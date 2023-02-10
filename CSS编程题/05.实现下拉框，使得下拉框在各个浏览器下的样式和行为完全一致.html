@@ -1,0 +1,99 @@
+//实现下拉框，使得下拉框在各个浏览器下的样式和行为完全一致。
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div,span,ul,li{margin: 0;padding: 0;}
+        ul,li{list-style: none;}
+        #box{width: 200px;height: 30px;}
+        span{width: 200px;height: 30px;border: 1px solid black;display: block;line-height: 30px;text-align: center;}
+        .list{width: 200px;height: 90px;display: none;}
+        .list li{width: 200px;height: 30px;border: 1px solid black;border-top:none;text-align: center;}
+        .list .active{background: #66f;color: #fff;}
+    </style>
+    <body>
+      <div id="box">
+        <span>上海</span>
+        <ul class="list">
+          <li class="active">上海</li>
+          <li>北京</li>
+          <li>广州</li>
+          <li>青岛</li>
+          <li>杭州</li>
+        </ul>
+      </div>
+    </body>
+    
+    <script>
+      var olist = document.querySelector(".list")
+      var ospan = document.querySelector("span");
+      var ali = document.querySelectorAll(".list li");
+      // 1为显示，2为隐藏
+      var type = 1;
+      // 默认索引样式
+      var index = 0;
+      clearActive();
+    
+      ospan.onclick = function(eve){
+        var e = eve || window.event;
+        if(type === 1){
+          olist.style.display = "block";
+          clearActive();
+          type = 2;
+        }else{
+          olist.style.display = "none";
+          clearActive();
+          type = 1;
+        }
+        stopBubble(e);
+      }
+      for (var i = 0; i < ali.length; i++) {
+        ali[i].xuhao = i
+        ali[i].onclick = function (eve) {
+          var e = eve || window.enent;
+          ospan.innerHTML = this.innerHTML
+          index = this.xuhao
+        }
+        // 鼠标滑过的样式
+        ali[i].onmousemove = function (eve) {
+          var e = eve || window.enent;
+          index = this.xuhao
+          clearActive();
+        }
+        ali[i].onmouseout = function (eve) {
+          var e = eve || window.enent;
+          this.className = "";
+        }
+      }
+      //点击空白
+      document.onclick = function(){
+        olist.style.display = "none";
+        type = 1;
+      }
+    
+    
+      //设置默认样式
+      function clearActive(){
+        for(var i=0;i<ali.length;i++) {
+          ali[i].className = "";
+        }
+        ali[index].className = "active";
+      }
+    
+      function stopBubble(e){
+        if(e.stopPropagation){
+          e.stopPropagation();
+        }else{
+          e.cancelBubble = true;
+        }
+      }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

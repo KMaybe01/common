@@ -1,0 +1,30 @@
+<!-- css实现未知宽度的正方形【自适应宽度正方形】 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        body{text-align:center;}
+       *{
+                margin:0;
+                padding:0;
+        }
+        .box{
+                display:inline-block;
+                margin: 1% auto;
+                width: 30%;
+                background: #ff6600;
+        }
+        .box:after{
+                display: block;
+                padding-top: 100%;
+                content : '';
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    
+</body>
+</html>

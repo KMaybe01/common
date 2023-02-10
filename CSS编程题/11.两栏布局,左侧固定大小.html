@@ -1,0 +1,141 @@
+<!-- 
+两栏布局一般指的是页面中一共两栏，左边固定，右边自适应的布局，一共有四种实现的方式。
+
+以左边宽度固定为 200px 为例
+
+-（1）利用浮动，将左边元素宽度设置为 200px，并且设置向左浮动。
+将右边元素的 margin-left 设置为 200px，宽度设置为 auto（默认为 auto，撑满整个父元素）。
+
+-（2）第二种是利用 flex 布局，将左边元素的放大和缩小比例设置为 0，基础大小设置为 200px。
+将右边的元素的放大比例设置为 1，缩小比例设置为 1，基础大小设置为 auto。
+
+-（3）第三种是利用绝对定位布局的方式，将父级元素设置相对定位。左边元素设置为 absolute 定位，并且宽度设置为 200px。
+将右边元素的 margin-left 的值设置为 200px。
+
+-（4）第四种还是利用绝对定位的方式，将父级元素设置为相对定位。左边元素宽度设置为 200px，
+右边元素设置为绝对定位，左边定位为 200px，其余方向定位为 0。 -->
+
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .container {
+            padding: 10px;
+            border: 1px solid #ffa200;
+            margin-bottom: 40px;
+        }
+
+        .container .left {
+            background-color: #4b83e2;
+        }
+
+        .container .right {
+            background-color: #ff3b30;
+        }
+
+        /*左浮动固定宽度，右边盒子overflow:hidden触发bfc，使其不与浮动盒子区域重叠，因此会重新计算宽度。*/
+        .container1 .left {
+            float: left;
+            width: 100px;
+        }
+
+        .container1 .right {
+            overflow: hidden;
+        }
+
+        /*清除浮动*/
+        .container1:after {
+            content: "";
+            height: 0;
+            line-height: 0;
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        /*左浮动固定宽度,右边margin-left*/
+        .container2 .left {
+            float: left;
+            width: 100px;
+        }
+
+        .container2 .right {
+            margin-left: 100px;
+        }
+
+        /*清除浮动*/
+        .container2:after {
+            content: "";
+            height: 0;
+            line-height: 0;
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        /*左边绝对定位，右边设置margin-left，缺点：当左边高于右边时，左边会超出父元素，需要使用js补救。*/
+        .container3 {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container3 .left {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 100px;
+
+        }
+
+        .container3 .right {
+            margin-left: 100px;
+        }
+
+        /*双display:inline-block*/
+        .container4 {
+            font-size: 0;
+        }
+
+        .container4 .left {
+            width: 100px;
+        }
+
+        .container4 .left,
+        .container4 .right {
+            display: inline-block;
+            font-size: 16px;
+            vertical-align: top;
+        }
+
+        .container4 .right {
+            width: calc(100% - 100px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container container1">
+        <div class="left">左</div>
+        <div class="right">右</div>
+    </div>
+    <div class="container container2">
+        <div class="left">左</div>
+        <div class="right">右</div>
+    </div>
+    <div class="container container3">
+        <div class="left">左</div>
+        <div class="right">右</div>
+    </div>
+    <div class="container container4">
+        <div class="left">左</div>
+        <div class="right">右</div>
+    </div>
+
+    </div>
+</body>
+
+</html>

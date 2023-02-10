@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>把真实DOM转变为虚拟DOM</title>
+</head>
+
+<body>
+
+  <div id="root">
+    <img class="img" />
+    <div title="div-box">
+      <p>box</p>
+    </div>
+    文本节点
+  </div>
+  <script>
+    // javascript
+    function VNode(tag, data, value, type) {
+      this.tag = tag && tag.toLowerCase()
+      this.data = data
+      this.value = value
+      this.type = type
+      this.children = []
+    }
+    VNode.prototype.appendChild = function (vnode) {
+      this.children.push(vnode)
+    }
+
+    function getVNode(node) {
+      let nodeType = node.nodeType
+      let _vnode = null
+      if (nodeType === 1) {
+        let tag = node.nodeName
+        let attrs = node.attributes
+        let _data = {}
+        let attrLen = attrs.length
+        for (let i = 0; i < attrLen; i++) {
+          _data[attrs[i].nodeName] = attrs[i].nodeValue
+        }
+        _vnode = new VNode(tag, _data, undefined, nodeType)
+        let childNodes = node.childNodes
+        let childLen = childNodes.length
+        for (let i = 0; i < childLen; i++) {
+          _vnode.appendChild(getVNode(childNodes[i]))
+        }
+      } else if (nodeType === 3) {
+        _vnode = new VNode(undefined, undefined, node.nodeValue, nodeType)
+      }
+      return _vnode
+    }
+
+    let root = document.querySelector('#root')
+    let vroot = getVNode(root)
+    console.log(vroot)
+  </script>
+</body>
+
+</html>
