@@ -2,7 +2,7 @@
 // 使用闭包实现
 for (var i = 0; i < 5; i++) {
     (function (i) {
-        setTimeout(function () {
+        setTimeout(()=> {
             console.log(i);
         }, i * 1000);
     })(i);
@@ -10,10 +10,11 @@ for (var i = 0; i < 5; i++) {
 
 // 使用 let 块级作用域
 for (let i = 0; i < 5; i++) {
-    setTimeout(function () {
+    setTimeout( ()=> {
         console.log(i);
     }, i * 1000);
 }
+
 //使用第三个参数
 for (var i = 0; i <= 5; i++) {
     setTimeout((j) => {

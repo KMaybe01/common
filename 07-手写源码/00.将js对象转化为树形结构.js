@@ -29,59 +29,6 @@ tree = [{
                 }
             }] */
 
-function jsonToTree(data) {
-    // 初始化结果数组，并判断输入数据的格式
-    let result = []
-    if (!Array.isArray(data)) {
-        return result
-    }
-    // 使用map，将当前对象的id与当前对象对应存储起来
-    let map = {};
-    data.forEach(item => {
-        map[item.id] = item;
-    });
-
-    data.forEach(item => {
-        let parent = map[item.pid];
-        if (parent) {
-            (parent.children || (parent.children = [])).push(item);
-        } else {
-            result.push(item);
-        }
-    });
-    return result;
-}
-
-
-function arrayToTree2(array) {
-    let root = array[0]
-    array.shift()
-    let tree = [{
-            id: root.id,
-            name: root.name,
-            children: array.length > 0 ? toTree2(root.id, array) : []
-        }
-
-    ]
-    return tree;
-}
-
-function toTree2(parenId, array) {
-    let children = []
-    let len = array.length
-    for (let i = 0; i < len; i++) {
-        let node = array[i]
-        if (node.pid === parenId) {
-            children.push({
-                id: node.id,
-                name: node.name,
-                children: toTree2(node.id, array)
-            })
-        }
-    }
-    return children
-}
-
 const source = [{
     id: 1,
     pid: 0,
@@ -95,9 +42,38 @@ const source = [{
     pid: 2,
     name: 'div'
 }]
-console.log(arrayToTree2(source));
-console.log(jsonToTree(source));
 
+function jsonToTree(data) {
+    // 初始化结果数组，并判断输入数据的格式
+    let result = []
+    if (!Array.isArray(data)) {
+        return result
+    }
+    // 使用map，将当前对象的id与当前对象对应存储起来
+    /*
+     {
+       '1': { id: 1, pid: 0, name: 'body' },
+       '2': { id: 2, pid: 1, name: 'title' },
+       '3': { id: 3, pid: 2, name: 'div' }
+     }
+    */
+    let map = {};
+
+    data.forEach(item => {
+        map[item.id] = item;
+    });
+    data.forEach(item => {
+        let parent = map[item.pid];
+        if (parent) {
+            (parent.children || (parent.children = [])).push(item);
+        } else {
+            result.push(item);
+        }
+    });
+    return result;
+}
+
+console.log(jsonToTree(source));
 
 //手写数组转树
 // 例如将 input 转成output的形式
@@ -156,7 +132,7 @@ let output = {
     }]
 }
 
-// 代码实现
+// 递归
 function arrayToTree(array) {
     let root = array[0]
     array.shift()
@@ -196,7 +172,7 @@ function jsonToTree2(data) {
     data.forEach(item => {
         map[item.id] = item;
     });
-
+    console.log(map)
     //
     data.forEach(item => {
         let parent = map[item.parentId];
@@ -208,5 +184,6 @@ function jsonToTree2(data) {
     });
     return result;
 }
-// console.log(arrayToTree(input))
-// console.log(jsonToTree2(input))
+
+console.log(arrayToTree(input))
+console.log(jsonToTree2(input))
