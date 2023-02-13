@@ -11,15 +11,15 @@
   console.log(add(one(two()))); //3
   console.log(add(two(one()))); //3 
   */
+
   function add() {
-    // your code
     return arguments[0].reduce((a,b)=>a+b)
 }
-function one() {
-    // your code
+
+function one() {  
     if(arguments.length==0){
         return 1
-    }else{
+    } else {
         return [arguments[0],1]
     }
 
@@ -27,7 +27,7 @@ function one() {
 function two() {
     if(arguments.length==0){
         return 2
-    }else{
+    } else {
         return [arguments[0],2]
     }
 }

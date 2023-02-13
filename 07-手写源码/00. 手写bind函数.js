@@ -13,7 +13,7 @@ Function.prototype.myBind = function (context) {
     throw new TypeError("Error");
   }
   // 获取参数
-  var args = [...arguments].slice(1),
+  let args = [...arguments].slice(1),
     fn = this;
   return function Fn() {
     // 根据调用方式，传入不同绑定值

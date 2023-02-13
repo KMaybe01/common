@@ -8,13 +8,13 @@ const request = (params) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     let isTimeOut = false
-    const timer = setTimeout(function () {
+    const timer = setTimeout(()=> {
       isTimeOut = true;
       xhr.abort();
       reject('request is timeout ！！！')
     }, option.timeOut)
     xhr.open("GET", option.url);
-    xhr.onreadystatechange = function () {
+    xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
         if (isTimeOut) return; //忽略中止请求
         clearTimeout(timer); //取消等待的超时

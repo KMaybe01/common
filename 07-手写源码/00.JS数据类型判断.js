@@ -20,7 +20,7 @@
  */
 
 //简洁面试版
-function getType(value) {
+const getType = (value) => {
 
   // 判断数据是引用类型的情况
   if (typeof value === "object") {
@@ -28,16 +28,21 @@ function getType(value) {
     //     type = valueClass.split(" ")[1].split("");
     // type.pop();
     // return type.join("").toLowerCase();
-    return Object.prototype.toString.call(value).slice(8, -1).toLowerCase(); // -1代表最后一位
+    return changeData(Object.prototype.toString.call(value).slice(8, -1).toLowerCase()); // -1代表最后一位
     // [object Array] ===> Array [object Object] ==> Object
-  } else if(value === null){
+  } else if (value === null){
      // 判断数据是 null 的情况
-    return value;
+     return changeData(value);
   } else {
     // 判断数据是基本数据类型的情况和函数的情况
-    return typeof value;
+    return changeData(typeof value);
   }
 }
+
+const changeData = (value) => {
+  return value[0].toUpperCase() + value.slice(1);
+};
+
 console.log("========getType==========");
 console.log(getType(Symbol())); //symbol
 console.log(getType(null)); //null

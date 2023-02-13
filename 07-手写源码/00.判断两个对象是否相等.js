@@ -26,7 +26,20 @@ const deepEqual = function (x, y) {
     return false;
 }
 
+//false
 console.log(deepEqual({}, {
     m: 1,
     a: 1
 }))
+
+//true
+console.log(deepEqual( 
+    {
+    m: 1,
+    a: 1
+    }, 
+    {
+    m: 1,
+    a: 1
+    }
+))

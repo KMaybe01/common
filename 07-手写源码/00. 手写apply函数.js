@@ -39,3 +39,4 @@ function fn() {
 }
 
 fn.myApply(obj, [1, 2, 3, 4, 5]);
+

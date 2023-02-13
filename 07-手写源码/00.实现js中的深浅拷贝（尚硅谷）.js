@@ -1,46 +1,4 @@
 /* 
-根据以上对浅拷贝的理解，实现一个浅拷贝的大致思路分为两点：
-● 对基础类型做一个最基本的一个拷贝；
-● 对引用类型开辟一个新的存储，并且拷贝一层对象属性。
-实现浅拷贝
-    方法一: 利用ES6语法
-    方法二: 利用ES5语法: for...in
-*/
-/* 方法一: 利用ES6语法*/
-function clone1(target) {
-  if (target instanceof Array) {
-    // return target.slice()
-    // return target.filter(() => true)
-    // return target.map(item => item)
-    return [...target];
-  } else if (target instanceof Object) {
-    // return Object.assign({}, target)
-    return {
-      ...target,
-    };
-  } else {
-    return target;
-  }
-}
-
-/* 方法二: 利用ES5语法: for...in */
-function clone2(target) {
-  if (target != null && typeof target === "object") {
-    // 根据 object 的类型判断是新建一个数组还是对象
-    const cloneTarget = Array.isArray(target) ? [] : {};
-    // 遍历 object，并且判断是 object 的属性才拷贝
-    for (let key in target) {
-      if (target.hasOwnProperty(key)) {
-        cloneTarget[key] = target[key];
-      }
-    }
-    return cloneTarget;
-  } else {
-    return target;
-  }
-}
-
-/* 
 深度克隆
 1). 大众乞丐版
     问题1: 函数属性会丢失

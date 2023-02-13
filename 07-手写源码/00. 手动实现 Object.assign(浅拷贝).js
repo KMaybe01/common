@@ -32,7 +32,7 @@ const obj3 = Object.create(proto, {
   },
 });
 console.log(obj3); // {c: 'cc'}
-// 输出obj3的构造函数的原型对象
+// 输出obj3的构造函数的原型对象s
 console.log(obj3.__proto__); // {p: 'proto'}
 const t1 = Object.myAssign({}, obj1, obj2);
 console.log(t1); // {a: "aa", b: "bb"}
@@ -51,6 +51,7 @@ function merge(target, ...sources) {
   }
   return target;
 }
+
 const t4 = Object.assign(
   {
     x: 1,

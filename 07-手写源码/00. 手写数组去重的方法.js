@@ -33,28 +33,13 @@ function unique(ary) {
 unique(arr);
 
 
-//indexOf
-function unique(ary) {
-    let newAry = [];
-    for (let i = 0; i < ary.length; i++) {
-        let cur = ary[i];
-        if (newAry.indexOf(cur) === -1) {
-            newAry.push(cur);
-        }
-    }
-    return newAry;
-}
-unique(arr)
-
-
-//includes :包含；如果数组包含那一项，返回true；不包含返回false；
-
+//includes or indexOf
 function unique(ary) {
     let newAry = [];
     let len = ary.length;
     for (let i = 0; i < len; i++) {
         let cur = ary[i];
-        if (!newAry.includes(cur)) {
+        if (!newAry.includes(cur)) {  // newAry.indexOf(cur) === -1
             newAry.push(cur);
         }
     }
@@ -64,9 +49,7 @@ console.log(unique(arr));
 
 //sort
 function unique(ary) {
-    let a = ary.sort(function (a, b) {
-        return a - b;
-    });
+    let a = ary.sort((a, b) => a - b);
     for (let i = 0; i < a.length; i++) {
         if (a[i] === a[i + 1]) {
             a.splice(i + 1, 1);
@@ -77,28 +60,7 @@ function unique(ary) {
 }
 unique(arr)
 
-//递归
-
-function unique(ary) {
-    let len = ary.length;
-    ary = ary.sort(function (a, b) {
-        return a - b;
-    });
-
-    function loop(index) {
-        if (index >= 1) {
-            if (ary[index] === ary[index - 1]) {
-                ary.splice(index, 1);
-            }
-            loop(index - 1)
-        }
-    }
-    loop(len - 1);
-    return ary;
-}
-console.log(unique(arr));
 //splice
-
 function unique(ary) {
     for (let i = 0; i < ary.length; i++) {
         for (j = i + 1; j < ary.length; j++) {
@@ -112,27 +74,9 @@ function unique(ary) {
 }
 unique(arr);
 
-//对象属性名不能重复
-function unique(ary) {
-    let obj = {};
-    for (let i = 0; i < ary.length; i++) {
-        let cur = ary[i];
-        if (obj[cur]) {
-            //ary.splice(i,1);// 导致数组塌陷
-            ary[i] = ary[ary.length - 1];
-            ary.length--; // 删除最后一项
-            i--;
-            continue;
-        }
-        obj[cur] = cur; // 给obj新增键值对；属性名和属性值是一样的
-    }
-}
-unique(arr);
-
 //filter+indexOf
 function unique(ary) {
-    return ary.filter(function (item, index, a) {
-        return ary.indexOf(item) === index;
-    })
+     return ary.filter((item,index)=> ary.indexOf(item) === index)
 }
 console.log(unique(arr));
+

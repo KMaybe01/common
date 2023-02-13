@@ -18,8 +18,8 @@ const isCycleObject = (obj, parent) => {
     return false;
 }
 
-let hasCycle = function (head) {
-    try {
+let hasCycle = (head) => {
+    try { 
         JSON.stringify(head);
         return false;
     } catch (err) {
@@ -41,5 +41,5 @@ const o = {
     c
 }
 o.c.b.aa = b;
-console.log(isCycleObject(o))
-console.log(hasCycle(o))
+console.log(isCycleObject(o)) // true
+console.log(hasCycle(o)) // true

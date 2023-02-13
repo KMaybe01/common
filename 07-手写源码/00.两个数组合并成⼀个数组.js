@@ -10,4 +10,6 @@ let a3 = [...a1, ...a2].sort().map((item) => {
     }
     return item
 })
-console.log(a3)
+
+console.log( [...a1, ...a2].sort());
+console.log(a3);

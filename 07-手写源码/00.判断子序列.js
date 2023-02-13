@@ -4,13 +4,22 @@ const isSubsequence = (b, a) => {
     let bi = 0,
         ai = 0;
     while (bi < b.length) {
-        if (a[ai] === b[bi]) bi++;
-        ai++;
-        if (ai > a.length) return false;
+        if (a[ai] === b[bi]) {
+            bi++;
+        } else {
+            ai++;
+        }
+
+        if (ai > a.length) {
+            return false;
+        }
     }
     return true;
 };
-const arr = [1, 3, 5, 7, 11];
-const arrChild = [1, 5, 11];
-const t1 = isSubsequence(arrChild, arr);
-console.log(t1)
+
+const t1 = isSubsequence([1, 5, 11], [1, 3, 5, 7, 11]);
+const t2 = isSubsequence([1, 11],  [1, 3, 5, 7, 11]);
+const t3 = isSubsequence([1, 11, 5],  [1, 3, 5, 7, 11]);
+console.log(t1) // true
+console.log(t2) // true
+console.log(t3) // false

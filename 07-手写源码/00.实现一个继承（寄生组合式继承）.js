@@ -13,11 +13,11 @@ function Child(name, parentName) {
     this.name = name;
 }
 //兼容处理，类似Object.create()
-function create(proto) {
-    function F() {}
-    F.prototype = proto;
-    return new F();
-}
+// function create(proto) {
+//     function F() {}
+//     F.prototype = proto;
+//     return new F();
+// }
 
 /**
 1. 这一步不用Child.prototype =Parent.prototype的原因是怕共享内存，修改父类原型对象就会影
@@ -26,7 +26,7 @@ function create(proto) {
 存在一份多余的父类实例属性
 3. Object.create是创建了父类原型的副本，与父类原型完全隔离
 */
-Child.prototype = create(Parent.prototype);
+Child.prototype = Object.create(Parent.prototype);
 Child.prototype.sayName = function () {
     console.log('child name:', this.name);
 }
