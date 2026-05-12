@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>grid</title>
+    <style>
+        .box {
+            display: grid;
+            height: 600px;
+            width: 100%;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        .box>div {
+            width: 98%;
+            margin: 1%;
+            background-color: deeppink;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .box>div:nth-child(even) {
+            background-color: black;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <div>九宫格1</div>
+        <div>九宫格2</div>
+        <div>九宫格3</div>
+        <div>九宫格4</div>
+        <div>九宫格5</div>
+        <div>九宫格6</div>
+        <div>九宫格7</div>
+        <div>九宫格8</div>
+        <div>九宫格9</div>
+    </div>
+
+
+</body>
+
+</html>

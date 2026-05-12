@@ -1,0 +1,119 @@
+<!-- A元素垂直居中于屏幕中央
+A元素距离屏幕左右边距各10px
+A元素里面的文字A的font-size:20px；水平垂直居中
+A元素的高度始终是A元素宽度的50%；(如果搞不定可以实现为A元素的高度固定为200px)
+
+请用html及css实现
+ -->
+<!-- 方法一 -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>居中</title>
+</head>
+
+<body>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .wrap {
+            width: 100%;
+            height: 100%;
+            background-color: bisque;
+            position: relative;
+        }
+
+        .A {
+            font-size: 20px;
+            text-align: center;
+            background-color: blueviolet;
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            transform: translate(0, -50%);
+            padding-top: 50%;
+        }
+
+        .f {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <div class="wrap">
+        <div class="A">
+            <div class="f">A</div>
+        </div>
+    </div>
+</body>
+
+</html> -->
+<!-- 方法二 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>居中</title>
+</head>
+
+<body>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+        }
+
+        .A {
+            flex: 1;
+            margin: 0 10px;
+            padding-top: 50%;
+            position: relative;
+            background: #999;
+        }
+
+        .A::after {
+            content: 'A';
+            display: block;
+            font-size: 20px;
+            position: absolute;
+            /* 样式1 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            /* 样式2 */
+            /* top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center; */
+        }
+    </style>
+    <div class="A"></div>
+</body>
+
+</html>

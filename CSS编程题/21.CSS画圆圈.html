@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        /* 1.两个标签的嵌套 */
+        .element1 {
+            width: 200px;
+            height: 200px;
+            background-color: lightpink;
+            border-radius: 50%;
+        }
+
+        .child1 {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #009966;
+            position: relative;
+            top: 50px;
+            left: 50px;
+        }
+
+        /* 2. 使用伪元素，before／after */
+        .element2 {
+            width: 200px;
+            height: 200px;
+            background-color: lightpink;
+            border-radius: 50%;
+        }
+
+        .element2:after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #009966;
+            position: relative;
+            top: 50px;
+            left: 50px;
+        }
+
+        /* 3. 使用border: */
+        .element3 {
+            width: 100px;
+            height: 100px;
+            background-color: #009966;
+            border-radius: 50%;
+            border: 50px solid lightpink;
+        }
+
+        /* 4. 使用border-shadow */
+        .element4 {
+            width: 100px;
+            height: 100px;
+            background-color: #009966;
+            border-radius: 50%;
+            box-shadow: 0 0 0 50px lightpink;
+            margin: auto;
+        }
+
+        /* 5. 使用radial-gradient */
+        .element6 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: -webkit-radial-gradient(circle closest-side, #009966 50%, lightpink 50%);
+        }
+    </style>
+    <div class="element1">
+        <div class="child1"></div>
+
+    </div>
+    <div class="element2"></div>
+    <div class="element3"></div>
+    <div class="element4"></div>
+    <div class="element6"></div>
+
+
+</body>
+
+</html>
