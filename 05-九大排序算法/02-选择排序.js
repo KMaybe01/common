@@ -1,7 +1,15 @@
-// 选择排序：原址比较排序算法。大致思路是找到数据结构中的最小值并将其放在第一位，
-// 接着找到第二小值并将其放在第二位，以此类推。
-// 时间复杂度：O(n2)
-//空间复杂度：O(1)
+/**
+ * 题目：选择排序
+ * 描述：每轮从未排序部分选出最小值，放到已排序部分的末尾。
+ *       原地排序，不稳定（例如 [5,5,2] 第一个5会被交换到后面）。
+ * 时间复杂度：O(n²)（任何情况）
+ * 空间复杂度：O(1)
+ */
+
+/**
+ * @param {number[]} arr
+ * @returns {number[]}
+ */
 function selectionSort(arr) {
   const len = arr.length;
   for (let i = 0; i < len - 1; i++) {
@@ -13,5 +21,3 @@ function selectionSort(arr) {
   }
   return arr;
 }
-
-console.log(selectionSort([2, 6, 1, 8, 5]));

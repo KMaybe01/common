@@ -1,22 +1,22 @@
-/* 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
-每次你可以爬 1 或 2 个台阶。你有多少种不同的⽅法可以爬到楼顶呢？ 
-注意： 给定 n 是⼀个正整数。
+/**
+ * 题目：爬楼梯（LeetCode 70）
+ * 描述：每次可以爬 1 或 2 个台阶，求爬到 n 阶楼顶有多少种方法。
+ * 本质：斐波那契数列问题 f(n) = f(n-1) + f(n-2)
+ *
+ * 解法一：动态规划（数组）
+ * 思路：dp[i] = dp[i-1] + dp[i-2]，dp[0]=1, dp[1]=1
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ *
+ * 解法二：动态规划（滚动变量优化）
+ * 思路：用三个变量滚动计算，节省空间
+ * 时间复杂度：O(n)；空间复杂度：O(1)
+ */
 
-输⼊： 2
-输出： 2
-解释： 有两种⽅法可以爬到楼顶。
-1. 1 阶 + 1 阶
-2. 2 阶
-
-输⼊： 3
-输出： 3
-解释： 有三种⽅法可以爬到楼顶。
-1. 1 阶 + 1 阶 + 1 阶
-2. 1 阶 + 2 阶
-3. 2 阶 + 1 阶
-*/
-// 时间复杂度：O(n)
-// 空间复杂度：O(n)
+/**
+ * climbStairs - DP 数组版
+ * @param {number} n
+ * @return {number}
+ */
 let climbStairs = function (n) {
   let dp = [1, 1];
   for (let i = 2; i <= n; i++) {
@@ -25,14 +25,13 @@ let climbStairs = function (n) {
   return dp[n];
 };
 
-console.log(climbStairs(3));
-console.log(climbStairs(4));
-
-//空间复杂度：O(1)
+/**
+ * climbStairs2 - 滚动变量优化版
+ * @param {number} n
+ * @return {number}
+ */
 let climbStairs2 = function (n) {
-  let res = 1,
-    n1 = 1,
-    n2 = 1;
+  let res = 1, n1 = 1, n2 = 1;
   for (let i = 2; i <= n; i++) {
     res = n1 + n2;
     n1 = n2;
@@ -40,5 +39,3 @@ let climbStairs2 = function (n) {
   }
   return res;
 };
-console.log(climbStairs2(3));
-console.log(climbStairs2(4));

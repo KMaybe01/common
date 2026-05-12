@@ -1,43 +1,55 @@
-/* 
-⾃下⽽上式堆化 ：将节点与其⽗节点⽐较，如果节点⼤于⽗节点（⼤顶堆）或节点⼩于⽗节点（⼩顶堆），则节点与⽗节点调整位置
-⾃上往下式堆化 ：将节点与其左右⼦节点⽐较，如果存在左右⼦节点⼤于该节点（⼤顶堆）或⼩于该节点（⼩顶堆），则将⼦节点的最⼤值（⼤顶堆）或最⼩值（⼩顶堆）与之交换
-所以，⾃下⽽上式堆是调整节点与⽗节点（往上⾛），⾃上往下式堆化是调整节点与其左右⼦节点（往下⾛）。
-时间复杂度：建堆过程的时间复杂度是 O(n) ，排序过程的时间复杂度是 O(nlogn) ，
-整体时间复杂度是 O(nlogn)
-空间复杂度：O(1) 
-*/
-/* 
-将原序列（n个）转化成⼀个⼤顶堆
-设置堆的有效序列⻓度为 n
-将堆顶元素（第⼀个有效序列）与最后⼀个⼦元素（最后⼀个有效序列）交换，并有效序列⻓度减1
-堆化有效序列，使有效序列᯿新称为⼀个⼤顶堆
-᯿复以上2步，直到有效序列的⻓度为 1，排序完成 */
+/**
+ * 题目：堆排序
+ * 描述：利用堆数据结构进行排序。先将数组构建成一个大顶堆，
+ *       然后反复将堆顶（最大值）与末尾交换，缩小堆范围并堆化。
+ *
+ * 核心概念：
+ * - 大顶堆：每个节点的值 >= 其子节点的值
+ * - 自下而上堆化：节点与父节点比较调整
+ * - 自上而下堆化：节点与子节点比较调整（本文使用）
+ *
+ * 注意：此实现使用 1-based 索引（堆的有效范围从索引 1 开始），
+ *       输入数组索引 0 位置为空。
+ * 时间复杂度：建堆 O(n)，排序 O(n log n)
+ * 空间复杂度：O(1)
+ */
+
+/**
+ * heapSort - 堆排序
+ * @param {number[]} items
+ * @returns {number[]}
+ */
 function heapSort(items) {
-  // 构建⼤顶堆
   buildHeap(items, items.length - 1);
-  // 设置堆的初始有效序列⻓度为 items.length - 1
   let heapSize = items.length - 1;
   for (var i = items.length - 1; i > 1; i--) {
-    // 交换堆顶元素与最后⼀个有效⼦元素
     swap(items, 1, i);
-    // 有效序列⻓度减 1
     heapSize--;
-    // 堆化有效序列(有效序列⻓度为 currentHeapSize，抛除了最后⼀个元素)
     heapify(items, heapSize, 1);
   }
   return items;
 }
-// 原地建堆
-// items: 原始序列
-// heapSize: 有效序列⻓度
+
+/**
+ * buildHeap - 原地建大顶堆
+ * 从最后一个非叶子节点开始，自下而上堆化
+ * @param {number[]} items
+ * @param {number} heapSize
+ */
 function buildHeap(items, heapSize) {
-  // 从最后⼀个⾮叶⼦节点开始，⾃上⽽下式堆化
   for (let i = Math.floor(heapSize / 2); i >= 1; --i) {
     heapify(items, heapSize, i);
   }
 }
+
+/**
+ * heapify - 自上而下堆化
+ * 将节点 i 与左右子节点比较，与最大值交换后继续向下堆化
+ * @param {number[]} items
+ * @param {number} heapSize
+ * @param {number} i 当前节点索引
+ */
 function heapify(items, heapSize, i) {
-  // ⾃上⽽下式堆化
   while (true) {
     var maxIndex = i;
     if (2 * i <= heapSize && items[i] < items[i * 2]) {
@@ -47,16 +59,16 @@ function heapify(items, heapSize, i) {
       maxIndex = i * 2 + 1;
     }
     if (maxIndex === i) break;
-    swap(items, i, maxIndex); // 交换
+    swap(items, i, maxIndex);
     i = maxIndex;
   }
 }
+
 function swap(items, i, j) {
   let temp = items[i];
   items[i] = items[j];
   items[j] = temp;
 }
-// 测试
+
+// items[0] 为空，实际数据从索引 1 开始
 var items = [1, 9, 2, 8, 3, 7, 4, 6, 5];
-console.log(heapSort(items));
-// [empty, 1, 2, 3, 4, 5, 6, 7, 8, 9]

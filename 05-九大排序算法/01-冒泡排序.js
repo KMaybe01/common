@@ -1,24 +1,33 @@
-// 冒泡排序
-// 时间复杂度： 最好时间复杂度 O(n)，平均时间复杂度 O(n2)
-// 空间复杂度：O(1)
+/**
+ * 题目：冒泡排序
+ * 描述：重复遍历数组，依次比较相邻两个元素，如果顺序错误则交换。
+ *       每轮遍历将最大（或最小）元素"冒泡"到数组末尾。
+ * 特性：稳定排序，原地排序
+ * 时间复杂度：最好 O(n)（已有序），最坏/平均 O(n²)
+ * 空间复杂度：O(1)
+ *
+ * 三个版本对比：
+ * - bubbleSort：标准冒泡
+ * - bubbleSort2：记录最后交换位置优化（已排序区域无需再比较）
+ * - bubbleSort3：提前退出优化（一轮无交换即有序）
+ */
+
 const arr = [5, 4, 3, 2, 1, 0];
+
+/** 标准冒泡排序 */
 function bubbleSort(arr) {
   const len = arr.length;
-  console.time("1.冒泡排序耗时");
   for (let i = 0; i < len; i++) {
     for (let j = 0; j < len - 1 - i; j++) {
       if (arr[j] > arr[j + 1]) [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
     }
   }
-  console.timeEnd("1.冒泡排序耗时");
   return arr;
 }
-console.log(bubbleSort(arr));
 
-// 改进冒泡排序
+/** 改进版：记录最后交换位置，已排序部分不再比较 */
 function bubbleSort2(arr) {
   let i = arr.length - 1;
-  console.time("2.改进后冒泡排序耗时");
   while (i > 0) {
     let pos = 0;
     for (let j = 0; j < i; j++) {
@@ -29,28 +38,20 @@ function bubbleSort2(arr) {
     }
     i = pos;
   }
-  console.timeEnd("2.改进后冒泡排序耗时");
   return arr;
 }
-console.log(bubbleSort2(arr));
 
+/** 改进版：提前退出，一轮无交换即有序 */
 function bubbleSort3(arr) {
-  console.time("3.改进后冒泡排序耗时");
   for (let i = 0; i < arr.length; i++) {
-    // 提前退出冒泡循环的标识位
     let flag = false;
     for (let j = 0; j < arr.length - i - 1; j++) {
       if (arr[j] > arr[j + 1]) {
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
         flag = true;
-        // 表示发⽣了数据交换
       }
     }
-    // 没有数据交换
     if (!flag) break;
   }
-  console.timeEnd("3.改进后冒泡排序耗时");
   return arr;
 }
-
-console.log(bubbleSort3(arr)); // [1, 2, 3, 4, 5]

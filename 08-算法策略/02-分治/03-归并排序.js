@@ -1,29 +1,33 @@
-// 归并排序
-/* 将原始序列平分成两个⼩数组
-判断⼩数组⻓度是否为1，不为1则继续分裂
-原始数组被分称了⻓度为1的多个⼩数组，然后合并相邻⼩数组（有序合并）
-不断合并⼩数组，直到合并称⼀个数组，则为排序后的数组序列 */
-// 时间复杂度：O(nlog2n)
-// 空间复杂度：O(n)
-const insertionSort = (arr) => {
+/**
+ * 题目：归并排序（分治策略）
+ * 描述：采用分治思想，将数组递归分成两半分别排序，再合并为有序数组。
+ *       分治的三步：分解 -> 解决 -> 合并
+ * 时间复杂度：O(n log n)；空间复杂度：O(n)
+ */
+
+/**
+ * mergeSort - 归并排序
+ * @param {number[]} arr
+ * @returns {number[]}
+ */
+const mergeSort = (arr) => {
   if (arr.length > 1) {
-    const len = arr.length;
-    const middle = Math.floor(len / 2);
-    const left = insertionSort(arr.slice(0, middle));
-    const right = insertionSort(arr.slice(middle));
+    const middle = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, middle));
+    const right = mergeSort(arr.slice(middle));
     arr = merge(left, right);
   }
   return arr;
 };
 
+/**
+ * merge - 合并两个有序数组
+ */
 const merge = (left, right) => {
-  let i = 0;
-  let j = 0;
+  let i = 0, j = 0;
   const res = [];
   while (i < left.length && j < right.length) {
     res.push(left[i] < right[j] ? left[i++] : right[j++]);
   }
   return res.concat(i < left.length ? left.slice(i) : right.slice(j));
 };
-
-console.log(insertionSort([5, 4, 3, 2, 1]));

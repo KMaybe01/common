@@ -1,31 +1,36 @@
-/* 给定⼀个字符串，你的任务是计算这个字符串中有多少个回⽂⼦串。
-具有不同开始位置或结束位置的⼦串，即使是由相同的字符组成，也会被视作不同的⼦串。
+/**
+ * 题目：回文子串（LeetCode 647）
+ * 描述：计算字符串中有多少个回文子串。不同位置的相同内容视为不同子串。
+ * 示例："abc" -> 3（"a","b","c"）；"aaa" -> 6
+ *
+ * 解法一：暴力法
+ * 思路：枚举所有子串，逐个判断是否为回文
+ * 时间复杂度：O(n³)；空间复杂度：O(1)
+ *
+ * 解法二：动态规划
+ * 思路：dp[i] 表示从 i 到当前 j 是否为回文
+ *       状态转移：s[i]===s[j] && (j-i<=1 || dp[i+1])
+ *       注意：外层循环是 j（右边界），内层是 i（左边界）
+ * 时间复杂度：O(n²)；空间复杂度：O(n)
+ */
 
-输⼊："abc"
-输出：3
-解释：三个回⽂⼦串: "a", "b", "c"
-
-输⼊："aaa"
-输出：6
-解释：6个回⽂⼦串: "a", "a", "a", "aa", "aa", "aaa" 
-*/
-//暴力法
-// 时间复杂度：O(n3)
-// 空间复杂度：O(1)
+/**
+ * countSubstrings - 暴力法
+ * @param {string} s
+ * @return {number}
+ */
 let countSubstrings = function (s) {
   let count = 0;
   for (let i = 0; i < s.length; i++) {
     for (let j = i; j < s.length; j++) {
-      if (isPalindrome(s.substring(i, j + 1))) {
-        count++;
-      }
+      if (isPalindrome(s.substring(i, j + 1))) count++;
     }
   }
   return count;
 };
+
 let isPalindrome = function (s) {
-  let i = 0,
-    j = s.length - 1;
+  let i = 0, j = s.length - 1;
   while (i < j) {
     if (s[i] != s[j]) return false;
     i++;
@@ -33,11 +38,12 @@ let isPalindrome = function (s) {
   }
   return true;
 };
-console.log(countSubstrings("aaa"));
 
-//动态规划
-// 时间复杂度：O(n2)
-// 空间复杂度：O(n)
+/**
+ * countSubstrings2 - 动态规划
+ * @param {string} s
+ * @return {number}
+ */
 let countSubstrings2 = function (s) {
   const len = s.length;
   let count = 0;
@@ -54,4 +60,3 @@ let countSubstrings2 = function (s) {
   }
   return count;
 };
-console.log(countSubstrings2("aaa"));

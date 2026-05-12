@@ -1,43 +1,49 @@
-// 后序遍历
-//递归
+/**
+ * 题目：二叉树的后序遍历（LeetCode 145）
+ * 描述：按照"左-右-根"的顺序遍历二叉树。
+ *
+ * 解法一：递归法
+ * 思路：递归遍历左子树 -> 递归遍历右子树 -> 访问根节点
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ *
+ * 解法二：迭代法（头插法技巧）
+ * 思路：前序遍历是"根-左-右"，调整为"根-右-左"后 reverse 即为"左-右-根"。
+ *       利用 unshift（头插法）将访问顺序变为"根-右-左"，再出栈时自然变为后序。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ */
+
+/**
+ * postorderTraversal - 递归后序遍历
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
 const postorderTraversal = function (root) {
   let result = [];
-  var postorderTraversalNode = (node) => {
+  const postorder = (node) => {
     if (node) {
-      // 先遍历左⼦树
-      postorderTraversalNode(node.left);
-      // 再遍历右⼦树
-      postorderTraversalNode(node.right);
-      // 最后根节点
+      postorder(node.left);
+      postorder(node.right);
       result.push(node.val);
     }
   };
-  postorderTraversalNode(root);
+  postorder(root);
   return result;
 };
 
-//迭代
-// 后序遍历
-const postorderTraversal = (root) => {
+/**
+ * postorderTraversal - 迭代后序遍历
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+const postorderTraversalIterative = (root) => {
   const list = [];
   const stack = [];
-  // 当根节点不为空的时候，将根节点⼊栈
   if (root) stack.push(root);
   while (stack.length > 0) {
     const node = stack.pop();
-    // 根左右=>右左根
-    list.unshift(node.val);
-    // 先进栈左⼦树后右⼦树
-    // 出栈的顺序就变更为先右后左
-    // 右先头插法⼊list
-    // 左再头插法⼊list
-    // 实现右左根=>左右根
-    if (node.left !== null) {
-      stack.push(node.left);
-    }
-    if (node.right !== null) {
-      stack.push(node.right);
-    }
+    list.unshift(node.val); // 头插法：将根放在最后
+    if (node.left !== null) stack.push(node.left);
+    if (node.right !== null) stack.push(node.right);
   }
   return list;
 };

@@ -1,19 +1,29 @@
-/* 给定⼀个⼆叉树，返回其节点值⾃底向上的层次遍历。 （即按从叶⼦节点所在层到根节点所在的层，
-逐层从左向右遍历）
-例如： 给定⼆叉树 [3,9,20,null,null,15,7] ,
-  3
- / \
- 9 20
-  /  \
- 15   7
- 返回其⾃底向上的层次遍历为：
- [
- [15,7],
- [9,20],
- [3]
-] */
+/**
+ * 题目：二叉树的层次遍历 II - 自底向上（LeetCode 107）
+ * 描述：从叶子节点所在层到根节点所在层，逐层从左到右遍历。
+ * 示例：
+ *     3
+ *    / \
+ *   9  20
+ *      / \
+ *     15  7
+ * 输出：[[15,7], [9,20], [3]]
+ *
+ * 解法一：BFS + reverse
+ * 思路：先正常从上到下 BFS 层序遍历，最后将结果数组 reverse。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ *
+ * 解法二：DFS（记录深度）
+ * 思路：递归时传递深度参数，将节点值放入对应深度的数组中，
+ *       最后将结果数组 reverse。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ */
 
-// BFS（⼴度优先遍历）
+/**
+ * levelOrderBottom - BFS 自底向上层序遍历
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
 const levelOrderBottom = function (root) {
   if (!root) return [];
   let res = [],
@@ -33,17 +43,20 @@ const levelOrderBottom = function (root) {
   return res.reverse();
 };
 
-// DFS（深度优先遍历）
-
-const levelOrderBottom = function (root) {
+/**
+ * levelOrderBottom - DFS 自底向上层序遍历
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+const levelOrderBottomDFS = function (root) {
   const res = [];
-  var dep = function (node, depth) {
+  const dfs = function (node, depth) {
     if (!node) return;
     res[depth] = res[depth] || [];
     res[depth].push(node.val);
-    dep(node.left, depth + 1);
-    dep(node.right, depth + 1);
+    dfs(node.left, depth + 1);
+    dfs(node.right, depth + 1);
   };
-  dep(root, 0);
+  dfs(root, 0);
   return res.reverse();
 };

@@ -1,35 +1,28 @@
-/* 给你⼀个按升序排序的整数数组 num （可能包含᯿复数字），请你将它们分割成⼀个或多个⼦序
-列，其中每个⼦序列都由连续整数组成且⻓度⾄少为 3 。
-如果可以完成上述分割，则返回 true ；否则，返回 false 。
+/**
+ * 题目：分割数组为连续子序列（LeetCode 659）
+ * 描述：将升序数组分割成一个或多个子序列，每个子序列由连续整数组成且长度至少为 3。
+ *       判断是否能完成分割。
+ * 示例：[1,2,3,3,4,5] -> true（可分割为 [1,2,3] 和 [3,4,5]）
+ *
+ * 解法：贪心 + 哈希计数
+ * 思路：
+ * - arr[num] 记录数字 num 的剩余出现次数
+ * - tail[num] 记录以 num 结尾的有效子序列数量
+ * - 遍历每个数字，优先追加到已有子序列（tail[num-1] > 0）
+ * - 否则尝试创建新子序列（检查 num+1 和 num+2 是否存在）
+ * - 都不行则返回 false
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ */
 
-输⼊: [1,2,3,3,4,5]
-输出: True
-解释:
-你可以分割出这样两个连续⼦序列 : 
-1, 2, 3
-3, 4, 5
-
-输⼊: [1,2,3,3,4,4,5,5]
-输出: True
-解释:
-你可以分割出这样两个连续⼦序列 : 
-1, 2, 3, 4, 5
-3, 4, 5
-
-输⼊: [1,2,3,4,4,5]
-输出: False 
-*/
-// 时间复杂度：O(n)
-// 空间复杂度：O(n)
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
 const isPossible = function (nums) {
   let max = nums[nums.length - 1];
-  // arr：存储原数组中数字每个数字出现的次数
-  // tail：存储以数字num结尾的且符合题意的连续⼦序列个数
-  let arr = new Array(max + 2).fill(0),
-    tail = new Array(max + 2).fill(0);
-  for (let num of nums) {
-    arr[num]++;
-  }
+  let arr = new Array(max + 2).fill(0);
+  let tail = new Array(max + 2).fill(0);
+  for (let num of nums) arr[num]++;
   for (let num of nums) {
     if (arr[num] === 0) continue;
     else if (tail[num - 1] > 0) {
@@ -46,4 +39,3 @@ const isPossible = function (nums) {
   }
   return true;
 };
-console.log(isPossible([1, 2, 3, 4, 4, 5]));

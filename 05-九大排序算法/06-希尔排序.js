@@ -1,14 +1,22 @@
-//
-//时间复杂度：O(nlogn)
-// 空间复杂度：O(1)
+/**
+ * 题目：希尔排序
+ * 描述：插入排序的改进版，通过将数组分组进行插入排序来减少元素移动距离。
+ *       先取一个间隔 gap，将数组分为 gap 组分别插入排序，
+ *       然后缩小 gap 重复操作，直到 gap = 1 完成最终排序。
+ * 特性：不稳定排序，原地排序。
+ * 时间复杂度：O(n log n) ~ O(n²) 取决于 gap 序列
+ * 空间复杂度：O(1)
+ */
+
+/**
+ * @param {number[]} arr
+ * @returns {number[]}
+ */
 function shellSort(arr) {
-  // 1. 获取数组长度
   let length = arr.length;
-  // 2.获取初始的间隔长度
   let interval = Math.floor(length / 2);
-  // 3. 不断地缩小间隔的大小，进行分组插入排序
+
   while (interval >= 1) {
-    // 4. 从 arr[interval] 开始往后遍历，将遍历到的数据与其小组进行插入排序
     for (let i = interval; i < length; i++) {
       let temp = arr[i];
       let j = i;
@@ -18,9 +26,7 @@ function shellSort(arr) {
       }
       arr[j] = temp;
     }
-    // 5. 缩小间隔
     interval = Math.floor(interval / 2);
   }
   return arr;
 }
-console.log(shellSort([5, 4, 3, 2, 1]));

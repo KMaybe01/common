@@ -1,64 +1,43 @@
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
+ * 题目：验证二叉搜索树（LeetCode 98）
+ * 描述：给定一个二叉树，判断其是否是一个有效的二叉搜索树（BST）。
+ * BST 定义：
+ *   1. 左子树所有节点的值 < 根节点的值
+ *   2. 右子树所有节点的值 > 根节点的值
+ *   3. 左右子树也必须是 BST
+ *
+ * 解法一（注释部分）：递归边界法
+ * 思路：递归时传递上下界（lower, upper），当前节点值必须在 (lower, upper) 范围内。
+ *       左子树更新上界为 root.val，右子树更新下界为 root.val。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
+ *
+ * 解法二（当前代码）：中序遍历法
+ * 思路：BST 的中序遍历结果一定是严格升序的。
+ *       中序遍历二叉树，依次比较每个节点值与上一个节点值。
+ *       如果当前值 <= 上一个值，说明不是 BST。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
  */
+
 /**
+ * isValidBST - 中序遍历法验证
  * @param {TreeNode} root
  * @return {boolean}
  */
-/* var isValidBST = function(root) {
-  // 通过一个辅助函数来统一设置左右子树的比较
-  return helper(root, -Infinity, Infinity);
-};
-
-const helper = (root, lower, upper) => {
-  if (root === null) {
-    return true
-  }
-	// 当前节点值超出边界，说明二叉树为非 BST
-  if (root.val <= lower || root.val >= upper) {
-    return false;
-  }
-  // 否则，递归处理左右子节点，并更新大小范围
-  // 同时根据左右子节点的返回值进行返回，只有全部递归结果均为 true， 才说明二叉树为 BST
-  return helper(root.left, lower, root.val) && helper(root.right, root.val, upper);
-} */
-
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} root
- * @return {boolean}
- */
-var isValidBST = function(root) {
-  let stk = []
-  // 用于记录上一次取得的节点值，BST 中这个值应小于当前节点
-  // 设置默认值为 -Infinity 避免对比较结果产生干扰
-  let oldNode = -Infinity
+var isValidBST = function (root) {
+  let stk = [];
+  let oldNode = -Infinity; // 记录上一个节点的值
 
   while (root || stk.length) {
     while (root) {
-      stk.push(root) 
-      root = root.left
+      stk.push(root);
+      root = root.left;
     }
-    root = stk.pop()
-    // 如果任意节点比上个节点值小，说明二叉树不是 BST
+    root = stk.pop();
     if (root.val <= oldNode) {
-      return false
+      return false; // 中序遍历未严格递增
     }
-    // 通过比较，记录当前节点值
-    oldNode = root.val
-    root = root.right
+    oldNode = root.val;
+    root = root.right;
   }
-  return true
+  return true;
 };

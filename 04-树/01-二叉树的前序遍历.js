@@ -1,50 +1,48 @@
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
+ * 题目：二叉树的前序遍历（LeetCode 144）
+ * 描述：按照"根-左-右"的顺序遍历二叉树。
+ *
+ * 解法一：递归法
+ * 思路：先访问根节点，再递归遍历左子树，最后递归遍历右子树。
+ * 时间复杂度：O(n)；空间复杂度：O(n)（递归调用栈）
+ *
+ * 解法二：迭代法（显式栈）
+ * 思路：利用栈模拟递归过程。先将右子节点入栈，访问当前节点，
+ *       再转向左子树，左子树处理完毕后从栈中取出右子节点处理。
+ * 时间复杂度：O(n)；空间复杂度：O(n)
  */
+
 /**
+ * preorderTraversal - 递归前序遍历
  * @param {TreeNode} root
  * @return {number[]}
  */
-//递归
-var preorderTraversal = function (root){
-  // 用于存储遍历的结果
+var preorderTraversal = function (root) {
   const res = [];
-  // 设置函数用于进行递归遍历
   const preorder = (root) => {
-    // 当前结点为空时，无需进行递归
-    if (!root) {
-      return;
-    }
-    // 记录根节点值
+    if (!root) return;
     res.push(root.val);
-    // 前序遍历左子树
     preorder(root.left);
-    // 前序遍历右子树
     preorder(root.right);
   };
   preorder(root);
   return res;
 };
 
-//迭代
-const preorderTraversal = function (root) {
+/**
+ * preorderTraversal - 迭代前序遍历
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+const preorderTraversalIterative = function (root) {
   const res = [];
   const stk = [];
   while (root || stk.length) {
     while (root) {
-      // 右子结点入栈
       stk.push(root.right);
-      // 记录根节点
       res.push(root.val);
-      // 下一步处理左子节点
       root = root.left;
     }
-    // 左子树处理完毕，将 stk 出栈，处理右子树
     root = stk.pop();
   }
   return res;
