@@ -1968,13 +1968,7 @@ function Editor() {
    → React DevTools、Chrome DevTools Performance
 ```
 
----
 
-**文档更新时间**：2024年5月
-**适用版本**：React 19+
-**作者社区**：React 中文开发者社区
-
----
 
 ## 📚 推荐学习资源
 
