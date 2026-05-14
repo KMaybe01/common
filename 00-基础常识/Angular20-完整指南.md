@@ -116,7 +116,7 @@ count.update(v => v+1); // 基于旧值更新
 
 ```mermaid
 graph LR
-    A["signal(0)<br/>count"] --> B["computed() <br/>doubled"]
+    A["signal("0")<br/>count"] --> B["computed() <br/>doubled"]
     A --> C["effect() <br/>监听器"]
     B --> C
     

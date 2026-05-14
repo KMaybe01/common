@@ -24,17 +24,17 @@
 ```mermaid
 graph LR
     subgraph LLM
-        L1[输入 Prompt] --> L2[生成文本]
-        L2 --> L3[输出完成]
+        L1["输入 Prompt"] --> L2["生成文本"]
+        L2 --> L3["输出完成"]
     end
 
     subgraph Agent
-        A1[用户目标] --> A2[LLM 推理]
-        A2 --> A3{需要工具？}
-        A3 -->|是| A4[调用 Tool/API]
-        A4 --> A5[获取结果]
+        A1["用户目标"] --> A2["LLM 推理"]
+        A2 --> A3{"需要工具？"}
+        A3 -->|是| A4["调用 Tool/API"]
+        A4 --> A5["获取结果"]
         A5 --> A2
-        A3 -->|否| A6[生成最终回答]
+        A3 -->|否| A6["生成最终回答"]
     end
 
     style L3 fill:#ffcccc
@@ -55,26 +55,26 @@ graph LR
 
 ```mermaid
 graph TB
-    User[用户] --> Profile[用户意图解析]
-    Profile --> Brain[LLM 推理核心]
+    User["用户"] --> Profile["用户意图解析"]
+    Profile --> Brain["LLM 推理核心"]
     
     subgraph Agent 核心架构
-        Brain --> Memory[记忆模块]
-        Brain --> Planning[规划模块]
-        Brain --> Tools[工具调用模块]
+        Brain --> Memory["记忆模块"]
+        Brain --> Planning["规划模块"]
+        Brain --> Tools["工具调用模块"]
         
-        Memory --> STM[短期记忆<br/>当前对话]
-        Memory --> LTM[长期记忆<br/>向量数据库]
+        Memory --> STM["短期记忆<br/>当前对话"]
+        Memory --> LTM["长期记忆<br/>向量数据库"]
         
-        Planning --> ReAct[ReAct 循环]
-        Planning --> PlanExec[Plan-Execute]
+        Planning --> ReAct["ReAct 循环"]
+        Planning --> PlanExec["Plan-Execute"]
         
-        Tools --> FC[Function Calling]
-        Tools --> MCP[MCP 协议]
-        Tools --> Code[代码执行]
+        Tools --> FC["Function Calling"]
+        Tools --> MCP["MCP 协议"]
+        Tools --> Code["代码执行"]
     end
     
-    Tools --> Environment[外部环境<br/>API/数据库/文件系统]
+    Tools --> Environment["外部环境<br/>API/数据库/文件系统"]
     
     style Brain fill:#e1f5fe
     style Memory fill:#fff3e0
@@ -100,20 +100,20 @@ graph TB
 ```mermaid
 graph TB
     subgraph Tools
-        T1[单个能力单元]
-        T2[搜索/计算/API]
+        T1["单个能力单元"]
+        T2["搜索/计算/API"]
     end
     
     subgraph Agent
-        A1[自主决策体]
-        A2[LLM 驱动]
-        A3[选择工具执行]
+        A1["自主决策体"]
+        A2["LLM 驱动"]
+        A3["选择工具执行"]
     end
     
     subgraph Workflow
-        W1[预定义流程]
-        W2[确定性 DAG]
-        W3[条件分支]
+        W1["预定义流程"]
+        W2["确定性 DAG"]
+        W3["条件分支"]
     end
     
     Tools -->|被 Agent 调用| Agent
@@ -140,17 +140,17 @@ graph TB
 
 ```mermaid
 graph TD
-    Paradigm[Agent 设计范式] --> ReAct[ReAct<br/>推理+行动循环]
-    Paradigm --> PE[Plan-and-Execute<br/>先计划后执行]
-    Paradigm --> Reflection[Reflection<br/>自我反思修正]
-    Paradigm --> MAA[Multi-Agent<br/>多智能体协作]
-    Paradigm --> SW[SWE-Agent<br/>代码工程代理]
+    Paradigm["Agent 设计范式"] --> ReAct["ReAct<br/>推理+行动循环"]
+    Paradigm --> PE["Plan-and-Execute<br/>先计划后执行"]
+    Paradigm --> Reflection["Reflection<br/>自我反思修正"]
+    Paradigm --> MAA["Multi-Agent<br/>多智能体协作"]
+    Paradigm --> SW["SWE-Agent<br/>代码工程代理"]
     
-    ReAct --> R1[适合大多数通用场景]
-    PE --> P1[适合复杂多步任务]
-    Reflection --> Re1[适合编码/推理任务]
-    MAA --> M1[适合复杂协作场景]
-    SW --> S1[适合 GitHub 工程任务]
+    ReAct --> R1["适合大多数通用场景"]
+    PE --> P1["适合复杂多步任务"]
+    Reflection --> Re1["适合编码/推理任务"]
+    MAA --> M1["适合复杂协作场景"]
+    SW --> S1["适合 GitHub 工程任务"]
 ```
 
 **Agent vs Workflow 核心区别：**
@@ -220,28 +220,28 @@ Final Answer: 最终回答
 ```mermaid
 graph TB
     subgraph ReAct
-        R1[Thought] --> R2[Action]
-        R2 --> R3[Observation]
+        R1["Thought"] --> R2["Action"]
+        R2 --> R3["Observation"]
         R3 -->|继续| R1
-        R3 -->|完成| R4[Answer]
+        R3 -->|完成| R4["Answer"]
         style R4 fill:#ccffcc
     end
 
     subgraph Plan-and-Execute
-        P1[分析任务] --> P2[制定完整计划]
-        P2 --> P3[Step 1]
-        P3 --> P4[Step 2]
-        P4 --> P5[...]
-        P5 --> P6[完成]
+        P1["分析任务"] --> P2["制定完整计划"]
+        P2 --> P3["Step 1"]
+        P3 --> P4["Step 2"]
+        P4 --> P5["..."]
+        P5 --> P6["完成"]
         style P6 fill:#ccffcc
     end
 
     subgraph Reflection
-        E1[执行] --> E2[评估结果]
-        E2 -->|不满意| E3[分析原因]
-        E3 --> E4[重新执行]
+        E1["执行"] --> E2["评估结果"]
+        E2 -->|不满意| E3["分析原因"]
+        E3 --> E4["重新执行"]
         E4 --> E2
-        E2 -->|满意| E5[输出]
+        E2 -->|满意| E5["输出"]
         style E5 fill:#ccffcc
     end
 ```
@@ -268,13 +268,13 @@ graph TB
 
 ```mermaid
 graph TD
-    TD[任务拆分方法] --> LLM_Based[LLM 自主拆分]
-    TD --> Template[模板化拆分]
-    TD --> Hierarchical[层次化拆分]
+    TD["任务拆分方法"] --> LLM_Based["LLM 自主拆分"]
+    TD --> Template["模板化拆分"]
+    TD --> Hierarchical["层次化拆分"]
     
-    LLM_Based --> L1[LLM 分析任务<br/>动态生成子任务]
-    Template --> L2[预设拆分规则<br/>如: 需求→设计→编码→测试]
-    Hierarchical --> L3[递归分解<br/>大任务→子任务→原子任务]
+    LLM_Based --> L1["LLM 分析任务<br/>动态生成子任务"]
+    Template --> L2["预设拆分规则<br/>如: 需求→设计→编码→测试"]
+    Hierarchical --> L3["递归分解<br/>大任务→子任务→原子任务"]
 ```
 
 **为什么要拆分：**
@@ -301,24 +301,24 @@ graph TD
 ```mermaid
 graph TB
     subgraph 记忆系统
-        US[用户输入] --> STM
+        US["用户输入"] --> STM
     
-        subgraph STM[短期记忆]
-            SC[当前对话上下文<br/>滑动窗口]
-            SB[缓冲区<br/>最近 K 轮]
+        subgraph STM [短期记忆]
+            SC["当前对话上下文<br/>滑动窗口"]
+            SB["缓冲区<br/>最近 K 轮"]
         end
     
-        subgraph LTM[长期记忆]
-            VE[向量嵌入]
-            VS[向量数据库<br/>Chromadb/Pinecone]
-            SU[摘要记忆<br/>对话摘要]
+        subgraph LTM [长期记忆]
+            VE["向量嵌入"]
+            VS["向量数据库<br/>Chromadb/Pinecone"]
+            SU["摘要记忆<br/>对话摘要"]
         end
     
         STM -->|超出窗口| LTM
         LTM -->|检索| STM
     end
     
-    STM --> LLM[LLM 推理]
+    STM --> LLM["LLM 推理"]
     LTM --> LLM
     
     style STM fill:#fff3e0
@@ -364,10 +364,10 @@ class AgentMemory:
 ```mermaid
 graph LR
     subgraph 记忆存储层级
-        L0[L0: Token 级<br/>完整上下文]
-        L1[L1: 消息级<br/>最近 N 轮对话]
-        L2[L2: 摘要级<br/>压缩后的历史]
-        L3[L3: 知识级<br/>向量检索]
+        L0["L0: Token 级<br/>完整上下文"]
+        L1["L1: 消息级<br/>最近 N 轮对话"]
+        L2["L2: 摘要级<br/>压缩后的历史"]
+        L3["L3: 知识级<br/>向量检索"]
     end
     
     L0 -->|超出窗口| L1
@@ -375,9 +375,9 @@ graph LR
     L2 -->|定期| L3
     
     subgraph 存储介质
-        M1[内存: L0/L1]
-        M2[Redis: L1/L2]
-        M3[向量库: L3]
+        M1["内存: L0/L1"]
+        M2["Redis: L1/L2"]
+        M3["向量库: L3"]
     end
 ```
 
@@ -407,9 +407,9 @@ graph LR
 
 ```mermaid
 graph TB
-    Coordinator[协调 Agent] --> PM[产品经理 Agent]
-    Coordinator --> DEV[开发 Agent]
-    Coordinator --> QA[测试 Agent]
+    Coordinator["协调 Agent"] --> PM["产品经理 Agent"]
+    Coordinator --> DEV["开发 Agent"]
+    Coordinator --> QA["测试 Agent"]
     
     PM -->|输出 PRD| DEV
     DEV -->|提交代码| QA
@@ -436,15 +436,15 @@ graph TB
 ```mermaid
 graph TD
     subgraph Single-Agent
-        S1[一个 LLM 实例]
-        S1 --> S2[全部任务自己处理]
-        S2 --> S3[轮流扮演不同角色]
+        S1["一个 LLM 实例"]
+        S1 --> S2["全部任务自己处理"]
+        S2 --> S3["轮流扮演不同角色"]
     end
 
     subgraph Multi-Agent
-        M1[Agent A<br/>产品] -->|消息队列| M2[Agent B<br/>开发]
-        M2 -->|消息队列| M3[Agent C<br/>测试]
-        M1 -.->|仲裁| M4[Supervisor<br/>协调者]
+        M1["Agent A<br/>产品"] -->|消息队列| M2["Agent B<br/>开发"]
+        M2 -->|消息队列| M3["Agent C<br/>测试"]
+        M1 -.->|仲裁| M4["Supervisor<br/>协调者"]
     end
 ```
 
@@ -469,17 +469,17 @@ graph TD
 
 ```mermaid
 graph TB
-    MC[记忆压缩方法] --> Summarize[LLM 摘要压缩]
-    MC --> Window[滑动窗口丢弃]
-    MC --> Entity[实体提取压缩]
-    MC --> KV[KV 缓存压缩]
-    MC --> RAG[向量化检索]
+    MC["记忆压缩方法"] --> Summarize["LLM 摘要压缩"]
+    MC --> Window["滑动窗口丢弃"]
+    MC --> Entity["实体提取压缩"]
+    MC --> KV["KV 缓存压缩"]
+    MC --> RAG["向量化检索"]
     
-    Summarize --> S1[用 LLM 生成对话摘要<br/>保留核心信息]
-    Window --> W1[只保留最近 K 轮<br/>丢弃早期内容]
-    Entity --> E1[提取实体-关系三元组<br/>结构化存储]
-    KV --> K1[利用 KV Cache<br/>减少重复计算]
-    RAG --> R1[embedding + Top-K<br/>按需检索]
+    Summarize --> S1["用 LLM 生成对话摘要<br/>保留核心信息"]
+    Window --> W1["只保留最近 K 轮<br/>丢弃早期内容"]
+    Entity --> E1["提取实体-关系三元组<br/>结构化存储"]
+    KV --> K1["利用 KV Cache<br/>减少重复计算"]
+    RAG --> R1["embedding + Top-K<br/>按需检索"]
 ```
 
 | 方法 | 压缩比 | 信息损失 | 实现复杂度 |
@@ -498,15 +498,15 @@ graph TB
 ```mermaid
 graph LR
     subgraph 手搓 Agent
-        H1[自定义 Prompt]
-        H2[精细控制]
-        H3[轻量无依赖]
+        H1["自定义 Prompt"]
+        H2["精细控制"]
+        H3["轻量无依赖"]
     end
 
     subgraph 框架（LangChain等）
-        F1[抽象层多]
-        F2[调试困难]
-        F3[黑盒问题]
+        F1["抽象层多"]
+        F2["调试困难"]
+        F3["黑盒问题"]
     end
 ```
 
@@ -567,12 +567,12 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    Start[执行任务] --> Result[得到结果]
-    Result --> Evaluate{自我评估}
-    Evaluate -->|通过| Output[输出结果]
-    Evaluate -->|不通过| Analysis[分析失败原因]
-    Analysis --> Refine[制定修正方案]
-    Refine --> ReExecute[重新执行]
+    Start["执行任务"] --> Result["得到结果"]
+    Result --> Evaluate{"自我评估"}
+    Evaluate -->|通过| Output["输出结果"]
+    Evaluate -->|不通过| Analysis["分析失败原因"]
+    Analysis --> Refine["制定修正方案"]
+    Refine --> ReExecute["重新执行"]
     ReExecute --> Result
     
     style Output fill:#ccffcc
@@ -606,19 +606,19 @@ graph TB
 
 ```mermaid
 graph TB
-    Gate[入口网关] -->|意图分析| Router[路由决策]
+    Gate["入口网关"] -->|意图分析| Router["路由决策"]
     
-    Router -->|需要搜索| SearchA[搜索 Agent]
-    Router -->|需要编码| CodeA[编码 Agent]
-    Router -->|需要分析| AnalyzeA[分析 Agent]
+    Router -->|需要搜索| SearchA["搜索 Agent"]
+    Router -->|需要编码| CodeA["编码 Agent"]
+    Router -->|需要分析| AnalyzeA["分析 Agent"]
     
     SearchA -->|结果返回| Gate
     CodeA -->|代码结果| Gate
     AnalyzeA -->|分析报告| Gate
     
     subgraph 协作机制
-        EventBus[事件总线] 
-        SharedMem[共享记忆]
+        EventBus["事件总线"] 
+        SharedMem["共享记忆"]
     end
     
     SearchA <--> EventBus
@@ -670,17 +670,17 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph 训练阶段
-        T1[收集工具调用数据] --> T2[格式化函数 Schema]
-        T2 --> T3[构建训练样本<br/>问题+Schema→函数调用]
-        T3 --> T4[Supervised Fine-tuning]
+        T1["收集工具调用数据"] --> T2["格式化函数 Schema"]
+        T2 --> T3["构建训练样本<br/>问题+Schema→函数调用"]
+        T3 --> T4["Supervised Fine-tuning"]
     end
 
     subgraph 推理阶段
-        I1[用户输入] --> I2[附加函数描述]
-        I2 --> I3[LLM 推理]
-        I3 --> I4{需要调用？}
-        I4 -->|是| I5[输出 JSON 格式调用]
-        I4 -->|否| I6[直接回答]
+        I1["用户输入"] --> I2["附加函数描述"]
+        I2 --> I3["LLM 推理"]
+        I3 --> I4{"需要调用？"}
+        I4 -->|是| I5["输出 JSON 格式调用"]
+        I4 -->|否| I6["直接回答"]
     end
 ```
 
@@ -708,16 +708,16 @@ graph TB
 ```mermaid
 graph TB
     subgraph MCP 架构
-        Host[宿主应用<br/>Claude Desktop / IDE] --> Client[MCP Client]
-        Client -->|JSON-RPC 协议| Server[MCP Server]
-        Server --> Server1[Tool<br/>工具]
-        Server --> Server2[Resource<br/>资源]
-        Server --> Server3[Prompt<br/>提示模板]
+        Host["宿主应用<br/>Claude Desktop / IDE"] --> Client["MCP Client"]
+        Client -->|JSON-RPC 协议| Server["MCP Server"]
+        Server --> Server1["Tool<br/>工具"]
+        Server --> Server2["Resource<br/>资源"]
+        Server --> Server3["Prompt<br/>提示模板"]
     end
     
-    Server1 --> API[外部 API]
-    Server2 --> DB[数据库]
-    Server3 --> Template[模板库]
+    Server1 --> API["外部 API"]
+    Server2 --> DB["数据库"]
+    Server3 --> Template["模板库"]
 ```
 
 **MCP 核心内容：**
@@ -736,23 +736,23 @@ graph TB
 
 ```mermaid
 graph TD
-    MCP[MCP 协议] --> Transport[传输层]
-    MCP --> Protocol[协议层]
-    MCP --> Capabilities[能力层]
+    MCP["MCP 协议"] --> Transport["传输层"]
+    MCP --> Protocol["协议层"]
+    MCP --> Capabilities["能力层"]
     
-    Transport --> T1[stdio<br/>本地进程通信]
-    Transport --> T2[SSE<br/>服务端事件推送]
-    Transport --> T3[WebSocket<br/>双向通信]
+    Transport --> T1["stdio<br/>本地进程通信"]
+    Transport --> T2["SSE<br/>服务端事件推送"]
+    Transport --> T3["WebSocket<br/>双向通信"]
     
-    Protocol --> P1[JSON-RPC 2.0 消息格式]
-    Protocol --> P2[Request/Response/Notification]
-    Protocol --> P3[初始化/能力协商]
+    Protocol --> P1["JSON-RPC 2.0 消息格式"]
+    Protocol --> P2["Request/Response/Notification"]
+    Protocol --> P3["初始化/能力协商"]
     
-    Capabilities --> C1[tools/list<br/>获取工具列表]
-    Capabilities --> C2[tools/call<br/>调用工具]
-    Capabilities --> C3[resources/list<br/>获取资源列表]
-    Capabilities --> C4[resources/read<br/>读取资源]
-    Capabilities --> C5[prompts/list<br/>获取提示模板]
+    Capabilities --> C1["tools/list<br/>获取工具列表"]
+    Capabilities --> C2["tools/call<br/>调用工具"]
+    Capabilities --> C3["resources/list<br/>获取资源列表"]
+    Capabilities --> C4["resources/read<br/>读取资源"]
+    Capabilities --> C5["prompts/list<br/>获取提示模板"]
 ```
 
 ---
@@ -790,17 +790,17 @@ graph TD
 ```mermaid
 graph LR
     subgraph 支持 MCP
-        S1[Claude<br/>Anthropic]
-        S2[兼容 MCP 的模型]
+        S1["Claude<br/>Anthropic"]
+        S2["兼容 MCP 的模型"]
     end
 
     subgraph 不支持 MCP
-        N1[纯推理模型<br/>o1 / DeepSeek-R1]
-        N2[原因: 不支持<br/>Function Calling 格式]
+        N1["纯推理模型<br/>o1 / DeepSeek-R1"]
+        N2["原因: 不支持<br/>Function Calling 格式"]
     end
 
-    MCP[MCP 协议] -->|需要| FC[Function Calling 能力]
-    FC -->|依赖| Train[指令微调]
+    MCP["MCP 协议"] -->|需要| FC["Function Calling 能力"]
+    FC -->|依赖| Train["指令微调"]
     Train --> N1
     
     style N1 fill:#ffcccc
@@ -874,13 +874,13 @@ Agent
 ```mermaid
 graph LR
     subgraph MCP
-        MC[Agent] -->|工具调用| MS[MCP Server]
-        MS --> API[外部 API]
+        MC["Agent"] -->|工具调用| MS["MCP Server"]
+        MS --> API["外部 API"]
     end
 
     subgraph A2A
-        A1[Agent A<br/>产品] <-->|A2A 协议| A2[Agent B<br/>开发]
-        A2 <-->|A2A 协议| A3[Agent C<br/>测试]
+        A1["Agent A<br/>产品"] <-->|A2A 协议| A2["Agent B<br/>开发"]
+        A2 <-->|A2A 协议| A3["Agent C<br/>测试"]
     end
 ```
 
@@ -943,20 +943,20 @@ graph LR
 
 ```mermaid
 graph TB
-    Client[客户端] --> Gateway[AI Gateway]
+    Client["客户端"] --> Gateway["AI Gateway"]
     
     subgraph Gateway 层功能
-        G1[路由: 模型分发]
-        G2[限流: QPS 控制]
-        G3[缓存: 语义缓存]
-        G4[降级: 模型切换]
-        G5[监控: Token 统计]
-        G6[安全: 内容过滤]
+        G1["路由: 模型分发"]
+        G2["限流: QPS 控制"]
+        G3["缓存: 语义缓存"]
+        G4["降级: 模型切换"]
+        G5["监控: Token 统计"]
+        G6["安全: 内容过滤"]
     end
     
-    Gateway --> LLM1[GPT-4o]
-    Gateway --> LLM2[Claude]
-    Gateway --> LLM3[DeepSeek]
+    Gateway --> LLM1["GPT-4o"]
+    Gateway --> LLM2["Claude"]
+    Gateway --> LLM3["DeepSeek"]
 ```
 
 **网关层解决的问题：**
@@ -994,18 +994,18 @@ graph TB
 ```mermaid
 graph TB
     subgraph Encoder
-        Input[输入序列] --> Embed[Embedding + 位置编码]
-        Embed --> MHA[多头自注意力]
-        MHA --> FFN[前馈神经网络]
-        FFN --> EncOut[编码器输出]
+        Input["输入序列"] --> Embed["Embedding + 位置编码"]
+        Embed --> MHA["多头自注意力"]
+        MHA --> FFN["前馈神经网络"]
+        FFN --> EncOut["编码器输出"]
     end
 
     subgraph Decoder
-        DecInput[输出序列] --> DecEmbed[Embedding + 位置编码]
-        DecEmbed --> MaskMHA[掩码自注意力]
-        MaskMHA --> CrossAttn[交叉注意力]
-        CrossAttn --> DecFFN[前馈网络]
-        DecFFN --> Output[输出概率]
+        DecInput["输出序列"] --> DecEmbed["Embedding + 位置编码"]
+        DecEmbed --> MaskMHA["掩码自注意力"]
+        MaskMHA --> CrossAttn["交叉注意力"]
+        CrossAttn --> DecFFN["前馈网络"]
+        DecFFN --> Output["输出概率"]
     end
 
     EncOut --> CrossAttn
@@ -1030,27 +1030,27 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph MHA[Multi-Head Attention]
-        H1[Q1 K1 V1] --> Cat1[拼接]
-        H2[Q2 K2 V2] --> Cat1
-        H3[...n heads] --> Cat1
-        Cat1 --> Out1[输出]
-        Note1[高显存/高带宽]
+    subgraph MHA [Multi-Head Attention]
+        H1["Q1 K1 V1"] --> Cat1["拼接"]
+        H2["Q2 K2 V2"] --> Cat1
+        H3["...n heads"] --> Cat1
+        Cat1 --> Out1["输出"]
+        Note1["高显存/高带宽"]
     end
 
-    subgraph GQA[Grouped Query Attention]
-        GQ[Q: n 组] --> Group[分组计算]
-        GK[K: 1 组] --> Group
-        Group --> Out2[输出]
-        Note2[平衡质量与效率]
+    subgraph GQA [Grouped Query Attention]
+        GQ["Q: n 组"] --> Group["分组计算"]
+        GK["K: 1 组"] --> Group
+        Group --> Out2["输出"]
+        Note2["平衡质量与效率"]
     end
     
-    subgraph MQA[Multi-Query Attention]
-        MQ[Q: n 组] --> Single[共享 KV]
-        SK[K: 1 组] --> Single
-        SV[V: 1 组] --> Single
-        Single --> Out3[输出]
-        Note3[极致 KV Cache 优化]
+    subgraph MQA [Multi-Query Attention]
+        MQ["Q: n 组"] --> Single["共享 KV"]
+        SK["K: 1 组"] --> Single
+        SV["V: 1 组"] --> Single
+        Single --> Out3["输出"]
+        Note3["极致 KV Cache 优化"]
     end
 ```
 
@@ -1084,9 +1084,9 @@ graph TB
 
 ```mermaid
 graph LR
-    Text["今天天气真好"] --> Tokenize[分词器]
-    Tokenize --> Tokens["['今天', '天气', '真好']"]
-    Tokens --> IDs["[1024, 3567, 8912]"]
+    Text["今天天气真好"] --> Tokenize["分词器"]
+    Tokenize --> Tokens["#quot;['今天', '天气', '真好'"]"]
+    Tokens --> IDs["#quot;[1024, 3567, 8912"]"]
 ```
 
 **主流分词算法：**
@@ -1104,22 +1104,22 @@ graph LR
 
 ```mermaid
 graph LR
-    PT[预训练<br/>Pre-training] --> SFT[指令微调<br/>Supervised Fine-tuning]
-    SFT --> RLHF[人类反馈强化学习<br/>RLHF / DPO]
+    PT["预训练<br/>Pre-training"] --> SFT["指令微调<br/>Supervised Fine-tuning"]
+    SFT --> RLHF["人类反馈强化学习<br/>RLHF / DPO"]
     
     subgraph 预训练
-        P1[海量文本<br/>TB 级]
-        P2[自监督学习<br/>Next Token Prediction]
+        P1["海量文本<br/>TB 级"]
+        P2["自监督学习<br/>Next Token Prediction"]
     end
     
     subgraph 指令微调
-        S1[高质量对话数据]
-        S2[监督学习]
+        S1["高质量对话数据"]
+        S2["监督学习"]
     end
     
     subgraph RLHF
-        R1[奖励模型训练]
-        R2[PPO 优化]
+        R1["奖励模型训练"]
+        R2["PPO 优化"]
     end
 ```
 
@@ -1138,18 +1138,18 @@ graph LR
 ```mermaid
 graph LR
     subgraph Scaling Law
-        P[参数量 ↑] --> L[Loss ↓]
-        D[数据量 ↑] --> L
-        C[计算量 ↑] --> L
+        P["参数量 ↑"] --> L["Loss ↓"]
+        D["数据量 ↑"] --> L
+        C["计算量 ↑"] --> L
     end
     
-    L --> E[涌现能力]
+    L --> E["涌现能力"]
     
     subgraph 涌现能力
-        E1[推理]
-        E2[代码]
-        E3[翻译]
-        E4[Few-shot]
+        E1["推理"]
+        E2["代码"]
+        E3["翻译"]
+        E4["Few-shot"]
     end
 ```
 
@@ -1195,17 +1195,17 @@ LoRA 更新: W + ΔW = W + BA
 
 ```mermaid
 graph TB
-    SFT[指令微调 SFT] --> Post[Post-Training]
+    SFT["指令微调 SFT"] --> Post["Post-Training"]
     
-    Post --> RLHF[RLHF<br/>PPO]
-    Post --> DPO[DPO<br/>Direct Preference Optimization]
-    Post --> GRPO[GRPO<br/>Group Relative Policy Optimization]
-    Post --> Rejection[拒绝采样<br/>Rejection Sampling]
+    Post --> RLHF["RLHF<br/>PPO"]
+    Post --> DPO["DPO<br/>Direct Preference Optimization"]
+    Post --> GRPO["GRPO<br/>Group Relative Policy Optimization"]
+    Post --> Rejection["拒绝采样<br/>Rejection Sampling"]
     
-    RLHF --> R1[需要奖励模型<br/>复杂但效果稳]
-    DPO --> D1[无需奖励模型<br/>简单高效]
-    GRPO --> G1[DeepSeek 使用<br/>分组相对优化]
-    Rejection --> Re1[多次采样取优<br/>质量筛选]
+    RLHF --> R1["需要奖励模型<br/>复杂但效果稳"]
+    DPO --> D1["无需奖励模型<br/>简单高效"]
+    GRPO --> G1["DeepSeek 使用<br/>分组相对优化"]
+    Rejection --> Re1["多次采样取优<br/>质量筛选"]
 ```
 
 | 方法 | 需要奖励模型 | 复杂度 | 代表模型 |
@@ -1236,13 +1236,13 @@ graph TB
 
 ```mermaid
 graph TB
-    Decode[解码策略] --> Greedy[贪心搜索<br/>Greedy Decoding]
-    Decode --> Beam[束搜索<br/>Beam Search]
-    Decode --> Sample[采样<br/>Sampling]
+    Decode["解码策略"] --> Greedy["贪心搜索<br/>Greedy Decoding"]
+    Decode --> Beam["束搜索<br/>Beam Search"]
+    Decode --> Sample["采样<br/>Sampling"]
     
-    Sample --> TopK[Top-K 采样]
-    Sample --> TopP[Top-P / Nucleus 采样]
-    Sample --> Temp[温度采样<br/>Temperature]
+    Sample --> TopK["Top-K 采样"]
+    Sample --> TopP["Top-P / Nucleus 采样"]
+    Sample --> Temp["温度采样<br/>Temperature"]
 ```
 
 | 策略 | 原理 | 适用场景 |
@@ -1307,14 +1307,14 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    Quant[量化方案] --> PTQ[训练后量化<br/>Post-Training Quantization]
-    Quant --> QAT[量化感知训练<br/>Quantization-Aware Training]
+    Quant["量化方案"] --> PTQ["训练后量化<br/>Post-Training Quantization"]
+    Quant --> QAT["量化感知训练<br/>Quantization-Aware Training"]
     
-    PTQ --> GPTQ[GPTQ<br/>逐层量化]
-    PTQ --> AWQ[AWQ<br/>激活感知量化]
-    PTQ --> GGUF[GGUF<br/>llama.cpp 格式]
+    PTQ --> GPTQ["GPTQ<br/>逐层量化"]
+    PTQ --> AWQ["AWQ<br/>激活感知量化"]
+    PTQ --> GGUF["GGUF<br/>llama.cpp 格式"]
     
-    QAT --> Q1[效果好但需要训练]
+    QAT --> Q1["效果好但需要训练"]
 ```
 
 | 方案 | 精度 | 显存节省 | 质量损失 | 推荐场景 |
@@ -1375,10 +1375,10 @@ A: 先计算 24 × 30 = 720
 
 ```mermaid
 graph TB
-    Hallucination[幻觉原因] --> Data[训练数据偏差<br/>数据含错误/偏见]
-    Hallucination --> Decode[解码策略<br/>采样引入不确定性]
-    Hallucination --> Knowledge[知识截止<br/>训练数据过时]
-    Hallucination --> Over[过度自信<br/>模型倾向于生成而非拒绝]
+    Hallucination["幻觉原因"] --> Data["训练数据偏差<br/>数据含错误/偏见"]
+    Hallucination --> Decode["解码策略<br/>采样引入不确定性"]
+    Hallucination --> Knowledge["知识截止<br/>训练数据过时"]
+    Hallucination --> Over["过度自信<br/>模型倾向于生成而非拒绝"]
 ```
 
 **缓解方案：**
@@ -1399,17 +1399,17 @@ graph TB
 
 ```mermaid
 graph TB
-    Input[输入] --> Router[路由门控]
-    Router --> E1[Expert 1]
-    Router --> E2[Expert 2]
-    Router --> E3[...]
-    Router --> EN[Expert N]
+    Input["输入"] --> Router["路由门控"]
+    Router --> E1["Expert 1"]
+    Router --> E2["Expert 2"]
+    Router --> E3["..."]
+    Router --> EN["Expert N"]
     
-    E1 -->|权重 w1| Combine[加权合并]
+    E1 -->|权重 w1| Combine["加权合并"]
     E3 -->|权重 w3| Combine
-    Combine --> Output[输出]
+    Combine --> Output["输出"]
     
-    Note1[每次只激活 Top-K 个专家<br/>如 DeepSeek-V3: 激活 2/256]
+    Note1["每次只激活 Top-K 个专家<br/>如 DeepSeek-V3: 激活 2/256"]
 ```
 
 **代表模型：** DeepSeek-V3（671B 总参，37B 激活参）、Mixtral 8x7B、Qwen2-MoE
@@ -1435,12 +1435,12 @@ graph TB
 
 ```mermaid
 graph TD
-    Deploy[部署选型] --> Online{在线服务?}
+    Deploy["部署选型"] --> Online{"在线服务?"}
     Online -->|高并发| vLLM
     Online -->|HF 生态| TGI
     Online -->|复杂结构化| SGLang
     
-    Deploy --> Local{本地/边缘?}
+    Deploy --> Local{"本地/边缘?"}
     Local -->|CUDA GPU| LMDeploy
     Local -->|CPU/Mac| llama.cpp
     Local -->|快速测试| Ollama
@@ -1483,13 +1483,13 @@ graph TD
 
 ```mermaid
 graph TB
-    LangChain[LangChain 框架] --> Models[Model I/O<br/>模型调用封装]
-    LangChain --> Prompts[Prompts<br/>模板管理]
-    LangChain --> Memory[Memory<br/>记忆系统]
-    LangChain --> Chains[Chains<br/>执行链]
-    LangChain --> Agents[Agents<br/>智能体]
-    LangChain --> Tools[Tools<br/>工具集成]
-    LangChain --> Callbacks[Callbacks<br/>回调监控]
+    LangChain["LangChain 框架"] --> Models["Model I/O<br/>模型调用封装"]
+    LangChain --> Prompts["Prompts<br/>模板管理"]
+    LangChain --> Memory["Memory<br/>记忆系统"]
+    LangChain --> Chains["Chains<br/>执行链"]
+    LangChain --> Agents["Agents<br/>智能体"]
+    LangChain --> Tools["Tools<br/>工具集成"]
+    LangChain --> Callbacks["Callbacks<br/>回调监控"]
 ```
 
 | 核心组件 | 功能 |
@@ -1513,8 +1513,8 @@ graph LR
     Input --> Chain
     
     subgraph Chain 内部
-        Step1[LLM 调用] --> Step2[Prompt 处理]
-        Step2 --> Step3[输出解析]
+        Step1["LLM 调用"] --> Step2["Prompt 处理"]
+        Step2 --> Step3["输出解析"]
     end
     
     Chain --> Output
@@ -1575,17 +1575,17 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    Doc[文档] --> Split[文档分割<br/>Text Splitters]
-    Split --> Embed[向量化<br/>Embedding Model]
-    Embed --> Store[向量存储<br/>VectorStore]
+    Doc["文档"] --> Split["文档分割<br/>Text Splitters"]
+    Split --> Embed["向量化<br/>Embedding Model"]
+    Embed --> Store["向量存储<br/>VectorStore"]
     
-    Query[用户问题] --> QEmbed[向量化]
-    QEmbed --> Retrieve[相似度检索<br/>Top-K]
+    Query["用户问题"] --> QEmbed["向量化"]
+    QEmbed --> Retrieve["相似度检索<br/>Top-K"]
     Store --> Retrieve
     
-    Retrieve --> Augment[增强: 问题 + 上下文]
-    Augment --> LLM[LLM 生成回答]
-    LLM --> Answer[最终回答]
+    Retrieve --> Augment["增强: 问题 + 上下文"]
+    Augment --> LLM["LLM 生成回答"]
+    LLM --> Answer["最终回答"]
     
     style Store fill:#e8f5e9
     style Retrieve fill:#fff3e0
@@ -1658,11 +1658,11 @@ chain = prompt | llm | output_parser
 
 ```mermaid
 graph TB
-    Dev[开发] --> LangChain
-    LangChain --> LangSmith[调试追踪]
-    LangChain --> LangServe[部署为 API]
-    LangServe --> Client[客户端调用]
-    LangSmith --> Monitor[生产监控]
+    Dev["开发"] --> LangChain
+    LangChain --> LangSmith["调试追踪"]
+    LangChain --> LangServe["部署为 API"]
+    LangServe --> Client["客户端调用"]
+    LangSmith --> Monitor["生产监控"]
 ```
 
 ---

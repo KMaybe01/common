@@ -93,10 +93,10 @@ flowchart TB
     ViewModel -->|"数据同步"| Model
 
     subgraph ViewModel内部
-        Observer["Observer\n(数据劫持)\n为 data 添加 getter/setter"]
-        Dep["Dep\n(依赖收集器)\n管理 Watcher 列表"]
-        Compile["Compile\n(模板编译)\n解析指令 / 绑定更新函数"]
-        Watcher["Watcher\n(订阅者)\n连接 Observer 和 Compile\n当数据变化时执行 update()"]
+        Observer["Observer\n("数据劫持")\n为 data 添加 getter/setter"]
+        Dep["Dep\n("依赖收集器")\n管理 Watcher 列表"]
+        Compile["Compile\n("模板编译")\n解析指令 / 绑定更新函数"]
+        Watcher["Watcher\n("订阅者")\n连接 Observer 和 Compile\n当数据变化时执行 update()"]
     end
 
     Observer -->|"getter 收集依赖"| Dep
@@ -157,23 +157,23 @@ flowchart LR
 flowchart TB
     subgraph MVC["MVC 架构"]
         direction LR
-        M1["Model\n(数据 + 业务逻辑)"] -->|"通知更新"| V1["View\n(页面展示)"]
-        V1 -->|"用户操作"| C1["Controller\n(事件处理)"]
+        M1["Model\n("数据 + 业务逻辑")"] -->|"通知更新"| V1["View\n("页面展示")"]
+        V1 -->|"用户操作"| C1["Controller\n("事件处理")"]
         C1 -->|"修改数据"| M1
     end
 
     subgraph MVP["MVP 架构"]
         direction LR
-        M2["Model"] -->|"数据变更"| P["Presenter\n(调度中心)"]
-        P -->|"更新视图"| V2["View\n(暴露接口)"]
+        M2["Model"] -->|"数据变更"| P["Presenter\n("调度中心")"]
+        P -->|"更新视图"| V2["View\n("暴露接口")"]
         V2 -->|"用户事件"| P
         P -->|"修改数据"| M2
     end
 
     subgraph MVVM["MVVM 架构"]
         direction LR
-        M3["Model\n(数据层)"] <-->|"双向绑定"| VM["ViewModel\n(Vue 实例)"]
-        VM <-->|"自动同步"| V3["View\n(声明式模板)"]
+        M3["Model\n("数据层")"] <-->|"双向绑定"| VM["ViewModel\n("Vue 实例")"]
+        VM <-->|"自动同步"| V3["View\n("声明式模板")"]
     end
 ```
 
@@ -355,8 +355,8 @@ flowchart TD
 
     subgraph 函数定义（正确）
         func_data["data() { return { count: 0 } }"] --> factory["工厂函数\n每次返回新对象"]
-        factory --> compA2["组件实例 A\n{ count: 0 }"]
-        factory --> compB2["组件实例 B\n{ count: 0 }"]
+        factory --> compA2["组件实例 A\n{"count: 0"}"]
+        factory --> compB2["组件实例 B\n{"count: 0"}"]
         compA2 -->|"A 修改 count++"| safe["B 的 count 不受影响"]
     end
 ```
@@ -371,11 +371,11 @@ flowchart TB
         start["组件切换触发"] --> includeCheck{"匹配 include/exclude？"}
         includeCheck -->|"不匹配"| noCache["直接返回 vnode\n不缓存"]
         includeCheck -->|"匹配"| keyGen["生成组件 key\ncid::tag"]
-        keyGen --> cacheCheck{"cache[key] 存在？"}
+        keyGen --> cacheCheck{"cache["key"] 存在？"}
         cacheCheck -->|"✅ 缓存命中"| lru["LRU 策略\n将 key 移到数组末尾"]
-        cacheCheck -->|"❌ 未命中"| addCache["加入缓存\ncache[key] = vnode"]
+        cacheCheck -->|"❌ 未命中"| addCache["加入缓存\ncache["key"] = vnode"]
         addCache --> maxCheck{"超过 max 限制？"}
-        maxCheck -->|"是"| prune["淘汰最久未使用的\n（keys[0]）"]
+        maxCheck -->|"是"| prune["淘汰最久未使用的\n（keys["0"]）"]
         maxCheck -->|"否"| setKeepAlive["设置 keepAlive=true"]
         lru --> setKeepAlive
         setKeepAlive --> render["返回 vnode"]
@@ -433,7 +433,7 @@ flowchart TB
 
     subgraph 使用场景
         sync["同步代码修改数据"] --> domNotUpdated["此时 DOM 尚未更新"]
-        domNotUpdated --> nextTick["$nextTick(() => { ... })"]
+        domNotUpdated --> nextTick["$nextTick("(") => { ... })"]
         nextTick -->|"DOM 更新后执行"| domUpdated["可以获取最新 DOM"]
     end
 ```
@@ -470,7 +470,7 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     subgraph $set 实现逻辑
-        target["this.$set(target, key, value)"] --> isArray{"target 是数组？"}
+        target["this.$set("target, key, value")"] --> isArray{"target 是数组？"}
         isArray -->|"✅ 是数组"| splice["使用 splice 方法\n（触发数组重写）"]
         isArray -->|"❌ 不是数组"| hasKey{"key 已存在？"}
         hasKey -->|"✅ 存在"| direct["直接赋值\n已有 setter 会触发更新"]
@@ -498,8 +498,8 @@ flowchart LR
     end
 
     subgraph 执行流程
-        call["arr.push(newVal)"] --> original["执行原生 push"]
-        original --> observeNew["observeArray(inserted)\n监听新增元素"]
+        call["arr.push("newVal")"] --> original["执行原生 push"]
+        original --> observeNew["observeArray("inserted")\n监听新增元素"]
         observeNew --> notify2["dep.notify()\n通知 Watcher 更新"]
     end
 ```
@@ -536,7 +536,7 @@ flowchart TB
         optimize --> dynamic["动态节点保持 static:false"]
         static & dynamic -->|"阶段三：生成"| generate["generate()\n生成 render 函数字符串"]
 
-        generate --> renderFn["render 函数\nnew Function('render')"]
+        generate --> renderFn["render 函数\nnew Function("'render'")"]
         generate --> staticRenderFns["staticRenderFns\n静态节点函数"]
     end
 
@@ -597,7 +597,7 @@ flowchart TD
     subgraph mergeOptions 执行流程
         options["组件选项 options"] --> normalize["规范化\nnormalizeProps\nnormalizeInject\nnormalizeDirectives"]
         normalize --> extendCheck{"child.extends 存在？"}
-        extendCheck -->|"✅"| mergeExtends["parent = mergeOptions(parent, child.extends)"]
+        extendCheck -->|"✅"| mergeExtends["parent = mergeOptions("parent, child.extends")"]
         mergeExtends --> mixinCheck
         extendCheck -->|"❌"| mixinCheck{"child.mixins 存在？"}
         mixinCheck -->|"✅"| mergeMixins["遍历 mixins 数组\n依次合并"]
@@ -631,14 +631,14 @@ flowchart TB
     end
 
     subgraph 2.依赖收集
-        mount["mount 过程"] --> newWatcher["new Watcher(render)"]
-        newWatcher --> pushTarget["pushTarget(this)\nDep.target = 当前 Watcher"]
+        mount["mount 过程"] --> newWatcher["new Watcher("render")"]
+        newWatcher --> pushTarget["pushTarget("this")\nDep.target = 当前 Watcher"]
         pushTarget --> render["执行 render()"]
         render --> readData["访问 data 属性"]
         readData --> getter["触发 getter"]
         getter --> depDepend["dep.depend()"]
-        depDepend --> addDep["Watcher.addDep(dep)"]
-        addDep --> depAddSub["dep.addSub(Watcher)\nWatcher 被添加到 subs"]
+        depDepend --> addDep["Watcher.addDep("dep")"]
+        addDep --> depAddSub["dep.addSub("Watcher")\nWatcher 被添加到 subs"]
     end
 
     subgraph 3.派发更新
@@ -993,12 +993,12 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph Action
-        actionFn["Action"] --> commit["context.commit('mutationName')"]
+        actionFn["Action"] --> commit["context.commit("'mutationName'")"]
         commit --> async["可包含异步操作\n（API 请求、延时等）"]
     end
 
     subgraph Mutation
-        mutationFn["Mutation(state, payload)"] --> modify["直接修改 state"]
+        mutationFn["Mutation("state, payload")"] --> modify["直接修改 state"]
         modify --> sync["必须同步执行"]
         modify --> track["DevTools 可追踪"]
     end
@@ -1070,7 +1070,7 @@ flowchart LR
     end
 
     subgraph 虚拟DOM
-        virtual["VNode 对象\n{ tag, data, children, text, ... }"]
+        virtual["VNode 对象\n{"tag, data, children, text, ..."}"]
         virtual --> virtualLight["轻量级 JS 对象\n只有必要属性"]
         virtual --> virtualFast["创建/对比成本低\n纯 JS 计算"]
     end
@@ -1105,7 +1105,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    patch["patch(oldVnode, newVnode)"] --> same{"sameVnode?\n（key 和 tag 相同？）"}
+    patch["patch("oldVnode, newVnode")"] --> same{"sameVnode?\n（key 和 tag 相同？）"}
 
     same -->|"❌ 不同"| replace["用新 vnode 替换旧 vnode"]
     same -->|"✅ 相同"| patchVnode["patchVnode"]
@@ -1172,8 +1172,8 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph 不设置 key（就地复用）
-        list1["旧列表：[A, B, C]"]
-        list2["新列表：[B, A, C]"]
+        list1["#quot;旧列表：[A, B, C"]"]
+        list2["#quot;新列表：[B, A, C"]"]
         list1 -->|"对比"| noKey["默认就地复用\n依次替换文本"]
         noKey --> inefficient["操作：\n1. A 变 B（文本替换）\n2. B 变 A（文本替换）\n3. C 不变"]
 
@@ -1181,8 +1181,8 @@ flowchart TB
     end
 
     subgraph 设置唯一 key
-        list1k["旧列表：[A-id1, B-id2, C-id3]"]
-        list2k["新列表：[B-id2, A-id1, C-id3]"]
+        list1k["#quot;旧列表：[A-id1, B-id2, C-id3"]"]
+        list2k["#quot;新列表：[B-id2, A-id1, C-id3"]"]
         list1k -->|"对比"| withKey["根据 key 匹配\n识别出 B 和 A 只是交换了位置"]
         withKey --> efficient["操作：\n1. 移动 B 到前面\n2. A 自动排到 B 后面\n3. C 不变"]
     end
@@ -1193,7 +1193,7 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph index 作为 key 的陷阱
-        arr["[a, b, c]\nindex: 0, 1, 2"] -->|"在头部插入 z"| newArr["[z, a, b, c]\nindex: 0→z, 1→a, 2→b, 3→c"]
+        arr["#quot;[a, b, c"]\nindex: 0, 1, 2"] -->|"在头部插入 z"| newArr["#quot;[z, a, b, c"]\nindex: 0→z, 1→a, 2→b, 3→c"]
         newArr -->|"Vue 对比 key"| wrong["0 匹配 0：z vs a → 不同\n1 匹配 1：a vs b → 不同\n2 匹配 2：b vs c → 不同\n全部节点需要修改"]
         wrong --> waste["本应只在 0 位置插入 z\n却导致所有节点重新渲染"]
     end
@@ -1215,7 +1215,7 @@ flowchart TB
 
     subgraph 更新渲染
         dataChange2["数据变化"] --> newVnode["新 VNode 树"]
-        newVnode --> diff2["diff(oldVnode, newVnode)"]
+        newVnode --> diff2["diff("oldVnode, newVnode")"]
         oldVnode["旧 VNode 树（已保存）"] --> diff2
         diff2 --> patches["找出差异 patch 列表"]
         patches --> patchOps["批量 DOM 操作\n（增删改移动）"]
@@ -1268,8 +1268,8 @@ flowchart TB
     end
 
     subgraph Store 定义方式
-        OptionStore["Option Store\n------\nexport const useStore = defineStore('id', {\n  state: () => ({}),\n  getters: {},\n  actions: {}\n})"]
-        SetupStore["Setup Store\n------\nexport const useStore = defineStore('id', () => {\n  const count = ref(0)\n  const double = computed(() => count.value * 2)\n  function increment() { count.value++ }\n  return { count, double, increment }\n})"]
+        OptionStore["Option Store\nstate / getters / actions\n适合选项式写法"]
+        SetupStore["Setup Store\nref / computed / function\n适合组合式写法"]
     end
 ```
 
@@ -1328,13 +1328,13 @@ export const useSetupCounterStore = defineStore('counter', () => {
 flowchart TB
     subgraph State 操作方式
         Direct["直接访问\nstore.count = 1"] --> Reactive["响应式更新"]
-        Patch["$patch({ count: 1, name: 'new' })\n批量修改"] --> Merge["合并多个属性\n只触发一次更新"]
+        Patch["$patch("{ count: 1, name: 'new' }")\n批量修改"] --> Merge["合并多个属性\n只触发一次更新"]
         Reset["$reset()\n重置为初始值"] --> Initial["恢复 state 初始状态"]
     end
 
     subgraph 解构问题
         Destruct["const { count } = store"] --> Loss["失去响应性 ❌"]
-        StoreToRefs["storeToRefs(store)"] --> Keep["保持响应性 ✅"]
+        StoreToRefs["storeToRefs("store")"] --> Keep["保持响应性 ✅"]
     end
 ```
 
@@ -1423,8 +1423,8 @@ export const useStore = defineStore('store', {
 ```mermaid
 flowchart LR
     subgraph Pinia 插件
-        Plugin["pinia.use(plugin)"] --> Lifecycle["插件在 Store 创建时执行"]
-        Lifecycle --> Context["接收 context\n{ store, app, options, pinia }"]
+        Plugin["pinia.use("plugin")"] --> Lifecycle["插件在 Store 创建时执行"]
+        Lifecycle --> Context["接收 context\n{"store, app, options, pinia"}"]
         Context --> Extend["扩展能力\n• 添加属性\n• 包装 action\n• 持久化\n• 日志记录"]
     end
 
@@ -1443,15 +1443,15 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Vuex 使用方式
-        V1["this.$store.commit('increment')"] --> V2["必须通过 Mutation 修改"]
-        V3["this.$store.dispatch('fetchUser')"] --> V4["Action 需 commit"]
-        V5["computed: { ...mapState(['count']) }"] --> V6["需要 map 辅助函数"]
+        V1["this.$store.commit("'increment'")"] --> V2["必须通过 Mutation 修改"]
+        V3["this.$store.dispatch("'fetchUser'")"] --> V4["Action 需 commit"]
+        V5["#quot;computed: { ...mapState("#quot;['count'#quot;]#quot;") }"] --> V6["需要 map 辅助函数"]
     end
 
     subgraph Pinia 使用方式
         P1["store.count++"] --> P2["直接修改 State"]
         P3["await store.fetchUser()"] --> P4["Action 直接调用"]
-        P5["const { count } = storeToRefs(store)"] --> P6["响应式解构"]
+        P5["const { count } = storeToRefs("store")"] --> P6["响应式解构"]
     end
 ```
 
