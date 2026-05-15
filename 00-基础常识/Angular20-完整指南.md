@@ -1097,8 +1097,8 @@ ngOnDestroy() ← 销毁前清理
 
 ```typescript
 @Component({...})
-export class BestPracticeComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class BestPracticeComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   
   constructor(private userService: UserService) {
     // ❌ 不要在这里做复杂初始化
@@ -1108,7 +1108,7 @@ export class BestPracticeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // ✅ 初始化数据
     this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(users => console.log(users));
     
     // ✅ 订阅
@@ -1119,15 +1119,9 @@ export class BestPracticeComponent implements OnInit, OnDestroy {
     // ✅ 访问 @ViewChild 元素
     // ✅ 操作原生 DOM
   }
+  // ❌ 无需 ngOnDestroy — takeUntilDestroyed 自动管理取消订阅
   
-  ngOnDestroy() {
-    // ✅ 取消所有订阅
-    this.destroy$.next();
-    this.destroy$.complete();
-    
-    // ✅ 清理定时器
-    // ✅ 移除事件监听
-  }
+  // 清理定时器/事件监听仍可在 ngOnDestroy 中手动处理
 }
 ```
 
@@ -1739,22 +1733,20 @@ export class BadComponent {
   }
 }
 
-// ✅ 解决方案 1：takeUntil
-export class GoodComponent implements OnDestroy {
-  private destroy$ = new Subject<void>();
+// ✅ 解决方案 1：takeUntilDestroyed（Angular 20+ 推荐）
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+export class GoodComponent {
+  private readonly destroyRef = inject(DestroyRef);
   
   constructor(private userService: UserService) {}
   
   ngOnInit() {
     this.userService.users$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(users => console.log(users));
   }
-  
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  // 无需 ngOnDestroy
 }
 
 // ✅ 解决方案 2：async 管道（自动取消订阅）

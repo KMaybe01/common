@@ -234,10 +234,11 @@ RxJS (Reactive Extensions for JavaScript) 是一个使用可观察对象 (Observ
 ### RxJS 示例
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
+import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common'; // Import CommonModule for ngFor
 
 @Component({
@@ -252,9 +253,9 @@ import { CommonModule } from '@angular/common'; // Import CommonModule for ngFor
   imports: [CommonModule] // Add CommonModule here
 })
 export class SearchComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private searchTerms = new Subject<string>();
   results$: Observable<any[]> | undefined; // Make it optional or initialize later
-  private destroy$ = new Subject<void>(); // Used for unsubscribing
 
   constructor(private http: HttpClient) { }
 
@@ -263,7 +264,7 @@ export class SearchComponent implements OnInit {
       debounceTime(300), // 等待 300ms，避免频繁请求
       distinctUntilChanged(), // 只有当搜索词发生变化时才继续
       switchMap((term: string) => this.searchProducts(term)), // 切换到新的搜索 Observable
-      takeUntil(this.destroy$) // 组件销毁时自动取消订阅
+      takeUntilDestroyed(this.destroyRef) // 组件销毁时自动取消订阅
     );
   }
 
@@ -278,11 +279,7 @@ export class SearchComponent implements OnInit {
     }
     return this.http.get<any[]>(`https://api.example.com/products?q=${term}`);
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  // 无需 ngOnDestroy — takeUntilDestroyed 自动处理
 }
 ```
 
@@ -1387,7 +1384,8 @@ export class SafeHtmlDemoComponent {
 ### 场景 5: 当 Observable 数据在组件中订阅后，如何避免内存泄漏？
 
 *   **`async` 管道**: 优先使用 `async` 管道，它会自动管理订阅和取消订阅。
-*   **`takeUntil()` 操作符**: 结合 `ngOnDestroy` 和 `Subject` (或 `ReplaySubject`) 来在组件销毁时取消所有订阅。
+*   **`takeUntilDestroyed()` 操作符 (Angular 20+ 推荐)**: 基于 `DestroyRef`，无需手动维护 `Subject` 和 `ngOnDestroy`。在 `constructor` 中可省略 `destroyRef` 参数。
+*   **`takeUntil()` 操作符 (传统方式)**: 结合 `ngOnDestroy` 和 `Subject` 来在组件销毁时取消所有订阅。
 *   **`take(1)` 操作符**: 对于只需要获取一次数据的 Observable。
 *   **手动 `unsubscribe()`**: 在 `ngOnDestroy` 中手动调用 `subscription.unsubscribe()`。
 
