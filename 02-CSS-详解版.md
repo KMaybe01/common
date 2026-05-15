@@ -48,6 +48,7 @@ mindmap
 - [📍 三、定位与浮动](#-三定位与浮动)
 - [🛠️ 四、场景应用](#-四场景应用)
 - [✨ 五、现代 CSS 新特性](#-五现代-css-新特性)
+- [🧩 六、CSS 编程题集](#-六css-编程题集)
 
 ---
 
@@ -977,6 +978,44 @@ $border-radius: 4px;
 // 编译后
 .button { background: #3498db; border-radius: 4px; padding: 10px 20px; }
 .button:hover { background: #2980b9; }
+
+---
+
+## 🧩 六、CSS 编程题集
+
+> 💡 **要点：** 通过 15 个 CSS/JS 实战题目，将布局、定位、动画、交互、响应式和常见面试技巧落地练习。
+
+### 6.1 题目总览
+
+| 题号 | 题目 | 核心能力 |
+| ---- | ---- | -------- |
+| 1 | 水平居中布局 | 绝对定位、transform、Flex、Grid |
+| 2 | 九宫格布局 | Flex / float / Grid 布局 |
+| 3 | 实现三角形 | CSS 边框、透明边、0 宽高 |
+| 4 | CSS 实现八卦图 | border-radius、伪元素、position |
+| 5 | 自适应正方形 | 宽高比、padding-top、vw/vh |
+| 6 | CSS 画圆圈 | border-radius、大小、背景 |
+| 7 | 三列布局-两边固定中间自适应 | flex / width / margin |
+| 8 | 上下固定中间自适应 | calc、position、Flex |
+| 9 | Flex 布局-八个元素分两行摆放 | flex-wrap、等分布局 |
+| 10 | 品字布局 | transform、rotate、inline-block |
+| 11 | 吸顶效果 | position: sticky / fixed |
+| 12 | 文字逐个打印 | CSS 动画、step-end、JS 字符串 |
+| 13 | CSS 歌词逐渐高亮 | 动画、渐变、文字过渡 |
+| 14 | 防抖和节流 | JS 计时器、交互优化 |
+| 15 | 手写拖拽 | mouse/touch 事件、position、边界判断 |
+
+### 6.2 实战要点
+
+- `transform: translate(-50%, -50%)` 是不定宽高居中的首选；比负 margin 更稳。
+- `display: grid; place-items: center;` 适合常见居中与九宫格场景。
+- `width: 0; height: 0; border: 50px solid transparent; border-top-color: red;` 是实现三角形的经典写法。
+- `position: sticky; top: 0;` 能快速实现吸顶效果，且维护更简洁。
+- `font-size: 0` + 子元素重置字号，可解决 `inline-block` 间隙问题。
+- `requestAnimationFrame`、防抖/节流和拖拽事件结合，可提升滚动与交互性能。
+- 实战题目既涵盖 CSS 布局，也涵盖少量 JS 交互，是巩固面试题型的好素材。
+
+> 📌 说明：以上题目均来自 `CSS编程题集.md`，可作为 `02-CSS-详解版.md` 的实践补充。 更多代码与示例请参考该题集。
 ```
 
 | 功能     | CSS       | Less/Sass |
