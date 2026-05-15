@@ -128,7 +128,7 @@ div .highlight { color: green; }
 
 > 💡 **要点：** 字体（font-*）和文本（color、line-height、text-align）相关属性大多可继承；盒模型（width/height、margin/padding、border）和定位相关属性不可继承
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     subgraph 可继承属性
         A1["font-family"]
@@ -311,7 +311,7 @@ flowchart TD
 
 > 💡 **要点：** transition 需事件触发，仅两个关键帧（开始→结束）；animation 可自动执行，支持 @keyframes 多关键帧和循环播放
 
-\`\`\`mermaid
+```mermaid
 stateDiagram-v2
     [*] --> 初始状态
 
@@ -386,7 +386,7 @@ stateDiagram-v2
 
 > 💡 **要点：** 伪类（:hover）选择已有元素的特定状态；伪元素（::before）创建 DOM 中不存在的虚拟元素，CSS3 规范推荐双冒号写法
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["CSS 选择器扩展"] --> B["伪类 : pseudo-class"]
     A --> C["伪元素 :: pseudo-element"]
@@ -428,7 +428,7 @@ p::first-letter { font-size: 2em; font-weight: bold; }
 
 > 💡 **要点：** rAF 与屏幕刷新率同步（60fps），页面不可见时自动暂停，相比 setTimeout 更省电、更平滑、不掉帧
 
-\`\`\`mermaid
+```mermaid
 sequenceDiagram
     participant JS as JavaScript
     participant Browser as 浏览器
@@ -564,7 +564,7 @@ flowchart TD
 
 > 💡 **要点：** translate 触发合成（composite）使用 GPU 加速，不触发重排/重绘；改变定位使用 CPU 触发重排，性能开销更大
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["改变元素位置"] --> B["transform: translate"]
     A --> C["position: absolute/relative"]
@@ -734,7 +734,7 @@ flowchart TD
 
 > 💡 **要点：** devicePixelRatio = 物理像素 / 逻辑像素（CSS 像素），高 DPR 屏幕（Retina）需提供对应倍率的高清图
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     A["CSS 像素 414px"] --> B["逻辑像素"]
     C["物理像素 1242px"] --> D["真实硬件像素"]
@@ -794,7 +794,7 @@ flowchart LR
 
 > 💡 **要点：** 推荐使用纯数字赋值（如 1.5），因为计算后的比例会正确传递给后代元素；px/em/百分比会传递固定计算值
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["line-height"] --> B["概念"]
     A --> C["赋值方式"]
@@ -859,7 +859,7 @@ flowchart TD
 
 > 💡 **要点：** 预处理器（Sass/Less）在 CSS 基础上增加变量、嵌套、Mixin 等编程特性；后处理器（PostCSS）对已有 CSS 进行编译优化
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     A["CSS 扩展工具"] --> B["预处理器 Preprocessor"]
     A --> C["后处理器 Postprocessor"]
@@ -978,6 +978,17 @@ $border-radius: 4px;
 // 编译后
 .button { background: #3498db; border-radius: 4px; padding: 10px 20px; }
 .button:hover { background: #2980b9; }
+```
+
+| 功能     | CSS       | Less/Sass |
+| -------- | --------- | --------- |
+| 变量     | 原生 CSS 支持自定义属性 `--var`，但逻辑能力有限 | 支持编译期变量 |
+| 嵌套     | 原生 CSS 已支持基础嵌套 | 支持且生态成熟 |
+| 运算     | `calc()` 有限 | 完整支持 |
+| 函数     | 内置函数为主 | 支持自定义函数 |
+| Mixin    | 不支持 | 支持 |
+| 继承     | 不支持选择器继承 | 支持 `@extend` |
+| 循环     | 不支持 | 支持 |
 
 ---
 
@@ -998,35 +1009,743 @@ $border-radius: 4px;
 | 7 | 三列布局-两边固定中间自适应 | flex / width / margin |
 | 8 | 上下固定中间自适应 | calc、position、Flex |
 | 9 | Flex 布局-八个元素分两行摆放 | flex-wrap、等分布局 |
-| 10 | 品字布局 | transform、rotate、inline-block |
+| 10 | 品字布局 | Grid、float、块级排列 |
 | 11 | 吸顶效果 | position: sticky / fixed |
 | 12 | 文字逐个打印 | CSS 动画、step-end、JS 字符串 |
 | 13 | CSS 歌词逐渐高亮 | 动画、渐变、文字过渡 |
 | 14 | 防抖和节流 | JS 计时器、交互优化 |
-| 15 | 手写拖拽 | mouse/touch 事件、position、边界判断 |
+| 15 | 手写拖拽 | Pointer Events、position、边界判断 |
 
 ### 6.2 实战要点
 
-- `transform: translate(-50%, -50%)` 是不定宽高居中的首选；比负 margin 更稳。
-- `display: grid; place-items: center;` 适合常见居中与九宫格场景。
-- `width: 0; height: 0; border: 50px solid transparent; border-top-color: red;` 是实现三角形的经典写法。
-- `position: sticky; top: 0;` 能快速实现吸顶效果，且维护更简洁。
-- `font-size: 0` + 子元素重置字号，可解决 `inline-block` 间隙问题。
-- `requestAnimationFrame`、防抖/节流和拖拽事件结合，可提升滚动与交互性能。
-- 实战题目既涵盖 CSS 布局，也涵盖少量 JS 交互，是巩固面试题型的好素材。
+- 面试手写题先说清楚「结构」「关键 CSS」「兼容或注意点」，再写代码。
+- 新项目布局优先考虑 Flex / Grid；float、table、负 margin 主要用于理解历史方案。
+- 不定宽高居中首选 `transform: translate(-50%, -50%)`、Flex 或 Grid。
+- 自适应比例布局优先使用 `aspect-ratio`，老方案再考虑 `padding-top` 百分比。
+- 图形题常见关键字：`border`、`border-radius`、`transform`、`linear-gradient`、`radial-gradient`、伪元素。
+- 交互题尽量用 `pointer` 事件统一鼠标和触摸，动画过程用 `requestAnimationFrame` 控制重绘节奏。
 
-> 📌 说明：以上题目均来自 `CSS编程题集.md`，可作为 `02-CSS-详解版.md` 的实践补充。 更多代码与示例请参考该题集。
+---
+
+### 6.3 水平垂直居中布局
+
+> 💡 **要点：** 定宽高可以用绝对定位 + 负 margin；不定宽高推荐 `transform`、Flex 或 Grid。
+
+#### 方法一：绝对定位 + transform（通用）
+
+```html
+<div class="center-box">
+  <div class="target">center</div>
+</div>
 ```
 
-| 功能     | CSS       | Less/Sass |
-| -------- | --------- | --------- |
-| 变量     | 不支持    | 支持      |
-| 嵌套     | 不支持    | 支持      |
-| 运算     | calc() 有限 | 完整支持 |
-| 函数     | 不支持    | 支持      |
-| Mixin    | 不支持    | 支持      |
-| 继承     | 不支持    | 支持      |
-| 循环     | 不支持    | 支持      |
+```css
+.center-box {
+  position: relative;
+  min-height: 300px;
+}
+
+.target {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+#### 方法二：Flex 居中
+
+```css
+.center-box {
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+#### 方法三：Grid 居中
+
+```css
+.center-box {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+}
+```
+
+**面试说明：** `transform` 不依赖元素自身宽高，适合弹窗、提示层等不定尺寸元素；Flex / Grid 更适合普通文档流布局。
+
+---
+
+### 6.4 九宫格布局
+
+> 💡 **要点：** 九宫格本质是 3 行 3 列等分布局，Grid 最直接，Flex 适合兼容或流式换行。
+
+#### Grid 实现（推荐）
+
+```html
+<ul class="grid-9">
+  <li>1</li><li>2</li><li>3</li>
+  <li>4</li><li>5</li><li>6</li>
+  <li>7</li><li>8</li><li>9</li>
+</ul>
+```
+
+```css
+.grid-9 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.grid-9 li {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: #f59e0b;
+  color: #fff;
+}
+```
+
+#### Flex 实现
+
+```css
+.grid-9 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.grid-9 li {
+  flex: 0 0 calc((100% - 16px) / 3);
+  aspect-ratio: 1;
+}
+```
+
+**注意：** 使用 `gap` 时要在 `flex-basis` 中减去两列间距，否则一行可能放不下 3 个。
+
+---
+
+### 6.5 实现三角形
+
+> 💡 **要点：** 宽高设为 0，四个边框相互挤压，保留一个有颜色的边，其余边透明。
+
+```css
+.triangle-up {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 80px solid #ef4444;
+}
+
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-top: 80px solid #3b82f6;
+}
+
+.triangle-right {
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 80px solid #22c55e;
+}
+```
+
+#### 方向记忆
+
+| 方向 | 有颜色的边 |
+| ---- | ---------- |
+| 向上 | `border-bottom` |
+| 向下 | `border-top` |
+| 向左 | `border-right` |
+| 向右 | `border-left` |
+
+---
+
+### 6.6 CSS 实现八卦图
+
+> 💡 **要点：** 大圆由上下两色构成，两个半圆和两个小圆通过伪元素叠加完成。
+
+```html
+<div class="taiji"></div>
+```
+
+```css
+.taiji {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(#fff 0 50%, #111 50% 100%);
+  border: 2px solid #111;
+}
+
+.taiji::before,
+.taiji::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.taiji::before {
+  left: 0;
+  background:
+    radial-gradient(circle, #111 0 12px, #fff 13px 100%);
+}
+
+.taiji::after {
+  right: 0;
+  background:
+    radial-gradient(circle, #fff 0 12px, #111 13px 100%);
+}
+```
+
+**拆解思路：** 先画大圆，再用 `linear-gradient` 分成上下两半，最后用两个伪元素画左右半圆和圆点。
+
+---
+
+### 6.7 自适应正方形
+
+> 💡 **要点：** 正方形的关键是让高度跟随宽度变化，现代写法首选 `aspect-ratio: 1 / 1`。
+
+#### 现代方案
+
+```css
+.square {
+  width: 40%;
+  aspect-ratio: 1 / 1;
+  background: #8b5cf6;
+}
+```
+
+#### padding 百分比方案
+
+```css
+.square {
+  width: 40%;
+  height: 0;
+  padding-top: 40%;
+  background: #8b5cf6;
+}
+```
+
+#### 需要放内容时
+
+```html
+<div class="square-card">
+  <div class="square-card__content">A</div>
+</div>
+```
+
+```css
+.square-card {
+  position: relative;
+  width: min(40vw, 240px);
+  aspect-ratio: 1;
+}
+
+.square-card__content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+```
+
+---
+
+### 6.8 CSS 画圆圈
+
+> 💡 **要点：** 圆形使用 `border-radius: 50%`；圆环可用 `border`、`box-shadow` 或 `radial-gradient`。
+
+#### 普通圆
+
+```css
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #14b8a6;
+}
+```
+
+#### 圆环：border
+
+```css
+.ring-border {
+  width: 120px;
+  height: 120px;
+  border: 24px solid #f9a8d4;
+  border-radius: 50%;
+  background: #14b8a6;
+  box-sizing: border-box;
+}
+```
+
+#### 圆环：radial-gradient
+
+```css
+.ring-gradient {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 42%, #f97316 43% 100%);
+}
+```
+
+**选择建议：** 要真实占据边框尺寸用 `border`；只做视觉效果用 `box-shadow` 或 `radial-gradient` 更灵活。
+
+---
+
+### 6.9 三列布局：两边固定，中间自适应
+
+> 💡 **要点：** 现代方案推荐 Flex / Grid；旧方案可用 float + BFC 或绝对定位。
+
+```html
+<div class="three-column">
+  <aside class="left">left</aside>
+  <main class="center">center</main>
+  <aside class="right">right</aside>
+</div>
+```
+
+#### Flex 实现
+
+```css
+.three-column {
+  display: flex;
+  min-height: 240px;
+}
+
+.left,
+.right {
+  flex: 0 0 240px;
+}
+
+.center {
+  flex: 1;
+  min-width: 0;
+}
+```
+
+#### Grid 实现
+
+```css
+.three-column {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 240px;
+  min-height: 240px;
+}
+```
+
+**注意：** 中间列放长文本时，Flex 写法中建议加 `min-width: 0`，否则内容可能把布局撑开。
+
+---
+
+### 6.10 上下固定，中间自适应
+
+> 💡 **要点：** 整体高度固定为视口高，头尾固定高度，中间区域 `flex: 1` 并允许滚动。
+
+```html
+<div class="page">
+  <header class="page__header">header</header>
+  <main class="page__main">content</main>
+  <footer class="page__footer">footer</footer>
+</div>
+```
+
+```css
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page__header,
+.page__footer {
+  height: 64px;
+  flex: 0 0 auto;
+}
+
+.page__main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+```
+
+#### calc 方案
+
+```css
+.page__main {
+  height: calc(100vh - 128px);
+  overflow: auto;
+}
+```
+
+**选择建议：** 页面框架优先 Flex；高度固定、结构简单时可用 `calc()`。
+
+---
+
+### 6.11 Flex 布局：八个元素分两行摆放
+
+> 💡 **要点：** 容器开启换行，子元素固定为每行 4 个。
+
+```html
+<ul class="two-row-list">
+  <li>1</li><li>2</li><li>3</li><li>4</li>
+  <li>5</li><li>6</li><li>7</li><li>8</li>
+</ul>
+```
+
+```css
+.two-row-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.two-row-list li {
+  flex: 0 0 calc((100% - 36px) / 4);
+  height: 80px;
+  display: grid;
+  place-items: center;
+  background: #dbeafe;
+}
+```
+
+**公式：** 每行 4 个，间距有 3 个，所以宽度是 `(100% - 3 * gap) / 4`。
+
+---
+
+### 6.12 品字布局
+
+> 💡 **要点：** 上面一个块居中，下面两个块左右排列，整体像“品”字。
+
+#### Grid 实现
+
+```html
+<div class="pin-layout">
+  <div class="pin-layout__top">1</div>
+  <div>2</div>
+  <div>3</div>
+</div>
+```
+
+```css
+.pin-layout {
+  width: min(100%, 480px);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.pin-layout > div {
+  height: 120px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #2563eb;
+}
+
+.pin-layout__top {
+  grid-column: 1 / -1;
+  width: 50%;
+  justify-self: center;
+}
+```
+
+#### Float 思路
+
+```css
+.top {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.left,
+.right {
+  float: left;
+  width: 50%;
+}
+```
+
+---
+
+### 6.13 吸顶效果
+
+> 💡 **要点：** `position: sticky` 让元素在普通文档流和固定定位之间切换。
+
+```html
+<section class="article">
+  <nav class="article__tabs">tabs</nav>
+  <div class="article__content">...</div>
+</section>
+```
+
+```css
+.article__tabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+}
+```
+
+#### sticky 失效常见原因
+
+- 没有设置 `top`、`left`、`right` 或 `bottom` 之一。
+- 父元素高度不够，滚动范围不足。
+- 父级设置了不合适的 `overflow: hidden / auto / scroll`，导致 sticky 参考滚动容器变化。
+- 表格、复杂 transform 场景下可能受层叠上下文影响。
+
+---
+
+### 6.14 文字逐个打印
+
+> 💡 **要点：** CSS 方案用 `steps()` 控制宽度逐格变化，配合 `overflow: hidden` 和等宽字体。
+
+```html
+<p class="typing">CSS makes layout visible.</p>
+```
+
+```css
+.typing {
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid currentColor;
+  font-family: monospace;
+  animation:
+    typing 3s steps(25, end) forwards,
+    cursor 0.8s step-end infinite;
+}
+
+@keyframes typing {
+  to {
+    width: 25ch;
+  }
+}
+
+@keyframes cursor {
+  50% {
+    border-color: transparent;
+  }
+}
+```
+
+**注意：** `steps(25)` 和 `25ch` 要与字符数量接近；中文或非等宽字体时宽度控制会更难精确。
+
+---
+
+### 6.15 CSS 歌词逐渐高亮
+
+> 💡 **要点：** 用渐变背景作为文字颜色，通过 `background-clip: text` 只显示文字区域。
+
+```html
+<p class="lyric">愿你走出半生，归来仍是少年</p>
+```
+
+```css
+@property --progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+.lyric {
+  --progress: 0%;
+  display: inline-block;
+  color: transparent;
+  background:
+    linear-gradient(
+      90deg,
+      #ef4444 0 var(--progress),
+      #111827 var(--progress) 100%
+    );
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: lyric-progress 4s linear forwards;
+}
+
+@keyframes lyric-progress {
+  to {
+    --progress: 100%;
+  }
+}
+```
+
+#### 更稳的兼容写法
+
+```css
+.lyric {
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(90deg, #ef4444, #ef4444);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  animation: highlight 4s linear forwards;
+}
+
+@keyframes highlight {
+  to {
+    background-size: 100% 100%;
+  }
+}
+```
+
+---
+
+### 6.16 防抖和节流
+
+> 💡 **要点：** 防抖是“停下来再执行”，节流是“固定间隔执行一次”。
+
+#### 防抖 Debounce
+
+```javascript
+function debounce(fn, delay = 300) {
+  let timer = null;
+
+  return function debounced(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+```
+
+#### 节流 Throttle
+
+```javascript
+function throttle(fn, delay = 300) {
+  let lastTime = 0;
+
+  return function throttled(...args) {
+    const now = Date.now();
+
+    if (now - lastTime >= delay) {
+      lastTime = now;
+      fn.apply(this, args);
+    }
+  };
+}
+```
+
+#### 使用场景
+
+| 类型 | 触发特点 | 适用场景 |
+| ---- | -------- | -------- |
+| 防抖 | 高频触发后只执行最后一次 | 搜索输入、窗口 resize、提交按钮防重复 |
+| 节流 | 高频触发时按固定频率执行 | 滚动监听、拖拽移动、游戏按键 |
+
+---
+
+### 6.17 手写拖拽
+
+> 💡 **要点：** 使用 Pointer Events 统一鼠标、触摸和触控笔；记录按下时的偏移量，移动时更新位置。
+
+```html
+<div class="drag-stage">
+  <div class="drag-box">drag</div>
+</div>
+```
+
+```css
+.drag-stage {
+  position: relative;
+  width: 480px;
+  height: 300px;
+  border: 1px solid #d1d5db;
+}
+
+.drag-box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  user-select: none;
+  background: #60a5fa;
+}
+
+.drag-box.is-dragging {
+  cursor: grabbing;
+}
+```
+
+```javascript
+const stage = document.querySelector(".drag-stage");
+const box = document.querySelector(".drag-box");
+
+let startX = 0;
+let startY = 0;
+let originX = 0;
+let originY = 0;
+let dragging = false;
+
+box.addEventListener("pointerdown", (event) => {
+  dragging = true;
+  startX = event.clientX;
+  startY = event.clientY;
+  originX = box.offsetLeft;
+  originY = box.offsetTop;
+  box.classList.add("is-dragging");
+  box.setPointerCapture(event.pointerId);
+});
+
+box.addEventListener("pointermove", (event) => {
+  if (!dragging) return;
+
+  const stageRect = stage.getBoundingClientRect();
+  const nextX = originX + event.clientX - startX;
+  const nextY = originY + event.clientY - startY;
+  const maxX = stageRect.width - box.offsetWidth;
+  const maxY = stageRect.height - box.offsetHeight;
+
+  box.style.left = `${Math.min(Math.max(nextX, 0), maxX)}px`;
+  box.style.top = `${Math.min(Math.max(nextY, 0), maxY)}px`;
+});
+
+box.addEventListener("pointerup", (event) => {
+  dragging = false;
+  box.classList.remove("is-dragging");
+  box.releasePointerCapture(event.pointerId);
+});
+```
+
+**可扩展点：** 边界吸附、网格吸附、拖拽排序、拖拽过程中用 `transform` 替代 `left/top` 以减少布局计算。
+
+---
+
+### 6.18 编程题作答模板
+
+> 💡 **要点：** 面试手写 CSS 题不只看代码，也看你能否解释方案取舍。
+
+1. 先确认题目约束：是否定宽高、是否需要兼容旧浏览器、是否要响应式。
+2. 给出推荐方案：现代布局优先 Flex/Grid，图形题优先伪元素和渐变。
+3. 写核心代码：只写必要 HTML 和 CSS，避免无关样式干扰。
+4. 补充注意点：滚动容器、层叠上下文、盒模型、`gap`、`min-width: 0` 等。
+5. 给出替代方案：例如 Grid 不可用时用 Flex，`aspect-ratio` 不可用时用 padding 百分比。
+
+> 📌 说明：以上题目均来自 `CSS编程题集.md`，可作为 `02-CSS-详解版.md` 的实践补充。 更多代码与示例请参考该题集。
 
 ---
 
@@ -1034,7 +1753,7 @@ $border-radius: 4px;
 
 > 💡 **要点：** 通过 @media 检测设备特性（屏幕宽度、分辨率等）实现响应式设计，常见断点：手机 320px、平板 768px、桌面 1024px
 
-\`\`\`css
+```css
 /* 在屏幕宽度小于等于 600px 时生效 */
 @media (max-width: 600px) {
   .sidebar {
@@ -1083,7 +1802,7 @@ $border-radius: 4px;
 
 > 💡 **要点：** 使用 getBoundingClientRect() 获取元素相对于视口的位置，结合 scrollTop 和 innerHeight 判断懒加载或无限滚动触发时机
 
-\`\`\`mermaid
+```mermaid
 sequenceDiagram
     participant Page as 文档
     participant Viewport as 可视区域
@@ -1123,7 +1842,7 @@ function isVisible(element) {
 
 > 💡 **要点：** z-index 只在定位元素（非 static）上生效，常见失效原因：未设定位、父元素层叠上下文限制、与 float 冲突
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["z-index 生效条件"] --> B["position 必须设置"]
     B --> C["position: relative | absolute | fixed"]
@@ -1176,7 +1895,7 @@ flowchart TD
 
 > 💡 **要点：** px 适合精确尺寸（边框、阴影）；em 适合与字体关联的尺寸（按钮内边距）；rem 适合响应式布局（全局统一缩放）
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     subgraph px
         P1["固定像素"]
@@ -1227,7 +1946,7 @@ html {
 
 > 💡 **要点：** 推荐使用 Flex 方案（父 display:flex，右 flex:1）最简洁；float+BFC 方案兼容性好；绝对定位方案脱离文档流需注意
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     subgraph 两栏布局方案
         A["float + margin"]
@@ -1327,7 +2046,7 @@ flowchart TD
 
 > 💡 **要点：** Flex 方案最简洁（中间 flex:1）；圣杯和双飞翼是经典 CSS 布局，核心是利用浮动和负 margin 实现中间列优先渲染
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     subgraph 三栏布局方案
         A["绝对定位"]
@@ -1513,7 +2232,7 @@ flowchart TD
 
 > 💡 **要点：** Flex 方案最推荐（justify-content:center + align-items:center）；transform 方案无需知道元素宽高；Grid 方案一行代码完成
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     subgraph 水平垂直居中方案
         A["transform 偏移"]
@@ -1611,7 +2330,7 @@ flowchart TD
 
 > 💡 **要点：** 容器属性控制主轴（flex-direction/justify-content）和交叉轴（align-items）对齐；项目属性控制自身伸缩（flex-grow/shrink/basis）
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["Flex 容器 display:flex"] --> B["主轴 main axis"]
     A --> C["交叉轴 cross axis"]
@@ -1716,7 +2435,7 @@ flowchart LR
 
 > 💡 **要点：** 上方块居中（margin: 0 auto），下方两个块并排（float 或 inline-block），配合 calc() 精确计算位置
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["品字布局"] --> B["上方一个块居中"]
     A --> C["下方两个块并排"]
@@ -1756,7 +2475,7 @@ div {
 
 > 💡 **要点：** Grid 实现最简洁（`grid-template-columns: repeat(3, 1fr)`），Flex 需要处理 margin 间隙和换行，适合面试手写
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     subgraph 九宫格实现方案
         A["Flex 布局"]
@@ -1893,7 +2612,7 @@ clear: none | left | right | both
 
 > 💡 **要点：** BFC（块级格式化上下文）是独立渲染区域，创建方式包括 overflow:hidden、float、position:absolute、display:inline-block 等，用于解决 margin 重叠、清除浮动、自适应布局
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["BFC 块级格式化上下文"] --> B["创建条件"]
     A --> C["特点"]
@@ -1956,7 +2675,7 @@ flowchart TD
 
 > 💡 **要点：** 只有垂直方向 margin 会重叠（取较大值），BFC、浮动、定位、inline-block 均可解决，父子元素重叠可通过父加 border/padding/overflow 解决
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["margin 重叠"] --> B["兄弟元素重叠"]
     A --> C["父子元素重叠"]
@@ -1984,7 +2703,7 @@ flowchart TD
 
 > 💡 **要点：** 从下到上：背景边框 → 负 z-index → 块级 → 浮动 → 行内 → z-index:0（定位）→ 正 z-index；z-index:auto 不创建新层叠上下文
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["层叠顺序 从下到上"] --> B["1. 背景和边框"]
     A --> C["2. 负 z-index"]
@@ -2083,7 +2802,7 @@ flowchart LR
 
 > 💡 **要点：** display:none 优先级最高（隐藏）；position:absolute/fixed 使 float 失效；三者按规则优先级逐级转换，最终影响元素的盒模型类型
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A["开始"] --> B{"display: none?"}
     B -->|是| C["元素隐藏，不渲染"]
@@ -2201,7 +2920,7 @@ flowchart TD
 
 > 💡 **要点：** 在三角形基础上添加 border-radius 将直边变成弧线，border-radius 值设为 border 宽度即可
 
-\`\`\`css
+```css
 /* 实现一个 90° 扇形 */
 .sector {
   width: 0;
@@ -2293,7 +3012,7 @@ flowchart TD
 
 > 💡 **要点：** 利用非对称 border 宽度制作梯形效果，上底由 width 决定，下底由 border-width 决定，等腰和直角梯形写法不同
 
-\`\`\`css
+```css
 /* 等腰梯形 */
 .trapezoid {
   height: 0;
@@ -2318,7 +3037,7 @@ flowchart TD
 
 > 💡 **要点：** 使用 transform:scaleY(0.5) 将 1px 线压扁为 0.5px，或使用伪元素先放大 2 倍再缩放回 0.5 实现 0.5px 边框
 
-\`\`\`css
+```css
 /* 方法一：transform: scale */
 .half-px-line {
   height: 1px;
