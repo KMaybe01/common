@@ -1,6 +1,42 @@
-# HTML 知识点详解版
+# 📚 HTML 知识点详解版
 
-## 知识脑图
+> 🎯 前端面试必备 - HTML 核心知识全面梳理 | 建议收藏 ⭐
+
+---
+
+## 📑 目录
+
+- [⚡ 1. src 和 href 的区别](#1-src-和-href-的区别)
+- [🏷️ 2. 对 HTML 语义化的理解](#2-对-html-语义化的理解)
+- [📄 3. DOCTYPE（文档类型）的作用](#3-doctype文档类型的作用)
+- [⚙️ 4. script 标签中 defer 和 async 的区别](#4-script-标签中-defer-和-async-的区别)
+- [🏷️ 5. 常用的 meta 标签](#5-常用的-meta-标签)
+- [🚀 6. HTML5 有哪些更新](#6-html5-有哪些更新)
+- [🖼️ 7. img 的 srcset 属性的作用](#7-img-的-srcset-属性的作用)
+- [📦 8. 行内元素、块级元素、空元素](#8-行内元素块级元素空元素)
+- [🔧 9. 对 Web Worker 的理解](#9-对-web-worker-的理解)
+- [📥 10. HTML5 离线存储](#10-html5-离线存储application-cache)
+- [🔄 11. 离线存储资源的管理与加载](#11-离线存储资源的管理与加载)
+- [✨ 12. title vs h1, b vs strong, i vs em](#12-title-vs-h1-b-vs-strong-i-vs-em)
+- [🖥️ 13. iframe 的优缺点](#13-iframe-的优缺点)
+- [🏷️ 14. label 的作用和使用](#14-label-的作用和使用)
+- [🎨 15. Canvas 和 SVG 的区别](#15-canvas-和-svg-的区别)
+- [📑 16. head 标签的作用](#16-head-标签的作用)
+- [📄 17. 文档声明（Doctype）](#17-文档声明doctype与严格混杂模式)
+- [🔤 18. 浏览器乱码的原因与解决](#18-浏览器乱码的原因与解决)
+- [📈 19. 渐进增强和优雅降级](#19-渐进增强和优雅降级)
+- [🖱️ 20. HTML5 Drag & Drop API](#20-html5-drag--drop-api)
+- [🧩 21. Web Components](#21-web-components)
+- [⚡ 22. 资源提示（Resource Hints）](#22-资源提示resource-hints)
+- [🎬 23. View Transitions API](#23-view-transitions-api)
+- [📦 24. Import Map](#24-import-map)
+- [🔗 25. WebSocket](#25-websocket)
+- [📹 26. WebRTC 简介](#26-webrtc-简介)
+
+
+---
+
+## 🧠 知识脑图
 
 ```mermaid
 mindmap
@@ -50,7 +86,9 @@ mindmap
 
 ---
 
-## 1. src 和 href 的区别
+## 1️⃣ src 和 href 的区别
+
+> ⚡️ **核心区别**：src 会阻塞解析（替换内容），href 不会阻塞（建立关系）
 
 ### 核心本质
 
@@ -139,7 +177,9 @@ flowchart TB
 
 ---
 
-## 2. 对 HTML 语义化的理解
+## 2️⃣ 对 HTML 语义化的理解
+
+> 🏷️ **语义化 = 用正确的标签做正确的事情**
 
 ### 什么是语义化？
 
@@ -203,7 +243,9 @@ flowchart TD
 
 ---
 
-## 3. DOCTYPE（文档类型）的作用
+## 3️⃣ DOCTYPE（文档类型）的作用
+
+> 📄 **DOCTYPE 告诉浏览器以何种标准解析渲染页面**
 
 ### 核心功能
 
@@ -246,7 +288,9 @@ flowchart TD
 
 ---
 
-## 4. script 标签中 defer 和 async 的区别
+## 4️⃣ script 标签中 defer 和 async 的区别
+
+> ⚙️ **脚本加载方式选择**：默认阻塞 / async 并行不保证顺序 / defer 并行保证顺序
 
 ### 三种加载方式对比
 
@@ -327,7 +371,9 @@ sequenceDiagram
 
 ---
 
-## 5. 常用的 meta 标签
+## 5️⃣ 常用的 meta 标签
+
+> 🏷️ **meta 标签提供元数据，不显示在页面上，但对浏览器和搜索引擎很重要**
 
 ### meta 标签的本质
 
@@ -388,7 +434,9 @@ user-scalable=no     → 禁止用户缩放
 
 ---
 
-## 6. HTML5 有哪些更新
+## 6️⃣ HTML5 有哪些更新
+
+> 🚀 **HTML5 是 HTML 的最新标准，增加了许多强大的新特性**
 
 ### 全景概览
 
@@ -639,7 +687,9 @@ history.go(-1);
 
 ---
 
-## 7. img 的 srcset 属性的作用
+## 7️⃣ img 的 srcset 属性的作用
+
+> 🖼️ **响应式图片：让不同设备加载最合适的图片**
 
 ### 响应式图片——不同屏幕密度加载不同图片
 
@@ -681,7 +731,9 @@ flowchart TD
 
 ---
 
-## 8. 行内元素、块级元素、空元素
+## 8️⃣ 行内元素、块级元素、空元素
+
+> 📦 **元素的显示模式决定了布局方式**
 
 ### 分类对比
 
@@ -710,7 +762,9 @@ flowchart LR
 
 ---
 
-## 9. 对 Web Worker 的理解
+## 9️⃣ 对 Web Worker 的理解
+
+> 🔧 **Web Worker 在后台线程运行 JS，不阻塞主线程**
 
 ### 为什么需要 Web Worker？
 
@@ -766,7 +820,11 @@ self.onmessage = function(e) {
 
 ---
 
-## 10. HTML5 离线存储（Application Cache）
+## 🔟 HTML5 离线存储（Application Cache）
+
+> 📥 **离线存储让应用在无网络时也能正常运行**
+
+> ⚠️ **注意**：Application Cache 已被废弃，推荐使用 Service Worker
 
 ### 工作原理
 
@@ -848,7 +906,9 @@ window.applicationCache.update();
 
 ---
 
-## 11. 离线存储资源的管理与加载
+## 1️⃣1️⃣ 离线存储资源的管理与加载
+
+> 🔄 **根据在线/离线状态决定资源加载方式**
 
 ### 不同状态下的行为
 
@@ -876,7 +936,9 @@ stateDiagram-v2
 
 ---
 
-## 12. title vs h1, b vs strong, i vs em
+## 1️⃣2️⃣ title vs h1, b vs strong, i vs em
+
+> ✨ **视觉 vs 语义：搜索引擎更重视语义化标签**
 
 ### 对比总结
 
@@ -900,7 +962,9 @@ flowchart LR
 
 ---
 
-## 13. iframe 的优缺点
+## 1️⃣3️⃣ iframe 的优缺点
+
+> 🖥️ **iframe 在当前页面嵌入另一个页面**
 
 ### 什么是 iframe？
 
@@ -933,7 +997,9 @@ flowchart LR
 
 ---
 
-## 14. label 的作用和使用
+## 1️⃣4️⃣ label 的作用和使用
+
+> 🏷️ **label 绑定表单控件，提升可用性和可访问性**
 
 ### 作用
 
@@ -948,7 +1014,9 @@ flowchart LR
 
 ---
 
-## 15. Canvas 和 SVG 的区别
+## 1️⃣5️⃣ Canvas 和 SVG 的区别
+
+> 🎨 **Canvas 是位图（像素），SVG 是矢量图（对象）**
 
 ### 核心差异
 
@@ -1015,7 +1083,9 @@ flowchart TD
 
 ---
 
-## 16. head 标签的作用
+## 1️⃣6️⃣ head 标签的作用
+
+> 📑 **head 包含文档元信息，不显示在页面上**
 
 ### 功能概述
 
@@ -1051,7 +1121,9 @@ flowchart LR
 
 ---
 
-## 17. 文档声明（Doctype）与严格/混杂模式
+## 1️⃣7️⃣ 文档声明（Doctype）与严格/混杂模式
+
+> 📄 **文档声明告诉浏览器以何种标准解析渲染页面**
 
 ### 文档声明的作用
 
@@ -1080,6 +1152,8 @@ stateDiagram-v2
 
 ### 模式判定规则
 
+> ⚠️ **忘记写 `<!DOCTYPE html>` 会导致浏览器以混杂模式渲染**，不同浏览器对相同 CSS 可能有不同解析结果，造成跨浏览器兼容问题。
+
 | 条件 | 结果 |
 |------|------|
 | 严格 DTD | ✅ 严格模式 |
@@ -1092,7 +1166,9 @@ stateDiagram-v2
 
 ---
 
-## 18. 浏览器乱码的原因与解决
+## 1️⃣8️⃣ 浏览器乱码的原因与解决
+
+> 🔤 **统一 UTF-8 编码是解决乱码的根本之道**
 
 ### 乱码产生的三种场景
 
@@ -1113,6 +1189,8 @@ flowchart TD
 
 ### 解决方案
 
+> 💡 **最佳实践**：HTML 文件保存为 UTF-8 无 BOM 格式 + `meta charset="UTF-8"` 声明 + 服务端 HTTP 头 `Content-Type: text/html; charset=utf-8` 三者一致，即可彻底解决乱码问题。
+
 | 问题 | 解决方法 |
 |------|---------|
 | 文件编码不一致 | 统一使用 UTF-8 保存 HTML 文件 |
@@ -1126,7 +1204,9 @@ flowchart TD
 
 ---
 
-## 19. 渐进增强和优雅降级
+## 1️⃣9️⃣ 渐进增强和优雅降级
+
+> 📈 **渐进增强是"从基础到增强"，优雅降级是"从完整到兼容"**
 
 ### 概念对比
 
@@ -1176,7 +1256,9 @@ flowchart LR
 
 ---
 
-## 20. HTML5 Drag & Drop API
+## 2️⃣0️⃣ HTML5 Drag & Drop API
+
+> 🖱️ **拖放 API 使 HTML 元素支持原生拖拽交互，通过 dataTransfer 传递数据**
 
 ### 拖放事件流
 
@@ -1247,7 +1329,9 @@ sequenceDiagram
 
 ---
 
-## 21. Web Components
+## 2️⃣1️⃣ Web Components
+
+> 🧩 **Web Components 是浏览器原生 API，用于创建可复用的自定义元素**
 
 ### 概念
 
@@ -1321,6 +1405,8 @@ class MyCard extends HTMLElement {
 customElements.define('my-card', MyCard);
 ```
 
+> ⚠️ **注意**：自定义元素名**必须包含连字符（-）**，这是为了与原生 HTML 元素区分，例如 `my-card`、`app-header`。
+
 ```html
 <!-- 使用自定义元素 -->
 <my-card title="Web Components" content="一套浏览器原生组件方案"></my-card>
@@ -1352,6 +1438,8 @@ flowchart LR
 | `Shadow Host` | 挂载 Shadow DOM 的普通元素 |
 | `mode: 'open'` | 外部可通过 `element.shadowRoot` 访问 |
 | `mode: 'closed'` | 外部无法访问 Shadow DOM |
+
+> 💡 `mode: 'open'` 可通过 `element.shadowRoot` 访问内部 DOM，适合需要外部交互的场景；`mode: 'closed'` 更严格但会阻止表单自动关联等行为，通常推荐使用 `open`。
 
 #### `:host` 选择器
 
@@ -1421,7 +1509,9 @@ flowchart LR
 
 ---
 
-## 22. 资源提示（Resource Hints）
+## 2️⃣2️⃣ 资源提示（Resource Hints）
+
+> ⚡ **资源提示提前告知浏览器未来需要的资源，优化加载性能**
 
 ### 概念
 
@@ -1469,6 +1559,8 @@ flowchart LR
 ```
 
 `as` 属性可选值: `style`, `script`, `font`, `image`, `fetch`, `document`, `audio`, `video`, `worker`, `embed`
+
+> ⚡ **注意**：preload 字体资源时必须添加 `crossorigin` 属性，否则浏览器会因跨域策略忽略预加载。`as` 属性必须正确指定，否则浏览器不会使用预加载资源。
 
 ```mermaid
 sequenceDiagram
@@ -1563,7 +1655,9 @@ flowchart LR
 
 ---
 
-## 23. View Transitions API
+## 2️⃣3️⃣ View Transitions API
+
+> 🎬 **浏览器原生视图过渡动画 API，让 DOM 状态变化时产生平滑动画效果**
 
 ### 概念
 
@@ -1642,6 +1736,8 @@ await transition.updateCallbackDone;
 
 ### SPA 页面切换示例
 
+> ⚠️ **兼容性提示**：View Transitions API 目前（2024+）在 Chrome/Edge 中可用，Safari 和 Firefox 尚在开发中。使用前需检测 `document.startViewTransition` 是否存在，并提供降级方案。
+
 ```javascript
 // Vue Router 或 React Router 中使用
 async function navigateTo(url) {
@@ -1671,7 +1767,9 @@ async function navigateTo(url) {
 
 ---
 
-## 24. Import Map
+## 2️⃣4️⃣ Import Map
+
+> 📦 **Import Map 使浏览器原生支持 ES Module 裸导入，无需打包工具处理模块路径**
 
 ### 概念
 
@@ -1786,7 +1884,9 @@ import { debounce } from 'lodash-es';
 
 ---
 
-## 25. WebSocket
+## 2️⃣5️⃣ WebSocket
+
+> 🔗 **WebSocket 基于 TCP 的全双工通信协议，由 HTTP 升级而来，服务端可主动推送数据**
 
 ### 概念与原理
 
@@ -1877,6 +1977,8 @@ socket.addEventListener('error', (event) => {
 socket.close(1000, '正常关闭');
 ```
 
+> ⚠️ **生产环境注意**：WebSocket 连接可能因网络波动断开，建议实现**自动重连机制**（指数退避策略），并监听 `close` 事件处理重连逻辑。
+
 ### 应用场景
 
 | 场景 | 说明 |
@@ -1915,7 +2017,9 @@ wss.on('connection', (ws, req) => {
 
 ---
 
-## 26. WebRTC 简介
+## 2️⃣6️⃣ WebRTC 简介
+
+> 📹 **WebRTC 是浏览器原生 P2P 实时通信技术，支持音视频通话和数据传输，无需安装插件**
 
 ### 概念
 
@@ -1934,6 +2038,8 @@ flowchart TD
 ```
 
 ### 三大核心 API
+
+> 💡 **WebRTC 需要信令服务器（Signaling Server）协助建立连接**，通过信令交换 SDP（会话描述）和 ICE Candidate 后才能建立 P2P 直连。信令服务器本身不在 WebRTC 规范内，通常使用 WebSocket 实现。
 
 | API | 作用 | 说明 |
 |-----|------|------|
@@ -2079,7 +2185,7 @@ pc.ondatachannel = (event) => {
 
 ---
 
-## 27. 安全和隐私相关新特性
+## 2️⃣7️⃣. 安全和隐私相关新特性
 
 ### 概念
 

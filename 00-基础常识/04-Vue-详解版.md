@@ -1,6 +1,6 @@
-# Vue.js 核心知识详解版（含 Mermaid 图解）
+# 🟢 Vue.js 核心知识详解版（含 Mermaid 图解）
 
-> 本文档基于原版面试总结进行大幅扩展，新增 Mermaid 架构图、流程图、原理图等可视化内容，帮助深入理解 Vue 核心机制。
+> 🚀 前端面试必备 - Vue.js 核心知识全面梳理 | 建议收藏 ⭐
 
 ---
 
@@ -59,11 +59,31 @@ mindmap
 
 ---
 
-## 一、Vue 基础
+## 📑 目录（Table of Contents）
+
+- [🎯 一、Vue 基础](#-一vue-基础)
+- [🔄 二、生命周期](#-二生命周期)
+- [📡 三、组件通信](#-三组件通信)
+- [🧭 四、Vue Router](#-四vue-router)
+- [🏪 五、Vuex 状态管理](#-五vuex-状态管理)
+- [🚀 六、Vue 3.0](#-六vue-30)
+- [⚡ 七、虚拟 DOM 与 Diff 算法](#-七虚拟-dom-与-diff-算法)
+- [📦 八、Pinia（新一代 Vue 状态管理）](#-八pinia新一代-vue-状态管理)
+- [🔧 九、Vue 3 组合式 API 进阶](#-九vue-3-组合式-api-进阶)
+- [🌳 十、Vue 生态](#-十vue-生态)
+- [❓ 十一、Vue 3 常见面试题](#-十一vue-3-常见面试题)
+- [✅ 十二、Vue 开发最佳实践总结](#-十二vue-开发最佳实践总结)
+- [📑 附录：Mermaid 图例说明](#-附录mermaid-图例说明)
 
 ---
 
-### 1. Vue 的基本原理
+## 🎯 一、Vue 基础
+
+---
+
+### 1️⃣ Vue 的基本原理
+
+> 💡 **要点**：Vue 通过 `Object.defineProperty`（Vue2）/ `Proxy`（Vue3）实现数据响应式，核心三要素是 Observer（观察者）、Dep（依赖收集器）、Watcher（订阅者），三者协作驱动视图更新。
 
 当一个 Vue 实例创建时，Vue 会遍历 `data` 中的属性，用 `Object.defineProperty`（Vue 3.0 使用 `Proxy`）将它们转为 `getter/setter`，并在内部追踪相关依赖。当属性被访问时收集依赖，被修改时通知变化。每个组件实例都有相应的 `watcher` 实例，它在组件渲染过程中把属性记录为依赖，当依赖项的 `setter` 被调用时，通知 `watcher` 重新计算，从而驱动关联的组件更新。
 
@@ -74,7 +94,9 @@ mindmap
 
 ---
 
-### 2. 双向数据绑定的原理
+### 2️⃣ 双向数据绑定的原理
+
+> 💡 **要点**：采用"数据劫持 + 发布者-订阅者模式"，通过 Observer、Dep、Watcher、Compile 四者协作，实现数据变化自动更新视图、用户操作自动同步数据。
 
 Vue 采用**数据劫持** + **发布者-订阅者模式**，通过 `Object.defineProperty()` 劫持各属性的 `setter/getter`，在数据变动时发布消息给订阅者，触发相应监听回调。
 
@@ -110,6 +132,8 @@ flowchart TB
 
 **核心流程四步：**
 
+> 📌 **数据驱动机制**：Observer 负责数据劫持，Compile 解析模板指令，Watcher 作为桥梁连接数据和视图，MVVM 整合三者实现双向绑定。
+
 1. **Observer**：递归遍历 data 对象，通过 `Object.defineProperty()` 为所有属性添加 getter/setter。当读取属性时触发 getter（依赖收集），当修改属性时触发 setter（派发更新）。
 2. **Compile**：解析模板指令，将模板中的变量替换为数据，初始化渲染页面视图，并为每个指令对应的节点绑定更新函数，添加监听数据的订阅者。
 3. **Watcher**：作为 Observer 和 Compile 之间的通信桥梁——实例化时向 Dep 添加自己；持有 `update()` 方法；当属性变动 `dep.notify()` 时调用自身 `update()` 并触发 Compile 中绑定的回调。
@@ -117,7 +141,9 @@ flowchart TB
 
 ---
 
-### 3. `Object.defineProperty()` 的缺陷与 Proxy 的改进
+### 3️⃣ `Object.defineProperty()` 的缺陷与 Proxy 的改进
+
+> ⚠️ **注意**：Vue2 的 `Object.defineProperty` 有 4 大缺陷（无法监听数组下标、长度变化、新增/删除属性），Vue3 的 `Proxy` 完美解决了这些问题，且支持 `Map/Set`。
 
 **Object.defineProperty 的局限：**
 
@@ -151,10 +177,15 @@ flowchart LR
 
 ---
 
-### 4. MVVM / MVC / MVP 架构对比
+> 🎯 **Vue 3 改进总结**：Proxy 解决了 Vue 2 中 `Object.defineProperty` 的 4 大痛点：数组下标修改、新增属性、删除属性、Map/Set 支持。且采用懒代理机制，访问时才代理深层对象，初始化性能更优。
+
+---
+
+### 4️⃣ MVVM / MVC / MVP 架构对比
+
+> 💡 **要点**：MVVM 的核心优势是 View 和 Model 完全解耦，通过 ViewModel 实现双向自动同步，无需手动操作 DOM。
 
 ```mermaid
-flowchart TB
     subgraph MVC["MVC 架构"]
         direction LR
         M1["Model\n("数据 + 业务逻辑")"] -->|"通知更新"| V1["View\n("页面展示")"]
@@ -190,7 +221,9 @@ flowchart TB
 
 ---
 
-### 5. Computed vs Watch vs Methods
+### 5️⃣ Computed vs Watch vs Methods
+
+> 💡 **要点**：Computed 有缓存且只返回派生值，Watch 适合执行副作用（支持异步），Methods 每次调用都重新执行。三者在 Vue 中各司其职。
 
 ```mermaid
 flowchart LR
@@ -228,7 +261,9 @@ flowchart LR
 
 ---
 
-### 6. Slot 插槽机制
+### 6️⃣ Slot 插槽机制
+
+> 💡 **要点**：插槽是组件内容分发的核心机制，分为默认插槽（匿名）、具名插槽（name 属性）、作用域插槽（子传数据给父）。
 
 ```mermaid
 flowchart TB
@@ -257,7 +292,9 @@ flowchart TB
 
 ---
 
-### 9. 保持页面状态的方案
+### 9️⃣ 保持页面状态的方案
+
+> 💡 **要点**：根据组件是否被卸载选择不同方案——卸载时用 `localStorage`/路由传值，未卸载时用 `keep-alive` 缓存组件实例。
 
 ```mermaid
 flowchart TD
@@ -281,7 +318,9 @@ flowchart TD
 
 ---
 
-### 11. v-if vs v-show vs v-html 原理
+### 1️⃣1️⃣ v-if vs v-show vs v-html 原理
+
+> 💡 **要点**：`v-if` 条件渲染（销毁/创建 DOM），`v-show` 始终渲染（切换 `display`），`v-html` 直接设置 `innerHTML`（有 XSS 风险）。
 
 ```mermaid
 flowchart LR
@@ -308,7 +347,9 @@ flowchart LR
 
 ---
 
-### 14. v-model 实现原理（语法糖）
+### 1️⃣4️⃣ v-model 实现原理（语法糖）
+
+> 💡 **要点**：`v-model` 本质是 `:value + @input` 的语法糖，表单元素监听原生事件，自定义组件默认利用 `value` prop 和 `input` 事件。
 
 ```mermaid
 flowchart LR
@@ -335,7 +376,8 @@ flowchart LR
 
 **实现本质：**
 
-```
+```text
+// v-model 语法糖本质：绑定 value 与监听 input 事件
 v-model = v-bind:value + v-on:input
 ```
 
@@ -343,7 +385,9 @@ v-model = v-bind:value + v-on:input
 
 ---
 
-### 16. data 为什么是函数
+### 1️⃣6️⃣ data 为什么是函数
+
+> ⚠️ **注意**：组件 data 必须是函数，每次创建组件实例时返回新的数据对象，避免多个实例共享同一引用导致数据污染。
 
 ```mermaid
 flowchart TD
@@ -363,7 +407,9 @@ flowchart TD
 
 ---
 
-### 17. keep-alive 实现原理
+### 1️⃣7️⃣ keep-alive 实现原理
+
+> 🏆 **要点**：keep-alive 是抽象组件，通过 LRU 缓存策略缓存组件 vnode，新增 `activated`/`deactivated` 生命周期，命中缓存时不触发 `created`/`mounted`。
 
 ```mermaid
 flowchart TB
@@ -409,7 +455,9 @@ flowchart TB
 
 ---
 
-### 18. $nextTick 原理
+### 1️⃣8️⃣ $nextTick 原理
+
+> 💡 **要点**：$nextTick 利用微任务/宏任务机制在 DOM 更新后执行回调，实现数据变更与 DOM 操作的时序协调。
 
 ```mermaid
 flowchart TB
@@ -465,7 +513,9 @@ sequenceDiagram
 
 ---
 
-### 19. $set 原理
+### 1️⃣9️⃣ $set 原理
+
+> 💡 **要点**：$set 用于向响应式对象添加新属性或修改数组元素，内部通过 `defineReactive` 为新属性添加响应式并手动触发 `dep.notify()`。
 
 ```mermaid
 flowchart TD
@@ -483,9 +533,15 @@ flowchart TD
 
 ---
 
-### 20. Vue 数组方法重写
+> 📌 **LRU 策略**：keep-alive 内部维护 `keys` 数组记录访问顺序，最新访问的 key 被移到最后，超出 `max` 限制时淘汰头部（最久未使用）的缓存。
 
-```mermaid
+---
+
+### 2️⃣0️⃣ Vue 数组方法重写
+
+> 💡 **要点**：Vue 2 通过重写数组的 7 个方法（`push/pop/shift/unshift/splice/sort/reverse`）实现数组响应式，拦截后先执行原生方法，再监听新值并通知更新。
+
+\`\`\`mermaid
 flowchart LR
     subgraph 原型链拦截
         direction TB
@@ -518,9 +574,15 @@ flowchart LR
 
 ---
 
-### 22. Template → Render 编译过程
+> 🎯 **异步优先级**：Vue 优先使用微任务（`Promise.then`），降级到 `MutationObserver` → `setImmediate` → `setTimeout`，确保在当前 tick 数据变更完成后统一更新 DOM。
 
-```mermaid
+---
+
+### 2️⃣2️⃣ Template → Render 编译过程
+
+> 💡 **要点**：模板编译分三阶段：`parse`（解析为 AST）→ `optimize`（标记静态节点）→ `generate`（生成 render 函数），静态节点在后续 diff 中被跳过。
+
+\`\`\`mermaid
 flowchart TB
     subgraph 编译三阶段
         template["Template\n（字符串模板）"] -->|"阶段一：解析"| parse["parse()\n正则表达式逐词解析"]
@@ -561,9 +623,11 @@ flowchart TB
 
 ---
 
-### 23. 响应式数据更新流程
+### 2️⃣3️⃣ 响应式数据更新流程
 
-```mermaid
+> 💡 **要点**：数据变更触发 setter → Dep.notify() → Watcher 入异步队列（去重+排序）→ 下一个 tick 统一执行 patch 更新 DOM。
+
+\`\`\`mermaid
 sequenceDiagram
     participant Data as data 属性
     participant Dep as Dep
@@ -590,7 +654,7 @@ sequenceDiagram
 
 ---
 
-### 24. mixin / extends 合并策略
+### 2️⃣4️⃣ mixin / extends 合并策略
 
 ```mermaid
 flowchart TD
@@ -620,9 +684,11 @@ flowchart TD
 
 ---
 
-### 27. 依赖收集原理
+### 2️⃣7️⃣ 依赖收集原理
 
-```mermaid
+> 💡 **要点**：渲染时触发 data 的 getter → 当前 Watcher 被 `dep.depend()` 收集到 `subs` 数组；数据变化时 setter → `dep.notify()` → 遍历 subs 通知所有 Watcher 更新。
+
+\`\`\`mermaid
 flowchart TB
     subgraph 1.初始化
         init["new Vue()"] --> initState["initState()"]
@@ -660,7 +726,7 @@ flowchart TB
 
 ---
 
-### 28. 模板语法完全参考
+### 2️⃣8️⃣ 模板语法完全参考
 
 #### 插值与绑定
 
@@ -720,11 +786,13 @@ flowchart TB
 
 ---
 
-## 二、生命周期
+## 🔄 二、生命周期
 
 ---
 
-### 1. 完整生命周期流程图
+### 1️⃣ 完整生命周期流程图
+
+> 💡 **要点**：Vue 生命周期共 8 个阶段：`beforeCreate` → `created` → `beforeMount` → `mounted` → `beforeUpdate` → `updated` → `beforeDestroy` → `destroyed`。`created` 可访问 data 但无 DOM，`mounted` 可操作 DOM。
 
 ```mermaid
 flowchart TD
@@ -775,7 +843,7 @@ sequenceDiagram
 
 ---
 
-### 2. 父子组件生命周期顺序
+### 2️⃣ 父子组件生命周期顺序
 
 ```mermaid
 sequenceDiagram
@@ -821,7 +889,9 @@ sequenceDiagram
 
 ---
 
-### 5. keep-alive 生命周期
+> 💡 **关键提示**：生命周期遵循"父组件创建 → 子组件创建 → 子组件挂载 → 父组件挂载"的顺序。更新阶段父 beforeUpdate 先触发，子更新完成后再触发父 updated。销毁阶段同理。
+
+### 5️⃣ keep-alive 生命周期
 
 ```mermaid
 sequenceDiagram
@@ -846,7 +916,7 @@ sequenceDiagram
 
 ---
 
-## 三、组件通信
+## 📡 三、组件通信
 
 ```mermaid
 flowchart TB
@@ -884,13 +954,15 @@ flowchart TB
 
 ---
 
-## 四、Vue Router
+## 🧭 四、Vue Router
 
 ---
 
-### 2. hash 模式 vs history 模式
+### 2️⃣ hash 模式 vs history 模式
 
-```mermaid
+> 💡 **要点**：hash 模式使用 `#` 后的 URL 变化触发 `onhashchange`，无需后端配置；history 模式使用 `pushState` 修改 URL，刷新时需后端配合返回 index.html 避免 404。
+
+\`\`\`mermaid
 flowchart TB
     subgraph hash模式
         url_hash["http://abc.com/#/user/123"]
@@ -924,7 +996,7 @@ flowchart TB
 
 ---
 
-### 6. 导航守卫执行顺序
+### 6️⃣ 导航守卫执行顺序
 
 ```mermaid
 flowchart TD
@@ -944,11 +1016,13 @@ flowchart TD
 
 ---
 
-## 五、Vuex 状态管理
+## 🏪 五、Vuex 状态管理
 
 ---
 
-### 1. Vuex 核心架构
+### 1️⃣ Vuex 核心架构
+
+> 💡 **要点**：Vuex 采用单向数据流：Component → dispatch → Action → commit → Mutation → mutate → State → 响应式渲染到 Component。Mutation 是唯一修改 State 的途径且必须同步。
 
 ```mermaid
 flowchart TB
@@ -988,7 +1062,7 @@ flowchart TB
 
 ---
 
-### 6. Vuex Action vs Mutation 对比
+### 6️⃣ Vuex Action vs Mutation 对比
 
 ```mermaid
 flowchart LR
@@ -1006,11 +1080,13 @@ flowchart LR
 
 ---
 
-## 六、Vue 3.0
+## 🚀 六、Vue 3.0
 
 ---
 
-### 1. Vue 2 vs Vue 3 对比
+### 1️⃣ Vue 2 vs Vue 3 对比
+
+> 💡 **要点**：Vue 3 核心改进：Composition API（逻辑复用）、Proxy（完整响应式）、原生 TypeScript 支持、Fragment（多根节点）、Tree-shaking（按需引入）。
 
 ```mermaid
 flowchart LR
@@ -1033,33 +1109,9 @@ flowchart LR
 
 ---
 
-### 4. Composition API 详解
+### 4️⃣ Composition API 详解
 
-```mermaid
-flowchart TB
-    subgraph Composition API 核心函数
-        setup["setup() 函数"] --> ref["ref()\n基础响应式"]
-        setup --> reactive["reactive()\n对象响应式"]
-        setup --> computed["computed()\n计算属性"]
-        setup --> watch["watch()\n侦听器"]
-        setup --> onMounted["onMounted()\n生命周期"]
-        setup --> provide_inject["provide() / inject()"]
-    end
-
-    subgraph 组织方式对比
-        Options["Options API\n按类型组织\n------\ndata () {}\nmethods: {}\ncomputed: {}\nwatch: {}"] -.->|"跨关注点分散"| scattered["功能 A 的 data\n功能 A 的 methods\n功能 A 的 computed\n分散在文件中"]
-
-        Composition["Composition API\n按功能组织\n------\nsetup() {\n  // 功能 A\n  const a = ref()\n  function doA() {}\n  // 功能 B\n  const b = ref()\n  function doB() {}\n}"] -.->|"关注点集中"| focused["功能 A 集中在一起\n功能 B 集中在一起"]
-    end
-```
-
----
-
-## 七、虚拟 DOM 与 Diff 算法
-
----
-
-### 1. 虚拟 DOM 本质
+> 💡 **要点**：Composition API 通过 `setup()` 函数按功能组织代码，解决了 Options API 跨关注点分散的问题，配合 `ref`/`reactive`/`computed`/`watch` 实现更灵活的逻辑复用。
 
 ```mermaid
 flowchart LR
@@ -1082,6 +1134,7 @@ flowchart LR
 
 **VNode 核心结构：**
 ```javascript
+// VNode 对象结构示例
 {
   tag: 'div',           // 标签名
   data: {               // 属性/指令
@@ -1101,7 +1154,9 @@ flowchart LR
 
 ---
 
-### 5. Diff 算法详解
+### 5️⃣ Diff 算法详解
+
+> ⚠️ **注意**：Vue 的 Diff 算法采用"同层比较 + 四个指针遍历"策略，通过 key 建立 Map 快速查找可复用节点，有效降低时间复杂度。
 
 ```mermaid
 flowchart TD
@@ -1167,7 +1222,9 @@ flowchart LR
 
 ---
 
-### 6. Key 的作用
+### 6️⃣ Key 的作用
+
+> ⚠️ **注意**：key 帮助 Diff 算法准确识别节点身份，避免就地复用导致的渲染错误。**不要使用 index 作为 key**，否则在列表头部插入时会导致所有节点重新渲染。
 
 ```mermaid
 flowchart TB
@@ -1201,7 +1258,7 @@ flowchart LR
 
 ---
 
-### 7. 虚拟 DOM 的完整工作流程
+### 7️⃣ 虚拟 DOM 的完整工作流程
 
 ```mermaid
 flowchart TB
@@ -1225,7 +1282,7 @@ flowchart TB
 
 ---
 
-## 附录：Mermaid 图例说明
+## 📑 附录：Mermaid 图例说明
 
 本文档中的图表类型：
 
@@ -1238,11 +1295,13 @@ flowchart TB
 
 ---
 
-## 八、Pinia（新一代 Vue 状态管理）
+## 📦 八、Pinia（新一代 Vue 状态管理）
 
 ---
 
-### 1. Pinia 核心概念
+### 1️⃣ Pinia 核心概念
+
+> 💡 **要点**：Pinia 是 Vue 3 官方推荐的状态管理方案，相比 Vuex 去掉了 Mutation、原生 TypeScript 支持、每个 Store 独立模块化、体积仅 ~1KB。
 
 | 对比维度 | Pinia | Vuex |
 |----------|-------|------|
@@ -1286,6 +1345,7 @@ flowchart TB
 **defineStore 基本用法：**
 
 ```javascript
+// 定义 Pinia Store 的两种方式：Option Store 与 Setup Store
 // Option Store
 import { defineStore } from 'pinia'
 
@@ -1320,7 +1380,7 @@ export const useSetupCounterStore = defineStore('counter', () => {
 
 ---
 
-### 2. 核心功能
+### 2️⃣ 核心功能
 
 **State：**
 
@@ -1328,17 +1388,18 @@ export const useSetupCounterStore = defineStore('counter', () => {
 flowchart TB
     subgraph State 操作方式
         Direct["直接访问\nstore.count = 1"] --> Reactive["响应式更新"]
-        Patch["$patch("{ count: 1, name: 'new' }")\n批量修改"] --> Merge["合并多个属性\n只触发一次更新"]
+        Patch["$patch({ count: 1, name: 'new' })\n批量修改"] --> Merge["合并多个属性\n只触发一次更新"]
         Reset["$reset()\n重置为初始值"] --> Initial["恢复 state 初始状态"]
     end
 
     subgraph 解构问题
         Destruct["const { count } = store"] --> Loss["失去响应性 ❌"]
-        StoreToRefs["storeToRefs("store")"] --> Keep["保持响应性 ✅"]
+        StoreToRefs["storeToRefs(store)"] --> Keep["保持响应性 ✅"]
     end
 ```
 
 ```javascript
+// Pinia State 的四种操作方式：直接修改、$patch 批量、$reset 重置、storeToRefs 解构
 const store = useCounterStore()
 
 // 直接修改
@@ -1367,6 +1428,7 @@ const { count, name } = storeToRefs(store)
 **Getters：**
 
 ```javascript
+// 使用 Getter 获取派生数据，支持访问其他 getter 和传参
 export const useStore = defineStore('store', {
   state: () => ({
     todos: [
@@ -1390,6 +1452,7 @@ export const useStore = defineStore('store', {
 **Actions：**
 
 ```javascript
+// Action 支持同步/异步操作，可调用其他 Store 的 Action
 export const useStore = defineStore('store', {
   actions: {
     // 同步 Action
@@ -1436,7 +1499,7 @@ flowchart LR
 
 ---
 
-### 3. Pinia vs Vuex 对比
+### 3️⃣ Pinia vs Vuex 对比
 
 **API 设计差异：**
 
@@ -1500,11 +1563,12 @@ flowchart TB
 
 ---
 
-### 4. 实战
+### 4️⃣ 实战
 
 **购物车 Store 示例：**
 
 ```javascript
+// 完整的购物车状态管理：包含商品增删、优惠券、结算逻辑
 // stores/cart.js
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
@@ -1564,6 +1628,7 @@ export const useCartStore = defineStore('cart', {
 **组合式 Store 示例：**
 
 ```javascript
+// 使用 Composition API 风格定义 Store，更灵活且 TypeScript 友好
 // stores/useUserStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
@@ -1641,15 +1706,16 @@ flowchart TB
 
 ---
 
-## 九、Vue 3 组合式 API 进阶
+## 🔧 九、Vue 3 组合式 API 进阶
 
 ---
 
-### 1. `<script setup>` 语法
+### 1️⃣ `<script setup>` 语法
 
 **基本用法：**
 
 ```vue
+<!-- <script setup> 语法：顶层的绑定和函数可直接在模板中使用 -->
 <script setup>
 // 所有代码在 setup 函数中执行
 import { ref, onMounted } from 'vue'
@@ -1670,6 +1736,7 @@ onMounted(() => {
 **defineProps / defineEmits / defineExpose：**
 
 ```vue
+// 编译时宏，无需导入即可使用
 <script setup>
 // 无需导入，编译时宏
 const props = defineProps({
@@ -1693,6 +1760,7 @@ defineExpose({
 **defineModel（v-model 语法糖，Vue 3.4+）：**
 
 ```vue
+<!-- defineModel 简化了自定义组件上的 v-model 实现 -->
 <!-- 子组件 -->
 <script setup>
 const model = defineModel({ type: String, default: '' })
@@ -1716,6 +1784,7 @@ const model = defineModel({ type: String, default: '' })
 **defineOptions（Vue 3.3+）：**
 
 ```vue
+// defineOptions 用于在 <script setup> 中设置组件选项
 <script setup>
 defineOptions({
   name: 'MyComponent',
@@ -1727,6 +1796,7 @@ defineOptions({
 **withDefaults：**
 
 ```vue
+// withDefaults 为 defineProps 的泛型方式提供默认值
 <script setup>
 interface Props {
   title?: string
@@ -1744,7 +1814,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 ---
 
-### 2. 进阶响应式 API
+### 2️⃣ 进阶响应式 API
 
 **响应式层次图：**
 
@@ -1774,6 +1844,7 @@ flowchart TB
 **shallowRef / shallowReactive：**
 
 ```javascript
+// shallowRef：只追踪 .value 变化，不深度监听；shallowReactive：只监听第一层属性
 import { shallowRef, shallowReactive } from 'vue'
 
 // shallowRef：只追踪 .value 的变化，不深度监听内部属性
@@ -1795,6 +1866,7 @@ obj.nested.count = 1       // ❌ 不触发响应式（深层对象不监听）
 **triggerRef / customRef：**
 
 ```javascript
+// triggerRef 手动触发更新，customRef 显式控制依赖收集和触发时机
 import { triggerRef, customRef, shallowRef } from 'vue'
 
 // triggerRef：强制触发依赖更新
@@ -1826,6 +1898,7 @@ const debouncedMsg = useDebouncedRef('hello', 500)
 **toRef / toRefs / toRaw / markRaw：**
 
 ```javascript
+// toRef/toRefs 保持响应式解构，toRaw 获取原始对象，markRaw 阻止转为响应式
 import { reactive, toRef, toRefs, toRaw, markRaw } from 'vue'
 
 const state = reactive({ a: 1, b: 2 })
@@ -1854,6 +1927,7 @@ const state2 = reactive({
 **effectScope / onScopeDispose：**
 
 ```javascript
+// effectScope 管理多个 effect（computed/watch）的生命周期，可统一停止
 import { effectScope, onScopeDispose, ref, computed, watch } from 'vue'
 
 // 创建一个 effect 作用域
@@ -1879,26 +1953,12 @@ scope.stop()
 
 ---
 
-### 3. 内置组件
+### 3️⃣ 内置组件
 
 **`<Teleport>`（传送门）：**
 
-```mermaid
-flowchart LR
-    subgraph DOM 结构
-        App["#app"] --> Component["Vue 组件\ndom-1"]
-        Component --> Teleport["&lt;Teleport to='body'&gt;"]
-        Teleport --> Modal["模态框\n渲染到 &lt;body&gt; 下"]
-        Teleport --> Tooltip["工具提示\n渲染到 &lt;body&gt; 下"]
-    end
-
-    subgraph 逻辑归属
-        Component2["Vue 组件"] -->|"事件、状态"| Teleport2["Teleport\n逻辑上属于组件"]
-        Teleport2 -->|"DOM 渲染到指定位置"| Target["目标容器\n（body / #modal）"]
-    end
-```
-
 ```vue
+<!-- Teleport 将 DOM 渲染到指定位置，但逻辑上仍属于当前组件 -->
 <template>
   <div class="component">
     <button @click="showModal = true">打开模态框</button>
@@ -1927,6 +1987,7 @@ flowchart LR
 
 ```vue
 <script setup>
+// Suspense 处理异步依赖，提供 fallback 加载状态
 // 异步组件
 import { defineAsyncComponent } from 'vue'
 
@@ -1963,6 +2024,7 @@ flowchart TB
 
 ```vue
 <script setup>
+// KeepAlive 支持 max 限制和 include/exclude 动态筛选
 const tabs = ['Home', 'About', 'Contact']
 const activeTab = ref('Home')
 
@@ -1991,6 +2053,7 @@ const isCached = (comp) => comp.name !== 'Contact'
 
 ```vue
 <template>
+  <!-- Transition 支持自定义 class 和 JavaScript 钩子 -->
   <!-- 自定义过渡 class -->
   <Transition name="fade"
     enter-from-class="opacity-0"
@@ -2031,11 +2094,12 @@ const isCached = (comp) => comp.name !== 'Contact'
 
 ---
 
-### 4. 函数式组件与渲染函数
+### 4️⃣ 函数式组件与渲染函数
 
 **h() 函数：**
 
 ```javascript
+// h() 是 createVNode 的缩写，用于以编程方式创建虚拟节点
 import { h, ref } from 'vue'
 
 export default {
@@ -2053,6 +2117,7 @@ export default {
 **渲染函数 + 指令/插槽：**
 
 ```javascript
+// 使用 resolveComponent 和 withDirectives 实现渲染函数高级用法
 import { h, withDirectives, resolveComponent } from 'vue'
 
 export default {
@@ -2080,6 +2145,7 @@ export default {
 **JSX/TSX 支持：**
 
 ```tsx
+// Button.tsx - Vue 组件支持 JSX/TSX 语法
 // Button.tsx
 import { defineComponent, ref } from 'vue'
 
@@ -2112,11 +2178,12 @@ export default defineComponent({
 
 ---
 
-### 5. 可组合函数（Composables）
+### 5️⃣ 可组合函数（Composables）
 
 #### 常用 Composables 封装
 
 ```typescript
+// 封装通用 useFetch 和 useCounter 组合式函数
 // composables/useFetch.ts
 import { ref, onMounted } from 'vue'
 
@@ -2161,6 +2228,7 @@ export function useCounter(initialValue = 0) {
 
 ```vue
 <script setup lang="ts">
+// 在组件中组合使用多个 composables
 import { useFetch } from '../composables/useFetch'
 import { useCounter } from '../composables/useCounter'
 
@@ -2210,11 +2278,13 @@ const { count, doubled, increment, decrement } = useCounter(0)
 
 ---
 
-## 十、Vue 生态
+## 🌳 十、Vue 生态
 
 ---
 
-### 1. Vite
+### 1️⃣ Vite
+
+> 💡 **要点**：Vite 基于原生 ES Module 实现秒级启动，开发时按需编译（esbuild），生产环境用 Rollup 打包；HMR 毫秒级，远快于 Webpack。
 
 **为什么 Vite 是默认构建工具：**
 
@@ -2303,7 +2373,9 @@ sequenceDiagram
 
 ---
 
-### 2. Nuxt.js
+### 2️⃣ Nuxt.js
+
+> 💡 **要点**：Nuxt 提供 SSR/SSG/CSR 三种渲染模式，基于文件系统路由，自动导入 composables 和组件，丰富的模块生态（Content、Image、Auth 等）。
 
 **服务端渲染（SSR）/ 静态生成（SSG）：**
 
@@ -2352,6 +2424,7 @@ pages/
 **自动导入：**
 
 ```javascript
+// 无需手动 import，Nuxt 自动扫描 composables/ 和 components/ 目录
 // 无需手动 import，Nuxt 自动扫描并注册
 // composables/ 下的导出自动可用
 // components/ 下的组件自动注册
@@ -2402,7 +2475,7 @@ flowchart LR
 
 ---
 
-### 3. VueUse
+### 3️⃣ VueUse
 
 **概念：** 基于 Composition API 的工具函数集合，提供 200+ 常用组合式函数。
 
@@ -2444,6 +2517,7 @@ mindmap
 **常用函数示例：**
 
 ```javascript
+// VueUse 提供的常用组合式函数：持久化状态、鼠标追踪、元素可见性、防抖搜索
 import { useStorage, useMouse, useIntersectionObserver } from '@vueuse/core'
 
 // 持久化状态（自动同步 localStorage）
@@ -2488,6 +2562,7 @@ export function useSearch() {
 **自定义组合式函数模式：**
 
 ```javascript
+// 自定义 composables 的推荐模式：返回 { state, computed, methods }
 // composables/useCounter.js
 import { ref, computed } from 'vue'
 
@@ -2533,7 +2608,7 @@ export function useApi(url) {
 
 ---
 
-### 4. Vapor Mode
+### 4️⃣ Vapor Mode
 
 **概念：** Vapor Mode 是 Vue 3 的一种可选编译策略，编译时跳过虚拟 DOM，直接生成高效的命令式 DOM 操作代码。
 
@@ -2591,11 +2666,13 @@ flowchart TB
 
 ---
 
-## 十一、Vue 3 常见面试题
+## ❓ 十一、Vue 3 常见面试题
 
 ---
 
-### 1. 为什么 Vue 3 使用 Proxy 代替 Object.defineProperty？
+### 1️⃣ 为什么 Vue 3 使用 Proxy 代替 Object.defineProperty？
+
+> ⚠️ **注意**：Proxy 代理整个对象而非逐个属性，支持 13 种拦截操作（包括 `delete`、`in`、`for...in`），且采用懒代理策略——只在访问时才代理深层对象，初始化性能更好。
 
 **对比表格：**
 
@@ -2651,7 +2728,9 @@ flowchart LR
 
 ---
 
-### 2. Composition API vs Options API
+### 2️⃣ Composition API vs Options API
+
+> 💡 **要点**：Options API 按类型组织代码（data/methods/computed 分散），小型组件清晰；Composition API 按功能组织代码，大型项目逻辑复用更好，TypeScript 支持更优。
 
 **对比图：**
 
@@ -2729,11 +2808,14 @@ function increment(): void {
 
 ---
 
-### 3. Vue 3 性能优化技巧
+### 3️⃣ Vue 3 性能优化技巧
+
+> 💡 **要点**：关键优化手段包括 `shallowRef`（大型数据）、`v-once`/`v-memo`（静态内容）、函数式组件（无状态开销）、异步组件（代码分割）、虚拟列表（大量数据渲染）。
 
 **合理使用 shallowRef：**
 
 ```javascript
+// 大型数据用 shallowRef 避免深度响应式开销，配合 triggerRef 手动控制更新
 import { shallowRef, shallowReactive } from 'vue'
 
 // ❌ 大型数据结构使用 ref 导致深度响应式
@@ -2758,6 +2840,7 @@ function updateUsers(newUsers) {
 
 ```vue
 <template>
+  <!-- v-once 只渲染一次，v-memo 依赖不变时不更新 -->
   <!-- v-once：只渲染一次，后续不再更新 -->
   <div v-once>
     <h1>静态标题</h1>
@@ -2781,6 +2864,7 @@ function updateUsers(newUsers) {
 **函数式组件：**
 
 ```javascript
+// 函数式组件无状态、无实例，渲染开销极低
 // 函数式组件：无状态、无实例，渲染开销极低
 import { h } from 'vue'
 
@@ -2802,6 +2886,7 @@ function StatelessButton(props, { slots, emit }) {
 
 ```vue
 <script setup>
+// 异步加载大型组件，支持 loading/error 状态和重试机制
 import { defineAsyncComponent } from 'vue'
 
 // 基础用法
@@ -2843,9 +2928,11 @@ flowchart TB
     end
 ```
 
+**简化版虚拟列表：**
+
 ```vue
 <template>
-  <!-- 简化版虚拟列表 -->
+  <!-- 虚拟列表：只渲染可视区域内的节点 -->
   <div
     ref="container"
     class="virtual-list"
@@ -2900,7 +2987,7 @@ function onScroll() {
 
 ---
 
-## 十二、Vue 开发最佳实践总结
+## ✅ 十二、Vue 开发最佳实践总结
 
 ### Vue 开发黄金法则
 

@@ -1,4 +1,6 @@
-# React 核心知识详解（增强版）
+# ⚛️ React 核心知识详解（增强版）
+
+> 🚀 前端面试必备 - React 核心知识全面梳理 | 建议收藏 ⭐
 
 ---
 
@@ -54,9 +56,29 @@ mindmap
 
 ---
 
-## 一、组件基础
+## 📋 目录（Table of Contents）
 
-### 1. React 事件机制
+- [🧩 一、组件基础](#-一、组件基础)
+- [📊 二、数据管理](#-二、数据管理)
+- [🎣 三、Hooks 详解](#-三hooks-详解)
+- [🧭 四、路由](#-四路由)
+- [⚖️ 五、React 与 Vue 对比](#-五react-与-vue-对比)
+- [🎨 六、React 设计理念](#-六react-设计理念)
+- [📝 七、总结脑图](#-七总结脑图)
+- [🆕 八、React 18/19 新特性](#-八react-1819-新特性)
+- [📦 九、现代React状态管理](#-九现代react状态管理)
+- [⚡ 十、Next.js (React元框架)](#-十nextjs-react元框架)
+- [🏗️ 十一、React 设计模式和最佳实践](#-十一react-设计模式和最佳实践)
+- [🔄 十二、React 面试常考对比](#-十二react-面试常考对比)
+- [❓ 十三、React 面试题汇总](#-十三react-面试题汇总)
+
+---
+
+## 🧩 一、组件基础
+
+### 1️⃣ React 事件机制
+
+> 💡 **要点**：React 通过事件代理将所有事件绑定在 document 上，利用合成事件（SyntheticEvent）抹平浏览器差异并实现事件池复用，减少内存开销。
 
 #### 合成事件（SyntheticEvent）
 
@@ -98,10 +120,14 @@ flowchart TD
 | 执行顺序 | 先执行 | 后执行（冒泡到 document） |
 
 > **重要：** 合成事件冒泡到 document 才执行，若原生事件阻止冒泡，会导致合成事件不执行。
+>
+> 💡 **补充**：React 17+ 将事件代理从 document 迁移到 root DOM 容器，为微前端和多版本 React 共存提供更好的隔离性。React 18+ 进一步改进了事件系统性能。
 
 ---
 
-### 2. React 高阶组件、Render props、Hooks 对比
+### 2️⃣ React 高阶组件、Render props、Hooks 对比
+
+> 💡 **要点**：三种代码复用方案从 HOC → Render Props → Hooks 逐步演进，Hooks 解决了 props 命名冲突和嵌套地狱问题，是当前推荐的 React 代码复用方案。
 
 ```mermaid
 flowchart LR
@@ -125,6 +151,7 @@ flowchart LR
 **定义：** 参数是组件，返回值是新组件的函数。
 
 ```javascript
+// 示例：高阶组件 - 订阅数据源
 function withSubscription(WrappedComponent, selectData) {
   return class extends React.Component {
     constructor(props) {
@@ -147,6 +174,7 @@ function withSubscription(WrappedComponent, selectData) {
 **定义：** 组件间使用一个值为函数的 prop 共享代码。
 
 ```javascript
+// 示例：Render Props 模式
 class DataProvider extends React.Component {
   state = { name: 'Tom' }
   render() {
@@ -160,6 +188,7 @@ class DataProvider extends React.Component {
 #### （3）Hooks
 
 ```javascript
+// 示例：Hooks 实现等价逻辑
 function useSubscription() {
   const [data] = useState(DataSource.getComments())
   return [data]
@@ -170,7 +199,9 @@ function useSubscription() {
 
 ---
 
-### 3. Fiber 架构
+### 3️⃣ Fiber 架构
+
+> 💡 **要点**：Fiber 架构将虚拟 DOM 从递归不可中断的 Stack Reconciler 重构为可中断的 Fiber 链表结构，引入时间切片和优先级调度机制，解决了大型应用卡顿问题。
 
 ```mermaid
 flowchart TB
@@ -231,9 +262,13 @@ flowchart LR
 - 分批延时操作 DOM，避免一次性大量操作
 - 给浏览器喘息机会进行 JIT 编译优化和 reflow 修正
 
+> ⚠️ **注意**：Fiber 的核心在于"可中断"——高优先级更新（如用户输入）可打断低优先级渲染（如数据加载）。React 通过 expirationTime 机制确保所有任务最终都会被执行，避免低优先级任务被"饿死"。
+
 ---
 
-### 4. setState 流程（批量更新机制）
+### 4️⃣ setState 流程（批量更新机制）
+
+> 💡 **要点**：setState 在 React 可控环境（生命周期/合成事件）中是异步批量更新，在不可控环境（原生事件/setTimeout/Promise）中是同步更新，理解 isBatchingUpdates 机制是关键。
 
 ```mermaid
 flowchart TD
@@ -281,7 +316,7 @@ flowchart LR
 **源码级流程：**
 
 ```javascript
-// 1. setState 入口
+// 1️⃣ setState 入口
 ReactComponent.prototype.setState = function (partialState, callback) {
   this.updater.enqueueSetState(this, partialState)
   if (callback) {
@@ -307,9 +342,13 @@ function enqueueUpdate(component) {
 }
 ```
 
+> 💡 **技巧**：当新状态依赖旧状态时，始终使用函数式更新 `setState(prev => prev + 1)`，这能确保在批量合并模式下每次更新都基于最新的 state 值，避免因合并导致的覆盖问题。
+
 ---
 
-### 5. Virtual DOM & Diff 算法
+### 5️⃣ Virtual DOM & Diff 算法
+
+> 💡 **要点**：Diff 算法基于三大策略（树分层对比、组件类型判断、key 标识复用），将时间复杂度从 O(n³) 优化到 O(n)，key 是列表性能优化的关键手段。
 
 ```mermaid
 flowchart TD
@@ -356,6 +395,8 @@ flowchart TD
 
 **key 的作用：**
 
+> ⚠️ **警告**：使用数组 index 作为 key 会导致列表更新时出现数据错乱，尤其是在涉及输入框或包含状态的列表项时。务必使用唯一且稳定的标识（如数据库 id 或 UUID）。
+
 ```mermaid
 flowchart LR
     subgraph 无 key
@@ -376,7 +417,9 @@ flowchart LR
 
 ---
 
-### 6. 组件生命周期（React 16+）
+### 6️⃣ 组件生命周期（React 16+）
+
+> 💡 **要点**：React 16+ 生命周期分为挂载（Mount）、更新（Update）、卸载（Unmount）、错误处理（Error）四个阶段，废弃的三个 will 前缀方法因 Fiber 可中断渲染可能导致多次调用。
 
 ```mermaid
 flowchart TD
@@ -465,7 +508,9 @@ flowchart LR
 
 ---
 
-### 7. Reconciliation（协调）过程
+### 7️⃣ Reconciliation（协调）过程
+
+> 💡 **要点**：协调过程分为 Render（可中断，构建 workInProgress 树）、Pre-commit（不可中断，读取 DOM 快照）、Commit（不可中断，执行 DOM 操作）三个阶段。
 
 ```mermaid
 flowchart TD
@@ -500,7 +545,9 @@ flowchart TD
 
 ---
 
-### 8. 组件通信方式
+### 8️⃣ 组件通信方式
+
+> 💡 **要点**：React 提供五种组件通信方式：props（父→子）、回调函数（子→父）、共同父组件转发（兄弟）、Context API（跨层级）、Redux/Event Bus（任意组件）。
 
 ```mermaid
 flowchart TD
@@ -521,7 +568,9 @@ flowchart TD
 
 ---
 
-### 9. React.Component vs React.PureComponent
+### 9️⃣ React.Component vs React.PureComponent
+
+> 💡 **要点**：PureComponent 自动实现 shouldComponentUpdate 的浅比较（shallow compare），引用类型只比较地址，变更时必须创建新对象才能触发渲染。
 
 ```mermaid
 flowchart LR
@@ -539,9 +588,13 @@ flowchart LR
 
 **注意：** PureComponent 进行**浅比较**，引用类型只比较地址。如需深比较的数据变更，必须创建新对象。
 
+> ⚠️ **易错点**：直接在现有对象上修改属性然后 `setState` 不会触发 PureComponent 重新渲染，因为浅比较发现引用地址未变化。务必使用展开运算符或 Object.assign 创建新对象。
+
 ---
 
-### 10. 受控组件 vs 非受控组件
+### 🔟 受控组件 vs 非受控组件
+
+> 💡 **要点**：受控组件的状态由 React state 驱动，数据实时同步且可预测；非受控组件通过 ref 获取 DOM 值，适合简单表单或第三方库集成场景。
 
 ```mermaid
 flowchart LR
@@ -564,7 +617,9 @@ flowchart LR
 
 ---
 
-### 11. JSX 详解
+### 1️⃣1️⃣ JSX 详解
+
+> 💡 **要点**：JSX 是 React.createElement 的语法糖，经 Babel 编译为 AST → createElement 调用 → React 元素对象 → 虚拟 DOM → 真实 DOM，支持表达式插值和条件渲染。
 
 #### JSX 的本质
 
@@ -625,7 +680,7 @@ return (
 
 ---
 
-## 二、数据管理
+## 📊 二、数据管理
 
 ### Redux 工作流
 
@@ -665,9 +720,11 @@ flowchart LR
 
 ---
 
-## 三、Hooks 详解
+## 🎣 三、Hooks 详解
 
-### Hooks 与 Class 生命周期对照
+### 📋 Hooks 与 Class 生命周期对照
+
+> 💡 **要点**：Hooks 以函数组件替代 Class 生命周期：useState → constructor，React.memo → shouldComponentUpdate，useEffect 组合了 componentDidMount/Update/WillUnmount。
 
 ```mermaid
 flowchart TD
@@ -694,7 +751,9 @@ flowchart TD
     C6 -.-> H5
 ```
 
-### useEffect vs useLayoutEffect
+### ⏱️ useEffect vs useLayoutEffect
+
+> 💡 **要点**：useEffect 异步执行不阻塞浏览器绘制，适合数据获取和订阅；useLayoutEffect 同步执行阻塞绘制，适合 DOM 测量和样式调整；优先使用 useEffect。
 
 ```mermaid
 sequenceDiagram
@@ -723,11 +782,14 @@ sequenceDiagram
 
 ---
 
-### 3. 自定义 Hooks 实战
+### 3️⃣ 自定义 Hooks 实战
+
+> 💡 **要点**：自定义 Hooks 是 React 逻辑复用的最高形态，将组件逻辑提取为可复用的函数，以下展示 useAsync、useLocalStorage、useDebounce 三个经典实战案例。
 
 #### useAsync - 异步操作管理
 
 ```typescript
+// useAsync Hook - 管理异步操作的状态机
 function useAsync<T>(
   asyncFunction: () => Promise<T>,
   immediate = true
@@ -774,6 +836,7 @@ function UserProfile({ userId }: { userId: string }) {
 #### useLocalStorage - 本地存储 Hook
 
 ```typescript
+// useLocalStorage Hook - 本地存储与 React 状态同步
 function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
@@ -807,6 +870,7 @@ function DarkModeToggle() {
 #### useDebounce - 防抖 Hook
 
 ```typescript
+// useDebounce Hook - 防抖处理，返回延迟更新后的值
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -833,9 +897,11 @@ function SearchUsers() {
 
 ---
 
-## 四、路由
+## 🧭 四、路由
 
-### React Router 实现原理
+### 🔧 React Router 实现原理
+
+> 💡 **要点**：React Router 通过 history 库统一 HashRouter（hashchange）和 BrowserRouter（History API + popstate），Route 组件匹配当前 URL 渲染对应组件。
 
 ```mermaid
 flowchart TD
@@ -862,7 +928,7 @@ flowchart TD
 
 ---
 
-## 五、React 与 Vue 对比
+## ⚖️ 五、React 与 Vue 对比
 
 ```mermaid
 flowchart LR
@@ -894,7 +960,7 @@ flowchart LR
 
 ---
 
-## 六、React 设计理念
+## 🎨 六、React 设计理念
 
 1. **声明式：** 为每个状态设计简洁的视图，数据变更时 React 高效更新
 2. **组件化：** 可组合、可复用、可维护、可测试
@@ -904,7 +970,7 @@ flowchart LR
 
 ---
 
-## 七、总结脑图
+## 📝 七、总结脑图
 
 ```mermaid
 mindmap
@@ -941,13 +1007,15 @@ mindmap
 
 ---
 
-> 本文档由原版面试总结大幅扩展而成，增加了 Mermaid 可视化图表辅助理解，涵盖 React 核心概念、原理、流程、对比等全方位知识体系。
+> 📖 本文档由原版面试总结大幅扩展而成，增加了 Mermaid 可视化图表辅助理解，涵盖 React 核心概念、原理、流程、对比等全方位知识体系。
 
 ---
 
-## 八、React 18/19 新特性
+## 🆕 八、React 18/19 新特性
 
-### 1. React 18 并发特性
+### 1️⃣ React 18 并发特性
+
+> 💡 **要点**：React 18 引入并发渲染机制，通过 startTransition/useDeferredValue 标记低优先级更新，结合 Automatic Batching 和流式 SSR 大幅提升用户体验。
 
 #### startTransition 和 useTransition
 - **startTransition**：标记非紧急更新，让高优先级更新（如用户输入）优先渲染
@@ -983,7 +1051,7 @@ const deferredQuery = useDeferredValue(query);
 - React 18：Promise、setTimeout、原生事件中也能自动批处理
 
 ```tsx
-// React 18 中以下代码只触发一次渲染
+// React 18 中以下代码只触发一次渲染（自动批处理）
 setTimeout(() => {
   setCount(c => c + 1);
   setFlag(f => !f);
@@ -1034,7 +1102,9 @@ graph TD
     style I fill:#2196F3,color:#fff
 ```
 
-### 2. React 19 新特性
+### 2️⃣ React 19 新特性
+
+> 💡 **要点**：React 19 带来了 use()、useOptimistic、useFormStatus、useActionState 等新 Hooks，Server Components 稳定化，ref 可直接作为 prop 传递，废弃 forwardRef。
 
 #### use() 钩子
 - 在渲染阶段直接读取 Promise 或 Context 的值
@@ -1145,7 +1215,9 @@ graph LR
     style D2 fill:#4CAF50,color:#fff
 ```
 
-### 3. React Server Components (RSC) 详解
+### 3️⃣ React Server Components (RSC) 详解
+
+> 💡 **要点**：RSC 在服务端渲染且不产生 JS bundle，能直接访问数据库；与 SSR 不同，RSC 输出为特殊 RSC Payload 格式，支持流式传输和选择性水合。
 
 #### 客户端组件 vs 服务端组件
 
@@ -1216,9 +1288,11 @@ graph TB
 
 ---
 
-## 九、现代React状态管理
+## 📦 九、现代React状态管理
 
-### 1. Zustand
+### 1️⃣ Zustand
+
+> 💡 **要点**：Zustand 是极简状态管理库（~1KB），无需 Provider 包裹，基于不可变数据模式的 Mutable API，天然支持 TypeScript，无 action/reducer 模板代码。
 
 #### 极简状态管理
 - 轻量级（~1KB），无 Provider 包裹
@@ -1229,6 +1303,7 @@ graph TB
 #### 创建 Store
 
 ```tsx
+// 创建 Zustand Store（无需 Provider 包裹）
 import { create } from 'zustand';
 
 interface BearStore {
@@ -1305,7 +1380,9 @@ const useStore = create<Store>()(
 );
 ```
 
-### 2. TanStack Query (React Query)
+### 2️⃣ TanStack Query (React Query)
+
+> 💡 **要点**：TanStack Query 将服务端状态与客户端状态分离，自动管理缓存、重新获取、后台刷新，可减少 90% 的数据获取样板代码。
 
 #### 服务端状态管理
 - 将服务端状态与客户端状态分离
@@ -1415,7 +1492,9 @@ sequenceDiagram
     Q->>Cache: 对比更新
 ```
 
-### 3. Jotai / Recoil
+### 3️⃣ Jotai / Recoil
+
+> 💡 **要点**：原子化状态管理以 Atom 为最小状态单元，支持派生状态和按需渲染，相比 Context API 避免不必要的全体重渲染，适合灵活组合的场景。
 
 #### 原子化状态管理
 - 以原子（Atom）为最小状态单元
@@ -1485,9 +1564,11 @@ graph TD
 
 ---
 
-## 十、Next.js (React元框架)
+## ⚡ 十、Next.js (React元框架)
 
-### 1. App Router vs Pages Router
+### 1️⃣ App Router vs Pages Router
+
+> 💡 **要点**：Next.js App Router 以文件系统为基础，通过 layout.tsx 实现持久化嵌套布局，loading/error/not-found 文件自动提供 Suspense 和错误边界。
 
 #### 文件系统路由
 
@@ -1599,7 +1680,9 @@ graph TD
     style H2 fill:#E91E63,color:#fff
 ```
 
-### 2. 数据获取模式
+### 2️⃣ 数据获取模式
+
+> 💡 **要点**：App Router 支持 Server-side Fetching、Static Generation、ISR、Streaming SSR 四种数据获取模式，配合多层缓存策略实现最佳性能。
 
 #### Server-side fetching (async 组件 fetch)
 - App Router 中，服务端组件可以直接 `async` + `await`
@@ -1680,7 +1763,9 @@ async function Dashboard() {
 }
 ```
 
-### 3. 缓存策略
+### 3️⃣ 缓存策略
+
+> 💡 **要点**：Next.js 提供多层缓存体系：Full Route Cache（静态 HTML）、Data Cache（fetch 响应）、Router Cache（客户端预加载），通过 revalidate 和标签控制失效策略。
 
 #### Full Route Cache
 - 静态路由默认在构建时缓存
@@ -1741,9 +1826,11 @@ graph TB
 
 ---
 
-## 十一、React 设计模式和最佳实践
+## 🏗️ 十一、React 设计模式和最佳实践
 
-### 1. 现代组件模式
+### 1️⃣ 现代组件模式
+
+> 💡 **要点**：现代 React 组件模式包括 Compound Components（隐式共享状态）、Control Props（受控/非受控切换）、State Reducer（可覆盖状态逻辑）、Props Collection（合并属性集合）。
 
 #### Compound Components (复合组件)
 - 多个子组件共享隐式状态，无需手动传递 props
@@ -1854,7 +1941,9 @@ function MyComponent() {
 }
 ```
 
-### 2. React 性能优化
+### 2️⃣ React 性能优化
+
+> 💡 **要点**：React 性能优化应遵循"按需优化"原则：React.memo 用于纯展示组件，useMemo/useCallback 避免重复计算，虚拟列表处理大数据量，代码分割减少首屏体积。
 
 #### React.memo 最佳实践
 - 仅对纯展示组件使用，避免不必要的重渲染
@@ -1938,7 +2027,9 @@ function App() {
 - 动态导入大型库（`import('moment')` → 按需使用）
 - 使用 `lodash-es` 替代 `lodash`
 
-### 3. 测试策略
+### 3️⃣ 测试策略
+
+> 💡 **要点**：推荐 Vitest + React Testing Library 做单元/集成测试，renderHook 测试自定义 Hooks，Playwright 做 E2E 测试，形成完整测试金字塔。
 
 #### Vitest + React Testing Library
 
@@ -1994,7 +2085,9 @@ test('user can complete purchase flow', async ({ page }) => {
 });
 ```
 
-### 4. React Router v6+
+### 4️⃣ React Router v6+
+
+> 💡 **要点**：React Router v6+ 引入 createBrowserRouter 和嵌套路由配置，支持 loader/action 数据流、defer/Await 延迟加载，配合 Outlet 实现持久化布局。
 
 #### 嵌套路由
 
@@ -2142,9 +2235,11 @@ graph TD
 
 ---
 
-## 十二、React 面试常考对比
+## 🔄 十二、React 面试常考对比
 
-### 1. React 18 vs React 19 vs React 20 关键变化
+### 1️⃣ React 18 vs React 19 vs React 20 关键变化
+
+> 💡 **要点**：从 React 18 的可选并发到 React 19 的默认并发再到 React 20 的自动优先级推断，Server Components 逐步从实验性走向默认推荐，Compiler 自动 memo 降低心智负担。
 
 | 特性 | React 18 (2022) | React 19 (2024) | React 20 (2025+) |
 |------|-----------------|-----------------|------------------|
@@ -2161,12 +2256,14 @@ graph TD
 | Compiler (React Forget) | 实验性 | ✅ 自动 memo | ✅ 默认 |
 | 元框架集成 | 基础 | 深化 | 原生支持 |
 
-### 2. 常见 Hooks 实现原理
+### 2️⃣ 常见 Hooks 实现原理
+
+> 💡 **要点**：Hooks 本质是基于 Fiber 节点上的链表存储，通过调用顺序索引匹配状态，因此不能在条件/循环中调用 Hooks，必须保证每次渲染的调用顺序一致。
 
 #### useState 实现原理
 
 ```tsx
-// 简化版 useState 实现（基于 Fiber 架构）
+// 简化版 useState 内部实现原理（基于 Fiber hooks 链表）
 let stateIndex = 0;
 const stateQueue = [];
 
@@ -2198,10 +2295,12 @@ function useState(initialValue) {
 - **不能在条件/循环中调用 Hooks**（保证调用顺序一致）
 - `setState` 触发更新调度，合并到批量更新队列
 
+> ⚠️ **Hooks 规则**：不要在循环、条件语句或嵌套函数中调用 Hooks。必须在函数组件或自定义 Hook 的顶层调用，确保每次渲染时所有 Hooks 按**相同的顺序**被调用——这是 React 通过 Fiber 链表索引匹配状态的硬性要求。违反此规则会导致状态错乱或报错。
+
 #### useEffect 实现原理
 
 ```tsx
-// 简化版 useEffect 实现
+// 简化版 useEffect 内部实现原理
 function useEffect(callback, deps) {
   const currentIndex = effectIndex;
   const previousDeps = effectQueue[currentIndex];
@@ -2236,6 +2335,7 @@ function useEffect(callback, deps) {
 #### useRef 实现原理
 
 ```tsx
+// 简化版 useRef 内部实现原理
 function useRef(initialValue) {
   const currentIndex = refIndex;
   if (refQueue[currentIndex] === undefined) {
@@ -2276,7 +2376,9 @@ function useContext(Context) {
 - Provider 的 value 变化时，所有消费该 Context 的组件会强制更新
 - 不阻塞渲染（与 useState 不同）
 
-### 3. React 生态对比
+### 3️⃣ React 生态对比
+
+> 💡 **要点**：React 生态丰富多元：元框架选型（Next.js/Remix/Gatsby）、状态管理（Zustand/Redux/MobX/Jotai）、数据获取（TanStack Query/SWR/Apollo），根据项目需求选择合适的组合。
 
 #### Next.js vs Remix vs Gatsby
 
@@ -2353,9 +2455,9 @@ graph TB
 
 ---
 
-## 十三、React 面试题汇总
+## ❓ 十三、React 面试题汇总
 
-### Q1: React 是什么？核心特性？
+### 💬 Q1: React 是什么？核心特性？
 
 React 是一个用于构建用户界面的 JavaScript 库。核心特性：
 
@@ -2366,7 +2468,7 @@ React 是一个用于构建用户界面的 JavaScript 库。核心特性：
 | 虚拟 DOM | 通过 Diff 最小化真实 DOM 操作 |
 | 单向数据流 | 数据从父组件流向子组件 |
 
-### Q2: 虚拟 DOM 如何提高性能？
+### 💬 Q2: 虚拟 DOM 如何提高性能？
 
 ```mermaid
 graph LR
@@ -2379,7 +2481,7 @@ graph LR
 - **高效 Diff**：只更新改变的部分（O(n) 复杂度）
 - **避免频繁回流**：直接操作 DOM 是最慢的
 
-### Q3: useState 闭包陷阱及解决方法？
+### 💬 Q3: useState 闭包陷阱及解决方法？
 
 ```typescript
 function Counter() {
@@ -2399,7 +2501,7 @@ function Counter() {
 }
 ```
 
-### Q4: 如何优化 React 应用性能？
+### 💬 Q4: 如何优化 React 应用性能？
 
 | 分类 | 优化手段 |
 |------|---------|
@@ -2408,7 +2510,7 @@ function Counter() {
 | 网络优化 | 预加载关键资源、懒加载图片/组件、CDN |
 | 服务器优化 | SSR/SSG、API 响应缓存、数据预取 |
 
-### Q5: Hooks 和 Class 组件如何选择？
+### 💬 Q5: Hooks 和 Class 组件如何选择？
 
 | 对比 | Hooks（函数组件） | Class 组件 |
 |------|------------------|-----------|
@@ -2419,7 +2521,7 @@ function Counter() {
 
 **建议**：新项目优先 Hooks；需要 Error Boundary 或集成旧代码时用 Class。
 
-### Q6: 实现一个具有分页、搜索、排序的数据表格
+### 💬 Q6: 实现一个具有分页、搜索、排序的数据表格
 
 ```typescript
 function DataTable() {
@@ -2478,4 +2580,6 @@ function DataTable() {
 
 ---
 
-> 本文档涵盖 React 18/19/20 核心特性、现代状态管理方案、Next.js 元框架、设计模式、性能优化、测试策略及生态对比。所有图表均使用 Mermaid 绘制，可在支持 Mermaid 的 Markdown 渲染器中直接查看。
+> 📚 **本文档覆盖内容**：React 18/19/20 核心特性 · 现代状态管理方案 · Next.js 元框架 · 设计模式 · 性能优化 · 测试策略 · 生态对比
+>
+> 🎨 所有图表均使用 Mermaid 绘制，可在支持 Mermaid 的 Markdown 渲染器中直接查看。

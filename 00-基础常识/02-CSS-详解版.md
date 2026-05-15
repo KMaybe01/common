@@ -1,4 +1,6 @@
-# CSS 知识详解版（含 Mermaid 图解）
+# 🎨 CSS 知识详解版（含 Mermaid 图解）
+
+> 🚀 前端面试必备 - CSS 核心知识全面梳理 | 建议收藏 ⭐
 
 ---
 
@@ -39,13 +41,23 @@ mindmap
       小字体
 ```
 
+## 📑 目录
+
+- [🎯 一、CSS 基础](#-一css-基础)
+- [📐 二、页面布局](#-二页面布局)
+- [📍 三、定位与浮动](#-三定位与浮动)
+- [🛠️ 四、场景应用](#-四场景应用)
+- [✨ 五、现代 CSS 新特性](#-五现代-css-新特性)
+
 ---
 
-## 一、CSS 基础
+## 🎯 一、CSS 基础
 
 ---
 
-### 1. CSS 选择器及其优先级
+### 1️⃣ CSS 选择器及其优先级
+
+> 💡 **要点：** 选择器优先级权重分为四级（行内 1000、ID 100、类/属性/伪类 10、标签/伪元素 1），!important 最高，继承最低
 
 #### 选择器类型与权重
 
@@ -91,6 +103,8 @@ flowchart TD
 - 通用选择器（`*`）、子选择器（`>`）和相邻同胞选择器（`+`）的权值都为 0
 - 样式表的来源不同时，优先级顺序为：**内联样式 > 内部样式 > 外部样式 > 浏览器用户自定义样式 > 浏览器默认样式**
 
+> ⚠️ **注意：** !important 应谨慎使用，滥用会导致样式难以调试和维护。推荐通过提高选择器 specificity 来覆盖样式，而非依赖 !important
+
 #### 权重计算示例
 
 ```css
@@ -109,9 +123,11 @@ div .highlight { color: green; }
 
 ---
 
-### 2. CSS 中可继承与不可继承属性
+### 2️⃣ CSS 中可继承与不可继承属性
 
-```mermaid
+> 💡 **要点：** 字体（font-*）和文本（color、line-height、text-align）相关属性大多可继承；盒模型（width/height、margin/padding、border）和定位相关属性不可继承
+
+\`\`\`mermaid
 flowchart LR
     subgraph 可继承属性
         A1["font-family"]
@@ -161,7 +177,9 @@ flowchart LR
 
 ---
 
-### 3. display 的属性值及其作用
+### 3️⃣ display 的属性值及其作用
+
+> 💡 **要点：** 理解 block（独占一行可设宽高）、inline（同行显示不可设宽高）、inline-block（兼得二者优点）三者的核心区别是掌握 CSS 布局的基础
 
 | **属性值**   | **作用**                                                 |
 | ------------ | -------------------------------------------------------- |
@@ -200,7 +218,9 @@ flowchart TD
 
 ---
 
-### 4. display 的 block、inline 和 inline-block 的区别
+### 4️⃣ display 的 block、inline 和 inline-block 的区别
+
+> 💡 **要点：** block 独占一行，宽高 margin padding 四个方向均有效；inline 不可设宽高，margin/padding 仅水平有效；inline-block 不独占一行但可设宽高
 
 | 特性     | block             | inline           | inline-block     |
 | -------- | ----------------- | ---------------- | ---------------- |
@@ -221,7 +241,9 @@ flowchart TD
 
 ---
 
-### 5. 隐藏元素的方法有哪些
+### 5️⃣ 隐藏元素的方法有哪些
+
+> 💡 **要点：** display:none 不占空间触发重排；visibility:hidden 占空间只重绘；opacity:0 占空间且可交互（触发合成）
 
 | 方法                               | 是否占据空间 | 是否响应事件 | 是否触发重排/重绘     |
 | ---------------------------------- | ------------ | ------------ | --------------------- |
@@ -257,7 +279,9 @@ flowchart TD
 
 ---
 
-### 6. link 和 @import 的区别
+### 6️⃣ link 和 @import 的区别
+
+> 💡 **要点：** 推荐使用 `<link>` 而非 `@import`，前者随页面同时加载、无兼容问题、JS 可控、优先级更高
 
 | 对比项             | `<link>`                   | `@import`                    |
 | ------------------ | -------------------------- | ---------------------------- |
@@ -282,9 +306,11 @@ flowchart TD
 
 ---
 
-### 7. transition 和 animation 的区别
+### 7️⃣ transition 和 animation 的区别
 
-```mermaid
+> 💡 **要点：** transition 需事件触发，仅两个关键帧（开始→结束）；animation 可自动执行，支持 @keyframes 多关键帧和循环播放
+
+\`\`\`mermaid
 stateDiagram-v2
     [*] --> 初始状态
 
@@ -331,7 +357,9 @@ stateDiagram-v2
 
 ---
 
-### 8. display:none 与 visibility:hidden 的区别
+### 8️⃣ display:none 与 visibility:hidden 的区别
+
+> 💡 **要点：** display:none 脱离文档流（重排），子节点不可恢复；visibility:hidden 保留空间（重绘），子节点可设 visible 恢复显示
 
 | 对比项               | `display: none`                         | `visibility: hidden`                   |
 | -------------------- | --------------------------------------- | -------------------------------------- |
@@ -353,9 +381,11 @@ stateDiagram-v2
 
 ---
 
-### 9. 伪元素和伪类的区别
+### 9️⃣ 伪元素和伪类的区别
 
-```mermaid
+> 💡 **要点：** 伪类（:hover）选择已有元素的特定状态；伪元素（::before）创建 DOM 中不存在的虚拟元素，CSS3 规范推荐双冒号写法
+
+\`\`\`mermaid
 flowchart TD
     A["CSS 选择器扩展"] --> B["伪类 : pseudo-class"]
     A --> C["伪元素 :: pseudo-element"]
@@ -393,9 +423,11 @@ p::first-letter { font-size: 2em; font-weight: bold; }
 
 ---
 
-### 10. requestAnimationFrame 的理解
+### 🔟 requestAnimationFrame 的理解
 
-```mermaid
+> 💡 **要点：** rAF 与屏幕刷新率同步（60fps），页面不可见时自动暂停，相比 setTimeout 更省电、更平滑、不掉帧
+
+\`\`\`mermaid
 sequenceDiagram
     participant JS as JavaScript
     participant Browser as 浏览器
@@ -445,7 +477,9 @@ cancelAnimationFrame(animationId);
 
 ---
 
-### 11. 盒模型的理解
+### 1️⃣1️⃣ 盒模型的理解
+
+> 💡 **要点：** content-box 的 width 只包含内容区域；border-box 的 width 包含 content+padding+border，后者更符合直觉且方便计算
 
 #### 标准盒模型 vs IE 盒模型
 
@@ -493,6 +527,8 @@ flowchart TD
 | 标准模型 | `content-box`（默认）   | 仅 content                            | `width + padding-left + padding-right + border-left + border-right + margin-left + margin-right` |
 | IE 模型  | `border-box`            | content + padding + border            | `width + margin-left + margin-right`                |
 
+> 💡 **最佳实践：** 全局设置 `box-sizing: border-box` 可使布局计算更直观，推荐在项目 Reset CSS 中加入 `*, *::before, *::after { box-sizing: border-box; }`
+
 #### 代码演示
 
 ```css
@@ -523,9 +559,11 @@ flowchart TD
 
 ---
 
-### 12. 为什么用 translate 改变位置而不是定位？
+### 1️⃣2️⃣ 为什么用 translate 改变位置而不是定位？
 
-```mermaid
+> 💡 **要点：** translate 触发合成（composite）使用 GPU 加速，不触发重排/重绘；改变定位使用 CPU 触发重排，性能开销更大
+
+\`\`\`mermaid
 flowchart TD
     A["改变元素位置"] --> B["transform: translate"]
     A --> C["position: absolute/relative"]
@@ -552,7 +590,9 @@ flowchart TD
 
 ---
 
-### 13. li 与 li 之间看不见的空白间隔
+### 1️⃣3️⃣ li 与 li 之间看不见的空白间隔
+
+> 💡 **要点：** inline/inline-block 元素的换行符被渲染为空格，可通过 font-size:0、浮动、删除空白符等方式解决
 
 **原因：** 浏览器会把 inline 内联元素间的空白字符（空格、换行、Tab 等）渲染成一个空格。
 
@@ -575,7 +615,9 @@ flowchart TD
 
 ---
 
-### 14. CSS3 新特性
+### 1️⃣4️⃣ CSS3 新特性
+
+> 💡 **要点：** 包括圆角、渐变、变换、过渡、动画、弹性布局、网格布局、媒体查询、CSS 变量、滤镜等，极大扩展了 CSS 能力
 
 | 类别       | 特性                                                         |
 | ---------- | ------------------------------------------------------------ |
@@ -596,7 +638,9 @@ flowchart TD
 
 ---
 
-### 15. 替换元素的概念及计算规则
+### 1️⃣5️⃣ 替换元素的概念及计算规则
+
+> 💡 **要点：** 替换元素（img、video、input 等）内容不受页面 CSS 影响，尺寸优先级：CSS 尺寸 > HTML 尺寸 > 固有尺寸
 
 **替换元素（Replaced Element）：** 通过修改某个属性值呈现的内容就可以被替换的元素，如 `<img>`、`<video>`、`<iframe>`、`<input>`、`<textarea>`、`<select>` 等。
 
@@ -633,7 +677,9 @@ flowchart TD
 
 ---
 
-### 16. 常见图片格式及使用场景
+### 1️⃣6️⃣ 常见图片格式及使用场景
+
+> 💡 **要点：** WebP 综合最优（比 PNG 小 26%、比 JPEG 小 25-34%），PNG 适合透明图，SVG 适合矢量图标，GIF 适合简单动画
 
 | 格式     | 压缩方式 | 色彩     | 透明度 | 动画 | 适合场景               | 文件大小 |
 | -------- | -------- | -------- | ------ | ---- | ---------------------- | -------- |
@@ -652,7 +698,9 @@ flowchart TD
 
 ---
 
-### 17. CSS Sprites（精灵图）
+### 1️⃣7️⃣ CSS Sprites（精灵图）
+
+> 💡 **要点：** 将小图标合并为一张大图，通过 background-position 定位，减少 HTTP 请求数，但维护成本较高
 
 **概念：** 将一个页面涉及到的所有小图片合并到一张大图中，通过 `background-image`、`background-repeat`、`background-position` 进行定位。
 
@@ -681,9 +729,11 @@ flowchart TD
 
 ---
 
-### 18. 物理像素、逻辑像素与像素密度
+### 1️⃣8️⃣ 物理像素、逻辑像素与像素密度
 
-```mermaid
+> 💡 **要点：** devicePixelRatio = 物理像素 / 逻辑像素（CSS 像素），高 DPR 屏幕（Retina）需提供对应倍率的高清图
+
+\`\`\`mermaid
 flowchart LR
     A["CSS 像素 414px"] --> B["逻辑像素"]
     C["物理像素 1242px"] --> D["真实硬件像素"]
@@ -725,7 +775,9 @@ flowchart LR
 
 ---
 
-### 19. margin 和 padding 的使用场景
+### 1️⃣9️⃣ margin 和 padding 的使用场景
+
+> 💡 **要点：** margin 用于元素间间距（border 外侧），padding 用于元素内间距和扩大点击区域（border 内侧）
 
 | 场景                         | 使用     |
 | ---------------------------- | -------- |
@@ -737,9 +789,11 @@ flowchart LR
 
 ---
 
-### 20. line-height 的理解及赋值方式
+### 2️⃣0️⃣ line-height 的理解及赋值方式
 
-```mermaid
+> 💡 **要点：** 推荐使用纯数字赋值（如 1.5），因为计算后的比例会正确传递给后代元素；px/em/百分比会传递固定计算值
+
+\`\`\`mermaid
 flowchart TD
     A["line-height"] --> B["概念"]
     A --> C["赋值方式"]
@@ -766,7 +820,9 @@ flowchart TD
 
 ---
 
-### 21. CSS 优化与性能提升
+### 2️⃣1️⃣ CSS 优化与性能提升
+
+> 💡 **要点：** 从加载性能（压缩、link 优先）、选择器性能（避免通配符、层级不超过 3 层）、渲染性能（减少重排重绘）三个维度优化
 
 #### 加载性能
 
@@ -798,9 +854,11 @@ flowchart TD
 
 ---
 
-### 22. CSS 预处理器/后处理器
+### 2️⃣2️⃣ CSS 预处理器/后处理器
 
-```mermaid
+> 💡 **要点：** 预处理器（Sass/Less）在 CSS 基础上增加变量、嵌套、Mixin 等编程特性；后处理器（PostCSS）对已有 CSS 进行编译优化
+
+\`\`\`mermaid
 flowchart LR
     A["CSS 扩展工具"] --> B["预处理器 Preprocessor"]
     A --> C["后处理器 Postprocessor"]
@@ -835,7 +893,9 @@ PostCSS 类似 CSS 世界的 Babel，可以：
 
 ---
 
-### 23. ::before 和 :after 的双冒号与单冒号
+### 2️⃣3️⃣ ::before 和 :after 的双冒号与单冒号
+
+> 💡 **要点：** CSS3 规范推荐伪元素使用双冒号（::before），伪类使用单冒号（:hover）；浏览器向后兼容单冒号写法
 
 **规则：** 单冒号（`:`）用于 CSS3 伪类，双冒号（`::`）用于 CSS3 伪元素。
 
@@ -848,7 +908,9 @@ PostCSS 类似 CSS 世界的 Babel，可以：
 
 ---
 
-### 24. display: inline-block 的间隙问题
+### 2️⃣4️⃣ display: inline-block 的间隙问题
+
+> 💡 **要点：** HTML 中的空格/换行符会被渲染为字符空格，推荐父元素 font-size:0 或删除 HTML 空白符解决
 
 **原因：** HTML 中的空格、换行符被渲染成了字符空格。
 
@@ -860,7 +922,9 @@ PostCSS 类似 CSS 世界的 Babel，可以：
 
 ---
 
-### 25. 单行/多行文本溢出隐藏
+### 2️⃣5️⃣ 单行/多行文本溢出隐藏
+
+> 💡 **要点：** 单行使用 text-overflow:ellipsis + white-space:nowrap + overflow:hidden；多行使用 -webkit-line-clamp 配合弹性盒模型
 
 #### 单行文本溢出
 
@@ -889,7 +953,9 @@ PostCSS 类似 CSS 世界的 Babel，可以：
 
 ---
 
-### 26. Sass / Less 是什么
+### 2️⃣6️⃣ Sass / Less 是什么
+
+> 💡 **要点：** CSS 预处理器增加了变量、嵌套、Mixin、函数、循环等编程特性，显著提升 CSS 的可维护性和复用性
 
 **CSS 预处理器：** 在 CSS 基础上添加了变量、嵌套、Mixin、函数等编程特性。
 
@@ -925,9 +991,11 @@ $border-radius: 4px;
 
 ---
 
-### 27. 媒体查询的理解
+### 2️⃣7️⃣ 媒体查询的理解
 
-```css
+> 💡 **要点：** 通过 @media 检测设备特性（屏幕宽度、分辨率等）实现响应式设计，常见断点：手机 320px、平板 768px、桌面 1024px
+
+\`\`\`css
 /* 在屏幕宽度小于等于 600px 时生效 */
 @media (max-width: 600px) {
   .sidebar {
@@ -954,7 +1022,9 @@ $border-radius: 4px;
 
 ---
 
-### 28. CSS 工程化理解
+### 2️⃣8️⃣ CSS 工程化理解
+
+> 💡 **要点：** 解决 CSS 组织拆分、编码复用、构建优化、可维护性问题，常用方案包括预处理器、PostCSS、CSS Modules、BEM 命名规范
 
 **需要解决的问题：**
 1. **宏观设计：** CSS 如何组织、拆分、模块化
@@ -970,9 +1040,11 @@ $border-radius: 4px;
 
 ---
 
-### 29. 判断元素是否到达可视区域
+### 2️⃣9️⃣ 判断元素是否到达可视区域
 
-```mermaid
+> 💡 **要点：** 使用 getBoundingClientRect() 获取元素相对于视口的位置，结合 scrollTop 和 innerHeight 判断懒加载或无限滚动触发时机
+
+\`\`\`mermaid
 sequenceDiagram
     participant Page as 文档
     participant Viewport as 可视区域
@@ -1008,9 +1080,11 @@ function isVisible(element) {
 
 ---
 
-### 30. z-index 在什么情况下会失效
+### 3️⃣0️⃣ z-index 在什么情况下会失效
 
-```mermaid
+> 💡 **要点：** z-index 只在定位元素（非 static）上生效，常见失效原因：未设定位、父元素层叠上下文限制、与 float 冲突
+
+\`\`\`mermaid
 flowchart TD
     A["z-index 生效条件"] --> B["position 必须设置"]
     B --> C["position: relative | absolute | fixed"]
@@ -1028,11 +1102,13 @@ flowchart TD
 
 ---
 
-## 二、页面布局
+## 📐 二、页面布局
 
 ---
 
-### 1. 常见 CSS 布局单位
+### 1️⃣ 常见 CSS 布局单位
+
+> 💡 **要点：** px 固定大小、em 相对父元素 font-size（有级联）、rem 相对根元素（无级联）、vw/vh 相对视口，rem 和 vw 适合响应式
 
 | 单位  | 类型 | 相对对象       | 特点                         |
 | ----- | ---- | -------------- | ---------------------------- |
@@ -1057,9 +1133,11 @@ flowchart TD
 
 ---
 
-### 2. px、em、rem 的区别及使用场景
+### 2️⃣ px、em、rem 的区别及使用场景
 
-```mermaid
+> 💡 **要点：** px 适合精确尺寸（边框、阴影）；em 适合与字体关联的尺寸（按钮内边距）；rem 适合响应式布局（全局统一缩放）
+
+\`\`\`mermaid
 flowchart LR
     subgraph px
         P1["固定像素"]
@@ -1106,9 +1184,11 @@ html {
 
 ---
 
-### 3. 两栏布局的实现（左固定右自适应）
+### 3️⃣ 两栏布局的实现（左固定右自适应）
 
-```mermaid
+> 💡 **要点：** 推荐使用 Flex 方案（父 display:flex，右 flex:1）最简洁；float+BFC 方案兼容性好；绝对定位方案脱离文档流需注意
+
+\`\`\`mermaid
 flowchart TD
     subgraph 两栏布局方案
         A["float + margin"]
@@ -1204,9 +1284,11 @@ flowchart TD
 
 ---
 
-### 4. 三栏布局的实现（左右固定中间自适应）
+### 4️⃣ 三栏布局的实现（左右固定中间自适应）
 
-```mermaid
+> 💡 **要点：** Flex 方案最简洁（中间 flex:1）；圣杯和双飞翼是经典 CSS 布局，核心是利用浮动和负 margin 实现中间列优先渲染
+
+\`\`\`mermaid
 flowchart TD
     subgraph 三栏布局方案
         A["绝对定位"]
@@ -1388,9 +1470,11 @@ flowchart TD
 
 ---
 
-### 5. 水平垂直居中的实现
+### 5️⃣ 水平垂直居中的实现
 
-```mermaid
+> 💡 **要点：** Flex 方案最推荐（justify-content:center + align-items:center）；transform 方案无需知道元素宽高；Grid 方案一行代码完成
+
+\`\`\`mermaid
 flowchart TD
     subgraph 水平垂直居中方案
         A["transform 偏移"]
@@ -1446,7 +1530,9 @@ flowchart TD
 
 ---
 
-### 6. 移动端适配
+### 6️⃣ 移动端适配
+
+> 💡 **要点：** 两个维度：适配像素密度（通过媒体查询或 srcset 提供高清图）和适配屏幕大小（使用 rem/vw 等相对单位）
 
 **两个核心维度：**
 
@@ -1482,9 +1568,11 @@ flowchart TD
 
 ---
 
-### 7. Flex 布局的理解
+### 7️⃣ Flex 布局的理解
 
-```mermaid
+> 💡 **要点：** 容器属性控制主轴（flex-direction/justify-content）和交叉轴（align-items）对齐；项目属性控制自身伸缩（flex-grow/shrink/basis）
+
+\`\`\`mermaid
 flowchart TD
     A["Flex 容器 display:flex"] --> B["主轴 main axis"]
     A --> C["交叉轴 cross axis"]
@@ -1532,9 +1620,11 @@ flowchart LR
 
 ---
 
-### 8. flex:1 表示什么
+### 8️⃣ flex:1 表示什么
 
-`flex: 1` 是三个属性的简写：`flex: 1 1 0%`
+> 💡 **要点：** flex:1 等价于 `flex: 1 1 0%`，即可放大（grow=1）、可缩小（shrink=1）、基础大小为 0（basis=0%），表示项目将等分剩余空间
+
+\`flex: 1\` 是三个属性的简写：\`flex: 1 1 0%\`
 
 | 属性          | 值    | 含义                                                         |
 | ------------- | ----- | ------------------------------------------------------------ |
@@ -1558,7 +1648,9 @@ flowchart LR
 
 ---
 
-### 9. 响应式设计
+### 9️⃣ 响应式设计
+
+> 💡 **要点：** 通过媒体查询检测设备屏幕尺寸做处理，核心 meta 标签为 `viewport`，常用方案包括媒体查询、百分比、rem/vw、Flex、Grid
 
 **概念：** 一个网站能够兼容多个终端，而不是为每一个终端做一个特定版本。
 
@@ -1581,9 +1673,11 @@ flowchart LR
 
 ---
 
-### 10. 实现品字布局
+### 🔟 实现品字布局
 
-```mermaid
+> 💡 **要点：** 上方块居中（margin: 0 auto），下方两个块并排（float 或 inline-block），配合 calc() 精确计算位置
+
+\`\`\`mermaid
 flowchart TD
     A["品字布局"] --> B["上方一个块居中"]
     A --> C["下方两个块并排"]
@@ -1619,9 +1713,11 @@ div {
 
 ---
 
-### 11. 九宫格布局
+### 1️⃣1️⃣ 九宫格布局
 
-```mermaid
+> 💡 **要点：** Grid 实现最简洁（`grid-template-columns: repeat(3, 1fr)`），Flex 需要处理 margin 间隙和换行，适合面试手写
+
+\`\`\`mermaid
 flowchart TD
     subgraph 九宫格实现方案
         A["Flex 布局"]
@@ -1681,11 +1777,13 @@ li { background: skyblue; border-radius: 5px; }
 
 ---
 
-## 三、定位与浮动
+## 📍 三、定位与浮动
 
 ---
 
-### 1. 清除浮动
+### 1️⃣ 清除浮动
+
+> 💡 **要点：** 推荐使用 ::after 伪元素清除浮动（无额外标签、兼容性好）；overflow:hidden 一行代码但会裁剪溢出内容
 
 #### 浮动引起的问题
 
@@ -1726,9 +1824,11 @@ flowchart TD
 
 ---
 
-### 2. clear 属性清除浮动的原理
+### 2️⃣ clear 属性清除浮动的原理
 
-`clear` 属性的官方解释："**元素盒子的边不能和前面的浮动元素相邻**"
+> 💡 **要点：** clear 阻止元素与前面的浮动元素相邻，只对块级元素有效，伪元素需设置 display:block 才能生效
+
+\`clear\` 属性的官方解释："**元素盒子的边不能和前面的浮动元素相邻**"
 
 ```css
 clear: none | left | right | both
@@ -1750,9 +1850,11 @@ clear: none | left | right | both
 
 ---
 
-### 3. BFC 的理解
+### 3️⃣ BFC 的理解
 
-```mermaid
+> 💡 **要点：** BFC（块级格式化上下文）是独立渲染区域，创建方式包括 overflow:hidden、float、position:absolute、display:inline-block 等，用于解决 margin 重叠、清除浮动、自适应布局
+
+\`\`\`mermaid
 flowchart TD
     A["BFC 块级格式化上下文"] --> B["创建条件"]
     A --> C["特点"]
@@ -1774,6 +1876,8 @@ flowchart TD
     D --> D2["清除浮动（高度塌陷）"]
     D --> D3["自适应两栏布局"]
 ```
+
+> 🎯 **拓展：** BFC 是面试高频考点，理解 BFC 的创建条件和三大作用（阻止 margin 重叠、清除浮动、实现两栏布局）能帮助解答 80% 的布局类面试题
 
 #### BFC 解决 margin 重叠
 
@@ -1809,9 +1913,11 @@ flowchart TD
 
 ---
 
-### 4. margin 重叠问题
+### 4️⃣ margin 重叠问题
 
-```mermaid
+> 💡 **要点：** 只有垂直方向 margin 会重叠（取较大值），BFC、浮动、定位、inline-block 均可解决，父子元素重叠可通过父加 border/padding/overflow 解决
+
+\`\`\`mermaid
 flowchart TD
     A["margin 重叠"] --> B["兄弟元素重叠"]
     A --> C["父子元素重叠"]
@@ -1835,9 +1941,11 @@ flowchart TD
 
 ---
 
-### 5. 元素的层叠顺序
+### 5️⃣ 元素的层叠顺序
 
-```mermaid
+> 💡 **要点：** 从下到上：背景边框 → 负 z-index → 块级 → 浮动 → 行内 → z-index:0（定位）→ 正 z-index；z-index:auto 不创建新层叠上下文
+
+\`\`\`mermaid
 flowchart TD
     A["层叠顺序 从下到上"] --> B["1. 背景和边框"]
     A --> C["2. 负 z-index"]
@@ -1860,7 +1968,9 @@ flowchart TD
 
 ---
 
-### 6. position 属性
+### 6️⃣ position 属性
+
+> 💡 **要点：** relative 相对自身（不脱离文档流）；absolute 相对最近定位祖先（脱离文档流）；fixed 相对视口；sticky 混合模式需设阈值
 
 | 属性值     | 定位基准           | 是否脱离文档流 | 是否保留原空间 |
 | ---------- | ------------------ | -------------- | -------------- |
@@ -1930,9 +2040,11 @@ flowchart LR
 
 ---
 
-### 7. display、float、position 的关系
+### 7️⃣ display、float、position 的关系
 
-```mermaid
+> 💡 **要点：** display:none 优先级最高（隐藏）；position:absolute/fixed 使 float 失效；三者按规则优先级逐级转换，最终影响元素的盒模型类型
+
+\`\`\`mermaid
 flowchart TD
     A["开始"] --> B{"display: none?"}
     B -->|是| C["元素隐藏，不渲染"]
@@ -1955,7 +2067,9 @@ flowchart TD
 
 ---
 
-### 8. absolute 与 fixed 的共同点与不同点
+### 8️⃣ absolute 与 fixed 的共同点与不同点
+
+> 💡 **要点：** 都脱离文档流、改变行内元素为 inline-block；区别在于定位基准不同：absolute 找最近定位祖先，fixed 直接相对于视口
 
 **共同点：**
 - 改变行内元素的呈现方式，display 转为 inline-block
@@ -1972,7 +2086,9 @@ flowchart TD
 
 ---
 
-### 9. sticky 定位的理解
+### 9️⃣ sticky 定位的理解
+
+> 💡 **要点：** sticky 是 relative 和 fixed 的混合体，未超过阈值时表现为 relative，超过后表现为 fixed；必须设置 top/left 等阈值才生效
 
 **sticky = relative + fixed 的混合体：**
 
@@ -1989,11 +2105,13 @@ flowchart LR
 
 ---
 
-## 四、场景应用
+## 🛠️ 四、场景应用
 
 ---
 
-### 1. 实现三角形
+### 1️⃣ 实现三角形
+
+> 💡 **要点：** 利用 border 四个方向均为三角形的特性，设置宽高为 0，保留目标方向边框颜色，其余方向设为透明
 
 **原理：** border 的四个方向实际上是四个三角形。
 
@@ -2040,9 +2158,11 @@ flowchart TD
 
 ---
 
-### 2. 实现扇形
+### 2️⃣ 实现扇形
 
-```css
+> 💡 **要点：** 在三角形基础上添加 border-radius 将直边变成弧线，border-radius 值设为 border 宽度即可
+
+\`\`\`css
 /* 实现一个 90° 扇形 */
 .sector {
   width: 0;
@@ -2057,7 +2177,9 @@ flowchart TD
 
 ---
 
-### 3. 实现圆和半圆
+### 3️⃣ 实现圆和半圆
+
+> 💡 **要点：** 正圆使用 border-radius:50%（推荐，避免浏览器重算）；半圆高度设宽度一半，只给需弯曲的边设圆角
 
 #### 圆
 
@@ -2087,7 +2209,9 @@ flowchart TD
 
 ---
 
-### 4. 宽高自适应的正方形
+### 4️⃣ 宽高自适应的正方形
+
+> 💡 **要点：** 三种方案：vw 单位（最简洁）、padding-top 百分比（兼容性好）、伪元素 margin-top（需 overflow:hidden），核心都用百分比相对于父元素宽度
 
 | 方法                             | 原理                               |
 | -------------------------------- | ---------------------------------- |
@@ -2126,9 +2250,11 @@ flowchart TD
 
 ---
 
-### 5. 画一个梯形
+### 5️⃣ 画一个梯形
 
-```css
+> 💡 **要点：** 利用非对称 border 宽度制作梯形效果，上底由 width 决定，下底由 border-width 决定，等腰和直角梯形写法不同
+
+\`\`\`css
 /* 等腰梯形 */
 .trapezoid {
   height: 0;
@@ -2149,9 +2275,11 @@ flowchart TD
 
 ---
 
-### 6. 画一条 0.5px 的线
+### 6️⃣ 画一条 0.5px 的线
 
-```css
+> 💡 **要点：** 使用 transform:scaleY(0.5) 将 1px 线压扁为 0.5px，或使用伪元素先放大 2 倍再缩放回 0.5 实现 0.5px 边框
+
+\`\`\`css
 /* 方法一：transform: scale */
 .half-px-line {
   height: 1px;
@@ -2181,7 +2309,9 @@ flowchart TD
 
 ---
 
-### 7. 设置小于 12px 的字体
+### 7️⃣ 设置小于 12px 的字体
+
+> 💡 **要点：** Chrome 最小字体限制为 12px，推荐使用 transform:scale() 整体缩放绕过限制，注意需将元素设为 inline-block
 
 **问题：** Chrome 浏览器最小字体为 12px，设置小于 12px 无效。
 
@@ -2211,7 +2341,9 @@ flowchart TD
 
 ---
 
-### 8. 解决 1px 问题
+### 8️⃣ 解决 1px 问题
+
+> 💡 **要点：** Retina 屏 devicePixelRatio>1 使 CSS 1px 实际占用多物理像素，推荐伪元素先放大 2 倍再 scale(0.5) 方案，兼容性最好
 
 **问题来源：** 在 Retina 屏上，CSS 1px 对应多个物理像素（如 iPhone 6/7/8 的 devicePixelRatio = 2），导致实际显示的边框比 1px 粗。
 
@@ -2283,7 +2415,7 @@ meta.setAttribute(
 
 ---
 
-## CSS 渲染性能总结
+## ⚡ CSS 渲染性能总结
 
 ### 浏览器渲染过程
 
@@ -2316,17 +2448,21 @@ flowchart LR
 3. 避免频繁读取 `offsetTop`、`scrollTop` 等触发回流的属性
 4. 使用 `will-change` 提前告知浏览器需要优化的属性
 
+> 🚀 **面试重点：** 渲染性能优化是高频面试题，牢记"合成 > 重绘 > 回流"的性能层级，回答时能清晰阐述触发条件和优化策略将大幅加分
+
 ---
 
 > 本详解版在原文基础上进行了大幅扩充，增加了 Mermaid 图解、对比表格、深度原理讲解，以及更多代码示例，帮助读者构建完整的 CSS 知识体系。
 
 ---
 
-## 五、现代 CSS 新特性
+## ✨ 五、现代 CSS 新特性
 
 ---
 
-### 1. CSS Container Queries（容器查询）
+### 1️⃣ CSS Container Queries（容器查询）
+
+> 💡 **要点：** 容器查询让组件根据自身容器尺寸（而非视口）响应式调整，实现真正的组件级自适应，需先通过 container-type 定义容器上下文
 
 Container Queries 允许组件根据其**容器**的尺寸（而非视口尺寸）来响应式调整样式，是实现真正组件级自适应的关键特性。
 
@@ -2427,9 +2563,11 @@ flowchart TD
 
 ---
 
-### 2. CSS :has() 选择器
+### 2️⃣ CSS :has() 选择器
 
-`:has()` 被称为"父级选择器"，它允许根据**子元素**是否存在或处于某种状态来选择父元素。
+> 💡 **要点：** :has() 被称为"父级选择器"，可根据子元素是否存在或状态来选择父元素，极大改变了传统 CSS 单向选择的能力
+
+\`:has()\` 被称为"父级选择器"，它允许根据**子元素**是否存在或处于某种状态来选择父元素。
 
 #### :has() 语法和用法
 
@@ -2508,9 +2646,11 @@ flowchart LR
 
 ---
 
-### 3. CSS Cascade Layers（@layer）
+### 3️⃣ CSS Cascade Layers（@layer）
 
-`@layer` 允许开发者显式控制样式的**级联优先级**，解决了传统 CSS 中源顺序和选择器权重的复杂博弈问题。
+> 💡 **要点：** @layer 显式控制级联优先级，后定义的层优先级更高；!important 会反转层优先级；解决传统 CSS 选择器权重和源顺序的复杂博弈
+
+\`@layer\` 允许开发者显式控制样式的**级联优先级**，解决了传统 CSS 中源顺序和选择器权重的复杂博弈问题。
 
 #### @layer 的作用：控制样式优先级
 
@@ -2661,7 +2801,9 @@ flowchart LR
 
 ---
 
-### 4. CSS Nesting（原生 CSS 嵌套）
+### 4️⃣ CSS Nesting（原生 CSS 嵌套）
+
+> 💡 **要点：** 原生 CSS 嵌套语法无需 Sass/SCSS 等预处理器，使用 & 符号引用父选择器，主流浏览器 Chrome 120+、Firefox 117+ 已原生支持
 
 CSS 原生嵌套语法允许直接在 CSS 中书写嵌套规则，不再需要 Sass/SCSS 等预处理器。
 
@@ -2782,9 +2924,11 @@ flowchart LR
 
 ---
 
-### 5. CSS 自定义属性进阶（@property）
+### 5️⃣ CSS 自定义属性进阶（@property）
 
-`@property` 规则允许开发者注册自定义 CSS 属性，并为其指定类型、初始值和继承行为，使自定义属性可用于动画。
+> 💡 **要点：** @property 为自定义属性提供类型检查（syntax）、继承控制（inherits）、初始值（initial-value），使自定义属性可参与过渡和动画
+
+\`@property\` 规则允许开发者注册自定义 CSS 属性，并为其指定类型、初始值和继承行为，使自定义属性可用于动画。
 
 #### @property 注册自定义属性
 
@@ -2916,7 +3060,9 @@ flowchart TD
 
 ---
 
-### 6. 新颜色函数
+### 6️⃣ 新颜色函数
+
+> 💡 **要点：** oklch/oklab 提供感知均匀的色彩空间（调整亮度时视觉过渡平滑）；color-mix() 可按比例混合颜色，是现代 CSS 颜色方案的核心
 
 #### color-mix() 颜色混合
 
@@ -3029,7 +3175,9 @@ flowchart LR
 
 ---
 
-### 7. CSS Scroll-Driven Animations（滚动驱动动画）
+### 7️⃣ CSS Scroll-Driven Animations（滚动驱动动画）
+
+> 💡 **要点：** 动画进度直接绑定滚动位置（animation-timeline: scroll/view），无需 JavaScript 监听滚动事件，实现滚动进度条、视差滚动等效果
 
 滚动驱动动画允许动画的进度直接绑定到**滚动位置**，无需 JavaScript 监听滚动事件。
 
@@ -3157,7 +3305,9 @@ sequenceDiagram
 
 ---
 
-### 8. content-visibility 和 contain
+### 8️⃣ content-visibility 和 contain
+
+> 💡 **要点：** content-visibility:auto 跳过视口外元素渲染（性能提升可达 90%），配合 contain-intrinsic-size 预留空间防止滚动条跳动
 
 这两个属性用于**渲染性能优化**，可以显著减少长页面或复杂组件的渲染开销。
 
@@ -3262,7 +3412,9 @@ flowchart TD
 
 ---
 
-### 9. @starting-style 和 transition-behavior
+### 9️⃣ @starting-style 和 transition-behavior
+
+> 💡 **要点：** @starting-style 解决元素首次出现时无法做动画的问题；transition-behavior:allow-discrete 使 display:none↔block 可过渡
 
 两个让 CSS 过渡更加完善的特性：处理元素**首次渲染**和 `display` 切换的动画。
 
@@ -3386,7 +3538,9 @@ flowchart TD
 
 ---
 
-### 10. Tailwind CSS 简介
+### 🔟 Tailwind CSS 简介
+
+> 💡 **要点：** Utility-First 框架通过组合预定义工具类（如 p-4、bg-white）在 HTML 中直接构建界面，构建时 Tree-shaking 仅保留用到的类，体积极小
 
 Tailwind CSS 是当前最流行的 **Utility-First（原子化）CSS 框架**，通过组合大量细粒度的工具类来快速构建界面。
 
