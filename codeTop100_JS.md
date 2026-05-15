@@ -1,20 +1,322 @@
-# 🔥 Code Top 100 — 手写算法 (JavaScript ES6+)
+# 🔥 Code Top 100 — 手写算法完整导航 & 详解索引 (JavaScript ES6+)
+
+**文档更新时间**：2026年5月15日  
+**总题数**：100 个条目（含重复索引题）  
+**覆盖范围**：数据结构 + 高频算法 + 设计题 + JavaScript ES6+ 手写实现  
+**适用场景**：前端面试 / 算法复盘 / 手写题训练
 
 > 精选 LeetCode 高频 100 题，按数据结构和算法分类。本文基于题号和标题对题意做中文重述，并为每题整理 JavaScript ES6+ 实现、Mermaid 图解、关键思路与复杂度分析。
-
+>
 > 说明：题目描述为复习向转述，不逐字搬运 LeetCode 原文；示例保留为便于快速验证代码行为。
 
 ---
 
-# 一、哈希表
+## 🎯 快速导航
 
-## 1. 两数之和 🟢
+### 按难度等级
+- **🟢 简单**：27 题，适合作为每日热身和基础手写题。
+- **🟡 中等**：63 题，面试主战场，重点训练思路迁移。
+- **🔴 困难**：10 题，用来突破边界处理、复杂状态和综合设计。
+
+### 按刷题阶段
+- **快速入门**（1-2 天）→ 哈希表、双指针、链表基础、有效括号。
+- **核心强化**（1-2 周）→ 树、动态规划、二分、滑动窗口、TopK。
+- **面试冲刺**（3-4 周）→ LRU、K 个一组翻转、最大路径和、编辑距离、接雨水。
+
+### 按题型能力
+- **状态记录**：哈希表、前缀和、Map/Set。
+- **边界控制**：双指针、滑动窗口、二分查找。
+- **结构操作**：链表、二叉树、栈、队列、堆。
+- **状态转移**：动态规划、贪心、回溯。
+- **工程化手写**：LRU、Rand10、字符串解析、原地矩阵操作。
+
+---
+
+## 📖 完整题目清单
+
+### 分类索引
+
+| 模块 | 题号范围 | 数量 | 难度分布 | 核心能力 | 优先掌握 |
+|------|----------|------|----------|----------|----------|
+| 1️⃣ 哈希表 | 1-3 | 3 | 🟢1 🟡2 🔴0 | Map/Set、前缀和、去重查找 | 1、2、3 |
+| 2️⃣ 双指针与滑动窗口 | 4-11 | 8 | 🟢2 🟡4 🔴2 | 左右指针、窗口收缩、原地交换 | 4、5、7、8、11 |
+| 3️⃣ 链表操作 | 12-23 | 12 | 🟢5 🟡6 🔴1 | dummy 节点、快慢指针、局部反转 | 12、13、14、17、20、21 |
+| 4️⃣ 二叉树遍历与属性 | 24-41 | 18 | 🟢8 🟡9 🔴1 | DFS/BFS、BST、LCA、路径问题 | 24、26、29、33、41 |
+| 5️⃣ 动态规划 | 42-53 | 12 | 🟢1 🟡9 🔴2 | 状态定义、转移方程、滚动优化 | 42、43、44、47、48、52 |
+| 6️⃣ 字符串处理 | 54-65 | 12 | 🟢3 🟡9 🔴0 | 大数运算、括号、解析、回溯 | 54、55、56、59、63、65 |
+| 7️⃣ 二分查找 | 66-71 | 6 | 🟢2 🟡3 🔴1 | 有序性、边界定位、答案二分 | 66、69、70、71 |
+| 8️⃣ 栈与队列 | 72-75 | 4 | 🟢2 🟡1 🔴1 | 栈模拟、最小栈、单调队列 | 73、74、75 |
+| 9️⃣ 排序与 TopK | 76-80 | 5 | 🟢0 🟡4 🔴1 | 快排、堆、归并、区间排序 | 76、77、78、79 |
+| 🔟 回溯与递归 | 81-85 | 5 | 🟢0 🟡5 🔴0 | 选择列表、撤销选择、剪枝 | 81、82、83、85 |
+| 11. DFS/BFS/图 | 86-90 | 5 | 🟢0 🟡5 🔴0 | 网格 DFS、BFS、拓扑排序 | 86、87、88 |
+| 12. 设计题 | 91-93 | 3 | 🟢1 🟡2 🔴0 | API 不变量、缓存、拒绝采样 | 91、93 |
+| 13. 其他经典 | 94-100 | 7 | 🟢2 🟡4 🔴1 | 贪心、投票、原地矩阵、排列 | 94、96、97、98、100 |
+
+### 重复索引说明
+- **72 / 55**：有效的括号。
+- **84 / 63**：括号生成。
+- **89 / 27**：二叉树的右视图。
+- **90 / 24**：二叉树的层序遍历。
+- **92 / 73**：用栈实现队列。
+
+---
+
+## 🎓 学习路径建议
+
+### 第1周：线性结构与指针基础
+**目标**：掌握数组、哈希、双指针、链表的常见套路。
+
+1. **哈希表**
+   - 两数之和
+   - 和为 K 的子数组
+   - 最长连续序列
+
+2. **双指针 / 滑动窗口**
+   - 无重复字符的最长子串
+   - 三数之和
+   - 最小覆盖子串
+   - 删除链表倒数第 N 个节点
+
+3. **链表**
+   - 反转链表
+   - 合并两个有序链表
+   - 环形链表
+   - K 个一组翻转链表
+
+**第1周小测**：手写 1 道哈希、1 道滑窗、2 道链表题。
+
+---
+
+### 第2周：树、栈、队列与搜索
+**目标**：熟悉递归、层序遍历和辅助结构的使用。
+
+1. **二叉树**
+   - 层序遍历
+   - 最近公共祖先
+   - 验证二叉搜索树
+   - 二叉树中的最大路径和
+
+2. **栈与队列**
+   - 有效的括号
+   - 用栈实现队列
+   - 最小栈
+   - 滑动窗口最大值
+
+3. **DFS/BFS/图**
+   - 岛屿数量
+   - 岛屿的最大面积
+   - 课程表
+
+**第2周小测**：树题 3 道 + 栈队列题 2 道 + 图题 1 道。
+
+---
+
+### 第3-4周：动态规划与搜索边界
+**目标**：把“状态是什么、怎么转移、如何初始化”练成肌肉记忆。
+
+1. **动态规划入门**
+   - 爬楼梯
+   - 最大子数组和
+   - 打家劫舍
+   - 最小路径和
+
+2. **动态规划进阶**
+   - 最长上升子序列
+   - 最长公共子序列
+   - 编辑距离
+   - 最长有效括号
+
+3. **二分查找**
+   - 二分查找
+   - 搜索旋转排序数组
+   - 查找元素的第一个和最后一个位置
+   - 寻找两个正序数组的中位数
+
+**第3-4周小测**：每天 1 道 DP，隔天补 1 道二分边界题。
+
+---
+
+### 第5-6周：综合题与面试冲刺
+**目标**：训练在陌生题面里快速定位题型、选数据结构、写稳定代码。
+
+1. **排序与 TopK**
+   - 手撕快速排序
+   - 数组中的第 K 个最大元素
+   - 合并 K 个排序链表
+   - 合并区间
+
+2. **回溯与字符串**
+   - 全排列
+   - 组合总和
+   - 子集
+   - 字符串解码
+   - 基本计算器 II
+
+3. **设计与其他经典**
+   - LRU 缓存机制
+   - 用 Rand7 实现 Rand10
+   - 缺失的第一个正数
+   - 旋转图像
+   - 下一个排列
+
+**第5-6周小测**：限时 45 分钟完成 1 道中等题，并补复杂度分析。
+
+---
+
+## 🔥 高频面试题 TOP 25
+
+### 基础必刷
+1. 两数之和 ✅
+2. 无重复字符的最长子串 ✅
+3. 三数之和 ✅
+4. 反转链表 ✅
+5. 合并两个有序链表 ✅
+
+### 数据结构核心
+6. 删除链表的倒数第 N 个节点 ✅
+7. 环形链表 II ✅
+8. 二叉树的层序遍历 ✅
+9. 二叉树的最近公共祖先 ✅
+10. 验证二叉搜索树 ✅
+
+### 算法高频
+11. 最大子数组和 ✅
+12. 最长上升子序列 ✅
+13. 编辑距离 ✅
+14. 搜索旋转排序数组 ✅
+15. 数组中的第 K 个最大元素 ✅
+
+### 难点突破
+16. 接雨水 ✅
+17. 最小覆盖子串 ✅
+18. K 个一组翻转链表 ✅
+19. 二叉树中的最大路径和 ✅
+20. 寻找两个正序数组的中位数 ✅
+
+### 手写设计
+21. LRU 缓存机制 ✅
+22. 用栈实现队列 ✅
+23. 最小栈 ✅
+24. 基本计算器 II ✅
+25. 缺失的第一个正数 ✅
+
+---
+
+## 📊 题目分布统计
+
+```text
+总题数: 100 题
+
+按难度:
+  - 简单 🟢: 27 题
+  - 中等 🟡: 63 题
+  - 困难 🔴: 10 题
+
+按模块:
+  - 哈希表:              3 题
+  - 双指针与滑动窗口:    8 题
+  - 链表操作:           12 题
+  - 二叉树遍历与属性:   18 题
+  - 动态规划:           12 题
+  - 字符串处理:         12 题
+  - 二分查找:            6 题
+  - 栈与队列:            4 题
+  - 排序与 TopK:         5 题
+  - 回溯与递归:          5 题
+  - DFS/BFS/图:          5 题
+  - 设计题:              3 题
+  - 其他经典:            7 题
+```
+
+---
+
+## 💡 学习建议
+
+### 每日安排
+```text
+早: 复盘前一天错题和核心模板 (15分钟)
+中: 新刷 1 道题，先写思路再写代码 (45-60分钟)
+晚: 重写代码 + 补复杂度 + 记录易错点 (30分钟)
+```
+
+### 学习方法
+1. **先分类**：看到题目先判断是哈希、双指针、DP、树、图还是设计。
+2. **写不变量**：明确循环或递归过程中始终成立的条件。
+3. **补边界**：空数组、单节点、重复值、负数、溢出、头尾删除都要过一遍。
+4. **重写一遍**：当天会写不算稳，隔天能无提示写出来才算掌握。
+
+### 效率提升
+- ✅ 先做 TOP 25，再补完整 100 题。
+- ✅ 中等题优先，因为最贴近面试主战场。
+- ✅ 困难题重点学套路，不必死记每一行。
+- ✅ 每题至少说清楚“为什么是这个数据结构”。
+- ✅ 每周回看一次重复索引题，避免同题型换皮就卡住。
+
+---
+
+## 🔗 快速查找
+
+### 按关键字查找
+- **Map / Set**：两数之和、和为 K 的子数组、最长连续序列。
+- **滑动窗口**：无重复字符、最小覆盖子串、长度最小子数组、滑动窗口最大值。
+- **快慢指针**：删除倒数第 N 个节点、环形链表、回文链表。
+- **dummy 节点**：反转链表 II、两两交换、K 个一组翻转。
+- **树 DFS / BFS**：层序遍历、最大深度、路径总和、最大路径和。
+- **动态规划**：最大子数组、LIS、编辑距离、零钱兑换、不同路径。
+- **二分边界**：旋转数组、平方根、首尾位置、峰值。
+- **回溯**：全排列、组合总和、子集、括号生成、复原 IP。
+- **图搜索**：岛屿数量、岛屿最大面积、课程表。
+- **设计题**：LRU 缓存、Rand10、最小栈、队列模拟。
+
+### 按复杂度查找
+- **O(1)**：LRU get/put、最小栈、原地交换类题。
+- **O(n)**：哈希、双指针、链表、单趟 DP、BFS/DFS。
+- **O(n log n)**：排序链表、快速排序、堆、区间排序。
+- **O(n²)**：编辑距离、最长公共子序列、三数之和、部分回溯剪枝。
+
+
+---
+
+## 📝 使用本文档的方式
+
+### 方式1：按目录学习（系统性）
+从哈希表开始，按 13 个模块顺序刷完，适合完整复习。
+
+### 方式2：按 TOP 25 冲刺（针对性）
+先完成高频面试题，再回头补薄弱模块。
+
+### 方式3：按难度递进（稳扎稳打）
+🟢 简单 → 🟡 中等 → 🔴 困难，每题都补复杂度和边界。
+
+### 方式4：按题型专题（查缺补漏）
+针对 DP、链表、树、图、设计题等短板集中训练。
+
+---
+
+## 🎯 终极目标
+
+学完本题库后，你将能够：
+
+✅ **识别** 高频题对应的数据结构和算法套路  
+✅ **手写** JavaScript ES6+ 版本的核心实现  
+✅ **解释** 每题的关键思路、复杂度和边界条件  
+✅ **迁移** 哈希、双指针、DP、DFS/BFS、回溯等模板  
+✅ **拆解** LRU、计算器、Rand10 等设计类手写题  
+✅ **应对** 前端与大厂技术面试中的算法编码环节  
+
+---
+
+## 📚 详细题解正文
+
+## 一、哈希表
+
+### 1. 两数之和 🟢
 
 **频度：** 301 | **难度：** 简单 | **LeetCode 1**
 
 **官方链接：** [LeetCode 1](https://leetcode.com/problems/two-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定整数数组和目标值，找到两个不同下标，使它们对应元素之和等于目标值，并返回这两个下标。
 
 **示例：**
@@ -23,7 +325,7 @@
 输出：[0,1]
 ```
 
-### 解题详解
+#### 解题详解
 核心是把“回头查找”变成 O(1) 的状态查询。遍历到当前位置时，只关心此前是否出现过能与当前元素组成答案的值、前缀和或连续段起点。
 
 **关键步骤：**
@@ -31,7 +333,7 @@
 - 先查再存可以避免当前元素和自己配对。
 - 前缀和题要预置 0 出现 1 次，覆盖从下标 0 开始的子数组。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["遍历输入"] --> B["计算当前需要的信息"]
@@ -43,7 +345,7 @@ flowchart TD
     F --> G["输出结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function twoSum(nums, target) {
   const map = new Map();
@@ -58,19 +360,19 @@ function twoSum(nums, target) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 2. 和为 K 的子数组 🟡
+### 2. 和为 K 的子数组 🟡
 
 **频度：** 78 | **难度：** 中等 | **LeetCode 560**
 
 **官方链接：** [LeetCode 560](https://leetcode.com/problems/subarray-sum-equals-k/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定整数数组和整数 k，统计所有元素和等于 k 的连续子数组数量，数组中可以包含负数。
 
 **示例：**
@@ -79,7 +381,7 @@ function twoSum(nums, target) {
 输出：2
 ```
 
-### 解题详解
+#### 解题详解
 核心是把“回头查找”变成 O(1) 的状态查询。遍历到当前位置时，只关心此前是否出现过能与当前元素组成答案的值、前缀和或连续段起点。
 
 **关键步骤：**
@@ -87,7 +389,7 @@ function twoSum(nums, target) {
 - 先查再存可以避免当前元素和自己配对。
 - 前缀和题要预置 0 出现 1 次，覆盖从下标 0 开始的子数组。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["遍历输入"] --> B["计算当前需要的信息"]
@@ -99,7 +401,7 @@ flowchart TD
     F --> G["输出结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function subarraySum(nums, k) {
   const prefixMap = new Map();
@@ -116,19 +418,19 @@ function subarraySum(nums, k) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 3. 最长连续序列 🟡
+### 3. 最长连续序列 🟡
 
 **频度：** 91 | **难度：** 中等 | **LeetCode 128**
 
 **官方链接：** [LeetCode 128](https://leetcode.com/problems/longest-consecutive-sequence/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定未排序整数数组，返回数字值连续的最长序列长度，要求尽量在线性时间内完成。
 
 **示例：**
@@ -137,7 +439,7 @@ function subarraySum(nums, k) {
 输出：4
 ```
 
-### 解题详解
+#### 解题详解
 核心是把“回头查找”变成 O(1) 的状态查询。遍历到当前位置时，只关心此前是否出现过能与当前元素组成答案的值、前缀和或连续段起点。
 
 **关键步骤：**
@@ -145,7 +447,7 @@ function subarraySum(nums, k) {
 - 先查再存可以避免当前元素和自己配对。
 - 前缀和题要预置 0 出现 1 次，覆盖从下标 0 开始的子数组。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["遍历输入"] --> B["计算当前需要的信息"]
@@ -157,7 +459,7 @@ flowchart TD
     F --> G["输出结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function longestConsecutive(nums) {
   const set = new Set(nums);
@@ -173,21 +475,21 @@ function longestConsecutive(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-# 二、双指针与滑动窗口
+## 二、双指针与滑动窗口
 
-## 4. 无重复字符的最长子串 🟡
+### 4. 无重复字符的最长子串 🟡
 
 **频度：** 1140 | **难度：** 中等 | **LeetCode 3**
 
 **官方链接：** [LeetCode 3](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定字符串，返回不含重复字符的最长连续子串长度。
 
 **示例：**
@@ -196,7 +498,7 @@ function longestConsecutive(nums) {
 输出：3  ("abc")
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -204,7 +506,7 @@ function longestConsecutive(nums) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -216,7 +518,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function lengthOfLongestSubstring(s) {
   const map = new Map();
@@ -232,19 +534,19 @@ function lengthOfLongestSubstring(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(Σ)
 
 ---
 
-## 5. 三数之和 🟡
+### 5. 三数之和 🟡
 
 **频度：** 477 | **难度：** 中等 | **LeetCode 15**
 
 **官方链接：** [LeetCode 15](https://leetcode.com/problems/3sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 在数组中找出所有不重复的三元组，使三数之和为 0。
 
 **示例：**
@@ -253,7 +555,7 @@ function lengthOfLongestSubstring(s) {
 输出：[[-1,-1,2],[-1,0,1]]
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -261,7 +563,7 @@ function lengthOfLongestSubstring(s) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -273,7 +575,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function threeSum(nums) {
   const result = [];
@@ -296,19 +598,19 @@ function threeSum(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)
 - 空间复杂度: O(log n)
 
 ---
 
-## 6. 合并两个有序数组 🟢
+### 6. 合并两个有序数组 🟢
 
 **频度：** 294 | **难度：** 简单 | **LeetCode 88**
 
 **官方链接：** [LeetCode 88](https://leetcode.com/problems/merge-sorted-array/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 将两个非递减数组合并到第一个数组中，结果仍保持非递减顺序。
 
 **示例：**
@@ -317,7 +619,7 @@ function threeSum(nums) {
 输出：[1,2,2,3,5,6]
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -325,7 +627,7 @@ function threeSum(nums) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -337,7 +639,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function merge(nums1, m, nums2, n) {
   let p1 = m - 1, p2 = n - 1, p = m + n - 1;
@@ -348,19 +650,19 @@ function merge(nums1, m, nums2, n) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(m + n)
 - 空间复杂度: O(1)
 
 ---
 
-## 7. 接雨水 🔴
+### 7. 接雨水 🔴
 
 **频度：** 196 | **难度：** 困难 | **LeetCode 42**
 
 **官方链接：** [LeetCode 42](https://leetcode.com/problems/trapping-rain-water/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定柱状图高度，计算雨后这些柱子之间最多能接住多少水。
 
 **示例：**
@@ -369,7 +671,7 @@ function merge(nums1, m, nums2, n) {
 输出：6
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -377,7 +679,7 @@ function merge(nums1, m, nums2, n) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -389,7 +691,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function trap(height) {
   let l = 0, r = height.length - 1;
@@ -409,19 +711,19 @@ function trap(height) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 8. 最小覆盖子串 🔴
+### 8. 最小覆盖子串 🔴
 
 **频度：** 130 | **难度：** 困难 | **LeetCode 76**
 
 **官方链接：** [LeetCode 76](https://leetcode.com/problems/minimum-window-substring/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 在字符串 s 中找到包含字符串 t 全部字符及其出现次数的最短连续子串。
 
 **示例：**
@@ -430,7 +732,7 @@ function trap(height) {
 输出："BANC"
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -438,7 +740,7 @@ function trap(height) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -450,7 +752,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function minWindow(s, t) {
   const need = new Map();
@@ -475,19 +777,19 @@ function minWindow(s, t) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(|t|)
 
 ---
 
-## 9. 长度最小的子数组 🟡
+### 9. 长度最小的子数组 🟡
 
 **频度：** 72 | **难度：** 中等 | **LeetCode 209**
 
 **官方链接：** [LeetCode 209](https://leetcode.com/problems/minimum-size-subarray-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 给定正整数数组和目标值，返回和至少为目标值的最短连续子数组长度。
 
 **示例：**
@@ -496,7 +798,7 @@ function minWindow(s, t) {
 输出：2  ([4,3])
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -504,7 +806,7 @@ function minWindow(s, t) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -516,7 +818,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function minSubArrayLen(target, nums) {
   let l = 0, sum = 0, minLen = Infinity;
@@ -531,19 +833,19 @@ function minSubArrayLen(target, nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 10. 移动零 🟢
+### 10. 移动零 🟢
 
 **频度：** 67 | **难度：** 简单 | **LeetCode 283**
 
 **官方链接：** [LeetCode 283](https://leetcode.com/problems/move-zeroes/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 在原数组上把所有 0 移动到末尾，同时保持非零元素的相对顺序。
 
 **示例：**
@@ -552,7 +854,7 @@ function minSubArrayLen(target, nums) {
 输出：[1,3,12,0,0]
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -560,7 +862,7 @@ function minSubArrayLen(target, nums) {
 - 只要指针不回退，整体复杂度就是线性的。
 - 去重题通常在排序后跳过相同元素。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -572,7 +874,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function moveZeroes(nums) {
   let l = 0;
@@ -585,19 +887,19 @@ function moveZeroes(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 11. 删除链表的倒数第 N 个节点 🟡
+### 11. 删除链表的倒数第 N 个节点 🟡
 
 **频度：** 181 | **难度：** 中等 | **LeetCode 19**
 
 **官方链接：** [LeetCode 19](https://leetcode.com/problems/remove-nth-node-from-end-of-list/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 删除单链表倒数第 n 个节点，并返回删除后的头节点。
 
 **示例：**
@@ -606,7 +908,7 @@ function moveZeroes(nums) {
 输出：[1,2,3,5]
 ```
 
-### 解题详解
+#### 解题详解
 核心是让两个指针只向一个方向移动，窗口内维护当前可验证的信息。满足条件时尝试收缩，不满足时继续扩张。
 
 **关键步骤：**
@@ -614,7 +916,7 @@ function moveZeroes(nums) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     L["左指针 left"] --> W["维护窗口或区间"]
@@ -626,7 +928,7 @@ flowchart LR
     E --> W
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function removeNthFromEnd(head, n) {
   const dummy = new ListNode(0, head);
@@ -638,25 +940,25 @@ function removeNthFromEnd(head, n) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-# 三、链表操作
+## 三、链表操作
 
-## 12. 反转链表 🟢
+### 12. 反转链表 🟢
 
 **频度：** 741 | **难度：** 简单 | **LeetCode 206**
 
 **官方链接：** [LeetCode 206](https://leetcode.com/problems/reverse-linked-list/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 反转单链表。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -664,7 +966,7 @@ function removeNthFromEnd(head, n) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -673,7 +975,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function reverseList(head) {
   let prev = null, curr = head;
@@ -687,19 +989,19 @@ function reverseList(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 13. K 个一组翻转链表 🔴
+### 13. K 个一组翻转链表 🔴
 
 **频度：** 514 | **难度：** 困难 | **LeetCode 25**
 
 **官方链接：** [LeetCode 25](https://leetcode.com/problems/reverse-nodes-in-k-group/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 每 k 个节点一组翻转。
 
 **示例：**
@@ -708,7 +1010,7 @@ function reverseList(head) {
 输出：[2,1,4,3,5]
 ```
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -716,7 +1018,7 @@ function reverseList(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -725,7 +1027,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function reverseKGroup(head, k) {
   const dummy = new ListNode(0, head);
@@ -756,23 +1058,23 @@ function reverse(head, tail) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 14. 合并两个有序链表 🟢
+### 14. 合并两个有序链表 🟢
 
 **频度：** 330 | **难度：** 简单 | **LeetCode 21**
 
 **官方链接：** [LeetCode 21](https://leetcode.com/problems/merge-two-sorted-lists/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 合并两个升序链表。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -780,7 +1082,7 @@ function reverse(head, tail) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -789,7 +1091,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function mergeTwoLists(l1, l2) {
   const dummy = new ListNode(-1);
@@ -804,23 +1106,23 @@ function mergeTwoLists(l1, l2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(m+n)
 - 空间复杂度: O(1)
 
 ---
 
-## 15. 反转链表 II 🟡
+### 15. 反转链表 II 🟡
 
 **频度：** 267 | **难度：** 中等 | **LeetCode 92**
 
 **官方链接：** [LeetCode 92](https://leetcode.com/problems/reverse-linked-list-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 反转从 left 到 right 的节点。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -828,7 +1130,7 @@ function mergeTwoLists(l1, l2) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -837,7 +1139,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function reverseBetween(head, left, right) {
   const dummy = new ListNode(0, head);
@@ -854,23 +1156,23 @@ function reverseBetween(head, left, right) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 16. 重排链表 🟡
+### 16. 重排链表 🟡
 
 **频度：** 249 | **难度：** 中等 | **LeetCode 143**
 
 **官方链接：** [LeetCode 143](https://leetcode.com/problems/reorder-list/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 0→Ln→L1→Ln-1→...。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -878,7 +1180,7 @@ function reverseBetween(head, left, right) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -887,7 +1189,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function reorderList(head) {
   if (!head || !head.next) return;
@@ -908,23 +1210,23 @@ function reorderList(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 17. 环形链表 🟢
+### 17. 环形链表 🟢
 
 **频度：** 248 | **难度：** 简单 | **LeetCode 141**
 
 **官方链接：** [LeetCode 141](https://leetcode.com/problems/linked-list-cycle/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 判断链表是否有环。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -932,7 +1234,7 @@ function reorderList(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -941,7 +1243,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function hasCycle(head) {
   let slow = head, fast = head;
@@ -954,23 +1256,23 @@ function hasCycle(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 18. 相交链表 🟢
+### 18. 相交链表 🟢
 
 **频度：** 200 | **难度：** 简单 | **LeetCode 160**
 
 **官方链接：** [LeetCode 160](https://leetcode.com/problems/intersection-of-two-linked-lists/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 找到两个链表的相交节点。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -978,7 +1280,7 @@ function hasCycle(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -987,7 +1289,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function getIntersectionNode(headA, headB) {
   if (!headA || !headB) return null;
@@ -1000,23 +1302,23 @@ function getIntersectionNode(headA, headB) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(m+n)
 - 空间复杂度: O(1)
 
 ---
 
-## 19. 删除排序链表中的重复元素 II 🟡
+### 19. 删除排序链表中的重复元素 II 🟡
 
 **频度：** 184 | **难度：** 中等 | **LeetCode 82**
 
 **官方链接：** [LeetCode 82](https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 删除所有重复数字的节点。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -1024,7 +1326,7 @@ function getIntersectionNode(headA, headB) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -1033,7 +1335,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function deleteDuplicates(head) {
   const dummy = new ListNode(0, head);
@@ -1051,23 +1353,23 @@ function deleteDuplicates(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 20. 环形链表 II 🟡
+### 20. 环形链表 II 🟡
 
 **频度：** 170 | **难度：** 中等 | **LeetCode 142**
 
 **官方链接：** [LeetCode 142](https://leetcode.com/problems/linked-list-cycle-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 返回入环第一个节点。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -1075,7 +1377,7 @@ function deleteDuplicates(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -1084,7 +1386,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function detectCycle(head) {
   let slow = head, fast = head;
@@ -1100,23 +1402,23 @@ function detectCycle(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 21. 排序链表 🟡
+### 21. 排序链表 🟡
 
 **频度：** 146 | **难度：** 中等 | **LeetCode 148**
 
 **官方链接：** [LeetCode 148](https://leetcode.com/problems/sort-list/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 (n log n) 时间排序链表。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -1124,7 +1426,7 @@ function detectCycle(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -1133,7 +1435,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function sortList(head) {
   if (!head || !head.next) return head;
@@ -1146,23 +1448,23 @@ function sortList(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n log n)
 - 空间复杂度: O(log n)
 
 ---
 
-## 22. 回文链表 🟢
+### 22. 回文链表 🟢
 
 **频度：** 85 | **难度：** 简单 | **LeetCode 234**
 
 **官方链接：** [LeetCode 234](https://leetcode.com/problems/palindrome-linked-list/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 判断链表是否回文。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -1170,7 +1472,7 @@ function sortList(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -1179,7 +1481,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function isPalindrome(head) {
   if (!head || !head.next) return true;
@@ -1199,23 +1501,23 @@ function isPalindrome(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 23. 两两交换链表中的节点 🟡
+### 23. 两两交换链表中的节点 🟡
 
 **频度：** 70 | **难度：** 中等 | **LeetCode 24**
 
 **官方链接：** [LeetCode 24](https://leetcode.com/problems/swap-nodes-in-pairs/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 两两交换相邻节点。
 
 
-### 解题详解
+#### 解题详解
 链表题的关键是先保存后继节点，再改指针。涉及删除、反转、分组时通常引入 dummy 节点统一处理头节点变化。
 
 **关键步骤：**
@@ -1223,7 +1525,7 @@ function isPalindrome(head) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart LR
     D["虚拟头/前驱节点"] --> A["定位关键节点"]
@@ -1232,7 +1534,7 @@ flowchart LR
     C --> E["返回新的头节点"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function swapPairs(head) {
   if (!head || !head.next) return head;
@@ -1243,21 +1545,21 @@ function swapPairs(head) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n) 递归
 
 ---
 
-# 四、二叉树遍历与属性
+## 四、二叉树遍历与属性
 
-## 24. 二叉树的层序遍历 🟡
+### 24. 二叉树的层序遍历 🟡
 
 **频度：** 326 | **难度：** 中等 | **LeetCode 102**
 
 **官方链接：** [LeetCode 102](https://leetcode.com/problems/binary-tree-level-order-traversal/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 按层返回节点值。
 
 **示例：**
@@ -1266,7 +1568,7 @@ function swapPairs(head) {
 输出：[[3],[9,20],[15,7]]
 ```
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1274,7 +1576,7 @@ function swapPairs(head) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1286,7 +1588,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function levelOrder(root) {
   if (!root) return [];
@@ -1306,23 +1608,23 @@ function levelOrder(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 25. 二叉树的锯齿形层次遍历 🟡
+### 25. 二叉树的锯齿形层次遍历 🟡
 
 **频度：** 265 | **难度：** 中等 | **LeetCode 103**
 
 **官方链接：** [LeetCode 103](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 字形层序遍历。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1330,7 +1632,7 @@ function levelOrder(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1342,7 +1644,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function zigzagLevelOrder(root) {
   if (!root) return [];
@@ -1365,23 +1667,23 @@ function zigzagLevelOrder(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 26. 二叉树的最近公共祖先 🟡
+### 26. 二叉树的最近公共祖先 🟡
 
 **频度：** 264 | **难度：** 中等 | **LeetCode 236**
 
 **官方链接：** [LeetCode 236](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 找到两个节点的最近公共祖先。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1389,7 +1691,7 @@ function zigzagLevelOrder(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1401,7 +1703,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function lowestCommonAncestor(root, p, q) {
   if (!root || root === p || root === q) return root;
@@ -1412,23 +1714,23 @@ function lowestCommonAncestor(root, p, q) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 27. 二叉树的右视图 🟡
+### 27. 二叉树的右视图 🟡
 
 **频度：** 160 | **难度：** 中等 | **LeetCode 199**
 
 **官方链接：** [LeetCode 199](https://leetcode.com/problems/binary-tree-right-side-view/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 返回从右侧看到的节点值。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1436,7 +1738,7 @@ function lowestCommonAncestor(root, p, q) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1448,7 +1750,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function rightSideView(root) {
   if (!root) return [];
@@ -1468,23 +1770,23 @@ function rightSideView(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 28. 二叉树的中序遍历 🟢
+### 28. 二叉树的中序遍历 🟢
 
 **频度：** 142 | **难度：** 简单 | **LeetCode 94**
 
 **官方链接：** [LeetCode 94](https://leetcode.com/problems/binary-tree-inorder-traversal/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 中序遍历。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1492,7 +1794,7 @@ function rightSideView(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1504,7 +1806,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function inorderTraversal(root) {
   const result = [], stack = [];
@@ -1519,23 +1821,23 @@ function inorderTraversal(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 29. 从前序与中序遍历序列构造二叉树 🟡
+### 29. 从前序与中序遍历序列构造二叉树 🟡
 
 **频度：** 114 | **难度：** 中等 | **LeetCode 105**
 
 **官方链接：** [LeetCode 105](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 根据前序和中序构造二叉树。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1543,7 +1845,7 @@ function inorderTraversal(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1555,7 +1857,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function buildTree(preorder, inorder) {
   if (!preorder.length) return null;
@@ -1568,23 +1870,23 @@ function buildTree(preorder, inorder) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)，可用哈希表优化到 O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 30. 对称二叉树 🟢
+### 30. 对称二叉树 🟢
 
 **频度：** 96 | **难度：** 简单 | **LeetCode 101**
 
 **官方链接：** [LeetCode 101](https://leetcode.com/problems/symmetric-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“对称二叉树”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1592,7 +1894,7 @@ function buildTree(preorder, inorder) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1604,7 +1906,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function isSymmetric(root) {
   if (!root) return true;
@@ -1617,23 +1919,23 @@ function isMirror(l, r) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 31. 二叉树的最大深度 🟢
+### 31. 二叉树的最大深度 🟢
 
 **频度：** 91 | **难度：** 简单 | **LeetCode 104**
 
 **官方链接：** [LeetCode 104](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二叉树的最大深度”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1641,7 +1943,7 @@ function isMirror(l, r) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1653,7 +1955,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxDepth(root) {
   if (!root) return 0;
@@ -1661,23 +1963,23 @@ function maxDepth(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 32. 平衡二叉树 🟢
+### 32. 平衡二叉树 🟢
 
 **频度：** 87 | **难度：** 简单 | **LeetCode 110**
 
 **官方链接：** [LeetCode 110](https://leetcode.com/problems/balanced-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“平衡二叉树”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1685,7 +1987,7 @@ function maxDepth(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1697,7 +1999,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function isBalanced(root) {
   return height(root) !== -1;
@@ -1713,23 +2015,23 @@ function height(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 33. 验证二叉搜索树 🟡
+### 33. 验证二叉搜索树 🟡
 
 **频度：** 84 | **难度：** 中等 | **LeetCode 98**
 
 **官方链接：** [LeetCode 98](https://leetcode.com/problems/validate-binary-search-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“验证二叉搜索树”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1737,7 +2039,7 @@ function height(root) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1749,7 +2051,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function isValidBST(root) {
   let prev = -Infinity;
@@ -1764,23 +2066,23 @@ function isValidBST(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 34. 二叉树的前序遍历 🟢
+### 34. 二叉树的前序遍历 🟢
 
 **频度：** 84 | **难度：** 简单 | **LeetCode 144**
 
 **官方链接：** [LeetCode 144](https://leetcode.com/problems/binary-tree-preorder-traversal/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二叉树的前序遍历”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1788,7 +2090,7 @@ function isValidBST(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1800,7 +2102,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function preorderTraversal(root) {
   if (!root) return [];
@@ -1815,23 +2117,23 @@ function preorderTraversal(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 35. 二叉树的最大宽度 🟡
+### 35. 二叉树的最大宽度 🟡
 
 **频度：** 82 | **难度：** 中等 | **LeetCode 662**
 
 **官方链接：** [LeetCode 662](https://leetcode.com/problems/maximum-width-of-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二叉树的最大宽度”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1839,7 +2141,7 @@ function preorderTraversal(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1851,7 +2153,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function widthOfBinaryTree(root) {
   if (!root) return 0;
@@ -1874,23 +2176,23 @@ function widthOfBinaryTree(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 36. 二叉树的直径 🟢
+### 36. 二叉树的直径 🟢
 
 **频度：** 81 | **难度：** 简单 | **LeetCode 543**
 
 **官方链接：** [LeetCode 543](https://leetcode.com/problems/diameter-of-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二叉树的直径”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1898,7 +2200,7 @@ function widthOfBinaryTree(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1910,7 +2212,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function diameterOfBinaryTree(root) {
   let diameter = 0;
@@ -1925,23 +2227,23 @@ function diameterOfBinaryTree(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 37. 翻转二叉树 🟢
+### 37. 翻转二叉树 🟢
 
 **频度：** 68 | **难度：** 简单 | **LeetCode 226**
 
 **官方链接：** [LeetCode 226](https://leetcode.com/problems/invert-binary-tree/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“翻转二叉树”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1949,7 +2251,7 @@ function diameterOfBinaryTree(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -1961,7 +2263,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function invertTree(root) {
   if (!root) return null;
@@ -1971,23 +2273,23 @@ function invertTree(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 38. 路径总和 🟢
+### 38. 路径总和 🟢
 
 **频度：** 72 | **难度：** 简单 | **LeetCode 112**
 
 **官方链接：** [LeetCode 112](https://leetcode.com/problems/path-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“路径总和”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -1995,7 +2297,7 @@ function invertTree(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -2007,7 +2309,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function hasPathSum(root, targetSum) {
   if (!root) return false;
@@ -2017,23 +2319,23 @@ function hasPathSum(root, targetSum) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 39. 路径总和 II 🟡
+### 39. 路径总和 II 🟡
 
 **频度：** 77 | **难度：** 中等 | **LeetCode 113**
 
 **官方链接：** [LeetCode 113](https://leetcode.com/problems/path-sum-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“路径总和 II”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -2041,7 +2343,7 @@ function hasPathSum(root, targetSum) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -2053,7 +2355,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function pathSum(root, targetSum) {
   const result = [];
@@ -2073,23 +2375,23 @@ function pathSum(root, targetSum) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)
 - 空间复杂度: O(n)
 
 ---
 
-## 40. 求根到叶子节点数字之和 🟡
+### 40. 求根到叶子节点数字之和 🟡
 
 **频度：** 100 | **难度：** 中等 | **LeetCode 129**
 
 **官方链接：** [LeetCode 129](https://leetcode.com/problems/sum-root-to-leaf-numbers/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“求根到叶子节点数字之和”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -2097,7 +2399,7 @@ function pathSum(root, targetSum) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -2109,7 +2411,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function sumNumbers(root) {
   let total = 0;
@@ -2125,23 +2427,23 @@ function sumNumbers(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 41. 二叉树中的最大路径和 🔴
+### 41. 二叉树中的最大路径和 🔴
 
 **频度：** 182 | **难度：** 困难 | **LeetCode 124**
 
 **官方链接：** [LeetCode 124](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二叉树中的最大路径和”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 树题通常把大问题拆成“当前节点 + 左子树 + 右子树”。递归函数要明确返回值代表什么，全局答案只在必要时维护。
 
 **关键步骤：**
@@ -2149,7 +2451,7 @@ function sumNumbers(root) {
 - 递归返回值只表达当前子树能贡献给父节点的信息。
 - 空节点是最重要的边界条件。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["当前节点"] --> B{"节点是否为空"}
@@ -2161,7 +2463,7 @@ flowchart TD
     F --> G["更新答案/返回状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxPathSum(root) {
   let maxSum = -Infinity;
@@ -2177,21 +2479,21 @@ function maxPathSum(root) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-# 五、动态规划
+## 五、动态规划
 
-## 42. 最大子数组和 🟡
+### 42. 最大子数组和 🟡
 
 **频度：** 371 | **难度：** 中等 | **LeetCode 53**
 
 **官方链接：** [LeetCode 53](https://leetcode.com/problems/maximum-subarray/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 找出和最大的连续子数组。
 
 **示例：**
@@ -2200,7 +2502,7 @@ function maxPathSum(root) {
 输出：6  ([4,-1,2,1])
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2208,7 +2510,7 @@ function maxPathSum(root) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2219,7 +2521,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxSubArray(nums) {
   let curr = nums[0], max = nums[0];
@@ -2231,19 +2533,19 @@ function maxSubArray(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 43. 最长上升子序列 🟡
+### 43. 最长上升子序列 🟡
 
 **频度：** 262 | **难度：** 中等 | **LeetCode 300**
 
 **官方链接：** [LeetCode 300](https://leetcode.com/problems/longest-increasing-subsequence/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 最长严格递增子序列长度。
 
 **示例：**
@@ -2252,7 +2554,7 @@ function maxSubArray(nums) {
 输出：4  ([2,3,7,101])
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2260,7 +2562,7 @@ function maxSubArray(nums) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2271,7 +2573,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function lengthOfLIS(nums) {
   const tails = [];
@@ -2289,19 +2591,19 @@ function lengthOfLIS(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²) / O(n log n)
 - 空间复杂度: O(n)
 
 ---
 
-## 44. 编辑距离 🔴
+### 44. 编辑距离 🔴
 
 **频度：** 199 | **难度：** 困难 | **LeetCode 72**
 
 **官方链接：** [LeetCode 72](https://leetcode.com/problems/edit-distance/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 将 word1 转为 word2 的最小操作数（插入/删除/替换）。
 
 **示例：**
@@ -2310,7 +2612,7 @@ function lengthOfLIS(nums) {
 输出：3
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2318,7 +2620,7 @@ function lengthOfLIS(nums) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2329,7 +2631,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function minDistance(word1, word2) {
   const m = word1.length, n = word2.length;
@@ -2346,19 +2648,19 @@ function minDistance(word1, word2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(mn)
 
 ---
 
-## 45. 最长公共子序列 🟡
+### 45. 最长公共子序列 🟡
 
 **频度：** 193 | **难度：** 中等 | **LeetCode 1143**
 
 **官方链接：** [LeetCode 1143](https://leetcode.com/problems/longest-common-subsequence/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 两个字符串的最长公共子序列长度。
 
 **示例：**
@@ -2367,7 +2669,7 @@ function minDistance(word1, word2) {
 输出：3
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2375,7 +2677,7 @@ function minDistance(word1, word2) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2386,7 +2688,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function longestCommonSubsequence(text1, text2) {
   const m = text1.length, n = text2.length;
@@ -2401,19 +2703,19 @@ function longestCommonSubsequence(text1, text2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(mn)
 
 ---
 
-## 46. 最长有效括号 🔴
+### 46. 最长有效括号 🔴
 
 **频度：** 146 | **难度：** 困难 | **LeetCode 32**
 
 **官方链接：** [LeetCode 32](https://leetcode.com/problems/longest-valid-parentheses/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 最长有效括号子串长度。
 
 **示例：**
@@ -2422,7 +2724,7 @@ function longestCommonSubsequence(text1, text2) {
 输出：4  (()())
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2430,7 +2732,7 @@ function longestCommonSubsequence(text1, text2) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2441,7 +2743,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function longestValidParentheses(s) {
   const dp = new Array(s.length).fill(0);
@@ -2460,23 +2762,23 @@ function longestValidParentheses(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 47. 零钱兑换 🟡
+### 47. 零钱兑换 🟡
 
 **频度：** 132 | **难度：** 中等 | **LeetCode 322**
 
 **官方链接：** [LeetCode 322](https://leetcode.com/problems/coin-change/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 凑成 amount 的最少硬币数。
 
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2484,7 +2786,7 @@ function longestValidParentheses(s) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2495,7 +2797,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function coinChange(coins, amount) {
   const dp = new Array(amount + 1).fill(Infinity);
@@ -2509,23 +2811,23 @@ function coinChange(coins, amount) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(amount × coins.length)
 - 空间复杂度: O(amount)
 
 ---
 
-## 48. 爬楼梯 🟢
+### 48. 爬楼梯 🟢
 
 **频度：** 128 | **难度：** 简单 | **LeetCode 70**
 
 **官方链接：** [LeetCode 70](https://leetcode.com/problems/climbing-stairs/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 阶楼梯，每次 1 或 2 阶，多少种方法？。
 
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2533,7 +2835,7 @@ function coinChange(coins, amount) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2544,7 +2846,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function climbStairs(n) {
   if (n <= 2) return n;
@@ -2557,19 +2859,19 @@ function climbStairs(n) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 49. 乘积最大子数组 🟡
+### 49. 乘积最大子数组 🟡
 
 **频度：** 83 | **难度：** 中等 | **LeetCode 152**
 
 **官方链接：** [LeetCode 152](https://leetcode.com/problems/maximum-product-subarray/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 乘积最大的连续子数组。
 
 **示例：**
@@ -2578,7 +2880,7 @@ function climbStairs(n) {
 输出：6  ([2,3])
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2586,7 +2888,7 @@ function climbStairs(n) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2597,7 +2899,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxProduct(nums) {
   let max = nums[0], min = nums[0], res = nums[0];
@@ -2611,19 +2913,19 @@ function maxProduct(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 50. 不同路径 🟡
+### 50. 不同路径 🟡
 
 **频度：** 77 | **难度：** 中等 | **LeetCode 62**
 
 **官方链接：** [LeetCode 62](https://leetcode.com/problems/unique-paths/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 ×n 网格，从左上到右下，只能向右或向下，多少条路？。
 
 **示例：**
@@ -2632,7 +2934,7 @@ function maxProduct(nums) {
 输出：28
 ```
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2640,7 +2942,7 @@ function maxProduct(nums) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2651,7 +2953,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function uniquePaths(m, n) {
   const dp = new Array(n).fill(1);
@@ -2664,23 +2966,23 @@ function uniquePaths(m, n) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(n)
 
 ---
 
-## 51. 打家劫舍 🟡
+### 51. 打家劫舍 🟡
 
 **频度：** 73 | **难度：** 中等 | **LeetCode 198**
 
 **官方链接：** [LeetCode 198](https://leetcode.com/problems/house-robber/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 偷窃相邻报警，最高金额。
 
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2688,7 +2990,7 @@ function uniquePaths(m, n) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2699,7 +3001,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function rob(nums) {
   let prev2 = 0, prev1 = 0;
@@ -2712,23 +3014,23 @@ function rob(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 52. 最小路径和 🟡
+### 52. 最小路径和 🟡
 
 **频度：** 94 | **难度：** 中等 | **LeetCode 64**
 
 **官方链接：** [LeetCode 64](https://leetcode.com/problems/minimum-path-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 左上到右下路径数字和最小。
 
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2736,7 +3038,7 @@ function rob(nums) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2747,7 +3049,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function minPathSum(grid) {
   const m = grid.length, n = grid[0].length;
@@ -2762,23 +3064,23 @@ function minPathSum(grid) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(1)
 
 ---
 
-## 53. 最大正方形 🟡
+### 53. 最大正方形 🟡
 
 **频度：** 88 | **难度：** 中等 | **LeetCode 221**
 
 **官方链接：** [LeetCode 221](https://leetcode.com/problems/maximal-square/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 只含 1 的最大正方形面积。
 
 
-### 解题详解
+#### 解题详解
 先定义状态，再写出状态从哪里来。边界初始化决定第一行、第一列或第一个元素能否正确参与后续转移。
 
 **关键步骤：**
@@ -2786,7 +3088,7 @@ function minPathSum(grid) {
 - 先处理空串、第一行、第一列或第一个元素。
 - 如果当前状态只依赖上一行/上一项，可以继续优化空间。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义 dp 状态"] --> B["初始化边界"]
@@ -2797,7 +3099,7 @@ flowchart TD
     E -->|否| F["返回目标状态"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maximalSquare(matrix) {
   const m = matrix.length, n = matrix[0].length;
@@ -2816,21 +3118,21 @@ function maximalSquare(matrix) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(mn)
 
 ---
 
-# 六、字符串处理
+## 六、字符串处理
 
-## 54. 最长回文子串 🟡
+### 54. 最长回文子串 🟡
 
 **频度：** 346 | **难度：** 中等 | **LeetCode 5**
 
 **官方链接：** [LeetCode 5](https://leetcode.com/problems/longest-palindromic-substring/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 最长回文子串。
 
 **示例：**
@@ -2839,7 +3141,7 @@ function maximalSquare(matrix) {
 输出："bab" 或 "aba"
 ```
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -2847,7 +3149,7 @@ function maximalSquare(matrix) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -2860,7 +3162,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function longestPalindrome(s) {
   let start = 0, maxLen = 1;
@@ -2877,23 +3179,23 @@ function longestPalindrome(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)
 - 空间复杂度: O(1)
 
 ---
 
-## 55. 有效的括号 🟢
+### 55. 有效的括号 🟢
 
 **频度：** 292 | **难度：** 简单 | **LeetCode 20**
 
 **官方链接：** [LeetCode 20](https://leetcode.com/problems/valid-parentheses/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“有效的括号”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -2901,7 +3203,7 @@ function longestPalindrome(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -2914,7 +3216,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function isValid(s) {
   const stack = [];
@@ -2927,23 +3229,23 @@ function isValid(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 56. 字符串相加 🟢
+### 56. 字符串相加 🟢
 
 **频度：** 241 | **难度：** 简单 | **LeetCode 415**
 
 **官方链接：** [LeetCode 415](https://leetcode.com/problems/add-strings/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 字符串形式的非负整数相加。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -2951,7 +3253,7 @@ function isValid(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -2964,7 +3266,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function addStrings(num1, num2) {
   let i = num1.length - 1, j = num2.length - 1, carry = 0;
@@ -2978,23 +3280,23 @@ function addStrings(num1, num2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(max(m,n))
 - 空间复杂度: O(max(m,n))
 
 ---
 
-## 57. 复原 IP 地址 🟡
+### 57. 复原 IP 地址 🟡
 
 **频度：** 185 | **难度：** 中等 | **LeetCode 93**
 
 **官方链接：** [LeetCode 93](https://leetcode.com/problems/restore-ip-addresses/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“复原 IP 地址”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3002,7 +3304,7 @@ function addStrings(num1, num2) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3015,7 +3317,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function restoreIpAddresses(s) {
   const result = [];
@@ -3039,23 +3341,23 @@ function restoreIpAddresses(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(1) — 最多 3⁴ 种
 - 空间复杂度: O(1)
 
 ---
 
-## 58. 比较版本号 🟡
+### 58. 比较版本号 🟡
 
 **频度：** 160 | **难度：** 中等 | **LeetCode 165**
 
 **官方链接：** [LeetCode 165](https://leetcode.com/problems/compare-version-numbers/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“比较版本号”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3063,7 +3365,7 @@ function restoreIpAddresses(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3076,7 +3378,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function compareVersion(version1, version2) {
   const v1 = version1.split('.');
@@ -3091,23 +3393,23 @@ function compareVersion(version1, version2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(m+n)
 - 空间复杂度: O(m+n)
 
 ---
 
-## 59. 字符串转换整数 atoi 🟡
+### 59. 字符串转换整数 atoi 🟡
 
 **频度：** 131 | **难度：** 中等 | **LeetCode 8**
 
 **官方链接：** [LeetCode 8](https://leetcode.com/problems/string-to-integer-atoi/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“字符串转换整数 atoi”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3115,7 +3417,7 @@ function compareVersion(version1, version2) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3128,7 +3430,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function myAtoi(s) {
   const INT_MAX = 2147483647, INT_MIN = -2147483648;
@@ -3145,23 +3447,23 @@ function myAtoi(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 60. 字符串相乘 🟡
+### 60. 字符串相乘 🟡
 
 **频度：** 130 | **难度：** 中等 | **LeetCode 43**
 
 **官方链接：** [LeetCode 43](https://leetcode.com/problems/multiply-strings/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“字符串相乘”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3169,7 +3471,7 @@ function myAtoi(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3182,7 +3484,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function multiply(num1, num2) {
   if (num1 === '0' || num2 === '0') return '0';
@@ -3202,23 +3504,23 @@ function multiply(num1, num2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(m+n)
 
 ---
 
-## 61. 翻转字符串里的单词 🟡
+### 61. 翻转字符串里的单词 🟡
 
 **频度：** 105 | **难度：** 中等 | **LeetCode 151**
 
 **官方链接：** [LeetCode 151](https://leetcode.com/problems/reverse-words-in-a-string/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“翻转字符串里的单词”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3226,7 +3528,7 @@ function multiply(num1, num2) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3239,30 +3541,30 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function reverseWords(s) {
   return s.trim().split(/\s+/).reverse().join(' ');
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 62. 最长公共前缀 🟢
+### 62. 最长公共前缀 🟢
 
 **频度：** 83 | **难度：** 简单 | **LeetCode 14**
 
 **官方链接：** [LeetCode 14](https://leetcode.com/problems/longest-common-prefix/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“最长公共前缀”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3270,7 +3572,7 @@ function reverseWords(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3283,7 +3585,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function longestCommonPrefix(strs) {
   if (!strs.length) return '';
@@ -3299,23 +3601,23 @@ function longestCommonPrefix(strs) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(1)
 
 ---
 
-## 63. 括号生成 🟡
+### 63. 括号生成 🟡
 
 **频度：** 150 | **难度：** 中等 | **LeetCode 22**
 
 **官方链接：** [LeetCode 22](https://leetcode.com/problems/generate-parentheses/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“括号生成”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3323,7 +3625,7 @@ function longestCommonPrefix(strs) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3336,7 +3638,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function generateParenthesis(n) {
   const result = [];
@@ -3350,23 +3652,23 @@ function generateParenthesis(n) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(4ⁿ/√n)
 - 空间复杂度: O(n)
 
 ---
 
-## 64. 字符串解码 🟡
+### 64. 字符串解码 🟡
 
 **频度：** 97 | **难度：** 中等 | **LeetCode 394**
 
 **官方链接：** [LeetCode 394](https://leetcode.com/problems/decode-string/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“字符串解码”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3374,7 +3676,7 @@ function generateParenthesis(n) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3387,7 +3689,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function decodeString(s) {
   const numStack = [], strStack = [];
@@ -3409,23 +3711,23 @@ function decodeString(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-## 65. 基本计算器 II 🟡
+### 65. 基本计算器 II 🟡
 
 **频度：** 69 | **难度：** 中等 | **LeetCode 227**
 
 **官方链接：** [LeetCode 227](https://leetcode.com/problems/basic-calculator-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“基本计算器 II”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 字符串题多是按字符扫描，并用栈、窗口、双指针或模拟状态机保存上下文。重点是边界字符和重复字符的处理。
 
 **关键步骤：**
@@ -3433,7 +3735,7 @@ function decodeString(s) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["扫描字符串"] --> B["识别字符含义"]
@@ -3446,7 +3748,7 @@ flowchart TD
     F --> G
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function calculate(s) {
   const stack = [];
@@ -3467,25 +3769,25 @@ function calculate(s) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(n)
 
 ---
 
-# 七、二分查找
+## 七、二分查找
 
-## 66. 搜索旋转排序数组 🟡
+### 66. 搜索旋转排序数组 🟡
 
 **频度：** 305 | **难度：** 中等 | **LeetCode 33**
 
 **官方链接：** [LeetCode 33](https://leetcode.com/problems/search-in-rotated-sorted-array/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 旋转数组中找目标值。如 [4,5,6,7,0,1,2] 找 0 → 4。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3493,7 +3795,7 @@ function calculate(s) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3506,7 +3808,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function search(nums, target) {
   let l = 0, r = nums.length - 1;
@@ -3525,23 +3827,23 @@ function search(nums, target) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log n)
 - 空间复杂度: O(1)
 
 ---
 
-## 67. 二分查找 🟢
+### 67. 二分查找 🟢
 
 **频度：** 150 | **难度：** 简单 | **LeetCode 704**
 
 **官方链接：** [LeetCode 704](https://leetcode.com/problems/binary-search/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“二分查找”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3549,7 +3851,7 @@ function search(nums, target) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3562,7 +3864,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function search(nums, target) {
   let l = 0, r = nums.length - 1;
@@ -3576,23 +3878,23 @@ function search(nums, target) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log n)
 - 空间复杂度: O(1)
 
 ---
 
-## 68. x 的平方根 🟢
+### 68. x 的平方根 🟢
 
 **频度：** 146 | **难度：** 简单 | **LeetCode 69**
 
 **官方链接：** [LeetCode 69](https://leetcode.com/problems/sqrtx/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“x 的平方根”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3600,7 +3902,7 @@ function search(nums, target) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3613,7 +3915,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function mySqrt(x) {
   let l = 0, r = x, ans = -1;
@@ -3626,23 +3928,23 @@ function mySqrt(x) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log x)
 - 空间复杂度: O(1)
 
 ---
 
-## 69. 寻找两个正序数组的中位数 🔴
+### 69. 寻找两个正序数组的中位数 🔴
 
 **频度：** 169 | **难度：** 困难 | **LeetCode 4**
 
 **官方链接：** [LeetCode 4](https://leetcode.com/problems/median-of-two-sorted-arrays/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“寻找两个正序数组的中位数”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3650,7 +3952,7 @@ function mySqrt(x) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3663,7 +3965,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function findMedianSortedArrays(nums1, nums2) {
   if (nums1.length > nums2.length) [nums1, nums2] = [nums2, nums1];
@@ -3691,23 +3993,23 @@ function findMedianSortedArrays(nums1, nums2) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log(min(m,n)))
 - 空间复杂度: O(1)
 
 ---
 
-## 70. 在排序数组中查找元素的第一个和最后一个位置 🟡
+### 70. 在排序数组中查找元素的第一个和最后一个位置 🟡
 
 **频度：** 102 | **难度：** 中等 | **LeetCode 34**
 
 **官方链接：** [LeetCode 34](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“在排序数组中查找元素的第一个和最后一个位置”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3715,7 +4017,7 @@ function findMedianSortedArrays(nums1, nums2) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3728,7 +4030,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function searchRange(nums, target) {
   function binarySearch(left) {
@@ -3747,23 +4049,23 @@ function searchRange(nums, target) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log n)
 - 空间复杂度: O(1)
 
 ---
 
-## 71. 寻找峰值 🟡
+### 71. 寻找峰值 🟡
 
 **频度：** 80 | **难度：** 中等 | **LeetCode 162**
 
 **官方链接：** [LeetCode 162](https://leetcode.com/problems/find-peak-element/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“寻找峰值”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 二分的本质是利用单调性丢弃一半候选。要先明确搜索的是值、下标、边界还是答案空间。
 
 **关键步骤：**
@@ -3771,7 +4073,7 @@ function searchRange(nums, target) {
 - 搜索边界时不要在找到目标后立刻返回，而是记录答案继续收缩。
 - 旋转数组题要先判断哪一侧有序。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["确定搜索区间 left/right"] --> B{"left <= right?"}
@@ -3784,7 +4086,7 @@ flowchart TD
     G --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function findPeakElement(nums) {
   let l = 0, r = nums.length - 1;
@@ -3797,15 +4099,15 @@ function findPeakElement(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(log n)
 - 空间复杂度: O(1)
 
 ---
 
-# 八、栈与队列
+## 八、栈与队列
 
-## 72. 有效的括号 🟢（见字符串 55 题）
+### 72. 有效的括号 🟢（见字符串 55 题）
 
 **官方链接：** [LeetCode 20](https://leetcode.com/problems/valid-parentheses/)
 
@@ -3813,17 +4115,17 @@ function findPeakElement(nums) {
 
 ---
 
-## 73. 用栈实现队列 🟢
+### 73. 用栈实现队列 🟢
 
 **频度：** 143 | **难度：** 简单 | **LeetCode 232**
 
 **官方链接：** [LeetCode 232](https://leetcode.com/problems/implement-queue-using-stacks/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“用栈实现队列”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 栈适合处理最近相关关系，队列适合维护先来先服务或窗口候选。辅助栈/双端队列常用于 O(1) 查询最值。
 
 **关键步骤：**
@@ -3831,7 +4133,7 @@ function findPeakElement(nums) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["读取元素/操作"] --> B{"栈或队列状态"}
@@ -3842,7 +4144,7 @@ flowchart TD
     E --> F["返回查询结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 class MyQueue {
   constructor() {
@@ -3868,23 +4170,23 @@ class MyQueue {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: 均摊 O(1)
 - 空间复杂度: O(n)
 
 ---
 
-## 74. 最小栈 🟡
+### 74. 最小栈 🟡
 
 **频度：** 99 | **难度：** 中等 | **LeetCode 155**
 
 **官方链接：** [LeetCode 155](https://leetcode.com/problems/min-stack/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“最小栈”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 栈适合处理最近相关关系，队列适合维护先来先服务或窗口候选。辅助栈/双端队列常用于 O(1) 查询最值。
 
 **关键步骤：**
@@ -3892,7 +4194,7 @@ class MyQueue {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["读取元素/操作"] --> B{"栈或队列状态"}
@@ -3903,7 +4205,7 @@ flowchart TD
     E --> F["返回查询结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 class MinStack {
   constructor() {
@@ -3927,23 +4229,23 @@ class MinStack {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(1)
 - 空间复杂度: O(n)
 
 ---
 
-## 75. 滑动窗口最大值 🔴
+### 75. 滑动窗口最大值 🔴
 
 **频度：** 151 | **难度：** 困难 | **LeetCode 239**
 
 **官方链接：** [LeetCode 239](https://leetcode.com/problems/sliding-window-maximum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“滑动窗口最大值”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 栈适合处理最近相关关系，队列适合维护先来先服务或窗口候选。辅助栈/双端队列常用于 O(1) 查询最值。
 
 **关键步骤：**
@@ -3951,7 +4253,7 @@ class MinStack {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["读取元素/操作"] --> B{"栈或队列状态"}
@@ -3962,7 +4264,7 @@ flowchart TD
     E --> F["返回查询结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxSlidingWindow(nums, k) {
   const result = [];
@@ -3977,24 +4279,24 @@ function maxSlidingWindow(nums, k) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(k)
 
 ---
 
-# 九、排序与 TopK
+## 九、排序与 TopK
 
-## 76. 手撕快速排序 🟡
+### 76. 手撕快速排序 🟡
 
 **官方链接：** [LeetCode 912](https://leetcode.com/problems/sort-an-array/)
 
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“手撕快速排序”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 排序和 TopK 题关注比较规则、划分边界和是否需要完整排序。只要目标是第 K 个，通常可以避免排序全部元素。
 
 **关键步骤：**
@@ -4002,7 +4304,7 @@ function maxSlidingWindow(nums, k) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["选择划分/排序策略"] --> B["处理当前区间"]
@@ -4012,7 +4314,7 @@ flowchart TD
     E --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function quickSort(arr, l = 0, r = arr.length - 1) {
   if (l >= r) return;
@@ -4035,23 +4337,23 @@ function partition(arr, l, r) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n log n) 平均 / O(n²) 最坏
 - 空间复杂度: O(log n)
 
 ---
 
-## 77. 数组中的第 K 个最大元素 🟡
+### 77. 数组中的第 K 个最大元素 🟡
 
 **频度：** 595 | **难度：** 中等 | **LeetCode 215**
 
 **官方链接：** [LeetCode 215](https://leetcode.com/problems/kth-largest-element-in-an-array/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“数组中的第 K 个最大元素”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 排序和 TopK 题关注比较规则、划分边界和是否需要完整排序。只要目标是第 K 个，通常可以避免排序全部元素。
 
 **关键步骤：**
@@ -4059,7 +4361,7 @@ function partition(arr, l, r) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["选择划分/排序策略"] --> B["处理当前区间"]
@@ -4069,7 +4371,7 @@ flowchart TD
     E --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function findKthLargest(nums, k) {
   const target = nums.length - k;
@@ -4093,23 +4395,23 @@ function partition(arr, l, r) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n) 平均 / O(n²) 最坏
 - 空间复杂度: O(1)
 
 ---
 
-## 78. 合并 K 个排序链表 🔴
+### 78. 合并 K 个排序链表 🔴
 
 **频度：** 251 | **难度：** 困难 | **LeetCode 23**
 
 **官方链接：** [LeetCode 23](https://leetcode.com/problems/merge-k-sorted-lists/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“合并 K 个排序链表”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 排序和 TopK 题关注比较规则、划分边界和是否需要完整排序。只要目标是第 K 个，通常可以避免排序全部元素。
 
 **关键步骤：**
@@ -4117,7 +4419,7 @@ function partition(arr, l, r) {
 - 改指针前先保存后继节点，避免链表断开后无法继续遍历。
 - 返回值通常是 dummy.next 或反转后的新头节点。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["选择划分/排序策略"] --> B["处理当前区间"]
@@ -4127,7 +4429,7 @@ flowchart TD
     E --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function mergeKLists(lists) {
   if (!lists.length) return null;
@@ -4144,23 +4446,23 @@ function mergeKLists(lists) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n log k)
 - 空间复杂度: O(1)
 
 ---
 
-## 79. 合并区间 🟡
+### 79. 合并区间 🟡
 
 **频度：** 237 | **难度：** 中等 | **LeetCode 56**
 
 **官方链接：** [LeetCode 56](https://leetcode.com/problems/merge-intervals/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“合并区间”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 排序和 TopK 题关注比较规则、划分边界和是否需要完整排序。只要目标是第 K 个，通常可以避免排序全部元素。
 
 **关键步骤：**
@@ -4168,7 +4470,7 @@ function mergeKLists(lists) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["选择划分/排序策略"] --> B["处理当前区间"]
@@ -4178,7 +4480,7 @@ flowchart TD
     E --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function merge(intervals) {
   intervals.sort((a, b) => a[0] - b[0]);
@@ -4195,23 +4497,23 @@ function merge(intervals) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n log n)
 - 空间复杂度: O(n)
 
 ---
 
-## 80. 最大数 🟡
+### 80. 最大数 🟡
 
 **频度：** 82 | **难度：** 中等 | **LeetCode 179**
 
 **官方链接：** [LeetCode 179](https://leetcode.com/problems/largest-number/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“最大数”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 排序和 TopK 题关注比较规则、划分边界和是否需要完整排序。只要目标是第 K 个，通常可以避免排序全部元素。
 
 **关键步骤：**
@@ -4219,7 +4521,7 @@ function merge(intervals) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["选择划分/排序策略"] --> B["处理当前区间"]
@@ -4229,7 +4531,7 @@ flowchart TD
     E --> B
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function largestNumber(nums) {
   const sorted = nums.sort((a, b) => {
@@ -4241,25 +4543,25 @@ function largestNumber(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n log n)
 - 空间复杂度: O(n)
 
 ---
 
-# 十、回溯与递归
+## 十、回溯与递归
 
-## 81. 全排列 🟡
+### 81. 全排列 🟡
 
 **频度：** 296 | **难度：** 中等 | **LeetCode 46**
 
 **官方链接：** [LeetCode 46](https://leetcode.com/problems/permutations/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“全排列”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 回溯题关注路径、选择列表和结束条件。每次递归前做选择，递归后撤销选择，保证同一层枚举互不污染。
 
 **关键步骤：**
@@ -4267,7 +4569,7 @@ function largestNumber(nums) {
 - 剪枝可以减少无效分支，例如排序后跳过重复元素。
 - 每次 push 后都要 pop，保证回到进入本层前的状态。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["递归入口"] --> B{"是否满足结束条件"}
@@ -4279,7 +4581,7 @@ flowchart TD
     G --> D
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function permute(nums) {
   const result = [];
@@ -4302,23 +4604,23 @@ function permute(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n × n!)
 - 空间复杂度: O(n)
 
 ---
 
-## 82. 组合总和 🟡
+### 82. 组合总和 🟡
 
 **频度：** 94 | **难度：** 中等 | **LeetCode 39**
 
 **官方链接：** [LeetCode 39](https://leetcode.com/problems/combination-sum/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“组合总和”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 回溯题关注路径、选择列表和结束条件。每次递归前做选择，递归后撤销选择，保证同一层枚举互不污染。
 
 **关键步骤：**
@@ -4326,7 +4628,7 @@ function permute(nums) {
 - 剪枝可以减少无效分支，例如排序后跳过重复元素。
 - 每次 push 后都要 pop，保证回到进入本层前的状态。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["递归入口"] --> B{"是否满足结束条件"}
@@ -4338,7 +4640,7 @@ flowchart TD
     G --> D
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function combinationSum(candidates, target) {
   const result = [];
@@ -4356,23 +4658,23 @@ function combinationSum(candidates, target) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(2ⁿ)
 - 空间复杂度: O(target)
 
 ---
 
-## 83. 子集 🟡
+### 83. 子集 🟡
 
 **频度：** 104 | **难度：** 中等 | **LeetCode 78**
 
 **官方链接：** [LeetCode 78](https://leetcode.com/problems/subsets/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“子集”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 回溯题关注路径、选择列表和结束条件。每次递归前做选择，递归后撤销选择，保证同一层枚举互不污染。
 
 **关键步骤：**
@@ -4380,7 +4682,7 @@ function combinationSum(candidates, target) {
 - 剪枝可以减少无效分支，例如排序后跳过重复元素。
 - 每次 push 后都要 pop，保证回到进入本层前的状态。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["递归入口"] --> B{"是否满足结束条件"}
@@ -4392,7 +4694,7 @@ flowchart TD
     G --> D
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function subsets(nums) {
   const result = [];
@@ -4409,13 +4711,13 @@ function subsets(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n × 2ⁿ)
 - 空间复杂度: O(n)
 
 ---
 
-## 84. 括号生成 🟡（见 63 题）
+### 84. 括号生成 🟡（见 63 题）
 
 **官方链接：** [LeetCode 22](https://leetcode.com/problems/generate-parentheses/)
 
@@ -4423,17 +4725,17 @@ function subsets(nums) {
 
 ---
 
-## 85. 单词拆分 🟡
+### 85. 单词拆分 🟡
 
 **频度：** 69 | **难度：** 中等 | **LeetCode 139**
 
 **官方链接：** [LeetCode 139](https://leetcode.com/problems/word-break/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“单词拆分”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 回溯题关注路径、选择列表和结束条件。每次递归前做选择，递归后撤销选择，保证同一层枚举互不污染。
 
 **关键步骤：**
@@ -4441,7 +4743,7 @@ function subsets(nums) {
 - 剪枝可以减少无效分支，例如排序后跳过重复元素。
 - 每次 push 后都要 pop，保证回到进入本层前的状态。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["递归入口"] --> B{"是否满足结束条件"}
@@ -4453,7 +4755,7 @@ flowchart TD
     G --> D
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function wordBreak(s, wordDict) {
   const set = new Set(wordDict);
@@ -4471,25 +4773,25 @@ function wordBreak(s, wordDict) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)
 - 空间复杂度: O(n)
 
 ---
 
-# 十一、DFS/BFS/图
+## 十一、DFS/BFS/图
 
-## 86. 岛屿数量 🟡
+### 86. 岛屿数量 🟡
 
 **频度：** 324 | **难度：** 中等 | **LeetCode 200**
 
 **官方链接：** [LeetCode 200](https://leetcode.com/problems/number-of-islands/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“岛屿数量”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 图和网格题要先定义访问状态，防止重复访问。DFS 适合连通块和路径探索，BFS 适合层序扩散和拓扑依赖。
 
 **关键步骤：**
@@ -4497,7 +4799,7 @@ function wordBreak(s, wordDict) {
 - 网格题先判断越界、障碍和访问状态。
 - 拓扑排序通过入度判断依赖是否能全部完成。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["构建访问状态"] --> B["选择起点"]
@@ -4508,7 +4810,7 @@ flowchart TD
     C -->|是| F["统计连通块/返回结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function numIslands(grid) {
   let count = 0;
@@ -4533,23 +4835,23 @@ function numIslands(grid) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(mn)
 
 ---
 
-## 87. 岛屿的最大面积 🟡
+### 87. 岛屿的最大面积 🟡
 
 **频度：** 90 | **难度：** 中等 | **LeetCode 695**
 
 **官方链接：** [LeetCode 695](https://leetcode.com/problems/max-area-of-island/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“岛屿的最大面积”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 图和网格题要先定义访问状态，防止重复访问。DFS 适合连通块和路径探索，BFS 适合层序扩散和拓扑依赖。
 
 **关键步骤：**
@@ -4557,7 +4859,7 @@ function numIslands(grid) {
 - 网格题先判断越界、障碍和访问状态。
 - 拓扑排序通过入度判断依赖是否能全部完成。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["构建访问状态"] --> B["选择起点"]
@@ -4568,7 +4870,7 @@ flowchart TD
     C -->|是| F["统计连通块/返回结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxAreaOfIsland(grid) {
   const m = grid.length, n = grid[0].length;
@@ -4589,23 +4891,23 @@ function maxAreaOfIsland(grid) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(mn)
 
 ---
 
-## 88. 课程表 🟡
+### 88. 课程表 🟡
 
 **频度：** 65 | **难度：** 中等 | **LeetCode 207**
 
 **官方链接：** [LeetCode 207](https://leetcode.com/problems/course-schedule/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“课程表”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 图和网格题要先定义访问状态，防止重复访问。DFS 适合连通块和路径探索，BFS 适合层序扩散和拓扑依赖。
 
 **关键步骤：**
@@ -4613,7 +4915,7 @@ function maxAreaOfIsland(grid) {
 - 网格题先判断越界、障碍和访问状态。
 - 拓扑排序通过入度判断依赖是否能全部完成。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["构建访问状态"] --> B["选择起点"]
@@ -4624,7 +4926,7 @@ flowchart TD
     C -->|是| F["统计连通块/返回结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function canFinish(numCourses, prerequisites) {
   const inDegree = new Array(numCourses).fill(0);
@@ -4650,13 +4952,13 @@ function canFinish(numCourses, prerequisites) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(V + E)
 - 空间复杂度: O(V + E)
 
 ---
 
-## 89. 二叉树的右视图 🟡（见 27 题）
+### 89. 二叉树的右视图 🟡（见 27 题）
 
 **官方链接：** [LeetCode 199](https://leetcode.com/problems/binary-tree-right-side-view/)
 
@@ -4664,7 +4966,7 @@ function canFinish(numCourses, prerequisites) {
 
 ---
 
-## 90. 二叉树的层序遍历 🟡（见 24 题）
+### 90. 二叉树的层序遍历 🟡（见 24 题）
 
 **官方链接：** [LeetCode 102](https://leetcode.com/problems/binary-tree-level-order-traversal/)
 
@@ -4672,19 +4974,19 @@ function canFinish(numCourses, prerequisites) {
 
 ---
 
-# 十二、设计题
+## 十二、设计题
 
-## 91. LRU 缓存机制 🟡
+### 91. LRU 缓存机制 🟡
 
 **频度：** 917 | **难度：** 中等 | **LeetCode 146**
 
 **官方链接：** [LeetCode 146](https://leetcode.com/problems/lru-cache/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 设计支持 get 和 put 的缓存，容量满时淘汰最久未使用的键值。
 
 
-### 解题详解
+#### 解题详解
 设计题重点是让每个 API 的复杂度稳定。通常需要组合多个结构，例如哈希表负责定位，链表或有序结构负责顺序。
 
 **关键步骤：**
@@ -4692,7 +4994,7 @@ function canFinish(numCourses, prerequisites) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义数据结构"] --> B["实现核心 API"]
@@ -4702,7 +5004,7 @@ flowchart TD
     E --> F["返回结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 class LRUCache {
   constructor(capacity) {
@@ -4729,13 +5031,13 @@ class LRUCache {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(1)
 - 空间复杂度: O(capacity)
 
 ---
 
-## 92. 用栈实现队列 🟢（见 73 题）
+### 92. 用栈实现队列 🟢（见 73 题）
 
 **官方链接：** [LeetCode 232](https://leetcode.com/problems/implement-queue-using-stacks/)
 
@@ -4743,17 +5045,17 @@ class LRUCache {
 
 ---
 
-## 93. 用 Rand7 实现 Rand10 🟡
+### 93. 用 Rand7 实现 Rand10 🟡
 
 **频度：** 94 | **难度：** 中等 | **LeetCode 470**
 
 **官方链接：** [LeetCode 470](https://leetcode.com/problems/implement-rand10-using-rand7/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 只能调用 rand7，生成 1 到 10 之间均匀分布的随机整数。
 
 
-### 解题详解
+#### 解题详解
 设计题重点是让每个 API 的复杂度稳定。通常需要组合多个结构，例如哈希表负责定位，链表或有序结构负责顺序。
 
 **关键步骤：**
@@ -4761,7 +5063,7 @@ class LRUCache {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["定义数据结构"] --> B["实现核心 API"]
@@ -4771,7 +5073,7 @@ flowchart TD
     E --> F["返回结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function rand10() {
   while (true) {
@@ -4781,25 +5083,25 @@ function rand10() {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(1) 期望
 - 空间复杂度: O(1)
 
 ---
 
-# 十三、其他经典
+## 十三、其他经典
 
-## 94. 买卖股票的最佳时机 🟢
+### 94. 买卖股票的最佳时机 🟢
 
 **频度：** 278 | **难度：** 简单 | **LeetCode 121**
 
 **官方链接：** [LeetCode 121](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 只能买卖一次，最大利润。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -4807,7 +5109,7 @@ function rand10() {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -4816,7 +5118,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxProfit(prices) {
   let minPrice = Infinity, maxProfit = 0;
@@ -4828,23 +5130,23 @@ function maxProfit(prices) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 95. 买卖股票的最佳时机 II 🟡
+### 95. 买卖股票的最佳时机 II 🟡
 
 **频度：** 88 | **难度：** 中等 | **LeetCode 122**
 
 **官方链接：** [LeetCode 122](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 可以多次买卖，最大利润。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -4852,7 +5154,7 @@ function maxProfit(prices) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -4861,7 +5163,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function maxProfit(prices) {
   let profit = 0;
@@ -4874,23 +5176,23 @@ function maxProfit(prices) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 96. 多数元素 🟢
+### 96. 多数元素 🟢
 
 **频度：** 67 | **难度：** 简单 | **LeetCode 169**
 
 **官方链接：** [LeetCode 169](https://leetcode.com/problems/majority-element/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“多数元素”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -4898,7 +5200,7 @@ function maxProfit(prices) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -4907,7 +5209,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function majorityElement(nums) {
   let count = 0, candidate = null;
@@ -4919,23 +5221,23 @@ function majorityElement(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 97. 缺失的第一个正数 🔴
+### 97. 缺失的第一个正数 🔴
 
 **频度：** 113 | **难度：** 困难 | **LeetCode 41**
 
 **官方链接：** [LeetCode 41](https://leetcode.com/problems/first-missing-positive/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“缺失的第一个正数”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -4943,7 +5245,7 @@ function majorityElement(nums) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -4952,7 +5254,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function firstMissingPositive(nums) {
   const n = nums.length;
@@ -4968,23 +5270,23 @@ function firstMissingPositive(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
 ---
 
-## 98. 旋转图像 🟡
+### 98. 旋转图像 🟡
 
 **频度：** 83 | **难度：** 中等 | **LeetCode 48**
 
 **官方链接：** [LeetCode 48](https://leetcode.com/problems/rotate-image/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“旋转图像”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -4992,7 +5294,7 @@ function firstMissingPositive(nums) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -5001,7 +5303,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function rotate(matrix) {
   const n = matrix.length;
@@ -5016,23 +5318,23 @@ function rotate(matrix) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n²)
 - 空间复杂度: O(1)
 
 ---
 
-## 99. 螺旋矩阵 🟡
+### 99. 螺旋矩阵 🟡
 
 **频度：** 252 | **难度：** 中等 | **LeetCode 54**
 
 **官方链接：** [LeetCode 54](https://leetcode.com/problems/spiral-matrix/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“螺旋矩阵”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -5040,7 +5342,7 @@ function rotate(matrix) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -5049,7 +5351,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function spiralOrder(matrix) {
   if (!matrix.length) return [];
@@ -5074,23 +5376,23 @@ function spiralOrder(matrix) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(mn)
 - 空间复杂度: O(1) (不算结果)
 
 ---
 
-## 100. 下一个排列 🟡
+### 100. 下一个排列 🟡
 
 **频度：** 136 | **难度：** 中等 | **LeetCode 31**
 
 **官方链接：** [LeetCode 31](https://leetcode.com/problems/next-permutation/)
 
-### LeetCode 题意（中文重述）
+#### LeetCode 题意（中文重述）
 围绕“下一个排列”的 LeetCode 高频题，按题意要求返回目标结果或在原数据结构上完成修改。
 
 
-### 解题详解
+#### 解题详解
 这类题更看重约束洞察：能否单趟维护答案、能否原地交换、能否把多步操作拆成可验证的不变量。
 
 **关键步骤：**
@@ -5098,7 +5400,7 @@ function spiralOrder(matrix) {
 - 遍历过程中只更新与答案直接相关的状态。
 - 最后根据题意返回结果或完成原地修改。
 
-### Mermaid 图解
+#### Mermaid 图解
 ```mermaid
 flowchart TD
     A["分析题目约束"] --> B["选择贪心/原地/模拟策略"]
@@ -5107,7 +5409,7 @@ flowchart TD
     D --> E["输出或原地修改结果"]
 ```
 
-### JavaScript 实现
+#### JavaScript 实现
 ```javascript
 function nextPermutation(nums) {
   let i = nums.length - 2;
@@ -5125,7 +5427,7 @@ function nextPermutation(nums) {
 }
 ```
 
-### 复杂度分析
+#### 复杂度分析
 - 时间复杂度: O(n)
 - 空间复杂度: O(1)
 
