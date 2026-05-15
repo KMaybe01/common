@@ -511,7 +511,7 @@ graph LR
         H3["轻量无依赖"]
     end
 
-    subgraph 框架LangChain等
+    subgraph 框架（LangChain等）
         F1["抽象层多"]
         F2["调试困难"]
         F3["黑盒问题"]
@@ -1101,8 +1101,8 @@ graph TB
 ```mermaid
 graph LR
     Text["今天天气真好"] --> Tokenize["分词器"]
-    Tokenize --> Tokens['今天', '天气', '真好']
-    Tokens --> IDs[1024, 3567, 8912]
+    Tokenize --> Tokens["#quot;['今天', '天气', '真好'"]"]
+    Tokens --> IDs["#quot;[1024, 3567, 8912"]"]
 ```
 
 **主流分词算法：**

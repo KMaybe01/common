@@ -72,7 +72,7 @@ mindmap
        标记清除
        引用计数
        内存泄漏
- ```
+```
 
 ---
 
@@ -123,7 +123,7 @@ graph TD
 
     subgraph 堆Heap
         H1["地址: 0x00A3F8<br/>{ name: 'Tom', age: 20 }"]
-        H2["#quot;地址: 0x00B2C4<br/>[1, 2, 3, 4, 5"]"]
+        H2["地址: 0x00B2C4<br/>[1, 2, 3, 4, 5]"]
     end
 
     S4 -.->|指针指向| H1
@@ -201,7 +201,7 @@ console.log({} instanceof Object);                   // true
 
 ```mermaid
 graph TD
-    A["#quot;["] (空数组)"] -->|__proto__| B["Array.prototype"]
+    A["[] (空数组)"] -->|__proto__| B["Array.prototype"]
     B -->|__proto__| C["Object.prototype"]
     C -->|__proto__| D["null"]
 
@@ -397,7 +397,7 @@ Number.isNaN(NaN)       // true
 ```mermaid
 graph TD
     A["值 Value"] --> B{"是 Symbol?"}
-    B -->|Yes| C["只能显式转换<br/>Symbol("'x'").toString() → 'Symbol("x")'"]
+    B -->|Yes| C["只能显式转换<br/>Symbol(x).toString() → Symbol(x)"]
     B -->|No| D{"是 null/undefined?"}
     D -->|null| E["'null'"]
     D -->|undefined| F["'undefined'"]
@@ -502,7 +502,7 @@ Object.is(+0, -0)     // false
 
 ```mermaid
 graph LR
-    A["'abc' (原始字符串)"] -->|访问 length| B["new String("'abc'")<br/>(包装对象)"]
+    A["'abc' (原始字符串)"] -->|访问 length| B["new String(abc)<br/>(包装对象)"]
     B --> C["访问 length → 3"]
     C --> D["丢弃包装对象<br/>(GC回收)"]
 ```
@@ -534,7 +534,7 @@ if (!a) {
 ```mermaid
 graph TD
     A["表达式运算"] --> B{"操作数含对象?"}
-    B -->|Yes| C["ToPrimitive("obj")"]
+    B -->|Yes| C["ToPrimitive(obj)"]
     B -->|No| D{"+ 操作符<br/>有一方是字符串?"}
     C --> E{"+ 操作符<br/>有一方是字符串?"}
     D -->|Yes| F["字符串拼接"]
@@ -886,9 +886,9 @@ function foo() {
 ```mermaid
 graph TD
     subgraph 数组解构
-        A1["#quot;[1, 2, 3"]"] --> A2["#quot;const [a, b, c"]"]
+        A1["[1, 2, 3]"] --> A2["const [a, b, c]"]
         A2 --> A3["a=1, b=2, c=3<br/>(按位置匹配)"]
-        A4["#quot;[1, 2, 3"]"] --> A5["#quot;const [a,,c"]"]
+        A4["[1, 2, 3]"] --> A5["const [a,,c]"]
         A5 --> A6["a=1, c=3<br/>(空位跳过)"]
     end
 
@@ -981,9 +981,9 @@ const html = `
 
 ```mermaid
 graph TD
-    A["new Constructor("...args")"] --> B["1. 创建空对象<br/>obj = {}"]
+    A["new Constructor(...args)"] --> B["1. 创建空对象<br/>obj = {}"]
     B --> C["2. 设置原型链<br/>obj.__proto__ = Constructor.prototype"]
-    C --> D["3. 绑定 this + 执行<br/>result = Constructor.apply("obj, args")"]
+    C --> D["3. 绑定 this + 执行<br/>result = Constructor.apply(obj, args)"]
     D --> E{"4. 判断返回值类型"}
     E -->|"result 是对象或函数"| F["返回 result"]
     E -->|"result 是原始类型或 null"| G["返回新创建的 obj"]
@@ -1301,10 +1301,10 @@ encodeURIComponent("测试 page?name=张三")
 
 ```mermaid
 graph TD
-    A["创建 XMLHttpRequest"] --> B["xhr.open("method, url, async")"]
+    A["创建 XMLHttpRequest"] --> B["xhr.open(method, url, async)"]
     B --> C["设置请求头<br/>xhr.setRequestHeader"]
     C --> D["注册回调<br/>xhr.onreadystatechange"]
-    D --> E["xhr.send("body")"]
+    D --> E["xhr.send(body)"]
     E --> F{"readyState === 4?"}
     F -->|No| G["等待..."]
     F -->|Yes| H{"status 200-299 或 304?"}
@@ -2183,8 +2183,8 @@ console.log('script end')        // 4
 ```mermaid
 graph TD
     subgraph Promise 状态机
-        P["Pending (进行中)"] -->|"resolve("value")"| F["Fulfilled (已完成)"]
-        P -->|"reject("reason")"| R["Rejected (已拒绝)"]
+        P["Pending (进行中)"] -->|"resolve(value)"| F["Fulfilled (已完成)"]
+        P -->|"reject(reason)"| R["Rejected (已拒绝)"]
     end
 
     note["状态一经改变，不可逆转！<br/>Pending → Fulfilled<br/>Pending → Rejected"]
@@ -2244,7 +2244,7 @@ graph TD
         A["promise1 ✅"] --> D["all ✅"]
         B["promise2 ✅"] --> D
         C["promise3 ✅"] --> D
-        D --> E["#quot;resolved → [val1, val2, val3"]"]
+        D --> E["resolved[val1, val2, val3]"]
     end
 
     subgraph Promise.race
@@ -2258,7 +2258,7 @@ graph TD
         K["promise1 ✅"] --> N["allSettled ✅"]
         L["promise2 ❌"] --> N
         M["promise3 ✅"] --> N
-        N --> O["#quot;[ {status:'fulfilled',value:...},<br/>{status:'rejected',reason:...}, ..."]"]
+        N --> O["[ {status:'fulfilled',value:...},<br/>{status:'rejected',reason:...}, ...]"]
     end
 ```
 
@@ -2619,7 +2619,7 @@ mindmap
       内存管理
     this指向
       默认绑定: window
-      隐式绑定: obj.fn()
+      隐式绑定: obj.fn（）
       显式绑定: call/apply/bind
       new绑定
       箭头函数: 不绑定this
@@ -3078,9 +3078,9 @@ graph TD
     subgraph "结果"
         I["intersection: {3,4}<br/>交集: 共有的元素"]
         U["union: {1,2,3,4,5,6}<br/>并集: 全部元素去重"]
-        D["difference("A-B"): {1,2}<br/>差集: A有B没有"]
+        D["difference(A-B): {1,2}<br/>差集: A有B没有"]
         SD["symmetricDifference: {1,2,5,6}<br/>对称差: 互不共有的"]
-        SUB["isSubsetOf("{1,2}, {1,2,3,4}")<br/>子集: true"]
+        SUB["isSubsetOf({1,2}, {1,2,3,4})<br/>子集: true"]
     end
 ```
 
@@ -3578,14 +3578,14 @@ document.querySelectorAll('[data-track]').forEach(el => tracker.observe(el))
 
 ```mermaid
 graph TD
-    A["创建 IntersectionObserver"] --> B["调用 observe("target")"]
+    A["创建 IntersectionObserver"] --> B["调用 observe(target)"]
     B --> C{"目标与视口交叉?"}
     C -->|"是"| D["触发回调"]
     C -->|"否"| E["等待下一次滚动"]
     D --> F{"intersectionRatio >= threshold?"}
     F -->|"是"| G["执行操作<br/>加载图片/加载更多/上报曝光"]
     F -->|"否"| E
-    G --> H["unobserve("target")"]
+    G --> H["unobserve(target)"]
     H --> I["结束观察"]
 ```
 
@@ -4087,7 +4087,7 @@ localStorage.setItem('shared-data', JSON.stringify({ msg: 'hello' }))
 ```mermaid
 graph TD
     subgraph "BroadcastChannel"
-        T1A["标签页A<br/>channel.postMessage("data")"] --> CH["BroadcastChannel<br/>'app_channel'"]
+        T1A["标签页A<br/>channel.postMessage(data)"] --> CH["BroadcastChannel<br/>'app_channel'"]
         CH --> T1B["标签页B<br/>channel.onmessage"]
         CH --> T1C["标签页C<br/>channel.onmessage"]
         CH --> W1["Web Worker<br/>channel.onmessage"]
@@ -4099,7 +4099,7 @@ graph TD
     end
 
     subgraph "localStorage"
-        T2A["标签页A<br/>setItem("key, value")"] -->|"storage事件"| T2B["标签页B<br/>onstorage"]
+        T2A["标签页A<br/>setItem(key, value)"] -->|"storage事件"| T2B["标签页B<br/>onstorage"]
         T2A -.-|"❌ 不会触发自身"| T2A
     end
 
@@ -4178,8 +4178,8 @@ graph LR
     BC --> P2
     BC --> P3
 
-    P2 -->|"on("'LOGIN'")"| U1["更新 UI<br/>显示登录状态"]
-    P3 -->|"on("'LOGIN'")"| U2["更新 UI<br/>同步登录"]
+    P2 -->|"on(LOGIN)"| U1["更新 UI<br/>显示登录状态"]
+    P3 -->|"on(LOGIN)"| U2["更新 UI<br/>同步登录"]
 ```
 
 ---
@@ -4198,7 +4198,7 @@ mindmap
       Top-level await
       Error cause
       Array.fromAsync
-      .at() 方法
+      .at（） 方法
     ES2023+
       Array findLast/findLastIndex
       Hashbang Grammar
