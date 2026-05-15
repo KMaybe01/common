@@ -1,157 +1,829 @@
-# ⚛️ React 核心知识详解（增强版）
+# 🚀 React 19 完整学习指南
 
-> 🚀 前端面试必备 - React 核心知识全面梳理 | 建议收藏 ⭐
+> 这是一份全面、系统、图文并茂的 React 19 框架深度学习资料，融合核心原理、高级特性与工程实践，旨在帮助开发者从入门到精通。
 
 ---
 
-## React 知识体系脑图
+## 📑 目录结构
+
+- [第一部分：核心基础](#第一部分核心基础)
+- [第二部分：高级特性](#第二部分高级特性)
+- [第三部分：工程实践](#第三部分工程实践)
+- [第四部分：性能优化](#第四部分性能优化)
+- [第五部分：面试题汇总](#第五部分面试题汇总)
+
+---
+
+# 第一部分：核心基础
+
+## 1️⃣ React 是什么？
+
+### 📌 核心定义
+
+**React** 是由 Facebook 开发的 JavaScript 库，用于构建用户界面。它通过**组件化思想**和**声明式编程**，帮助开发者高效构建交互式、动态的 Web 应用。
+
+```typescript
+// React 的三大特性：
+// 1. 声明式：描述你想要什么，而不是如何实现
+// 2. 组件化：封装独立可复用的 UI 单元
+// 3. 虚拟 DOM：高效批量更新真实 DOM
+```
+
+### 🎯 React 的核心角色
 
 ```mermaid
-mindmap
-  root((React))
-    组件基础
-      事件机制
-      合成事件
-      组件通信
-      refs
-      Portals
-      Fragment
-      Context
-    数据管理
-      setState
-      props / state
-      Redux
-      MobX
-    生命周期
-      挂载 Mount
-      更新 Update
-      卸载 Unmount
-      错误处理
-    Hooks
-      useState
-      useEffect
-      useReducer
-      useRef
-      自定义Hook
-    虚拟DOM
-      diff算法
-      key的作用
-    Fiber架构
-      时间切片
-      优先级调度
-      双缓冲
-    路由
-      BrowserRouter
-      HashRouter
-      Switch / Route
-    代码复用
-      HOC
-      Render Props
-      Hooks
-    高阶进阶
-      SSR
-      Suspense
-      并发模式
+graph TD
+    A["React 库"] --> B["组件系统"]
+    A --> C["虚拟 DOM"]
+    A --> D["状态管理"]
+    A --> E["事件处理"]
+
+    B --> B1["函数组件"]
+    B --> B2["类组件"]
+    B --> B3["组件复用"]
+
+    D --> D1["useState"]
+    D --> D2["useContext"]
+    D --> D3["Redux/Zustand"]
+```
+
+### 📊 React vs 其他框架
+
+| 特性 | React | Vue | Angular |
+|-----|-------|-----|---------|
+| 学习曲线 | 🟡 中等 | 🟢 平缓 | 🔴 陡峭 |
+| 灵活性 | ✅ 极高 | ⚠️ 中等 | ❌ 受限 |
+| 生态系统 | ✅ 最庞大 | ⚠️ 中等 | ✅ 完整 |
+| 性能 | ✅ 优秀 | ✅ 优秀 | ✅ 优秀 |
+| 企业应用 | ✅ 完美 | ⚠️ 可行 | ✅ 完美 |
+
+### 🎨 React 设计理念
+
+1. **声明式**：为每个状态设计简洁的视图，数据变更时 React 高效更新
+2. **组件化**：可组合、可复用、可维护、可测试
+3. **虚拟 DOM**：函数式 UI 编程 + 保证性能下限
+4. **函数式编程**：给定输入 → 确定输出，无副作用
+5. **一次学习，随处编写**：Web / Native / SSR
+
+---
+
+## 2️⃣ React 19 新特性详解
+
+### 🌟 重要特性速览
+
+```
+React 19 (2024)
+├─ React Compiler (自动优化)
+├─ Actions (统一表单处理)
+├─ use() Hook (异步数据)
+├─ useOptimistic() (乐观更新)
+├─ useFormStatus/useFormState
+├─ Server Components 支持
+└─ Web Components 增强
+```
+
+### 🔧 React Compiler (Forget)详解
+
+#### 问题背景
+
+手动优化 React 性能很复杂：
+
+```typescript
+// ❌ 需要手动记忆化
+const MyComponent = memo((props) => {
+  const handleClick = useCallback(() => {}, []);
+  const value = useMemo(() => expensiveComputation(), [dep]);
+  return <Child onClick={handleClick} value={value} />;
+});
+```
+
+#### 解决方案：Compiler 自动优化
+
+```typescript
+// ✅ 自动转换，无需手动记忆化
+function MyComponent(props) {
+  const handleClick = () => {};        // ← Compiler 自动缓存
+  const value = expensiveComputation(); // ← Compiler 自动缓存
+  return <Child onClick={handleClick} value={value} />;
+}
+```
+
+**性能收益：**
+- 自动消除不必要的重新渲染
+- 减少 90%+ 的手写优化代码
+- 编译时静态分析，零运行时成本
+
+### 🎯 Actions 机制
+
+```typescript
+async function submitForm(prevState, formData) {
+  const username = formData.get('username');
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password })
+    });
+    return { success: true, message: '登录成功!' };
+  } catch (error) {
+    return { success: false, message: '登录失败' };
+  }
+}
+
+export function LoginForm() {
+  const [state, formAction] = useFormState(submitForm, null);
+  const { pending } = useFormStatus();
+
+  return (
+    <form action={formAction}>
+      <input name="username" />
+      <button type="submit" disabled={pending}>
+        {pending ? '登录中...' : '登录'}
+      </button>
+      {state?.message && <p>{state.message}</p>}
+    </form>
+  );
+}
+```
+
+**改进点：**
+- ✅ 自动加载状态管理
+- ✅ 简化异步操作处理
+- ✅ 内置乐观更新支持
+
+### ⏳ `use()` Hook - 异步数据获取
+
+```typescript
+import { use, Suspense } from 'react';
+
+function DataComponent() {
+  const data = use(fetchPromise);
+  return <div>{data.title}</div>;
+}
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DataComponent />
+    </Suspense>
+  );
+}
+```
+
+### ⏱️ React 18 vs 19 vs 20 关键变化
+
+| 特性 | React 18 (2022) | React 19 (2024) | React 20 (2025+) |
+|------|-----------------|-----------------|------------------|
+| 并发模式 | 可选启用 | 默认启用 | 默认启用 |
+| startTransition | ✅ | ✅ 增强 | ✅ 自动 |
+| use() | ❌ | ✅ | ✅ 增强 |
+| useOptimistic | ❌ | ✅ | ✅ 自动 |
+| Server Components | 实验性 | ✅ 稳定 | ✅ 默认推荐 |
+| ref 传参 | forwardRef | 直接传 ref | 直接传 ref |
+| Compiler | 实验性 | ✅ 自动 memo | ✅ 默认 |
+
+---
+
+## 3️⃣ JSX 与 Babel
+
+### 📝 JSX 详解
+
+JSX 是 **JavaScript XML**，让你能在 JS 中写 HTML 结构。JSX 本质是 `React.createElement` 的语法糖，经 Babel 编译为 AST → createElement 调用 → React 元素对象 → 虚拟 DOM → 真实 DOM。
+
+```jsx
+// 原始 JSX
+const element = <h1 className="greeting">Hello, {name}!</h1>;
+
+// Babel 编译后
+const element = React.createElement(
+  "h1",
+  { className: "greeting" },
+  "Hello, ", name, "!"
+);
+```
+
+### 🔄 JSX 转换流程图
+
+```mermaid
+graph LR
+    A["JSX 代码<br/>&lt;Component /&gt;"] -->|Babel 解析| B["AST<br/>抽象语法树"]
+    B -->|转换| C["createElement 调用"]
+    C -->|运行时| D["React 元素对象"]
+    D -->|渲染| E["虚拟 DOM"]
+    E -->|比对| F["真实 DOM"]
+```
+
+### ⚙️ JSX 规则
+
+```jsx
+// ✅ 使用 Fragment 避免多余 DOM
+return (
+  <>
+    <p>Hello</p>
+    <p>World</p>
+  </>
+);
+
+// ✅ 属性驼峰命名
+<div className="card" data-testid="card" />
+
+// ✅ 表达式插值
+<p>Count: {count * 2}</p>
+
+// ✅ 条件渲染
+{showTitle ? <h1>Title</h1> : null}
+{showTitle && <h1>Title</h1>}
 ```
 
 ---
 
-## 📋 目录（Table of Contents）
+## 4️⃣ 组件与 Props 深度剖析
 
-- [🧩 一、组件基础](#-一、组件基础)
-- [📊 二、数据管理](#-二、数据管理)
-- [🎣 三、Hooks 详解](#-三hooks-详解)
-- [🧭 四、路由](#-四路由)
-- [⚖️ 五、React 与 Vue 对比](#-五react-与-vue-对比)
-- [🎨 六、React 设计理念](#-六react-设计理念)
-- [📝 七、总结脑图](#-七总结脑图)
-- [🆕 八、React 18/19 新特性](#-八react-1819-新特性)
-- [📦 九、现代React状态管理](#-九现代react状态管理)
-- [⚡ 十、Next.js (React元框架)](#-十nextjs-react元框架)
-- [🏗️ 十一、React 设计模式和最佳实践](#-十一react-设计模式和最佳实践)
-- [🔄 十二、React 面试常考对比](#-十二react-面试常考对比)
-- [❓ 十三、React 面试题汇总](#-十三react-面试题汇总)
+### 🧩 组件解剖
+
+```typescript
+import { ReactNode } from 'react';
+
+interface CardProps {
+  title: string;
+  children: ReactNode;
+  onClick?: (id: string) => void;
+  disabled?: boolean;
+}
+
+function Card({ title, children, onClick, disabled = false }: CardProps) {
+  return (
+    <div className="card" style={{ opacity: disabled ? 0.5 : 1 }}>
+      <h2>{title}</h2>
+      <div className="card-body">{children}</div>
+      <button onClick={() => onClick?.(title)} disabled={disabled}>Click Me</button>
+    </div>
+  );
+}
+```
+
+### 📊 Props 完整对比
+
+| 特征 | Props | State |
+|------|-------|-------|
+| 来源 | 父组件 | 组件自身 |
+| 可修改 | ❌ 只读 | ✅ 可修改 |
+| 默认值 | Component.defaultProps | useState 初值 |
+| 影响重建 | ✅ Props 变化重新渲染 | ✅ State 变化重新渲染 |
+
+### 🔄 React.Component vs React.PureComponent
+
+```mermaid
+flowchart LR
+    A["Component 更新"] --> B["shouldComponentUpdate<br/>默认返回 true"]
+    B --> C["总是重新渲染"]
+
+    D["PureComponent 更新"] --> E["shouldComponentUpdate<br/>自动浅比较"]
+    E --> F{"props/state 引用是否变化?"}
+    F -->|是| G["重新渲染"]
+    F -->|否| H["跳过渲染"]
+```
+
+**注意：** PureComponent 进行**浅比较**，引用类型只比较地址。如需深比较的数据变更，必须创建新对象。
+
+> ⚠️ **易错点**：直接在现有对象上修改属性然后 `setState` 不会触发 PureComponent 重新渲染。务必使用展开运算符或 Object.assign 创建新对象。
+
+### 🔟 受控组件 vs 非受控组件
+
+```mermaid
+flowchart LR
+    subgraph 受控组件 Controlled
+        A["state 作为唯一数据源"] --> B["onChange 事件更新 state"]
+        B --> C["setState 触发重新渲染"]
+        C --> D["value 绑定 state"]
+        D --> B
+    end
+
+    subgraph 非受控组件 Uncontrolled
+        E["DOM 自身维护状态"] --> F["通过 ref 获取值"]
+        F --> G["需要时读取 DOM 值"]
+    end
+```
+
+| 维度 | 受控组件 | 非受控组件 |
+|------|---------|-----------|
+| 数据源 | React state | DOM 自身 |
+| 值获取 | state 变量 | ref 读取 |
+| 表单验证 | ✅ 容易 | ❌ 困难 |
+| 适用场景 | 复杂表单 | 简单一次性表单 |
 
 ---
 
-## 🧩 一、组件基础
+## 5️⃣ React 事件机制
 
-### 1️⃣ React 事件机制
+### 📌 合成事件（SyntheticEvent）
 
-> 💡 **要点**：React 通过事件代理将所有事件绑定在 document 上，利用合成事件（SyntheticEvent）抹平浏览器差异并实现事件池复用，减少内存开销。
-
-#### 合成事件（SyntheticEvent）
-
-React 的事件并非绑定在真实的 DOM 节点上，而是通过**事件代理（Event Delegation）**的方式，将所有事件统一绑定在 `document` 上。当事件冒泡到 `document` 时，React 将事件内容封装并交由真正的处理函数运行。
-
-```javascript
-<div onClick={this.handleClick}>点我</div>
-```
-
-上述 JSX 经过编译后，并不会在 div 上注册 click 事件监听器，而是在 document 上统一托管。
+React 的事件并非绑定在真实的 DOM 节点上，而是通过**事件代理（Event Delegation）**的方式，将所有事件统一绑定在根容器上。当事件冒泡到根容器时，React 将事件内容封装并交由真正的处理函数运行。
 
 ```mermaid
 flowchart TD
     A["用户点击 button"] --> B["原生 click 事件触发"]
     B --> C["事件冒泡传播"]
-    C --> D["到达 document 根节点"]
+    C --> D["到达根容器节点"]
     D --> E["React 统一事件监听器接管"]
-    E --> F["从映射表中查找对应的\n组件事件处理函数"]
+    E --> F["从映射表中查找对应的<br/>组件事件处理函数"]
     F --> G["创建 SyntheticEvent 合成事件对象"]
     G --> H["调用 handleClick 处理函数"]
-    H --> I["事件回调结束后\n回收合成事件对象到事件池"]
+    H --> I["事件回调结束后<br/>回收合成事件对象到事件池"]
 ```
 
-#### 实现合成事件的目的
-
-| 目的 | 说明 |
-|------|------|
-| 抹平浏览器兼容差异 | 跨浏览器原生事件包装器 |
-| 减少内存分配 | 事件池复用对象，避免频繁 GC |
-| 统一管理 | 组件挂载/销毁时统一订阅/移除 |
-
-#### React 事件与原生 HTML 事件的区别
+**React 事件与原生 HTML 事件的区别：**
 
 | 对比项 | 原生事件 | React 事件 |
 |--------|---------|-----------|
 | 命名方式 | 全小写 `onclick` | 小驼峰 `onClick` |
 | 处理函数语法 | 字符串 `"handle()"` | 函数 `{handleClick}` |
 | 阻止默认行为 | `return false` | `e.preventDefault()` |
-| 执行顺序 | 先执行 | 后执行（冒泡到 document） |
+| 执行顺序 | 先执行 | 后执行（冒泡到根容器） |
 
-> **重要：** 合成事件冒泡到 document 才执行，若原生事件阻止冒泡，会导致合成事件不执行。
->
-> 💡 **补充**：React 17+ 将事件代理从 document 迁移到 root DOM 容器，为微前端和多版本 React 共存提供更好的隔离性。React 18+ 进一步改进了事件系统性能。
+> 💡 React 17+ 将事件代理从 document 迁移到 root DOM 容器，为微前端和多版本 React 共存提供更好的隔离性。
 
 ---
 
-### 2️⃣ React 高阶组件、Render props、Hooks 对比
+## 6️⃣ Hooks 系统完全指南
 
-> 💡 **要点**：三种代码复用方案从 HOC → Render Props → Hooks 逐步演进，Hooks 解决了 props 命名冲突和嵌套地狱问题，是当前推荐的 React 代码复用方案。
+### 🎣 Hooks 工作原理
+
+```mermaid
+graph TD
+    A["函数组件<br/>每次渲染执行"] --> B["Hooks 调用"]
+    B --> C["Hook 闭包<br/>保存状态"]
+    C --> D["Fiber 对象<br/>存储 Hook 链表"]
+    D --> E["更新时<br/>恢复状态"]
+    E --> A
+```
+
+### 📍 useState - 状态管理
+
+```typescript
+const [count, setCount] = useState(0);
+
+// 函数式初始化（避免重复计算）
+const [state, setState] = useState(() => expensiveComputation());
+
+// 更新函数（基于前一个状态）
+setState(prev => prev + 1);
+```
+
+**规则 ⚠️：**
+- ✅ 只在组件顶层调用
+- ✅ 只在函数组件中调用
+- ❌ 不要在循环、条件、嵌套函数中调用
+
+### 📍 useEffect - 副作用管理
+
+```typescript
+function EffectDemo() {
+  useEffect(() => {
+    console.log('挂载 + 每次渲染后');
+    return () => console.log('清理副作用');
+  }); // 没有依赖数组，每次都运行
+
+  useEffect(() => {
+    console.log('仅在挂载时运行');
+    return () => console.log('卸载时清理');
+  }, []); // 空依赖数组，仅一次
+
+  useEffect(() => {
+    console.log('count 或 name 变化时运行');
+  }, [count, name]); // 指定依赖
+
+  return null;
+}
+```
+
+**常见模式：**
+
+```typescript
+// 数据获取（处理竞态条件）
+useEffect(() => {
+  let ignore = false;
+  fetchData().then(data => { if (!ignore) setData(data); });
+  return () => { ignore = true; };
+}, []);
+
+// 事件监听
+useEffect(() => {
+  const handleResize = () => console.log('resized');
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+// 定时器
+useEffect(() => {
+  const timer = setInterval(() => console.log('tick'), 1000);
+  return () => clearInterval(timer);
+}, []);
+```
+
+### 📍 useContext - 跨组件通信
+
+```typescript
+const ThemeContext = createContext<'light' | 'dark'>('light');
+
+function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  return (
+    <ThemeContext.Provider value={theme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return <button style={{
+    background: theme === 'light' ? '#fff' : '#333',
+    color: theme === 'light' ? '#000' : '#fff'
+  }}>按钮</button>;
+}
+```
+
+### 📍 useReducer - 复杂状态逻辑
+
+```typescript
+type Action =
+  | { type: 'ADD_TODO'; payload: Todo }
+  | { type: 'REMOVE_TODO'; payload: number }
+  | { type: 'TOGGLE_TODO'; payload: number };
+
+function todoReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return { ...state, todos: [...state.todos, action.payload] };
+    case 'REMOVE_TODO':
+      return { ...state, todos: state.todos.filter(t => t.id !== action.payload) };
+    case 'TOGGLE_TODO':
+      return {
+        ...state,
+        todos: state.todos.map(t => t.id === action.payload ? { ...t, completed: !t.completed } : t)
+      };
+    default:
+      return state;
+  }
+}
+
+function TodoApp() {
+  const [state, dispatch] = useReducer(todoReducer, initialState);
+  return (
+    <div>
+      {state.todos.map(todo => (
+        <input type="checkbox" checked={todo.completed}
+          onChange={() => dispatch({ type: 'TOGGLE_TODO', payload: todo.id })} />
+      ))}
+    </div>
+  );
+}
+```
+
+### 📍 useRef - 访问 DOM 和保存值
+
+```typescript
+// 访问 DOM 元素
+function TextInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const focusInput = () => { inputRef.current?.focus(); };
+  return <><input ref={inputRef} /><button onClick={focusInput}>Focus Input</button></>;
+}
+
+// 保存可变值（不触发重新渲染）
+function StopWatch() {
+  const intervalRef = useRef<number | null>(null);
+  const start = () => { intervalRef.current = setInterval(() => {}, 1000); };
+  const stop = () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  return <><button onClick={start}>Start</button><button onClick={stop}>Stop</button></>;
+}
+```
+
+### 📍 useCallback & useMemo - 性能优化
+
+```typescript
+// ❌ 问题：每次重新创建函数，导致子组件重新渲染
+function Parent() {
+  const handleClick = () => console.log('clicked');
+  return <Child onClick={handleClick} />;
+}
+
+// ✅ useCallback 缓存函数
+function Parent() {
+  const handleClick = useCallback(() => console.log('clicked'), []);
+  return <Child onClick={handleClick} />;
+}
+
+// ✅ useMemo 缓存计算结果
+function Component() {
+  const expensiveValue = useMemo(() => complexComputation(data), [data]);
+  return <div>{expensiveValue}</div>;
+}
+```
+
+### ⏱️ useEffect vs useLayoutEffect
+
+```mermaid
+sequenceDiagram
+    participant R as 组件渲染
+    participant D as DOM 更新
+    participant B as 浏览器绘制
+    participant E as useEffect
+    participant LE as useLayoutEffect
+
+    R->>D: render 输出 VNode
+    D->>B: React 更新真实 DOM
+    D->>LE: useLayoutEffect (同步，阻塞绘制)
+    LE->>D: 同步执行副作用
+    D->>B: 浏览器绘制
+    B->>E: useEffect (异步，不阻塞绘制)
+```
+
+| 特性 | useEffect | useLayoutEffect |
+|------|-----------|----------------|
+| 执行时机 | 浏览器绘制后（异步） | DOM 更新后绘制前（同步） |
+| 阻塞绘制 | ❌ 不阻塞 | ✅ 阻塞 |
+| 适用场景 | 数据获取、订阅、日志 | DOM 测量、样式调整 |
+| 推荐度 | ⭐ 优先使用 | ⚠️ 特殊场景使用 |
+
+### 📋 Hooks 与 Class 生命周期对照
+
+```mermaid
+flowchart TD
+    subgraph Class 生命周期
+        C1["constructor"] --> C2["getDerivedStateFromProps"]
+        C2 --> C3["shouldComponentUpdate"]
+        C3 --> C4["render"]
+        C4 --> C5["componentDidMount / DidUpdate"]
+        C5 --> C6["componentWillUnmount"]
+    end
+
+    subgraph Hooks 等价
+        H1["useState"] --> H2["渲染过程中更新 state"]
+        H2 --> H3["React.memo<br/>作用同 shouldComponentUpdate"]
+        H3 --> H4["函数体本身<br/>相当于 render"]
+        H4 --> H5["useEffect<br/>组合 DidMount + DidUpdate + WillUnmount"]
+    end
+
+    C1 -.-> H1
+    C3 -.-> H3
+    C4 -.-> H4
+    C5 -.-> H5
+    C6 -.-> H5
+```
+
+### 📍 React 19 新增 Hooks
+
+```typescript
+// use() - 异步数据获取
+function DataComponent() {
+  const data = use(fetchPromise);
+  return <div>{data}</div>;
+}
+
+// useOptimistic() - 乐观更新
+function TodoList() {
+  const [optimisticTodos, addOptimisticTodo] = useOptimistic(todos);
+  const handleAdd = async (todo: Todo) => {
+    addOptimisticTodo([...optimisticTodos, todo]);
+    await saveTodo(todo);
+  };
+  return <ul>{optimisticTodos.map(todo => <li key={todo.id}>{todo.text}</li>)}</ul>;
+}
+
+// useFormStatus() - 表单状态
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return <button disabled={pending}>{pending ? '提交中...' : '提交'}</button>;
+}
+
+// useFormState() - 表单结果
+function LoginForm() {
+  const [state, formAction] = useFormState(login, null);
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" />
+      <button type="submit">登录</button>
+      {state?.error && <p>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+---
+
+## 7️⃣ 自定义 Hooks 设计模式
+
+### 🎣 常用自定义 Hooks
+
+```typescript
+// useAsync - 异步操作管理
+function useAsync<T>(asyncFunction: () => Promise<T>, immediate = true) {
+  const [state, setState] = useState<{
+    status: 'idle' | 'pending' | 'success' | 'error';
+    data: T | null;
+    error: Error | null;
+  }>({ status: 'idle', data: null, error: null });
+
+  const execute = useCallback(async () => {
+    setState({ status: 'pending', data: null, error: null });
+    try {
+      const response = await asyncFunction();
+      setState({ status: 'success', data: response, error: null });
+      return response;
+    } catch (error) {
+      setState({ status: 'error', data: null, error: error as Error });
+    }
+  }, [asyncFunction]);
+
+  useEffect(() => { if (immediate) execute(); }, [execute, immediate]);
+
+  return { ...state, execute };
+}
+
+// useLocalStorage - 本地存储 Hook
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch { return initialValue; }
+  });
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) { console.error(error); }
+  };
+
+  return [storedValue, setValue] as const;
+}
+
+// useDebounce - 防抖 Hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+```
+
+---
+
+## 8️⃣ 生命周期与 Fiber 架构
+
+### 🔄 组件生命周期（React 16+）
+
+```mermaid
+flowchart TD
+    subgraph 挂载阶段 Mount
+        M1["constructor"] --> M2["getDerivedStateFromProps"]
+        M2 --> M3["render"]
+        M3 --> M4["React 更新 DOM 和 refs"]
+        M4 --> M5["componentDidMount"]
+    end
+
+    subgraph 更新阶段 Update
+        U0{"触发更新"} --> U1{"props/state/forceUpdate"}
+        U1 --> U2["getDerivedStateFromProps"]
+        U2 --> U3["shouldComponentUpdate"]
+        U3 -->|true| U4["render"]
+        U3 -->|false| U5["终止更新"]
+        U4 --> U6["getSnapshotBeforeUpdate"]
+        U6 --> U7["React 更新 DOM"]
+        U7 --> U8["componentDidUpdate"]
+    end
+
+    subgraph 卸载阶段 Unmount
+        D1["componentWillUnmount"]
+        D1 --> D2["清除 timer/取消请求/取消订阅"]
+    end
+
+    subgraph 错误处理 Error
+        E1["后代组件抛出错误"] --> E2["getDerivedStateFromError"]
+        E2 --> E3["渲染 fallback UI"]
+        E1 --> E4["componentDidCatch"]
+        E4 --> E5["记录错误日志"]
+    end
+
+    M5 --> U0
+    U8 --> D1
+```
+
+#### 废弃的生命周期（React 16+）
+
+```mermaid
+flowchart LR
+    dep["废弃的三个生命周期"] --> W1["componentWillMount"]
+    dep --> W2["componentWillReceiveProps"]
+    dep --> W3["componentWillUpdate"]
+
+    W1 -.->|替代| R1["constructor / componentDidMount"]
+    W2 -.->|替代| R2["getDerivedStateFromProps"]
+    W3 -.->|替代| R3["getSnapshotBeforeUpdate + componentDidUpdate"]
+```
+
+**废弃原因（Fiber 架构导致）：**
+- Fiber 让渲染过程可中断，`render` 之前的生命周期可能被执行多次
+- `componentWillMount`：功能可被 constructor 和 componentDidMount 替代
+- `componentWillReceiveProps`：容易破坏单一数据源
+- `componentWillUpdate`：回调可能被多次调用，无法可靠获取 DOM 信息
+
+### 🏗️ Fiber 架构
+
+Fiber 架构将虚拟 DOM 从递归不可中断的 Stack Reconciler 重构为可中断的 Fiber 链表结构，引入时间切片和优先级调度机制。
+
+```mermaid
+flowchart TB
+    subgraph React 15: Stack Reconciler
+        S1["递归遍历 Virtual DOM"] --> S2["同步更新 DOM"]
+        S2 --> S3["过程中不可中断"]
+        S3 --> S4["长时间占用主线程<br/>导致卡顿/掉帧"]
+    end
+
+    subgraph React 16+: Fiber Reconciler
+        F1["虚拟 DOM → Fiber 链表"] --> F2["可中断的异步渲染"]
+        F2 --> F3["时间切片 + 优先级调度"]
+        F3 --> F4{"浏览器空闲?"}
+        F4 -->|是| F5["继续执行 Fiber 工作单元"]
+        F4 -->|否| F6["让出主线程"]
+        F5 --> F7["完成 Reconciliation"]
+        F7 --> F8["一次性提交 DOM 更新"]
+    end
+```
+
+**Fiber 架构核心概念：**
+- **Fiber Node**：每个组件对应一个 Fiber 节点，构成 Fiber 树（单链表结构）
+- **双缓冲**：`current` 树（当前 UI）和 `workInProgress` 树（内存中构建的新树）
+- **时间切片（Time Slicing）**：将一个渲染任务拆分成多个小单元，每执行完一个单元就让出主线程
+- **优先级调度**：任务分优先级，高优先级任务（如用户输入）可打断低优先级任务（如数据加载）
+
+### 🔄 Reconciliation（协调）过程
+
+```mermaid
+flowchart TD
+    A["触发更新: setState / props 变化"] --> B["进入 Render 阶段<br/>可中断"]
+    B --> C["从 Fiber Root 开始遍历"]
+    C --> D["构建 workInProgress 树"]
+    D --> E{"节点是否可复用?"}
+    E -->|是| F["复用旧 Fiber，更新 props"]
+    E -->|否| G["创建新 Fiber"]
+    F --> H["收集 effectTag"]
+    G --> H
+    H --> I{"还有更多节点?"}
+    I -->|是| J["深度优先遍历"]
+    J --> D
+    I -->|否| K["workInProgress 树构建完成"]
+    K --> L["进入 Commit 阶段<br/>不可中断"]
+    L --> M["根据 effect 链表执行 DOM 操作"]
+    M --> N["current 指针切换"]
+    N --> O["触发生命周期回调"]
+```
+
+| 阶段 | 是否可中断 | 主要工作 |
+|------|-----------|---------|
+| Render | 可中断 | 构建 workInProgress 树，diff 对比，标记 effect |
+| Pre-commit | 不可中断 | 读取 DOM 快照（getSnapshotBeforeUpdate） |
+| Commit | 不可中断 | 执行 DOM 操作，触发生命周期 |
+
+---
+
+## 9️⃣ 代码复用方案对比
+
+### 🧩 HOC vs Render Props vs Hooks
 
 ```mermaid
 flowchart LR
     subgraph 代码复用方案演进
-        A["HOC\n高阶组件"] --> B["Render Props"]
-        B --> C["Hooks\nReact 16.8+"]
+        A["HOC<br/>高阶组件"] --> B["Render Props"]
+        B --> C["Hooks<br/>React 16.8+"]
     end
-    
-    A --> A1["优点: 逻辑复用\n不影响内部逻辑"]
-    A --> A2["缺点: props 命名冲突\n嵌套层级深"]
-    
-    B --> B1["优点: 数据共享灵活\n渲染逻辑可定制"]
-    B --> B2["缺点: 嵌套地狱\nreturn 外无法访问数据"]
-    
-    C --> C1["优点: 简洁直观\n解决props覆盖\n解决嵌套地狱\nreturn 外也可访问"]
-    C --> C2["限制: 只能在顶层调用\n不可放在分支/循环中"]
+
+    A --> A1["优点: 逻辑复用<br/>不影响内部逻辑"]
+    A --> A2["缺点: props 命名冲突<br/>嵌套层级深"]
+
+    B --> B1["优点: 数据共享灵活"]
+    B --> B2["缺点: 嵌套地狱"]
+
+    C --> C1["优点: 简洁直观<br/>解决props覆盖和嵌套地狱"]
+    C --> C2["限制: 只能在顶层调用"]
 ```
 
-#### （1）高阶组件（HOC）
+| 维度 | HOC | Render Props | Hooks |
+|------|-----|-------------|-------|
+| 模式 | 装饰器模式 | 函数作为 children | 组合式函数 |
+| 命名冲突 | ⚠️ 容易冲突 | ✅ 不冲突 | ✅ 不冲突 |
+| 嵌套层级 | 深 | 深（嵌套地狱） | 浅 |
+| 模板代码 | 多 | 多 | 少 |
+| 推荐度 | ⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ |
 
-**定义：** 参数是组件，返回值是新组件的函数。
+**HOC 示例：**
 
 ```javascript
-// 示例：高阶组件 - 订阅数据源
 function withSubscription(WrappedComponent, selectData) {
   return class extends React.Component {
     constructor(props) {
@@ -165,542 +837,156 @@ function withSubscription(WrappedComponent, selectData) {
 }
 ```
 
-**适用场景：** 权限控制、性能追踪、页面复用
-
-**原理：** 装饰器模式——不改变被包裹组件，在外层套一层容器组件来增强功能。
-
-#### （2）Render Props
-
-**定义：** 组件间使用一个值为函数的 prop 共享代码。
+**Render Props 示例：**
 
 ```javascript
-// 示例：Render Props 模式
 class DataProvider extends React.Component {
   state = { name: 'Tom' }
   render() {
     return <div>{this.props.render(this.state)}</div>
   }
 }
-// 使用
-<DataProvider render={data => <h1>Hello {data.name}</h1>} />
+// 使用: <DataProvider render={data => <h1>Hello {data.name}</h1>} />
 ```
 
-#### （3）Hooks
+---
 
-```javascript
-// 示例：Hooks 实现等价逻辑
-function useSubscription() {
-  const [data] = useState(DataSource.getComments())
-  return [data]
+# 第二部分：高级特性
+
+## 🔟 Context API 深度应用
+
+### 🔄 Context 完整工作流
+
+```mermaid
+graph TD
+    A["createContext"] -->|创建| B["Context 对象"]
+    B --> C["Provider 组件"]
+    B --> D["useContext Hook"]
+
+    C -->|提供| E["value"]
+    E -->|传递给| F["后代组件"]
+    D -->|消费| F
+    F -->|获取| E
+```
+
+### 🎯 实战：主题系统
+
+```typescript
+// theme-context.ts
+interface ThemeContextType {
+  theme: { primary: string; background: string; text: string };
+  toggleTheme: () => void;
+  currentThemeName: 'light' | 'dark';
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const themes = {
+  light: { primary: '#007bff', background: '#ffffff', text: '#000000' },
+  dark: { primary: '#0d6efd', background: '#1a1a1a', text: '#ffffff' }
+};
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [themeName, setThemeName] = useState<'light' | 'dark'>('light');
+  const value: ThemeContextType = {
+    theme: themes[themeName],
+    toggleTheme: () => setThemeName(prev => prev === 'light' ? 'dark' : 'light'),
+    currentThemeName: themeName
+  };
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error('useTheme must be used within ThemeProvider');
+  return context;
 }
 ```
 
-**总结：** Hooks 解决了 HOC 的 props 覆盖问题和 Render Props 的嵌套地狱问题。
-
 ---
 
-### 3️⃣ Fiber 架构
+## 1️⃣1️⃣ 状态管理完全指南
 
-> 💡 **要点**：Fiber 架构将虚拟 DOM 从递归不可中断的 Stack Reconciler 重构为可中断的 Fiber 链表结构，引入时间切片和优先级调度机制，解决了大型应用卡顿问题。
+### 📊 状态管理金字塔
 
-```mermaid
-flowchart TB
-    subgraph React 15: Stack Reconciler
-        S1["递归遍历 Virtual DOM"] --> S2["同步更新 DOM"]
-        S2 --> S3["过程中不可中断"]
-        S3 --> S4["长时间占用主线程\n导致卡顿/掉帧"]
-    end
-    
-    subgraph React 16+: Fiber Reconciler
-        F1["虚拟 DOM → Fiber 链表"] --> F2["可中断的异步渲染"]
-        F2 --> F3["时间切片 + 优先级调度"]
-        F3 --> F4{"浏览器空闲?"}
-        F4 -->|是| F5["继续执行 Fiber 工作单元"]
-        F4 -->|否| F6["让出主线程\n处理高优先级任务"]
-        F5 --> F7["完成 Reconciliation"]
-        F7 --> F8["一次性提交 DOM 更新"]
-    end
-    
-    style S4 fill:#ff9999
-    style F6 fill:#99ff99
+```
+                    复杂全局状态
+                   /            \
+          Redux / Zustand     TanStack Query
+              (客户端)         (服务器状态)
+
+      ┌─────────────────────────────────┐
+      │   Context API                   │
+      │   主题、语言、用户信息          │
+      └─────────────────────────────────┘
+
+      ┌─────────────────────────────────┐
+      │   useState / useReducer          │
+      │   本地组件状态                   │
+      └─────────────────────────────────┘
 ```
 
-**Fiber 架构核心概念：**
+### 🎯 方案对比表
 
-- **Fiber Node：** 每个组件对应一个 Fiber 节点，构成 Fiber 树（单链表结构）
-- **双缓冲：** `current` 树（当前 UI）和 `workInProgress` 树（内存中构建的新树）
-- **时间切片（Time Slicing）：** 将一个渲染任务拆分成多个小单元，每执行完一个单元就让出主线程
-- **优先级调度：** 任务分优先级，高优先级任务（如用户输入）可打断低优先级任务（如数据加载）
+| 方案 | 复杂度 | 学习曲线 | 用途 |
+|------|-------|----------|------|
+| useState | 低 | 🟢 简单 | 简单本地状态 |
+| useReducer | 中 | 🟡 中等 | 复杂本地状态 |
+| Context | 中 | 🟡 中等 | 跨组件共享状态 |
+| Redux | 高 | 🔴 陡峭 | 大型应用全局状态 |
+| Zustand | 中 | 🟢 简单 | 轻量级全局状态 |
+| TanStack Query | 中 | 🟡 中等 | 服务器数据管理 |
 
-```mermaid
-flowchart LR
-    subgraph Fiber 链表结构
-        A["Fiber Root"] --> B["App Fiber"]
-        B --> C["Header Fiber"]
-        C --> D["Content Fiber"]
-        D --> E["Footer Fiber"]
-    end
-    
-    subgraph 每个 Fiber Node
-        N1["type: 节点类型"]
-        N2["stateNode: 对应实例"]
-        N3["child: 第一个子节点"]
-        N4["sibling: 下一个兄弟"]
-        N5["return: 父节点"]
-        N6["effectTag: 操作类型"]
-        N7["expirationTime: 到期时间"]
-        N8["alternate: 指向另一棵树对应节点"]
-    end
-    
-    style N1 fill:#bbdefb
-    style N8 fill:#ffe0b2
-```
+### 💡 Zustand 实例（推荐）
 
-**解决问题：**
+```typescript
+import create from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
-- 渲染过程可中断，让浏览器及时响应交互
-- 分批延时操作 DOM，避免一次性大量操作
-- 给浏览器喘息机会进行 JIT 编译优化和 reflow 修正
-
-> ⚠️ **注意**：Fiber 的核心在于"可中断"——高优先级更新（如用户输入）可打断低优先级渲染（如数据加载）。React 通过 expirationTime 机制确保所有任务最终都会被执行，避免低优先级任务被"饿死"。
-
----
-
-### 4️⃣ setState 流程（批量更新机制）
-
-> 💡 **要点**：setState 在 React 可控环境（生命周期/合成事件）中是异步批量更新，在不可控环境（原生事件/setTimeout/Promise）中是同步更新，理解 isBatchingUpdates 机制是关键。
-
-```mermaid
-flowchart TD
-    A["调用 setState"] --> B{"setState 入口函数"}
-    B --> C["enqueueSetState\n将新的 state 放入\n_pendingStateQueue 队列"]
-    C --> D["调用 enqueueUpdate"]
-    D --> E{"batchingStrategy\nisBatchingUpdates?"}
-    E -->|true 当前处于批量模式| F["推入 dirtyComponents 队列\n等待批量处理"]
-    E -->|false 非批量模式| G["立即执行 batchedUpdates"]
-    F --> H["同步代码执行完毕\n批量处理开始"]
-    H --> I["合并 dirtyComponents 中的\n多个 setState 操作"]
-    I --> J["执行 shouldComponentUpdate"]
-    J --> K["重新渲染 Virtual DOM"]
-    K --> L["Diff + Patch 更新真实 DOM"]
-    G --> J
-    
-    subgraph 批量合并规则
-        M1["相同属性: 只保留最后一次"]
-        M2["函数式 setState("prev=>new"): 依次执行"]
-        M3["null 值: 不触发重新渲染"]
-    end
-```
-
-**setState 是同步还是异步？**
-
-```mermaid
-flowchart LR
-    A["setState 调用场景"] --> B{"React 能否控制?"}
-    B -->|能| C["isBatchingUpdates=true"]
-    B -->|不能| D["isBatchingUpdates=false"]
-    
-    C --> E["React 生命周期"]
-    C --> F["合成事件处理器"]
-    E --> G["异步: 合并到队列\n延迟批量更新"]
-    F --> G
-    
-    D --> H["原生事件 addEventListener"]
-    D --> I["setTimeout / setInterval"]
-    D --> J["Promise.then"]
-    H --> K["同步: 立即执行更新"]
-    I --> K
-    J --> K
-```
-
-**源码级流程：**
-
-```javascript
-// 1️⃣ setState 入口
-ReactComponent.prototype.setState = function (partialState, callback) {
-  this.updater.enqueueSetState(this, partialState)
-  if (callback) {
-    this.updater.enqueueCallback(this, callback, 'setState')
-  }
+interface TodoStore {
+  todos: Todo[];
+  addTodo: (text: string) => void;
+  removeTodo: (id: number) => void;
+  toggleTodo: (id: number) => void;
 }
 
-// 2. enqueueSetState 将 state 放入队列
-enqueueSetState: function (publicInstance, partialState) {
-  var internalInstance = getInternalInstanceReadyForUpdate(publicInstance, 'setState')
-  var queue = internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = [])
-  queue.push(partialState)
-  enqueueUpdate(internalInstance)
-}
-
-// 3. enqueueUpdate 判断是否批量模式
-function enqueueUpdate(component) {
-  if (!batchingStrategy.isBatchingUpdates) {
-    batchingStrategy.batchedUpdates(enqueueUpdate, component)
-    return
-  }
-  dirtyComponents.push(component)
-}
-```
-
-> 💡 **技巧**：当新状态依赖旧状态时，始终使用函数式更新 `setState(prev => prev + 1)`，这能确保在批量合并模式下每次更新都基于最新的 state 值，避免因合并导致的覆盖问题。
-
----
-
-### 5️⃣ Virtual DOM & Diff 算法
-
-> 💡 **要点**：Diff 算法基于三大策略（树分层对比、组件类型判断、key 标识复用），将时间复杂度从 O(n³) 优化到 O(n)，key 是列表性能优化的关键手段。
-
-```mermaid
-flowchart TD
-    subgraph 流程总览
-        A["数据变化"] --> B["生成新的 VNode 树"]
-        B --> C["新旧 VNode 进行 Diff"]
-        C --> D["生成 Patch 补丁对象"]
-        D --> E["根据 Patch 批量更新真实 DOM"]
-    end
-    
-    subgraph Diff 三大策略
-        S1["策略一: 树分层对比\n只比较同一层级节点\n跨层级直接删除重建"]
-        S2["策略二: 组件对比\n同类型组件走树对比\n不同类型直接替换"]
-        S3["策略三: 元素对比\n通过 key 标识列表节点\n高效复用 DOM 节点"]
-    end
-    
-    C --> S1
-    C --> S2
-    C --> S3
-```
-
-```mermaid
-flowchart TD
-    subgraph 树分层对比示例
-        T1["旧树"] --- T1_A["div id=root"]
-        T1_A --- T1_B["div"]
-        T1_A --- T1_C["p"]
-        T1_B --- T1_D["span"]
-        
-        T2["新树"] --- T2_A["div id=root"]
-        T2_A --- T2_B["section"]
-        T2_A --- T2_C["p"]
-        T2_B --- T2_D["span"]
-        
-        T1_A -->|同层级 匹配| T2_A
-        T1_B -.->|类型不同 div→section\n直接删除div及子节点\n新建section| T2_B
-        T1_C -->|同类型 p 匹配| T2_C
-        T1_D -.->|子节点丢失\n重新创建| T2_D
-    end
-    
-    style T1_B fill:#ffcccc
-    style T2_B fill:#ccffcc
-```
-
-**key 的作用：**
-
-> ⚠️ **警告**：使用数组 index 作为 key 会导致列表更新时出现数据错乱，尤其是在涉及输入框或包含状态的列表项时。务必使用唯一且稳定的标识（如数据库 id 或 UUID）。
-
-```mermaid
-flowchart LR
-    subgraph 无 key
-        L1["A B C D"] --> L2["插入 F"]
-        L2 --> L3["更新: A→A B→B C→C D→F\n然后尾部插入 D'"]
-        L3 --> L4["结果: 4 次对比 + 1 次插入"]
-    end
-    
-    subgraph 有 key
-        R1["A B C D"] --> R2["插入 F"]
-        R2 --> R3["key 匹配: A B C D 复用\n仅在尾部插入 F"]
-        R3 --> R4["结果: 仅 1 次插入"]
-    end
-    
-    style L4 fill:#ffcccc
-    style R4 fill:#ccffcc
-```
-
----
-
-### 6️⃣ 组件生命周期（React 16+）
-
-> 💡 **要点**：React 16+ 生命周期分为挂载（Mount）、更新（Update）、卸载（Unmount）、错误处理（Error）四个阶段，废弃的三个 will 前缀方法因 Fiber 可中断渲染可能导致多次调用。
-
-```mermaid
-flowchart TD
-    subgraph 挂载阶段 Mount
-        M1["constructor"] --> M2["getDerivedStateFromProps"]
-        M2 --> M3["render"]
-        M3 --> M4["React 更新 DOM 和 refs"]
-        M4 --> M5["componentDidMount"]
-    end
-    
-    subgraph 更新阶段 Update
-        U0{"触发更新"} --> U1{"props 变化\nstate 变化\nforceUpdate"}
-        U1 --> U2["getDerivedStateFromProps"]
-        U2 --> U3["shouldComponentUpdate"]
-        U3 -->|true| U4["render"]
-        U3 -->|false| U5["终止更新"]
-        U4 --> U6["getSnapshotBeforeUpdate"]
-        U6 --> U7["React 更新 DOM"]
-        U7 --> U8["componentDidUpdate"]
-    end
-    
-    subgraph 卸载阶段 Unmount
-        D1["componentWillUnmount"]
-        D1 --> D2["清除 timer\n取消网络请求\n取消订阅"]
-    end
-    
-    subgraph 错误处理 Error
-        E1["后代组件抛出错误"] --> E2["getDerivedStateFromError"]
-        E2 --> E3["渲染 fallback UI"]
-        E1 --> E4["componentDidCatch"]
-        E4 --> E5["记录错误日志"]
-    end
-    
-    M5 --> U0
-    U8 --> D1
-```
-
-#### 各阶段详细说明
-
-**挂载阶段调用顺序：**
-
-| 方法 | 说明 |
-|------|------|
-| `constructor` | 初始化 state、绑定事件 this |
-| `getDerivedStateFromProps(props, state)` | 静态方法，根据 props 映射 state |
-| `render()` | **唯一必须实现的方法**，返回 JSX |
-| `componentDidMount()` | DOM 已挂载，发起网络请求、操作 DOM |
-
-**更新阶段调用顺序：**
-
-| 方法 | 说明 |
-|------|------|
-| `getDerivedStateFromProps(props, state)` | 每次更新都会调用 |
-| `shouldComponentUpdate(nextProps, nextState)` | 性能优化，返回 false 跳过渲染 |
-| `render()` | 重新计算虚拟 DOM |
-| `getSnapshotBeforeUpdate(prevProps, prevState)` | 获取更新前的 DOM 快照 |
-| `componentDidUpdate(prevProps, prevState, snapshot)` | 更新完成，操作更新后的 DOM |
-
-#### 废弃的生命周期（React 16+）
-
-```mermaid
-flowchart LR
-    dep["废弃的三个生命周期"] --> W1["componentWillMount"]
-    dep --> W2["componentWillReceiveProps"]
-    dep --> W3["componentWillUpdate"]
-    
-    W1 -.->|替代| R1["constructor / componentDidMount"]
-    W2 -.->|替代| R2["getDerivedStateFromProps"]
-    W3 -.->|替代| R3["getSnapshotBeforeUpdate + componentDidUpdate"]
-    
-    style dep fill:#ffcccc
-    style W1 fill:#ffcccc
-    style W2 fill:#ffcccc
-    style W3 fill:#ffcccc
-    style R1 fill:#ccffcc
-    style R2 fill:#ccffcc
-    style R3 fill:#ccffcc
-```
-
-**废弃原因（Fiber 架构导致）：**
-
-- Fiber 让渲染过程可中断，`render` 之前的生命周期可能被执行多次
-- `componentWillMount`：功能可被 constructor 和 componentDidMount 替代
-- `componentWillReceiveProps`：容易破坏单一数据源，被 `getDerivedStateFromProps` 替代
-- `componentWillUpdate`：回调可能被多次调用，且无法可靠获取 DOM 信息
-
----
-
-### 7️⃣ Reconciliation（协调）过程
-
-> 💡 **要点**：协调过程分为 Render（可中断，构建 workInProgress 树）、Pre-commit（不可中断，读取 DOM 快照）、Commit（不可中断，执行 DOM 操作）三个阶段。
-
-```mermaid
-flowchart TD
-    A["触发更新: setState / props 变化"] --> B["进入 Render 阶段\n可中断"]
-    B --> C["从 Fiber Root 开始遍历"]
-    C --> D["构建 workInProgress 树"]
-    D --> E{"节点是否可复用?"}
-    E -->|是| F["复用旧 Fiber\n更新 props"]
-    E -->|否| G["创建新 Fiber"]
-    F --> H["收集 effectTag\n标记增/删/改"]
-    G --> H
-    H --> I{"还有更多节点?"}
-    I -->|是| J["深度优先遍历\nchild → sibling"]
-    J --> D
-    I -->|否| K["workInProgress 树构建完成"]
-    K --> L["进入 Commit 阶段\n不可中断"]
-    L --> M["根据 effect 链表\n执行 DOM 操作"]
-    M --> N["current 指针切换\nworkInProgress → current"]
-    N --> O["componentDidMount /\ncomponentDidUpdate 触发"]
-    
-    style B fill:#bbdefb
-    style L fill:#ffccbc
-```
-
-**三个阶段的职责：**
-
-| 阶段 | 是否可中断 | 主要工作 |
-|------|-----------|---------|
-| Render | 可中断 | 构建 workInProgress 树，diff 对比，标记 effect |
-| Pre-commit | 不可中断 | 读取 DOM 快照（getSnapshotBeforeUpdate） |
-| Commit | 不可中断 | 执行 DOM 操作，触发生命周期 |
-
----
-
-### 8️⃣ 组件通信方式
-
-> 💡 **要点**：React 提供五种组件通信方式：props（父→子）、回调函数（子→父）、共同父组件转发（兄弟）、Context API（跨层级）、Redux/Event Bus（任意组件）。
-
-```mermaid
-flowchart TD
-    subgraph 5种通信方式
-        T1["父→子: props"]
-        T2["子→父: props + 回调函数"]
-        T3["兄弟组件: 共同父组件转发"]
-        T4["跨层级: Context API"]
-        T5["任意组件: Redux / Event Bus"]
-    end
-    
-    T4 --> C1["Provider 提供数据"]
-    T4 --> C2["Consumer 消费数据"]
-    T5 --> C3["store.dispatch action"]
-    T5 --> C4["reducer 处理并返回新 state"]
-    T5 --> C5["subscribe 通知视图更新"]
-```
-
----
-
-### 9️⃣ React.Component vs React.PureComponent
-
-> 💡 **要点**：PureComponent 自动实现 shouldComponentUpdate 的浅比较（shallow compare），引用类型只比较地址，变更时必须创建新对象才能触发渲染。
-
-```mermaid
-flowchart LR
-    A["Component 更新"] --> B["shouldComponentUpdate\n默认返回 true"]
-    B --> C["总是重新渲染"]
-    
-    D["PureComponent 更新"] --> E["shouldComponentUpdate\n自动浅比较"]
-    E --> F{"props/state 引用是否变化?"}
-    F -->|是| G["重新渲染"]
-    F -->|否| H["跳过渲染"]
-    
-    style C fill:#ffcccc
-    style H fill:#ccffcc
-```
-
-**注意：** PureComponent 进行**浅比较**，引用类型只比较地址。如需深比较的数据变更，必须创建新对象。
-
-> ⚠️ **易错点**：直接在现有对象上修改属性然后 `setState` 不会触发 PureComponent 重新渲染，因为浅比较发现引用地址未变化。务必使用展开运算符或 Object.assign 创建新对象。
-
----
-
-### 🔟 受控组件 vs 非受控组件
-
-> 💡 **要点**：受控组件的状态由 React state 驱动，数据实时同步且可预测；非受控组件通过 ref 获取 DOM 值，适合简单表单或第三方库集成场景。
-
-```mermaid
-flowchart LR
-    subgraph 受控组件 Controlled
-        A["state 作为唯一数据源"] --> B["onChange 事件更新 state"]
-        B --> C["setState 触发重新渲染"]
-        C --> D["value 绑定 state"]
-        D --> B
-    end
-    
-    subgraph 非受控组件 Uncontrolled
-        E["DOM 自身维护状态"] --> F["通过 ref 获取值"]
-        F --> G["需要时读取 DOM 值"]
-        G --> E
-    end
-    
-    style A fill:#bbdefb
-    style E fill:#ffe0b2
-```
-
----
-
-### 1️⃣1️⃣ JSX 详解
-
-> 💡 **要点**：JSX 是 React.createElement 的语法糖，经 Babel 编译为 AST → createElement 调用 → React 元素对象 → 虚拟 DOM → 真实 DOM，支持表达式插值和条件渲染。
-
-#### JSX 的本质
-
-JSX 是 **JavaScript XML** 的语法糖，让你能在 JS 中写类 HTML 结构。它最终会被 Babel 编译为 `React.createElement` 调用。
-
-```jsx
-// JSX 写法
-const element = <h1 className="greeting">Hello, {name}!</h1>;
-
-// Babel 编译后
-const element = React.createElement(
-  "h1",
-  { className: "greeting" },
-  "Hello, ", name, "!"
+export const useTodoStore = create<TodoStore>()(
+  devtools(
+    persist(
+      (set) => ({
+        todos: [],
+        addTodo: (text) => set((state) => ({
+          todos: [...state.todos, { id: Date.now(), text, completed: false }]
+        })),
+        removeTodo: (id) => set((state) => ({
+          todos: state.todos.filter(t => t.id !== id)
+        })),
+        toggleTodo: (id) => set((state) => ({
+          todos: state.todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
+        }))
+      }),
+      { name: 'todo-store' }
+    ),
+    { name: 'TodoStore' }
+  )
 );
 ```
 
-#### JSX 转换流程
-
-```mermaid
-graph LR
-    A["JSX 代码<br/>&lt;Component /&gt;"] -->|Babel 解析| B["AST<br/>抽象语法树"]
-    B -->|转换| C["createElement 调用"]
-    C -->|运行时| D["React 元素对象"]
-    D -->|渲染| E["虚拟 DOM"]
-    E -->|比对| F["真实 DOM"]
-```
-
-#### JSX 规则
-
-```jsx
-// ✅ 根元素唯一
-return (
-  <div>
-    <p>Hello</p>
-    <p>World</p>
-  </div>
-);
-
-// ✅ 使用 Fragment 避免多余 DOM
-return (
-  <>
-    <p>Hello</p>
-    <p>World</p>
-  </>
-);
-
-// ✅ 属性驼峰命名
-<div className="card" data-testid="card" />
-
-// ✅ 表达式插值（任意 JS 表达式）
-<p>Count: {count * 2}</p>
-
-// ✅ 条件渲染
-{showTitle ? <h1>Title</h1> : null}
-{showTitle && <h1>Title</h1>}
-```
-
----
-
-## 📊 二、数据管理
-
-### Redux 工作流
+### 🏪 Redux 工作流
 
 ```mermaid
 flowchart TD
     A["React Component"] -->|dispatch action| B["Action"]
-    B --> C["Middleware\nredux-thunk / redux-saga"]
-    C --> D["Reducer\n纯函数"]
-    D --> E["Store\n单一状态树"]
+    B --> C["Middleware<br/>redux-thunk / redux-saga"]
+    C --> D["Reducer<br/>纯函数"]
+    D --> E["Store<br/>单一状态树"]
     E -->|connect / mapStateToProps| A
-    
+
     subgraph 三大原则
-        P1["单一数据源\nSingle Source of Truth"]
-        P2["状态只读\nState is Read-only"]
-        P3["使用纯函数修改\nChanges by Pure Functions"]
+        P1["单一数据源"]
+        P2["状态只读"]
+        P3["使用纯函数修改"]
     end
-    
-    style P1 fill:#e3f2fd
-    style P2 fill:#e3f2fd
-    style P3 fill:#e3f2fd
 ```
 
 **Redux 中间件原理：**
@@ -712,760 +998,87 @@ flowchart LR
     C --> D["middleware 3"]
     D --> E["reducer"]
     E --> F["store"]
-    
-    M["applyMiddleware 源码"] --> M1["注入 {getState, dispatch}"]
+
+    M["applyMiddleware"] --> M1["注入 {getState, dispatch}"]
     M1 --> M2["组合中间件链"]
     M2 --> M3["返回增强版 dispatch"]
 ```
 
----
-
-## 🎣 三、Hooks 详解
-
-### 📋 Hooks 与 Class 生命周期对照
-
-> 💡 **要点**：Hooks 以函数组件替代 Class 生命周期：useState → constructor，React.memo → shouldComponentUpdate，useEffect 组合了 componentDidMount/Update/WillUnmount。
-
-```mermaid
-flowchart TD
-    subgraph Class 生命周期
-        C1["constructor"] --> C2["getDerivedStateFromProps"]
-        C2 --> C3["shouldComponentUpdate"]
-        C3 --> C4["render"]
-        C4 --> C5["componentDidMount / DidUpdate"]
-        C5 --> C6["componentWillUnmount"]
-    end
-    
-    subgraph Hooks 等价
-        H1["useState"] --> H2["渲染过程中更新 state\n模拟 getDerivedStateFromProps"]
-        H2 --> H3["React.memo\n作用同 shouldComponentUpdate"]
-        H3 --> H4["函数体本身\n相当于 render"]
-        H4 --> H5["useEffect\n组合 DidMount + DidUpdate + WillUnmount"]
-    end
-    
-    C1 -.-> H1
-    C2 -.-> H2
-    C3 -.-> H3
-    C4 -.-> H4
-    C5 -.-> H5
-    C6 -.-> H5
-```
-
-### ⏱️ useEffect vs useLayoutEffect
-
-> 💡 **要点**：useEffect 异步执行不阻塞浏览器绘制，适合数据获取和订阅；useLayoutEffect 同步执行阻塞绘制，适合 DOM 测量和样式调整；优先使用 useEffect。
-
-```mermaid
-sequenceDiagram
-    participant R as 组件渲染
-    participant D as DOM 更新
-    participant B as 浏览器绘制
-    participant E as useEffect
-    participant LE as useLayoutEffect
-    
-    Note over R,LE: 执行顺序对比
-    
-    R->>D: render 输出 VNode
-    D->>B: React 更新真实 DOM
-    
-    Note over B: 浏览器尚未绘制屏幕
-    
-    D->>LE: useLayoutEffect (同步)
-    LE->>D: 同步执行副作用，阻塞绘制
-    D->>B: 浏览器绘制（已包含布局效果变更）
-    
-    B->>E: useEffect (异步)
-    Note over E: 此时用户可见更新
-    
-    Note over E: useEffect 延迟执行\n不会阻塞浏览器绘制
-```
-
----
-
-### 3️⃣ 自定义 Hooks 实战
-
-> 💡 **要点**：自定义 Hooks 是 React 逻辑复用的最高形态，将组件逻辑提取为可复用的函数，以下展示 useAsync、useLocalStorage、useDebounce 三个经典实战案例。
-
-#### useAsync - 异步操作管理
+### 🧩 Jotai / Recoil（原子化状态管理）
 
 ```typescript
-// useAsync Hook - 管理异步操作的状态机
-function useAsync<T>(
-  asyncFunction: () => Promise<T>,
-  immediate = true
-) {
-  const [state, setState] = useState<{
-    status: 'idle' | 'pending' | 'success' | 'error';
-    data: T | null;
-    error: Error | null;
-  }>({
-    status: 'idle',
-    data: null,
-    error: null,
-  });
+import { atom, useAtom } from 'jotai';
 
-  const execute = useCallback(async () => {
-    setState({ status: 'pending', data: null, error: null });
-    try {
-      const response = await asyncFunction();
-      setState({ status: 'success', data: response, error: null });
-      return response;
-    } catch (error) {
-      setState({ status: 'error', data: null, error: error as Error });
-    }
-  }, [asyncFunction]);
+const countAtom = atom(0);
+const doubledAtom = atom((get) => get(countAtom) * 2);
 
-  useEffect(() => {
-    if (immediate) execute();
-  }, [execute, immediate]);
-
-  return { ...state, execute };
-}
-
-// 使用
-function UserProfile({ userId }: { userId: string }) {
-  const { status, data: user, error } = useAsync(
-    () => fetch(`/api/users/${userId}`).then(r => r.json())
-  );
-  if (status === 'pending') return <div>Loading...</div>;
-  if (status === 'error') return <div>Error: {error?.message}</div>;
-  if (status === 'success') return <div>{user?.name}</div>;
+function Counter() {
+  const [count, setCount] = useAtom(countAtom);
+  const [doubled] = useAtom(doubledAtom);
+  return <button onClick={() => setCount(c => c + 1)}>+1 (Double: {doubled})</button>;
 }
 ```
 
-#### useLocalStorage - 本地存储 Hook
+**Context API vs Jotai/Recoil：**
+
+| 维度 | Context API | Jotai/Recoil |
+|------|-------------|--------------|
+| 渲染优化 | 所有消费者重渲染 | 仅关联原子变化时重渲染 |
+| 组合性 | 多层 Provider 嵌套 | 原子自由组合 |
+| TypeScript | 中等 | 优秀 |
+| Bundle 大小 | 内置 | ~3KB (Jotai) |
+
+### 🔄 Zustand vs Redux vs MobX
+
+| 维度 | Zustand | Redux Toolkit | MobX |
+|------|---------|---------------|------|
+| 范式 | 不可变 | 不可变（Immer） | 可变（响应式） |
+| 模板代码 | 极少 | 中等 | 少 |
+| Bundle | ~1KB | ~12KB | ~16KB |
+| 学习曲线 | 低 | 中 | 低 |
+| TypeScript | 优秀 | 优秀 | 一般 |
+| 最适合 | 中小型项目 | 大型复杂项目 | 响应式思维项目 |
+
+### 📡 TanStack Query (React Query)
 
 ```typescript
-// useLocalStorage Hook - 本地存储与 React 状态同步
-function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return [storedValue, setValue] as const;
-}
-
-// 使用
-function DarkModeToggle() {
-  const [isDark, setIsDark] = useLocalStorage('darkMode', false);
-  return <button onClick={() => setIsDark(!isDark)}>{isDark ? '🌙' : '☀️'}</button>;
-}
-```
-
-#### useDebounce - 防抖 Hook
-
-```typescript
-// useDebounce Hook - 防抖处理，返回延迟更新后的值
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-// 使用
-function SearchUsers() {
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 500);
-
-  useEffect(() => {
-    if (debouncedSearch) fetchUsers(debouncedSearch);
-  }, [debouncedSearch]);
-
-  return <input value={search} onChange={(e) => setSearch(e.target.value)} />;
-}
-```
-
----
-
-## 🧭 四、路由
-
-### 🔧 React Router 实现原理
-
-> 💡 **要点**：React Router 通过 history 库统一 HashRouter（hashchange）和 BrowserRouter（History API + popstate），Route 组件匹配当前 URL 渲染对应组件。
-
-```mermaid
-flowchart TD
-    subgraph HashRouter
-        H1["URL: http://xxx/#/path"] --> H2["监听 hashchange 事件"]
-        H2 --> H3["hash 变化 → 匹配路由"]
-        H3 --> H4["渲染对应组件"]
-    end
-    
-    subgraph BrowserRouter
-        B1["URL: http://xxx/path"] --> B2["使用 History API"]
-        B2 --> B3["pushState / replaceState\n改变 URL 不刷新页面"]
-        B3 --> B4["监听 popstate 事件"]
-        B4 --> B5["匹配路由 → 渲染组件"]
-    end
-    
-    subgraph react-router 封装
-        L1["history 库\n抹平 hash 与 history 差异"]
-        L2["Route 组件\npath 匹配当前 URL"]
-        L3["Switch 组件\n渲染第一个匹配的 Route"]
-        L4["Link 组件\n阻止 a 默认行为\n通过 history 跳转"]
-    end
-```
-
----
-
-## ⚖️ 五、React 与 Vue 对比
-
-```mermaid
-flowchart LR
-    subgraph React
-        R1["单向数据流"]
-        R2["JSX 模板"]
-        R3["不可变数据\n手动优化 shouldComponentUpdate"]
-        R4["HOC 扩展"]
-        R5["Create React App"]
-        R6["React Native"]
-    end
-    
-    subgraph Vue
-        V1["双向数据绑定"]
-        V2["HTML 模板"]
-        V3["可变数据\n自动追踪依赖"]
-        V4["Mixins 扩展"]
-        V5["Vue CLI"]
-        V6["Weex"]
-    end
-    
-    C1["相同点"] --- C2["Virtual DOM"]
-    C1 --- C3["组件化"]
-    C1 --- C4["props 数据传递"]
-    C1 --- C5["核心库 + 生态路由/状态管理"]
-    
-    style C1 fill:#e8f5e9
-```
-
----
-
-## 🎨 六、React 设计理念
-
-1. **声明式：** 为每个状态设计简洁的视图，数据变更时 React 高效更新
-2. **组件化：** 可组合、可复用、可维护、可测试
-3. **虚拟 DOM：** 函数式 UI 编程 + 保证性能下限
-4. **函数式编程：** 给定输入 → 确定输出，无副作用
-5. **一次学习，随处编写：** Web / Native / SSR
-
----
-
-## 📝 七、总结脑图
-
-```mermaid
-mindmap
-  root((React 面试要点))
-    组件基础
-      合成事件
-      Fiber 架构可中断
-      生命周期 16+
-      通信方式5种
-    数据流
-      setState 批量合并
-      props 不可变
-      Redux 三大原则
-      Redux 中间件
-    性能优化
-      PureComponent 浅比较
-      React.memo
-      shouldComponentUpdate
-      key 优化列表
-    代码复用
-      HOC 装饰模式
-      Render Props
-      Hooks 更优方案
-    核心机制
-      虚拟 DOM
-      Diff 算法 O(n)
-      Reconciliation
-      双缓冲 Fiber树
-    未来特性
-      并发模式 Concurrent
-      Suspense 异步渲染
-      Server Components
-```
-
----
-
-> 📖 本文档由原版面试总结大幅扩展而成，增加了 Mermaid 可视化图表辅助理解，涵盖 React 核心概念、原理、流程、对比等全方位知识体系。
-
----
-
-## 🆕 八、React 18/19 新特性
-
-### 1️⃣ React 18 并发特性
-
-> 💡 **要点**：React 18 引入并发渲染机制，通过 startTransition/useDeferredValue 标记低优先级更新，结合 Automatic Batching 和流式 SSR 大幅提升用户体验。
-
-#### startTransition 和 useTransition
-- **startTransition**：标记非紧急更新，让高优先级更新（如用户输入）优先渲染
-- **useTransition**：返回 `[isPending, startTransition]`，可获取过渡状态
-- 适用场景：搜索过滤、大量数据渲染、页面切换
-
-```tsx
-const [isPending, startTransition] = useTransition();
-const [query, setQuery] = useState('');
-
-function handleChange(e) {
-  // 高优先级：更新输入框
-  setQuery(e.target.value);
-  // 低优先级：过滤大量数据
-  startTransition(() => {
-    setFilteredResults(filterData(e.target.value));
-  });
-}
-```
-
-#### useDeferredValue
-- 延迟更新某个值，类似于防抖但由 React 调度控制
-- 常用于接收 props 的组件，让组件延迟响应变化的值
-
-```tsx
-const [query, setQuery] = useState('');
-const deferredQuery = useDeferredValue(query);
-// deferredQuery 会在空闲时更新，query 始终保持最新
-```
-
-#### Automatic Batching (自动批处理)
-- React 18 之前：仅在事件处理函数中批量更新
-- React 18：Promise、setTimeout、原生事件中也能自动批处理
-
-```tsx
-// React 18 中以下代码只触发一次渲染（自动批处理）
-setTimeout(() => {
-  setCount(c => c + 1);
-  setFlag(f => !f);
-}, 1000);
-```
-
-#### Suspense 增强 (流式SSR)
-- 服务端渲染支持 `<Suspense>` 包裹的组件流式输出 HTML
-- 页面无需等待所有数据加载完成即可发送给客户端
-- 结合 `streaming` 和 `selective hydration` 提升首屏性能
-
-#### useId
-- 生成唯一且稳定的 ID，用于 SSR 场景下的无障碍属性关联
-
-```tsx
-const id = useId();
-return <><label htmlFor={id}>Name</label><input id={id} /></>;
-```
-
-#### useSyncExternalStore
-- 用于订阅外部存储（如 Redux、Zustand），避免撕裂问题
-- React 推荐第三方状态库使用此 API 作为桥梁
-
-```tsx
-const state = useSyncExternalStore(store.subscribe, store.getSnapshot);
-```
-
-#### useInsertionEffect
-- 在 DOM 变更前同步执行，专用于 CSS-in-JS 库注入样式
-- 比 `useEffect` 执行时机更早，避免样式闪烁
-
-#### 并发渲染流程图
-
-```mermaid
-graph TD
-    A["用户交互"] --> B{"优先级判断"}
-    B -->|高优先级| C["立即渲染"]
-    B -->|低优先级| D["startTransition"]
-    D --> E["标记为过渡更新"]
-    E --> F{"是否有高优更新插入?"}
-    F -->|是| G["中断当前渲染"]
-    G --> B
-    F -->|否| H["完成渲染"]
-    H --> I["提交到DOM"]
-
-    style C fill:#4CAF50,color:#fff
-    style D fill:#FF9800,color:#fff
-    style I fill:#2196F3,color:#fff
-```
-
-### 2️⃣ React 19 新特性
-
-> 💡 **要点**：React 19 带来了 use()、useOptimistic、useFormStatus、useActionState 等新 Hooks，Server Components 稳定化，ref 可直接作为 prop 传递，废弃 forwardRef。
-
-#### use() 钩子
-- 在渲染阶段直接读取 Promise 或 Context 的值
-- 配合 `<Suspense>` 使用，让组件更简洁
-
-```tsx
-function Comments({ commentsPromise }) {
-  const comments = use(commentsPromise); // 直接读取 Promise
-  return <ul>{comments.map(c => <li key={c.id}>{c.text}</li>)}</ul>;
-}
-
-// 配合 Context
-const theme = use(ThemeContext); // 替代 useContext
-```
-
-#### useOptimistic (乐观更新)
-- 在异步操作完成前先显示预期结果，提升用户体验
-
-```tsx
-const [optimisticState, addOptimistic] = useOptimistic(
-  state,
-  (currentState, optimisticValue) => ({ ...currentState, ...optimisticValue })
-);
-
-async function handleSubmit(formData) {
-  addOptimistic({ text: formData.get('text'), pending: true });
-  await saveToServer(formData); // 实际请求
-}
-```
-
-#### useFormStatus
-- 获取表单提交状态，替代手动管理 loading state
-
-```tsx
-function SubmitButton() {
-  const { pending, data, method, action } = useFormStatus();
-  return <button disabled={pending}>{pending ? '提交中...' : '提交'}</button>;
-}
-```
-
-#### useActionState
-- 管理表单 Action 的状态和返回值
-
-```tsx
-const [state, formAction, isPending] = useActionState(
-  async (prevState, formData) => {
-    const result = await updateName(formData.get('name'));
-    return result;
-  },
-  null
-);
-```
-
-#### Server Components (RSC) 稳定
-- 服务端组件成为 React 19 的一等公民
-- 服务端组件不产生 JavaScript bundle，减少客户端体积
-
-#### Server Actions
-- 在服务端组件中定义可直接调用的异步函数
-
-```tsx
-// app/actions.ts
-'use server';
-export async function createItem(formData: FormData) {
-  const item = await db.insert(formData);
-  revalidatePath('/items');
-  return item;
-}
-```
-
-#### ref 作为 prop 直接传递
-- React 19 中不再需要 `forwardRef`，ref 可直接作为 prop
-
-```tsx
-// React 19 写法
-function MyInput({ ref, ...props }) {
-  return <input ref={ref} {...props} />;
-}
-```
-
-#### React 新旧版本对比
-
-```mermaid
-graph LR
-    subgraph React 18
-        A1["Concurrent Mode"]
-        B1["Suspense SSR"]
-        C1["Auto Batching"]
-        D1["useId / useSyncExternalStore"]
-    end
-
-    subgraph React 19
-        A2["use 读取Promise/Context"]
-        B2["useOptimistic 乐观更新"]
-        C2["Server Components 稳定"]
-        D2["Server Actions"]
-        E2["ref 直接传"]
-        F2["useFormStatus / useActionState"]
-    end
-
-    A1 --> A2
-    B1 --> C2
-    C1 --> A2
-
-    style A2 fill:#E91E63,color:#fff
-    style B2 fill:#9C27B0,color:#fff
-    style C2 fill:#FF5722,color:#fff
-    style D2 fill:#4CAF50,color:#fff
-```
-
-### 3️⃣ React Server Components (RSC) 详解
-
-> 💡 **要点**：RSC 在服务端渲染且不产生 JS bundle，能直接访问数据库；与 SSR 不同，RSC 输出为特殊 RSC Payload 格式，支持流式传输和选择性水合。
-
-#### 客户端组件 vs 服务端组件
-
-| 对比维度 | 服务端组件 (RSC) | 客户端组件 |
-|---------|----------------|-----------|
-| 运行环境 | 服务器 | 浏览器 |
-| Bundle 大小 | 0 KB（不发送到客户端） | 包含全部 JS |
-| 数据获取 | 直接访问数据库/文件系统 | 通过 API 调用 |
-| 状态/效果 | ❌ 不支持 useState/useEffect | ✅ 完整支持 |
-| 交互能力 | ❌ 不支持事件处理 | ✅ 完整支持 |
-| 渲染时机 | 每次请求时 | 客户端渲染/水合 |
-
-#### RSC 流式传输
-- 服务端组件渲染结果为 `RSC Payload`（一种特殊格式）
-- 客户端逐步接收并渲染，无需等待所有 RSC 完成
-- 结合 `<Suspense>` 实现按需加载
-
-#### Server-only code vs Client-only code
-
-```tsx
-// ✅ 服务端代码 - 不会泄漏到客户端
-import 'server-only';
-import fs from 'fs';
-import db from 'database';
-
-// ❌ 客户端代码 - 'use client' 指令
-'use client';
-import { useState } from 'react';
-
-// ⚠️ 共享组件 - 同时在服务端和客户端渲染
-function SharedComponent() { /* 无状态、无副作用、无 API 调用 */ }
-```
-
-#### 与 SSR 的区别
-
-| 维度 | SSR | RSC |
-|-----|-----|-----|
-| 输出 | HTML | RSC Payload（序列化数据结构） |
-| 水合 | 需要完整水合 | 选择性水合 |
-| Bundle | 全部 JS 发送到客户端 | 服务端组件不产生 JS |
-| 数据源 | 通常在服务端获取 | 可无限深层嵌套获取 |
-| 交互 | 水合后才有交互 | 客户端组件部分立即可交互 |
-
-#### 架构对比图
-
-```mermaid
-graph TB
-    subgraph "传统 SSR"
-        A1["请求"] --> B1["服务端获取所有数据"]
-        B1 --> C1["渲染完整 HTML"]
-        C1 --> D1["发送 HTML + 全部 JS"]
-        D1 --> E1["客户端水合"]
-    end
-
-    subgraph "RSC 架构"
-        A2["请求"] --> B2["服务端渲染 RSC"]
-        B2 --> C2["流式传输 RSC Payload"]
-        C2 --> D2{"按 Suspense 边界"}
-        D2 -->|就绪部分| E2["客户端增量渲染"]
-        D2 -->|等待中| F2["显示 fallback"]
-        F2 --> D2
-    end
-
-    style E1 fill:#FF9800,color:#fff
-    style E2 fill:#4CAF50,color:#fff
-    style C2 fill:#2196F3,color:#fff
-```
-
----
-
-## 📦 九、现代React状态管理
-
-### 1️⃣ Zustand
-
-> 💡 **要点**：Zustand 是极简状态管理库（~1KB），无需 Provider 包裹，基于不可变数据模式的 Mutable API，天然支持 TypeScript，无 action/reducer 模板代码。
-
-#### 极简状态管理
-- 轻量级（~1KB），无 Provider 包裹
-- 基于不可变数据模式的 Mutable API
-- 天然支持 TypeScript
-- 无需 action/reducer 模板代码
-
-#### 创建 Store
-
-```tsx
-// 创建 Zustand Store（无需 Provider 包裹）
-import { create } from 'zustand';
-
-interface BearStore {
-  bears: number;
-  increase: () => void;
-  reset: () => void;
-}
-
-const useBearStore = create<BearStore>((set) => ({
-  bears: 0,
-  increase: () => set((state) => ({ bears: state.bears + 1 })),
-  reset: () => set({ bears: 0 }),
-}));
-
-// 在组件中使用
-function BearCounter() {
-  const bears = useBearStore((state) => state.bears);
-  return <h1>{bears} around here...</h1>;
-}
-```
-
-#### 与 Redux 对比
-
-| 维度 | Zustand | Redux Toolkit |
-|------|---------|---------------|
-| Bundle 大小 | ~1KB | ~12KB |
-| Provider | 不需要 | 需要 `<Provider>` |
-| 模板代码 | 极少 | 中等（slice/reducer/action） |
-| 学习曲线 | 低 | 中 |
-| DevTools | 支持 | 内置 |
-| 中间件 | 插件式 | 内置 |
-
-#### 数据流图
-
-```mermaid
-graph LR
-    A["组件"] -->|调用 action| B["Zustand Store"]
-    B -->|返回新状态| C{"不可变更新"}
-    C --> D["触发订阅"]
-    D -->|精确选择| E["订阅该片段的组件"]
-    E -->|重新渲染| A
-
-    subgraph Store 内部
-        B --> F["set 函数"]
-        F --> C
-    end
-
-    style B fill:#E91E63,color:#fff
-    style C fill:#FF9800,color:#fff
-    style D fill:#4CAF50,color:#fff
-```
-
-#### 代码示例：带中间件
-
-```tsx
-import { create } from 'zustand';
-import { persist, devtools } from 'zustand/middleware';
-
-interface Store {
-  count: number;
-  increment: () => void;
-}
-
-const useStore = create<Store>()(
-  devtools(
-    persist(
-      (set) => ({
-        count: 0,
-        increment: () => set((state) => ({ count: state.count + 1 })),
-      }),
-      { name: 'count-storage' }
-    )
-  )
-);
-```
-
-### 2️⃣ TanStack Query (React Query)
-
-> 💡 **要点**：TanStack Query 将服务端状态与客户端状态分离，自动管理缓存、重新获取、后台刷新，可减少 90% 的数据获取样板代码。
-
-#### 服务端状态管理
-- 将服务端状态与客户端状态分离
-- 自动缓存、重新获取、后台刷新
-- 减少 90% 的样板代码
-
-#### useQuery / useMutation
-
-```tsx
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// 获取数据
 function Todos() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['todos'],
     queryFn: () => fetch('/api/todos').then(r => r.json()),
-    staleTime: 5 * 60 * 1000, // 5分钟内不重新获取
-    cacheTime: 30 * 60 * 1000, // 30分钟缓存
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
   });
 
   if (isLoading) return <Spinner />;
-  if (error) return <Error error={error} />;
   return <TodoList todos={data} />;
 }
 
-// 修改数据
 function AddTodo() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (newTodo) => fetch('/api/todos', {
-      method: 'POST',
-      body: JSON.stringify(newTodo),
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
+    mutationFn: (newTodo) => fetch('/api/todos', { method: 'POST', body: JSON.stringify(newTodo) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   });
-
-  return (
-    <button onClick={() => mutation.mutate({ text: 'New Todo' })}>
-      {mutation.isPending ? 'Adding...' : 'Add Todo'}
-    </button>
-  );
+  return <button onClick={() => mutation.mutate({ text: 'New Todo' })}>
+    {mutation.isPending ? 'Adding...' : 'Add Todo'}
+  </button>;
 }
 ```
 
-#### 缓存和重新获取策略
+**TanStack Query vs SWR vs Apollo：**
 
-| 策略 | 说明 | 配置 |
-|------|------|------|
-| staleTime | 数据过期时间 | `staleTime: 5000` |
-| cacheTime | 缓存保留时间 | `cacheTime: 300000` |
-| refetchOnWindowFocus | 窗口聚焦时重新获取 | `refetchOnWindowFocus: true` |
-| refetchInterval | 轮询间隔 | `refetchInterval: 30000` |
-| retry | 失败重试次数 | `retry: 3` |
+| 维度 | TanStack Query | SWR | Apollo Client |
+|------|----------------|-----|---------------|
+| 协议 | REST/GraphQL | REST/GraphQL | GraphQL |
+| 缓存策略 | 精细（GC/Stale） | 基础 | 规范化缓存 |
+| 重试策略 | 可配置指数退避 | 基础 | 基础 |
+| 乐观更新 | ✅ | ✅ | ✅ |
+| Bundle | ~13KB | ~5KB | ~35KB |
 
-#### 与 Redux 的职责划分
-
-```mermaid
-graph LR
-    subgraph "TanStack Query"
-        A["服务端数据"] -->|useQuery| B["缓存"]
-        B -->|自动同步| A
-        C["useMutation"] -->|变更| A
-    end
-
-    subgraph "Redux / Zustand"
-        D["客户端数据"] -->|dispatch| E["Reducer"]
-        E --> F["Store"]
-        F -->|select| G["组件"]
-    end
-
-    subgraph "配合使用"
-        B -->|只读| H["组件展示"]
-        F -->|可变| H
-    end
-
-    style A fill:#2196F3,color:#fff
-    style B fill:#4CAF50,color:#fff
-    style F fill:#E91E63,color:#fff
-```
-
-#### 数据获取流程图
+**数据获取流程图：**
 
 ```mermaid
 sequenceDiagram
@@ -1485,359 +1098,205 @@ sequenceDiagram
         Q->>Cache: 更新缓存
         Cache-->>C: 返回数据
     end
-
-    Note over C,API: 窗口重新聚焦时自动刷新
-    Q->>API: refetchOnWindowFocus
-    API-->>Q: 最新数据
-    Q->>Cache: 对比更新
-```
-
-### 3️⃣ Jotai / Recoil
-
-> 💡 **要点**：原子化状态管理以 Atom 为最小状态单元，支持派生状态和按需渲染，相比 Context API 避免不必要的全体重渲染，适合灵活组合的场景。
-
-#### 原子化状态管理
-- 以原子（Atom）为最小状态单元
-- 组合原子形成派生状态
-- 按需渲染，避免不必要的组件重渲染
-
-#### Jotai 示例
-
-```tsx
-import { atom, useAtom } from 'jotai';
-
-// 基础原子
-const countAtom = atom(0);
-// 派生原子
-const doubledAtom = atom((get) => get(countAtom) * 2);
-
-function Counter() {
-  const [count, setCount] = useAtom(countAtom);
-  const [doubled] = useAtom(doubledAtom);
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <p>Doubled: {doubled}</p>
-      <button onClick={() => setCount(c => c + 1)}>+1</button>
-    </div>
-  );
-}
-```
-
-#### 与 Context API 对比
-
-| 维度 | Context API | Jotai/Recoil |
-|------|-------------|--------------|
-| 渲染优化 | 所有消费者重渲染 | 仅关联原子变化时重渲染 |
-| 组合性 | 多层 Provider 嵌套 | 原子自由组合 |
-| 代码拆分 | 需要多个 Context | 原子可分散定义 |
-| TypeScript | 中等 | 优秀 |
-| Bundle 大小 | 内置 | ~3KB (Jotai) |
-
-#### 按需渲染
-
-```mermaid
-graph TD
-    subgraph "Context API"
-        A["Provider"] --> B["Consumer A"]
-        A --> C["Consumer B"]
-        A --> D["Consumer C"]
-        B -.->|任何值变化| B
-        B -.->|全部重渲染| C
-        B -.->|全部重渲染| D
-    end
-
-    subgraph "Jotai Atoms"
-        E["Atom A"] --> F["Component A"]
-        G["Atom B"] --> H["Component B"]
-        I["Atom C"] --> J["Component C"]
-        F -.->|仅A重渲染| F
-        H -.->|仅B重渲染| H
-    end
-
-    style A fill:#FF5722,color:#fff
-    style E fill:#4CAF50,color:#fff
-    style G fill:#2196F3,color:#fff
-    style I fill:#9C27B0,color:#fff
 ```
 
 ---
 
-## ⚡ 十、Next.js (React元框架)
+## 1️⃣2️⃣ 路由完全指南
 
-### 1️⃣ App Router vs Pages Router
+### 📍 React Router 实现原理
 
-> 💡 **要点**：Next.js App Router 以文件系统为基础，通过 layout.tsx 实现持久化嵌套布局，loading/error/not-found 文件自动提供 Suspense 和错误边界。
+```mermaid
+flowchart TD
+    subgraph HashRouter
+        H1["URL: http://xxx/#/path"] --> H2["监听 hashchange 事件"]
+        H2 --> H3["hash 变化 → 匹配路由 → 渲染组件"]
+    end
 
-#### 文件系统路由
+    subgraph BrowserRouter
+        B1["URL: http://xxx/path"] --> B2["使用 History API"]
+        B2 --> B3["pushState/replaceState<br/>改变 URL 不刷新页面"]
+        B3 --> B4["监听 popstate 事件 → 匹配路由"]
+    end
 
-**Pages Router（旧）**
-```
-pages/
-  index.tsx        → /
-  about.tsx        → /about
-  blog/
-    [slug].tsx     → /blog/:slug
-```
-
-**App Router（新，推荐）**
-```
-app/
-  page.tsx         → /
-  layout.tsx       → 根布局
-  about/
-    page.tsx       → /about
-  blog/
-    [slug]/
-      page.tsx     → /blog/:slug
-  api/
-    route.ts       → /api
+    subgraph react-router 封装
+        L1["history 库<br/>抹平 hash 与 history 差异"]
+        L2["Route 组件<br/>path 匹配当前 URL"]
+        L3["Link 组件<br/>阻止 a 默认行为"]
+    end
 ```
 
-#### Layout 嵌套布局
-- App Router 通过 `layout.tsx` 实现持久化布局
-- 布局切换时不会卸载内部组件，保持状态
+### 🛣️ 完整路由配置
 
-```tsx
-// app/layout.tsx - 根布局
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html>
-      <body>
-        <Header />
-        <nav>导航</nav>
-        <main>{children}</main>
-        <Footer />
-      </body>
-    </html>
-  );
+```typescript
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: 'about', element: <About /> },
+      {
+        path: 'dashboard',
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <DashboardHome /> },
+          { path: 'settings', element: <Settings /> },
+        ],
+      },
+      { path: 'products/:id', element: <ProductDetail /> },
+      { path: '*', element: <NotFound /> }
+    ]
+  }
+]);
+
+function RootLayout() {
+  return <div><Header /><Outlet /></div>;
 }
 
-// app/dashboard/layout.tsx - 仪表盘布局
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <section>
-      <DashboardSidebar />
-      {children}
-    </section>
-  );
+export default function App() {
+  return <RouterProvider router={router} />;
 }
 ```
 
-#### Loading / Error 边界
-- `loading.tsx` - 自动包裹 Suspense，显示加载状态
-- `error.tsx` - 自动包裹 ErrorBoundary，捕获渲染错误
-- `not-found.tsx` - 404 页面
+**参数读取与导航：**
 
-```tsx
-// app/dashboard/loading.tsx
-export default function Loading() {
-  return <div>Loading dashboard...</div>;
+```typescript
+function ProductDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  return <div>Product: {id}<button onClick={() => navigate('/')}>返回</button></div>;
 }
 
-// app/dashboard/error.tsx
-'use client';
-export default function Error({ error, reset }: {
-  error: Error;
-  reset: () => void;
-}) {
+// 受保护路由
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const isAuthenticated = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
+```
+
+### 📍 loaders / actions (v6.4+)
+
+```typescript
+const router = createBrowserRouter([
+  {
+    path: '/products/:id',
+    element: <ProductDetail />,
+    loader: async ({ params }) => {
+      const product = await fetch(`/api/products/${params.id}`);
+      return product.json();
+    },
+    action: async ({ request, params }) => {
+      const formData = await request.formData();
+      await fetch(`/api/products/${params.id}`, { method: 'PUT', body: formData });
+      return { success: true };
+    },
+  },
+]);
+
+function ProductDetail() {
+  const product = useLoaderData();
+  const actionData = useActionData();
   return (
     <div>
-      <h2>Something went wrong!</h2>
-      <button onClick={() => reset()}>Try again</button>
+      <h1>{product.name}</h1>
+      <Form method="put">
+        <input name="price" defaultValue={product.price} />
+        <button type="submit">更新</button>
+        {actionData?.success && <p>更新成功</p>}
+      </Form>
     </div>
   );
 }
 ```
 
-#### 路由对比图
+**defer / Await（延迟数据加载）：**
 
-```mermaid
-graph TD
-    subgraph "Pages Router (旧)"
-        A1["pages/index.tsx"] -->|CSR/SSR| B1["传统页面"]
-        C1["_app.tsx"] -->|全局包装| A1
-        D1["_document.tsx"] -->|HTML结构| A1
-    end
-
-    subgraph "App Router (新)"
-        A2["app/layout.tsx"] --> B2["根Layout，持久化"]
-        B2 --> C2["app/page.tsx"]
-        B2 --> D2["app/dashboard"]
-        D2 --> E2["dashboard layout.tsx"]
-        E2 --> F2["dashboard page.tsx"]
-        E2 --> G2["dashboard loading.tsx"]
-        E2 --> H2["dashboard error.tsx"]
-        G2 -->|Suspense| I2["Loading UI"]
-        H2 -->|ErrorBoundary| J2["Error UI"]
-    end
-
-    style A2 fill:#4CAF50,color:#fff
-    style B2 fill:#2196F3,color:#fff
-    style E2 fill:#FF9800,color:#fff
-    style G2 fill:#9C27B0,color:#fff
-    style H2 fill:#E91E63,color:#fff
-```
-
-### 2️⃣ 数据获取模式
-
-> 💡 **要点**：App Router 支持 Server-side Fetching、Static Generation、ISR、Streaming SSR 四种数据获取模式，配合多层缓存策略实现最佳性能。
-
-#### Server-side fetching (async 组件 fetch)
-- App Router 中，服务端组件可以直接 `async` + `await`
-
-```tsx
-// app/posts/page.tsx
-async function PostsPage() {
-  const posts = await fetch('https://api.example.com/posts', {
-    next: { revalidate: 60 } // ISR: 60秒后重新验证
-  }).then(r => r.json());
-
-  return (
-    <ul>
-      {posts.map(post => (
-        <li key={post.id}>{post.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-#### Static Generation
-- 构建时生成静态 HTML，适合内容型页面
-
-```tsx
-// 静态生成（构建时）
-export const dynamic = 'force-static';
-
-async function AboutPage() {
-  const content = await getContent(); // 构建时获取
-  return <article>{content}</article>;
-}
-```
-
-#### Incremental Static Regeneration (ISR)
-- 构建后按需重新生成静态页面，结合静态和动态优势
-
-```tsx
-// app/products/[id]/page.tsx
-interface Props {
-  params: { id: string };
+```typescript
+async function loader() {
+  const reviewsPromise = fetch('/api/reviews').then(r => r.json());
+  return defer({
+    product: await fetch('/api/product').then(r => r.json()),
+    reviews: reviewsPromise,
+  });
 }
 
-async function ProductPage({ params }: Props) {
-  const product = await fetch(`https://api.example.com/products/${params.id}`, {
-    next: { revalidate: 300 } // 5分钟后重新验证
-  }).then(r => r.json());
-
-  return <ProductDetail product={product} />;
-}
-
-// 预生成热门商品页面
-export async function generateStaticParams() {
-  const products = await getTopProducts(100);
-  return products.map(p => ({ id: p.id }));
-}
-```
-
-#### Streaming SSR
-- 使用 `loading.tsx` 和 `<Suspense>` 实现流式渲染
-- 页面无需等待所有数据就绪即可开始发送
-
-```tsx
-import { Suspense } from 'react';
-
-async function Dashboard() {
+function ProductPage() {
+  const data = useLoaderData();
   return (
     <div>
-      <h1>Dashboard</h1>
-      <Suspense fallback={<SlowWidgetSkeleton />}>
-        <SlowWidget />
-      </Suspense>
-      <Suspense fallback={<FastWidgetSkeleton />}>
-        <FastWidget />
+      <ProductDetail product={data.product} />
+      <Suspense fallback={<ReviewsSkeleton />}>
+        <Await resolve={data.reviews}>
+          {(reviews) => <ReviewsList reviews={reviews} />}
+        </Await>
       </Suspense>
     </div>
   );
 }
 ```
 
-### 3️⃣ 缓存策略
+---
 
-> 💡 **要点**：Next.js 提供多层缓存体系：Full Route Cache（静态 HTML）、Data Cache（fetch 响应）、Router Cache（客户端预加载），通过 revalidate 和标签控制失效策略。
+## 1️⃣3️⃣ 表单系统
 
-#### Full Route Cache
-- 静态路由默认在构建时缓存
-- 后续请求直接返回缓存 HTML
-- 通过 `revalidate` 或 `dynamic` 配置控制
+### 📋 受控组件完整示例
 
-#### Data Cache
-- `fetch` 响应默认缓存
-- 通过 `cache: 'no-store'` 或 `next: { revalidate }` 控制
+```typescript
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  agreeTerms: boolean;
+}
 
-```tsx
-// 不缓存
-fetch(url, { cache: 'no-store' });
-// 按时间重新验证
-fetch(url, { next: { revalidate: 60 } });
-// 手动重新验证
-import { revalidatePath, revalidateTag } from 'next/cache';
-revalidatePath('/posts');
-revalidateTag('posts');
-```
+function RegistrationForm() {
+  const [formData, setFormData] = useState<FormData>({
+    name: '', email: '', password: '', agreeTerms: false
+  });
+  const [errors, setErrors] = useState<Partial<FormData>>({});
 
-#### Router Cache
-- 客户端路由缓存，预加载即将访问的页面
-- 导航瞬间完成，无需等待服务端响应
-- 通过 `prefetch` 或 `<Link prefetch>` 控制
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, type, value, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
 
-#### 缓存层次图
+  const validate = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+    if (!formData.name) newErrors.name = '姓名必填';
+    if (!formData.email) newErrors.email = '邮箱必填';
+    if (!formData.password || formData.password.length < 6) newErrors.password = '密码至少6个字符';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-```mermaid
-graph TB
-    subgraph "请求生命周期"
-        A["用户请求"] --> B["Router Cache"]
-        B -->|命中| C["客户端缓存页面"]
-        B -->|未命中| D["Next.js Server"]
-    end
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    await submitForm(formData);
+  };
 
-    subgraph "服务端缓存层"
-        D --> E["Full Route Cache"]
-        E -->|命中| F["返回缓存的HTML"]
-        E -->|未命中| G["渲染组件"]
-        G --> H["Data Cache"]
-        H -->|命中| I["使用缓存数据"]
-        H -->|未命中| J["执行 fetch / DB查询"]
-        J --> K["写入 Data Cache"]
-        I --> L["生成HTML"]
-        K --> L
-        L --> M["写入 Full Route Cache"]
-    end
-
-    M --> N["返回HTML给客户端"]
-    N --> O["更新 Router Cache"]
-
-    style B fill:#4CAF50,color:#fff
-    style E fill:#2196F3,color:#fff
-    style H fill:#FF9800,color:#fff
-    style M fill:#9C27B0,color:#fff
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="name" value={formData.name} onChange={handleChange} />
+      {errors.name && <span>{errors.name}</span>}
+      <input type="email" name="email" value={formData.email} onChange={handleChange} />
+      <input type="checkbox" name="agreeTerms" checked={formData.agreeTerms} onChange={handleChange} />
+      <button type="submit">提交</button>
+    </form>
+  );
+}
 ```
 
 ---
 
-## 🏗️ 十一、React 设计模式和最佳实践
+## 1️⃣4️⃣ 组件设计模式
 
-### 1️⃣ 现代组件模式
+### 🎭 复合组件 (Compound Component)
 
-> 💡 **要点**：现代 React 组件模式包括 Compound Components（隐式共享状态）、Control Props（受控/非受控切换）、State Reducer（可覆盖状态逻辑）、Props Collection（合并属性集合）。
-
-#### Compound Components (复合组件)
-- 多个子组件共享隐式状态，无需手动传递 props
-
-```tsx
-import { createContext, useContext, useState } from 'react';
-
+```typescript
 const AccordionContext = createContext(null);
 
 function Accordion({ children }) {
@@ -1851,192 +1310,84 @@ function Accordion({ children }) {
 
 function Item({ index, children }) {
   const { openIndex, setOpenIndex } = useContext(AccordionContext);
-  const isOpen = openIndex === index;
   return (
     <div className="accordion-item">
-      <button onClick={() => setOpenIndex(isOpen ? null : index)}>
-        {children}
-      </button>
-      {isOpen && <div className="accordion-content">{children}</div>}
+      <button onClick={() => setOpenIndex(isOpen ? null : index)}>{children}</button>
+      {openIndex === index && <div>{children}</div>}
     </div>
   );
 }
 
-Accordion.Item = Item; // 复合组件
+Accordion.Item = Item;
 // 使用: <Accordion><Accordion.Item index={0}>内容</Accordion.Item></Accordion>
 ```
 
-#### Control Props (受控属性)
-- 组件接受外部控制的状态，同时支持非受控模式
+### 🎨 Render Props 模式
 
-```tsx
+```typescript
+function MouseTracker({ render }: { render: (data: MousePosition) => ReactNode }) {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => setPosition({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+  return render(position);
+}
+```
+
+### 🔧 Control Props（受控属性）
+
+```typescript
 function Toggle({ on, onChange, defaultOn = false }) {
   const isControlled = on !== undefined;
   const [internalOn, setInternalOn] = useState(defaultOn);
   const isOn = isControlled ? on : internalOn;
 
   function toggle() {
-    if (isControlled) {
-      onChange?.(!isOn);
-    } else {
-      setInternalOn(!isOn);
-    }
+    if (isControlled) onChange?.(!isOn);
+    else setInternalOn(!isOn);
   }
 
   return <button onClick={toggle}>{isOn ? 'ON' : 'OFF'}</button>;
 }
 ```
 
-#### State Reducer (状态归约器)
-- 允许使用者覆盖内部状态变更逻辑
+### 💡 State Reducer（状态归约器）
 
-```tsx
+```typescript
 function useToggle({ reducer = defaultReducer } = {}) {
   const [state, dispatch] = useReducer(reducer, { on: false });
-
-  function toggle() {
-    dispatch({ type: 'toggle' });
-  }
-
-  return { on: state.on, toggle };
+  return { on: state.on, toggle: () => dispatch({ type: 'toggle' }) };
 }
 
-// 使用者自定义 reducer
 function customReducer(state, action) {
   switch (action.type) {
-    case 'toggle':
-      return { on: !state.on };
-    default:
-      return state;
+    case 'toggle': return { on: !state.on };
+    default: return state;
   }
 }
 ```
 
-#### Props Collection (属性集合)
-- 将一组相关 props 合并为一个集合返回
+---
 
-```tsx
-function useToggle() {
-  const [on, setOn] = useState(false);
-  const toggle = () => setOn(!on);
+# 第三部分：工程实践
 
-  const getTogglerProps = ({ onClick, ...props } = {}) => ({
-    'aria-expanded': on,
-    onClick: () => {
-      onClick?.();
-      toggle();
-    },
-    ...props,
-  });
+## 1️⃣5️⃣ 工程化与测试
 
-  return { on, toggle, getTogglerProps };
-}
+### 🔧 测试策略
 
-// 使用
-function MyComponent() {
-  const { on, getTogglerProps } = useToggle();
-  return <button {...getTogglerProps({ onClick: () => console.log('clicked') })}>
-    {on ? 'ON' : 'OFF'}
-  </button>;
-}
-```
+| 层级 | 工具 | 测试内容 |
+|------|------|---------|
+| 单元测试 | Vitest + React Testing Library | 组件、Hooks、工具函数 |
+| 集成测试 | Vitest + RTL | 组件交互、数据流 |
+| E2E 测试 | Playwright / Cypress | 用户流程 |
 
-### 2️⃣ React 性能优化
-
-> 💡 **要点**：React 性能优化应遵循"按需优化"原则：React.memo 用于纯展示组件，useMemo/useCallback 避免重复计算，虚拟列表处理大数据量，代码分割减少首屏体积。
-
-#### React.memo 最佳实践
-- 仅对纯展示组件使用，避免不必要的重渲染
-- 配合 `useMemo` 传递稳定引用避免失效
-- 不要在所有地方滥用
-
-```tsx
-const ExpensiveList = React.memo(function ExpensiveList({ items, onItemClick }) {
-  return items.map(item => (
-    <div key={item.id} onClick={() => onItemClick(item.id)}>
-      {item.name}
-    </div>
-  ));
-});
-```
-
-#### useMemo / useCallback 合理使用
-
-```tsx
-// ✅ 需要：计算开销大
-const sortedList = useMemo(() => {
-  return items.sort((a, b) => a.name.localeCompare(b.name));
-}, [items]);
-
-// ✅ 需要：作为依赖传递给 useEffect / React.memo
-const handleClick = useCallback((id) => {
-  dispatch({ type: 'SELECT', payload: id });
-}, [dispatch]);
-
-// ❌ 不需要：简单计算
-const fullName = `${firstName} ${lastName}`;
-
-// ❌ 不需要：作为 prop 传递给原生 DOM 元素
-<div onClick={() => setCount(c => c + 1)} />
-```
-
-#### 虚拟列表 (react-window / react-virtuoso)
-
-```tsx
-import { FixedSizeList } from 'react-window';
-
-function VirtualList({ items }) {
-  const Row = ({ index, style }) => (
-    <div style={style}>
-      {items[index].name}
-    </div>
-  );
-
-  return (
-    <FixedSizeList
-      height={400}
-      itemCount={items.length}
-      itemSize={50}
-      width={300}
-    >
-      {Row}
-    </FixedSizeList>
-  );
-}
-```
-
-#### Code Splitting (React.lazy + Suspense)
-
-```tsx
-import { lazy, Suspense } from 'react';
-
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
-
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <HeavyComponent />
-    </Suspense>
-  );
-}
-```
-
-#### Bundle 分析优化
-- 使用 `vite-bundle-visualizer` 或 `webpack-bundle-analyzer`
-- 分析首屏不必要的第三方库
-- 动态导入大型库（`import('moment')` → 按需使用）
-- 使用 `lodash-es` 替代 `lodash`
-
-### 3️⃣ 测试策略
-
-> 💡 **要点**：推荐 Vitest + React Testing Library 做单元/集成测试，renderHook 测试自定义 Hooks，Playwright 做 E2E 测试，形成完整测试金字塔。
-
-#### Vitest + React Testing Library
+**Vitest + React Testing Library：**
 
 ```tsx
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import Counter from './Counter';
+import { describe, it, expect } from 'vitest';
 
 describe('Counter', () => {
   it('renders initial count', () => {
@@ -2052,26 +1403,21 @@ describe('Counter', () => {
 });
 ```
 
-#### Hooks 测试
+**Hooks 测试：**
 
 ```tsx
 import { renderHook, act } from '@testing-library/react';
-import useCounter from './useCounter';
 
 describe('useCounter', () => {
   it('should increment counter', () => {
     const { result } = renderHook(() => useCounter());
-
-    act(() => {
-      result.current.increment();
-    });
-
+    act(() => { result.current.increment(); });
     expect(result.current.count).toBe(1);
   });
 });
 ```
 
-#### E2E 测试 (Playwright)
+**E2E 测试（Playwright）：**
 
 ```tsx
 import { test, expect } from '@playwright/test';
@@ -2080,190 +1426,604 @@ test('user can complete purchase flow', async ({ page }) => {
   await page.goto('/products');
   await page.click('[data-testid="add-to-cart"]');
   await expect(page.locator('.cart-count')).toHaveText('1');
-  await page.click('[data-testid="checkout"]');
-  await expect(page).toHaveURL('/checkout');
 });
 ```
 
-### 4️⃣ React Router v6+
+### 🛠️ 构建工具
 
-> 💡 **要点**：React Router v6+ 引入 createBrowserRouter 和嵌套路由配置，支持 loader/action 数据流、defer/Await 延迟加载，配合 Outlet 实现持久化布局。
+| 工具 | 用途 |
+|------|------|
+| Vite | 开发/构建（推荐） |
+| Turbopack | Next.js 构建 |
+| Webpack | 传统项目 |
 
-#### 嵌套路由
+---
+
+## 1️⃣6️⃣ Next.js（React 元框架）
+
+### 🏗️ App Router vs Pages Router
+
+**Pages Router（旧）：**
+```
+pages/
+  index.tsx        → /
+  about.tsx        → /about
+  blog/[slug].tsx  → /blog/:slug
+```
+
+**App Router（新，推荐）：**
+```
+app/
+  page.tsx         → /
+  layout.tsx       → 根布局
+  about/page.tsx   → /about
+  blog/[slug]/page.tsx → /blog/:slug
+```
+
+**Layout 嵌套布局：**
 
 ```tsx
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <RootLayout />,
-    children: [
-      { index: true, element: <Home /> },
-      {
-        path: 'dashboard',
-        element: <DashboardLayout />,
-        children: [
-          { index: true, element: <DashboardHome /> },
-          { path: 'settings', element: <Settings /> },
-        ],
-      },
-      { path: 'products/:id', element: <ProductDetail /> },
-    ],
-  },
-]);
-
-function RootLayout() {
+// app/layout.tsx - 根布局
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      <Header />
-      <Outlet /> {/* 子路由在此渲染 */}
-    </div>
+    <html>
+      <body>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
+    </html>
   );
 }
 
-export default function App() {
-  return <RouterProvider router={router} />;
+// app/dashboard/layout.tsx - 仪表盘布局
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return <section><DashboardSidebar />{children}</section>;
 }
 ```
 
-#### loaders / actions
+**loading / error / not-found 边界：**
 
 ```tsx
-// router 配置
-const router = createBrowserRouter([
-  {
-    path: '/products/:id',
-    element: <ProductDetail />,
-    loader: async ({ params }) => {
-      const product = await fetch(`/api/products/${params.id}`);
-      return product.json();
-    },
-    action: async ({ request, params }) => {
-      const formData = await request.formData();
-      await fetch(`/api/products/${params.id}`, {
-        method: 'PUT',
-        body: formData,
-      });
-      return { success: true };
-    },
-  },
-]);
+// app/dashboard/loading.tsx
+export default function Loading() {
+  return <div>Loading dashboard...</div>;
+}
 
-// 组件中使用
-import { useLoaderData, useActionData, Form } from 'react-router-dom';
-
-function ProductDetail() {
-  const product = useLoaderData();
-  const actionData = useActionData();
-
-  return (
-    <div>
-      <h1>{product.name}</h1>
-      <Form method="put">
-        <input name="price" defaultValue={product.price} />
-        <button type="submit">更新</button>
-        {actionData?.success && <p>更新成功</p>}
-      </Form>
-    </div>
-  );
+// app/dashboard/error.tsx
+'use client';
+export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+  return <div><h2>Something went wrong!</h2><button onClick={() => reset()}>Try again</button></div>;
 }
 ```
 
-#### defer / Await
-- 延迟数据加载，配合 Suspense 实现流式加载
+### 📡 数据获取模式
 
 ```tsx
-import { defer, Await, useLoaderData } from 'react-router-dom';
-import { Suspense } from 'react';
+// Server-side fetching（async 组件 fetch）
+async function PostsPage() {
+  const posts = await fetch('https://api.example.com/posts', {
+    next: { revalidate: 60 } // ISR: 60秒后重新验证
+  }).then(r => r.json());
 
-// loader 返回 defer
-async function loader() {
-  const productPromise = fetch('/api/product').then(r => r.json());
-  const reviewsPromise = fetch('/api/reviews').then(r => r.json());
-
-  return defer({
-    product: await productPromise, // 等待 product
-    reviews: reviewsPromise, // 延迟 reviews
-  });
+  return <ul>{posts.map(post => <li key={post.id}>{post.title}</li>)}</ul>;
 }
 
-function ProductPage() {
-  const data = useLoaderData();
+// Static Generation（构建时）
+export const dynamic = 'force-static';
 
+// ISR（增量静态再生）
+async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await fetch(`/api/products/${params.id}`, {
+    next: { revalidate: 300 }
+  }).then(r => r.json());
+  return <ProductDetail product={product} />;
+}
+
+// Streaming SSR
+async function Dashboard() {
   return (
     <div>
-      <ProductDetail product={data.product} />
-      <Suspense fallback={<ReviewsSkeleton />}>
-        <Await resolve={data.reviews}>
-          {(reviews) => <ReviewsList reviews={reviews} />}
-        </Await>
+      <h1>Dashboard</h1>
+      <Suspense fallback={<SlowWidgetSkeleton />}>
+        <SlowWidget />
       </Suspense>
     </div>
   );
 }
 ```
 
-#### 路由架构图
+### 🗄️ 缓存策略
+
+**多层缓存体系：**
 
 ```mermaid
-graph TD
-    A["createBrowserRouter"] --> B["根路由 /"]
-    B --> C["RootLayout"]
-    C --> D["Outlet 子路由出口"]
+graph TB
+    subgraph "请求生命周期"
+        A["用户请求"] --> B["Router Cache"]
+        B -->|命中| C["客户端缓存页面"]
+        B -->|未命中| D["Next.js Server"]
+    end
 
-    B --> E["首页 index"]
-    B --> F["dashboard 布局"]
-    F --> G["DashboardLayout"]
-    G --> H["Dashboard Outlet"]
-    H --> I["首页 Dashboard"]
-    H --> J["settings 页面"]
+    subgraph "服务端缓存层"
+        D --> E["Full Route Cache"]
+        E -->|命中| F["返回缓存的HTML"]
+        E -->|未命中| G["渲染组件"]
+        G --> H["Data Cache"]
+        H -->|命中| I["使用缓存数据"]
+        H -->|未命中| J["执行 fetch"]
+        J --> K["写入 Data Cache"]
+        I --> L["生成HTML"]
+        K --> L
+        L --> M["写入 Full Route Cache"]
+    end
 
-    B --> K["products/:id"]
-    K --> L["loader 获取数据"]
-    K --> M["action 提交表单"]
-    L --> N["useLoaderData"]
-    M --> O["useActionData"]
+    M --> N["返回HTML给客户端"]
+    N --> O["更新 Router Cache"]
+```
 
-    B --> P["* 404页面"]
+| 缓存类型 | 作用 | 控制方式 |
+|---------|------|---------|
+| Full Route Cache | 静态路由构建时缓存 | `revalidate` / `dynamic` |
+| Data Cache | fetch 响应缓存 | `cache: 'no-store'` / `next: { revalidate }` |
+| Router Cache | 客户端预加载 | `prefetch` / `<Link prefetch>` |
 
-    style C fill:#4CAF50,color:#fff
-    style G fill:#2196F3,color:#fff
-    style L fill:#FF9800,color:#fff
-    style M fill:#E91E63,color:#fff
+### 🏪 Next.js vs Remix vs Gatsby
+
+| 维度 | Next.js | Remix | Gatsby |
+|------|---------|-------|--------|
+| 渲染模式 | SSR/SSG/ISR/CSR | SSR + 渐进增强 | 纯 SSG |
+| 路由 | App Router (RSC) + Pages Router | 嵌套路由 + loaders | 基于 GraphQL |
+| 数据获取 | 服务端 fetch / RSC | loaders / actions | GraphQL 查询 |
+| 缓存 | 多层缓存策略 | HTTP 缓存优先 | 静态文件 CDN |
+| 学习曲线 | 中等 | 低 | 中 |
+| 适用场景 | 通用/企业级 | SaaS/CRUD | 内容型网站 |
+
+---
+
+## 1️⃣7️⃣ React 最佳实践
+
+### 🎭 现代组件模式
+
+**Props Collection（属性集合）：**
+
+```typescript
+function useToggle() {
+  const [on, setOn] = useState(false);
+  const toggle = () => setOn(!on);
+
+  const getTogglerProps = ({ onClick, ...props } = {}) => ({
+    'aria-expanded': on,
+    onClick: () => { onClick?.(); toggle(); },
+    ...props,
+  });
+
+  return { on, toggle, getTogglerProps };
+}
+
+function MyComponent() {
+  const { on, getTogglerProps } = useToggle();
+  return <button {...getTogglerProps({ onClick: () => console.log('clicked') })}>
+    {on ? 'ON' : 'OFF'}
+  </button>;
+}
+```
+
+### 🧪 Bundle 分析优化
+
+- 使用 `vite-bundle-visualizer` 或 `webpack-bundle-analyzer`
+- 动态导入大型库（`import('moment')` → 按需使用）
+- 使用 `lodash-es` 替代 `lodash`
+
+### 🧩 组件通信方式总结
+
+| 方式 | 适用场景 | 方向 |
+|------|----------|------|
+| props | 父子组件 | 父→子 |
+| 回调函数 | 父子组件 | 子→父 |
+| 共同父组件转发 | 兄弟组件 | — |
+| Context API | 跨层级 | 祖先→后代 |
+| Redux / Zustand | 任意组件 | 全局 |
+
+---
+
+# 第四部分：性能优化
+
+## 1️⃣8️⃣ 性能优化完全指南
+
+### 📊 优化策略金字塔
+
+```
+                   🚀 性能优化
+                  /          \
+           代码分割        变更检测优化
+        (Lazy Load)    (Memo/useMemo)
+
+      ┌──────────────────────────────┐
+      │  渲染优化                    │
+      │  • React.memo                │
+      │  • useMemo / useCallback     │
+      │  • 正确使用 key 属性         │
+      └──────────────────────────────┘
+
+      ┌──────────────────────────────┐
+      │  构建优化                    │
+      │  • Tree Shaking              │
+      │  • 代码分割                  │
+      │  • 压缩 & Minify             │
+      └──────────────────────────────┘
+```
+
+### 🎯 渲染优化技巧
+
+```typescript
+// ❌ 问题 1：列表没有正确的 key
+{items.map((item, index) => <li key={index}>{item.name}</li>)} // ❌
+
+// ✅ 解决
+{items.map((item) => <li key={item.id}>{item.name}</li>)} // ✅
+
+// ❌ 问题 2：不必要的重新渲染
+function Parent() {
+  const [count, setCount] = useState(0);
+  return <ExpensiveChild onUpdate={() => {}} />; // ❌ 每次创建新函数
+}
+
+// ✅ 解决方案：React.memo + useCallback
+const MemoChild = React.memo(ExpensiveChild);
+function Parent() {
+  const handleUpdate = useCallback(() => {}, []);
+  return <MemoChild data="data" onUpdate={handleUpdate} />;
+}
+
+// ❌ 问题 3：在渲染时创建新对象
+function Parent() {
+  const style = { color: 'red' }; // ❌ 每次都创建新对象
+  return <Child style={style} />;
+}
+
+// ✅ 解决：提取到常量
+const CONST_STYLE = { color: 'red' };
+```
+
+### 🚀 代码分割与懒加载
+
+```typescript
+// React.lazy + Suspense
+const HeavyComponent = lazy(() => import('./HeavyComponent'));
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <HeavyComponent />
+    </Suspense>
+  );
+}
+
+// 路由级别代码分割
+const routeConfig = [
+  { path: '/admin', element: <React.lazy(() => import('./pages/Admin')) /> }
+];
+```
+
+### 🎯 React.memo 最佳实践
+
+```typescript
+const ExpensiveList = React.memo(function ExpensiveList({ items, onItemClick }) {
+  return items.map(item => (
+    <div key={item.id} onClick={() => onItemClick(item.id)}>{item.name}</div>
+  ));
+});
+```
+
+**useMemo / useCallback 合理使用：**
+
+```typescript
+// ✅ 需要：计算开销大
+const sortedList = useMemo(() => items.sort((a, b) => a.name.localeCompare(b.name)), [items]);
+
+// ✅ 需要：作为依赖传递给 useEffect/React.memo
+const handleClick = useCallback((id) => dispatch({ type: 'SELECT', payload: id }), [dispatch]);
+
+// ❌ 不需要：简单计算
+const fullName = `${firstName} ${lastName}`;
+```
+
+### 📋 虚拟列表
+
+```typescript
+import { FixedSizeList } from 'react-window';
+
+function VirtualList({ items }) {
+  const Row = ({ index, style }) => <div style={style}>{items[index].name}</div>;
+
+  return (
+    <FixedSizeList height={400} itemCount={items.length} itemSize={50} width={300}>
+      {Row}
+    </FixedSizeList>
+  );
+}
+```
+
+### 🔄 setState 流程（批量更新机制）
+
+```mermaid
+flowchart TD
+    A["调用 setState"] --> B["enqueueSetState<br/>将新的 state 放入队列"]
+    B --> C["enqueueUpdate"]
+    C --> D{"isBatchingUpdates?"}
+    D -->|true 批量模式| E["推入 dirtyComponents<br/>等待批量处理"]
+    D -->|false| F["立即执行 batchedUpdates"]
+    E --> G["合并多个 setState"]
+    G --> H["执行 shouldComponentUpdate"]
+    H --> I["重新渲染 Virtual DOM"]
+    I --> J["Diff + Patch 更新真实 DOM"]
+```
+
+**setState 是同步还是异步？**
+
+| 场景 | 是否批量 | 行为 |
+|------|---------|------|
+| React 生命周期 | ✅ 批量 | 异步合并 |
+| 合成事件处理器 | ✅ 批量 | 异步合并 |
+| 原生事件 | ❌ 非批量 | 同步更新 |
+| setTimeout / Promise | ❌ 非批量（React 18 前） | 同步更新 |
+
+> React 18 中，Promise、setTimeout、原生事件中也能自动批处理。
+
+```typescript
+// React 18 中以下代码只触发一次渲染（自动批处理）
+setTimeout(() => {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+}, 1000);
 ```
 
 ---
 
-## 🔄 十二、React 面试常考对比
+## 1️⃣9️⃣ React 18 并发特性
 
-### 1️⃣ React 18 vs React 19 vs React 20 关键变化
+### ⚡ startTransition - 非紧急更新
 
-> 💡 **要点**：从 React 18 的可选并发到 React 19 的默认并发再到 React 20 的自动优先级推断，Server Components 逐步从实验性走向默认推荐，Compiler 自动 memo 降低心智负担。
+```typescript
+function SearchUsers() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState<User[]>([]);
+  const [isPending, startTransition] = useTransition();
 
-| 特性 | React 18 (2022) | React 19 (2024) | React 20 (2025+) |
-|------|-----------------|-----------------|------------------|
-| 并发模式 | 可选启用 | 默认启用 | 默认启用，更深度集成 |
-| Scheduler | 基础优先级 | 改进调度算法 | 自动优先级推断 |
-| startTransition | ✅ | ✅ 增强 | ✅ 自动 |
-| use() | ❌ | ✅ 读取Promise/Context | ✅ 增强 |
-| useOptimistic | ❌ | ✅ | ✅ 自动乐观更新 |
-| Server Components | 实验性 | ✅ 稳定 | ✅ 默认推荐 |
-| Server Actions | ❌ | ✅ | ✅ |
-| ref 传参 | forwardRef | 直接传 ref | 直接传 ref |
-| useFormStatus | ❌ | ✅ | ✅ |
-| useActionState | ❌ | ✅ | ✅ |
-| Compiler (React Forget) | 实验性 | ✅ 自动 memo | ✅ 默认 |
-| 元框架集成 | 基础 | 深化 | 原生支持 |
+  const handleSearch = (value: string) => {
+    setSearchTerm(value); // 紧急更新
+    startTransition(() => { // 非紧急更新
+      setResults(performExpensiveSearch(value));
+    });
+  };
 
-### 2️⃣ 常见 Hooks 实现原理
+  return (
+    <>
+      <input value={searchTerm} onChange={(e) => handleSearch(e.target.value)} />
+      {isPending && <span>搜索中...</span>}
+      <ul>{results.map(user => <li key={user.id}>{user.name}</li>)}</ul>
+    </>
+  );
+}
+```
 
-> 💡 **要点**：Hooks 本质是基于 Fiber 节点上的链表存储，通过调用顺序索引匹配状态，因此不能在条件/循环中调用 Hooks，必须保证每次渲染的调用顺序一致。
+### 🎯 useDeferredValue - 延迟值
 
-#### useState 实现原理
+```typescript
+function List({ searchTerm }: { searchTerm: string }) {
+  const deferredSearchTerm = useDeferredValue(searchTerm);
 
-```tsx
-// 简化版 useState 内部实现原理（基于 Fiber hooks 链表）
+  const filteredItems = useMemo(() => {
+    return items.filter(item => item.name.includes(deferredSearchTerm));
+  }, [deferredSearchTerm]);
+
+  return <ul>{filteredItems.map(item => <li key={item.id}>{item.name}</li>)}</ul>;
+}
+```
+
+### 🎯 并发特性速览
+
+| 特性 | 说明 |
+|------|------|
+| startTransition | 标记非紧急更新 |
+| useDeferredValue | 延迟更新某个值 |
+| Automatic Batching | Promise/setTimeout 中也能自动批处理 |
+| Suspense SSR | 服务端流式渲染 + 选择性水合 |
+| useId | SSR 场景下生成唯一 ID |
+| useSyncExternalStore | 订阅外部存储，避免撕裂问题 |
+
+---
+
+## 2️⃣0️⃣ 图片和资源优化
+
+```typescript
+// 响应式图片
+function ResponsiveImage() {
+  return (
+    <img
+      srcSet="small.jpg 480w, medium.jpg 800w, large.jpg 1200w"
+      sizes="(max-width: 600px) 480px, (max-width: 1024px) 800px, 1200px"
+      src="large.jpg"
+      alt="描述"
+    />
+  );
+}
+
+// 延迟加载（Intersection Observer）
+function LazyImage({ src, alt }: { src: string; alt: string }) {
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          img.src = src;
+          setIsLoaded(true);
+          observer.unobserve(img);
+        }
+      },
+      { rootMargin: '50px' }
+    );
+    if (imgRef.current) observer.observe(imgRef.current);
+    return () => observer.disconnect();
+  }, [src]);
+
+  return <img ref={imgRef} alt={alt} style={{ opacity: isLoaded ? 1 : 0.5 }} />;
+}
+```
+
+---
+
+# 第五部分：面试题汇总
+
+## 核心概念面试题
+
+### Q1：React 是什么？它的核心特性有哪些？
+
+**标准答案：**
+
+```
+1️⃣ 声明式编程：
+   描述 UI 应该是什么样子，而不是如何一步步构建它
+
+2️⃣ 组件化：
+   将 UI 拆分成独立的、可复用的组件
+
+3️⃣ 虚拟 DOM：
+   通过比对新旧虚拟 DOM，最小化真实 DOM 操作
+
+4️⃣ 单向数据流：
+   数据从父组件流向子组件，数据更新由父组件控制
+```
+
+### Q2：虚拟 DOM 是什么？它如何提高性能？
+
+**工作原理：**
+1. 组件状态改变
+2. 创建新的虚拟 DOM 树
+3. 与旧虚拟 DOM 比对（Diff）
+4. 只更新有变化的真实 DOM
+
+**性能优势：**
+- 批量更新：多个状态变化合并为一次 DOM 更新
+- 高效 Diff：只更新改变的部分（O(n) 复杂度）
+- 避免频繁回流：直接操作 DOM 是最慢的
+
+### Q3：useState 的闭包陷阱是什么？如何避免？
+
+```typescript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  // ❌ 闭包陷阱：setTimeout 捕获的是旧值
+  const handleClick = () => {
+    setTimeout(() => console.log(count), 1000);
+  };
+}
+```
+
+**解决方案：**
+
+```typescript
+// ✅ 使用函数式更新
+setCount(prev => prev + 1);
+
+// ✅ 使用 useRef 保存最新值
+const countRef = useRef(count);
+useEffect(() => { countRef.current = count; }, [count]);
+
+// ✅ 依赖数组正确包含所有依赖
+useEffect(() => {
+  window.addEventListener('click', () => console.log(count));
+  return () => window.removeEventListener('click', () => console.log(count));
+}, [count]);
+```
+
+### Q4：如何优化 React 应用性能？
+
+```
+🎯 渲染优化
+  ✅ React.memo 缓存组件
+  ✅ useCallback 缓存函数
+  ✅ useMemo 缓存计算结果
+  ✅ 稳定 key 属性
+
+📦 代码优化
+  ✅ 代码分割和延迟加载
+  ✅ Tree shaking
+  ✅ 减少依赖库数量
+
+🌐 网络优化
+  ✅ 预加载关键资源
+  ✅ 懒加载图片和组件
+  ✅ CDN 部署资源
+```
+
+### Q5：Hooks 和 Class 组件有什么区别？
+
+| 特性 | Hooks（函数组件） | Class 组件 |
+|------|------------------|-----------|
+| 语法 | 简洁 | 复杂 |
+| 状态管理 | useState | this.state |
+| 副作用 | useEffect | 生命周期方法 |
+| 学习曲线 | 平缓 | 陡峭 |
+| 社区趋势 | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+
+**建议：** 新项目优先 Hooks；需要 Error Boundary 或集成旧代码时用 Class。
+
+### Q6：React Diff 算法的策略是什么？
+
+**三大策略：**
+1. **树分层对比**：只比较同一层级节点，跨层级直接删除重建
+2. **组件对比**：同类型组件走树对比，不同类型直接替换
+3. **元素对比**：通过 key 标识列表节点，高效复用 DOM 节点
+
+**key 的作用：**
+
+> ⚠️ 使用数组 index 作为 key 会导致列表更新时出现数据错乱。
+
+```mermaid
+flowchart LR
+    subgraph 无 key
+        L1["A B C D"] --> L2["插入 F"]
+        L2 --> L3["4 次对比 + 1 次插入"]
+    end
+
+    subgraph 有 key
+        R1["A B C D"] --> R2["插入 F"]
+        R2 --> R3["仅 1 次插入"]
+    end
+```
+
+### Q7：React 组件通信有哪几种方式？
+
+| 方式 | 适用场景 | 方向 |
+|------|----------|------|
+| props | 父子组件 | 父→子 |
+| 回调函数 | 父子组件 | 子→父 |
+| 共同父组件转发 | 兄弟组件 | — |
+| Context API | 跨层级 | 祖先→后代 |
+| Redux / Zustand | 任意组件 | 全局 |
+
+### Q8：useEffect 和 useLayoutEffect 的区别？
+
+| 特性 | useEffect | useLayoutEffect |
+|------|-----------|----------------|
+| 执行时机 | 浏览器绘制后（异步） | DOM 更新后绘制前（同步） |
+| 阻塞绘制 | ❌ 不阻塞 | ✅ 阻塞 |
+| 适用场景 | 数据获取、订阅 | DOM 测量、样式调整 |
+
+---
+
+## Hooks 实现原理
+
+### 🧬 useState 实现原理
+
+```typescript
+// 简化版 useState 内部实现
 let stateIndex = 0;
 const stateQueue = [];
 
@@ -2278,10 +2038,8 @@ function useState(initialValue) {
     const resolvedValue = typeof newValue === 'function'
       ? newValue(stateQueue[currentIndex])
       : newValue;
-
     stateQueue[currentIndex] = resolvedValue;
-    // 触发重新渲染（调度更新）
-    scheduleUpdate();
+    scheduleUpdate(); // 触发重新渲染
   }
 
   stateIndex++;
@@ -2289,34 +2047,25 @@ function useState(initialValue) {
 }
 ```
 
-**核心要点**：
+**核心要点：**
 - 每个组件实例有一个 Fiber 节点，存储 hooks 链表
 - 通过 `stateIndex` 按调用顺序匹配状态
 - **不能在条件/循环中调用 Hooks**（保证调用顺序一致）
 - `setState` 触发更新调度，合并到批量更新队列
 
-> ⚠️ **Hooks 规则**：不要在循环、条件语句或嵌套函数中调用 Hooks。必须在函数组件或自定义 Hook 的顶层调用，确保每次渲染时所有 Hooks 按**相同的顺序**被调用——这是 React 通过 Fiber 链表索引匹配状态的硬性要求。违反此规则会导致状态错乱或报错。
+### 🧬 useEffect 实现原理
 
-#### useEffect 实现原理
-
-```tsx
-// 简化版 useEffect 内部实现原理
+```typescript
 function useEffect(callback, deps) {
   const currentIndex = effectIndex;
   const previousDeps = effectQueue[currentIndex];
 
-  // 比较依赖项
-  const hasChanged = !previousDeps || deps.some((dep, i) =>
-    !Object.is(dep, previousDeps[i])
-  );
+  const hasChanged = !previousDeps || deps.some((dep, i) => !Object.is(dep, previousDeps[i]));
 
   if (hasChanged) {
-    // 清除上一次副作用
     if (effectQueue[currentIndex]?.cleanup) {
       effectQueue[currentIndex].cleanup();
     }
-
-    // 等待浏览器绘制完成后执行
     scheduleAfterPaint(() => {
       const cleanup = callback();
       effectQueue[currentIndex] = { deps, cleanup };
@@ -2327,15 +2076,14 @@ function useEffect(callback, deps) {
 }
 ```
 
-**核心要点**：
+**核心要点：**
 - 在 commit 阶段后异步执行（LayoutEffect 则是同步）
 - 通过 `Object.is` 比较依赖项
 - 返回的 cleanup 函数在下一次 effect 执行前调用
 
-#### useRef 实现原理
+### 🧬 useRef 实现原理
 
-```tsx
-// 简化版 useRef 内部实现原理
+```typescript
 function useRef(initialValue) {
   const currentIndex = refIndex;
   if (refQueue[currentIndex] === undefined) {
@@ -2346,16 +2094,15 @@ function useRef(initialValue) {
 }
 ```
 
-**核心要点**：
+**核心要点：**
 - 返回一个稳定的对象引用（整个生命周期不变）
 - `.current` 变化不会触发重新渲染
 - 常用于 DOM 引用、保存可变值
 
-#### useContext 实现原理
+### 🧬 useContext 实现原理
 
-```tsx
+```typescript
 function useContext(Context) {
-  // 从当前 Fiber 节点向上查找最近的 Provider
   const fiber = getCurrentFiber();
   let provider = fiber;
 
@@ -2366,34 +2113,27 @@ function useContext(Context) {
     provider = provider.return; // 父 Fiber
   }
 
-  // 未找到 Provider，使用默认值
   return Context._defaultValue;
 }
 ```
 
-**核心要点**：
+**核心要点：**
 - 本质是沿着 Fiber 树向上遍历查找最近的 Context.Provider
 - Provider 的 value 变化时，所有消费该 Context 的组件会强制更新
-- 不阻塞渲染（与 useState 不同）
 
-### 3️⃣ React 生态对比
+---
 
-> 💡 **要点**：React 生态丰富多元：元框架选型（Next.js/Remix/Gatsby）、状态管理（Zustand/Redux/MobX/Jotai）、数据获取（TanStack Query/SWR/Apollo），根据项目需求选择合适的组合。
+## React 生态对比
 
-#### Next.js vs Remix vs Gatsby
+### 元框架对比
 
 | 维度 | Next.js | Remix | Gatsby |
 |------|---------|-------|--------|
 | 渲染模式 | SSR/SSG/ISR/CSR | SSR + 渐进增强 | 纯 SSG |
-| 路由 | App Router (RSC) + Pages Router | 嵌套路由 + loaders | 基于 GraphQL |
-| 数据获取 | 服务端 fetch / RSC | loaders / actions | GraphQL 查询 |
-| 缓存 | 多层缓存策略 | HTTP 缓存优先 | 静态文件 CDN |
-| 热更新 | 快速刷新 | 组件 HMR | 较慢 |
 | 学习曲线 | 中等 | 低 | 中 |
 | 适用场景 | 通用/企业级 | SaaS/CRUD | 内容型网站 |
-| 社区生态 | 最大 | 成长中 | 衰退趋势 |
 
-#### Zustand vs Redux vs MobX
+### 状态管理对比
 
 | 维度 | Zustand | Redux Toolkit | MobX |
 |------|---------|---------------|------|
@@ -2401,127 +2141,20 @@ function useContext(Context) {
 | 模板代码 | 极少 | 中等 | 少 |
 | Bundle | ~1KB | ~12KB | ~16KB |
 | 学习曲线 | 低 | 中 | 低 |
-| TypeScript | 优秀 | 优秀 | 一般 |
-| DevTools | 第三方 | 内置 | 第三方 |
-| 最适合 | 中小型项目 | 大型复杂项目 | 响应式思维项目 |
 
-#### React Query vs SWR vs Apollo
+### 数据获取对比
 
 | 维度 | TanStack Query | SWR | Apollo Client |
 |------|----------------|-----|---------------|
 | 协议 | REST/GraphQL | REST/GraphQL | GraphQL |
 | 缓存策略 | 精细（GC/Stale） | 基础 | 规范化缓存 |
-| 重试策略 | 可配置指数退避 | 基础 | 基础 |
-| 乐观更新 | ✅ | ✅ | ✅ |
-| 分页/无限滚动 | ✅ useInfiniteQuery | ✅ useSWRInfinite | ✅ fetchMore |
 | Bundle | ~13KB | ~5KB | ~35KB |
-| 适用场景 | REST 优先 | 轻量需求 | GraphQL 专用 |
-
-#### 生态对比图
-
-```mermaid
-graph TB
-    subgraph "元框架"
-        A["Next.js"] --> B["App Router + RSC"]
-        C["Remix"] --> D["loaders + actions"]
-        E["Gatsby"] --> F["GraphQL + SSG"]
-    end
-
-    subgraph "状态管理"
-        G["Zustand"] -->|轻量| L["中小项目"]
-        H["Redux Toolkit"] -->|重型| M["大型项目"]
-        I["MobX"] -->|响应式| N["特定场景"]
-        J["Jotai"] -->|原子化| O["灵活组合"]
-        K["TanStack Query"] -->|服务端状态| P["数据同步"]
-    end
-
-    subgraph "测试"
-        Q["Vitest + RTL"] --> R["单元/集成"]
-        S["Playwright"] --> T["E2E"]
-    end
-
-    subgraph "构建工具"
-        U["Vite"] --> V["开发/构建"]
-        W["Turbopack"] --> X["Next.js 构建"]
-    end
-
-    style A fill:#4CAF50,color:#fff
-    style C fill:#2196F3,color:#fff
-    style G fill:#E91E63,color:#fff
-    style H fill:#FF9800,color:#fff
-    style K fill:#9C27B0,color:#fff
-    style U fill:#00BCD4,color:#fff
-```
 
 ---
 
-## ❓ 十三、React 面试题汇总
+## 实战场景题
 
-### 💬 Q1: React 是什么？核心特性？
-
-React 是一个用于构建用户界面的 JavaScript 库。核心特性：
-
-| 特性 | 说明 |
-|------|------|
-| 声明式 | 描述 UI 应该是什么样子，而非如何构建 |
-| 组件化 | 将 UI 拆分成独立、可复用的组件 |
-| 虚拟 DOM | 通过 Diff 最小化真实 DOM 操作 |
-| 单向数据流 | 数据从父组件流向子组件 |
-
-### 💬 Q2: 虚拟 DOM 如何提高性能？
-
-```mermaid
-graph LR
-    A["状态改变"] --> B["创建新 VNode 树"]
-    B --> C["与旧 VNode 树 Diff"]
-    C --> D["只更新变更的 DOM"]
-```
-
-- **批量更新**：多个状态变化合并为一次 DOM 更新
-- **高效 Diff**：只更新改变的部分（O(n) 复杂度）
-- **避免频繁回流**：直接操作 DOM 是最慢的
-
-### 💬 Q3: useState 闭包陷阱及解决方法？
-
-```typescript
-function Counter() {
-  const [count, setCount] = useState(0);
-
-  // ❌ 闭包陷阱：setTimeout 捕获的是旧值
-  const handleClick = () => {
-    setTimeout(() => console.log(count), 1000);
-  };
-
-  // ✅ 解决：函数式更新
-  setCount(prev => prev + 1);
-
-  // ✅ 解决：useRef 保存最新值
-  const countRef = useRef(count);
-  useEffect(() => { countRef.current = count; }, [count]);
-}
-```
-
-### 💬 Q4: 如何优化 React 应用性能？
-
-| 分类 | 优化手段 |
-|------|---------|
-| 渲染优化 | React.memo、useCallback、useMemo、稳定 key |
-| 代码优化 | 代码分割、Tree shaking、减少依赖库 |
-| 网络优化 | 预加载关键资源、懒加载图片/组件、CDN |
-| 服务器优化 | SSR/SSG、API 响应缓存、数据预取 |
-
-### 💬 Q5: Hooks 和 Class 组件如何选择？
-
-| 对比 | Hooks（函数组件） | Class 组件 |
-|------|------------------|-----------|
-| 语法 | 简洁 | 复杂 |
-| 状态 | useState | this.state |
-| 副作用 | useEffect | 生命周期方法 |
-| 趋势 | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-
-**建议**：新项目优先 Hooks；需要 Error Boundary 或集成旧代码时用 Class。
-
-### 💬 Q6: 实现一个具有分页、搜索、排序的数据表格
+### 场景 1：实现一个具有分页、搜索、排序的数据表格
 
 ```typescript
 function DataTable() {
@@ -2565,21 +2198,90 @@ function DataTable() {
 }
 ```
 
-### React 开发黄金法则
+### 场景 2：实现一个具有撤销/重做功能的编辑器
 
-```
-1️⃣ 优先使用函数组件和 Hooks
-2️⃣ 合理拆分组件（单一职责）
-3️⃣ 使用 TypeScript
-4️⃣ 为列表提供稳定的 key（避免 index）
-5️⃣ 避免在渲染时创建新对象
-6️⃣ 及时清理副作用
-7️⃣ 使用受控组件处理表单
-8️⃣ 分离关注点，使用自定义 Hooks
+```typescript
+function useHistory<T>(initialValue: T) {
+  const [state, setState] = useState(initialValue);
+  const [history, setHistory] = useState<T[]>([initialValue]);
+  const [historyStep, setHistoryStep] = useState(0);
+
+  const updateState = (newState: T) => {
+    const newHistory = history.slice(0, historyStep + 1);
+    newHistory.push(newState);
+    setHistory(newHistory);
+    setHistoryStep(newHistory.length - 1);
+    setState(newState);
+  };
+
+  const undo = () => {
+    if (historyStep > 0) {
+      const newStep = historyStep - 1;
+      setHistoryStep(newStep);
+      setState(history[newStep]);
+    }
+  };
+
+  const redo = () => {
+    if (historyStep < history.length - 1) {
+      const newStep = historyStep + 1;
+      setHistoryStep(newStep);
+      setState(history[newStep]);
+    }
+  };
+
+  return { state, updateState, undo, redo, canUndo: historyStep > 0, canRedo: historyStep < history.length - 1 };
+}
 ```
 
 ---
 
-> 📚 **本文档覆盖内容**：React 18/19/20 核心特性 · 现代状态管理方案 · Next.js 元框架 · 设计模式 · 性能优化 · 测试策略 · 生态对比
->
-> 🎨 所有图表均使用 Mermaid 绘制，可在支持 Mermaid 的 Markdown 渲染器中直接查看。
+## 最佳实践总结
+
+### 🎯 React 开发黄金法则
+
+```
+1️⃣ 优先使用函数组件和 Hooks
+   → 更简洁、更易测试、更好的代码复用
+
+2️⃣ 合理拆分组件
+   → 单一职责、易于维护和测试
+
+3️⃣ 使用 TypeScript
+   → 类型安全、IDE 智能提示、减少运行时错误
+
+4️⃣ 为列表提供稳定的 key
+   → 避免在 map 中使用索引
+
+5️⃣ 避免在渲染时创建新对象
+   → 提取到常量或使用 useMemo
+
+6️⃣ 及时清理副作用
+   → 在 useEffect 中返回清理函数
+
+7️⃣ 使用受控组件处理表单
+   → 更易验证、变换、条件提交
+
+8️⃣ 分离关注点
+   → 逻辑与 UI 分离，使用自定义 Hooks
+
+9️⃣ 使用 React.memo 优化纯展示组件
+   → 避免不必要的重渲染
+
+🔟 充分利用 React DevTools
+   → 分析性能瓶颈、调试组件状态
+```
+
+---
+
+## 📚 推荐学习资源
+
+- 🌐 [官方文档](https://react.dev)
+- 📖 [React 最佳实践](https://react.dev/learn)
+- 🎓 [React 核心概念深入](https://react.dev/reference)
+- 💻 [CodeSandbox 在线编辑](https://codesandbox.io)
+- 🧪 [React Testing Library](https://testing-library.com)
+
+---
+
+**如有问题或建议，欢迎反馈！** 🚀
