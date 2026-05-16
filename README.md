@@ -29,9 +29,9 @@ graph LR
 
 | 阶段 | 编号 | 文件（点击跳转） | 内容 |
 |------|------|------------------|------|
-| **🟢 S1 基础夯实** | 01 | [`01-HTML-详解版.md`](S1-基础夯实/01-HTML-详解版.md) | HTML5、语义化、Web Components |
-| | 02 | [`02-CSS-详解版.md`](S1-基础夯实/02-CSS-详解版.md) | 选择器、布局、动画、编程题集 |
-| | 03 | [`03-JavaScript-详解版.md`](S1-基础夯实/03-JavaScript-详解版.md) | 数据类型、闭包、原型链、异步 |
+| **🟢 S1 基础夯实** | 01 | [`01-HTML-详解版.md`](S1-基础夯实/01-HTML-详解版.md) | HTML5、语义化、Web Components、Popover、Dialog、ARIA、Service Worker |
+| | 02 | [`02-CSS-详解版.md`](S1-基础夯实/02-CSS-详解版.md) | 选择器、布局、动画、编程题集、Container Queries、Anchor Positioning、@scope |
+| | 03 | [`03-JavaScript-详解版.md`](S1-基础夯实/03-JavaScript-详解版.md) | 数据类型、闭包、原型链、异步、Immutable Array、Promise.try、Navigation API |
 | | 04 | [`04-代码输出-详解版.md`](S1-基础夯实/04-代码输出-详解版.md) | Promise/this/作用域/原型输出题 |
 | **🔵 S2 框架深入** | 05 | [`05-Vue3-详解版.md`](S2-框架深入/05-Vue3-详解版.md) | Vue 3、Composition API、响应式原理 |
 | | 06 | [`06-React19-详解版.md`](S2-框架深入/06-React19-详解版.md) | React 19、Hooks、Fiber、Next.js |
@@ -58,9 +58,9 @@ graph LR
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [1-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components |
-| [2-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道 |
-| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现 |
+| [1-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
+| [2-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道、Container Queries、:has()、CSS Nesting、@property、Anchor Positioning、@scope、Scroll-Driven Animations |
+| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现、Immutable Array、RegExp v flag、Promise.try、Navigation API、File System Access、Clipboard API |
 | [4-代码输出-详解版.md](S1-基础夯实/04-代码输出-详解版.md) | 60+ 经典输出题：Promise 顺序、宏任务/微任务、this 指向、变量提升、原型链 |
 
 ---
@@ -111,6 +111,10 @@ graph LR
 |------|---------|
 | HTML 语义化 & 标签 | [1](S1-基础夯实/01-HTML-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) |
 | CSS 布局 & 动画 | [2](S1-基础夯实/02-CSS-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) |
+| HTML 新特性 (Popover/Dialog/PWA) | [1](S1-基础夯实/01-HTML-详解版.md) |
+| 现代 CSS (Container/Anchor/@scope) | [2](S1-基础夯实/02-CSS-详解版.md) |
+| 现代 JS (Immutable Array/Promise.try) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
+| Web API (Navigation/Clipboard/File) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
 | JS 数据类型 & 类型转换 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
 | 闭包 & 作用域 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [简历八股](S4-面试冲刺/15-简历问题-深度八股.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
 | 原型链 & 继承 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
@@ -226,6 +230,8 @@ graph LR
 | 🟡 进阶文档 | 4 份 |
 | 🔴 冲刺文档 | 4 份（含简历） |
 | 覆盖题型 | 100+ 算法题、60+ 输出题、200+ 面试题 |
+
+> 🔄 **最近更新**：HTML 新增 Popover/Dialog/ARIA/表单高级/Service Worker/PWA/解析机制；CSS 新增 Anchor Positioning/@scope/light-dark/text-wrap/:user-valid；JS 新增 Immutable Array/RegExp v/Promise.try/JSON rawJSON + Navigation/File System/Screen Wake Lock/Clipboard API
 
 ---
 

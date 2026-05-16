@@ -4457,3 +4457,434 @@ flowchart TD
   }
 }
 ```
+
+---
+
+### 1️⃣1️⃣ CSS Anchor Positioning（锚点定位）
+
+> 💡 **要点：** 原生 CSS 锚点定位让元素相对于其他元素（锚点）精确定位，无需 JavaScript 计算位置，适合 tooltip、popover、下拉菜单
+
+Anchor Positioning 允许将一个元素**锚定**到另一个元素上，并基于锚点的位置进行精确定位。
+
+#### anchor-name / position-anchor
+
+```css
+/* 1. 锚点元素: 声明 anchor-name */
+.anchor-btn {
+  anchor-name: --action-btn;
+}
+
+/* 2. 目标元素: 通过 position-anchor 绑定锚点 */
+.tooltip {
+  position: absolute;              /* 或 fixed */
+  position-anchor: --action-btn;   /* 绑定锚点 */
+
+  /* 3. 使用 anchor() 函数定位 */
+  top: anchor(bottom);             /* 顶部对齐锚点底部 */
+  left: anchor(center);            /* 水平居中 */
+}
+```
+
+#### anchor() 和 anchor-size() 函数
+
+```css
+.positioned-element {
+  /* anchor() 引用锚点的位置 */
+  top: anchor(--btn bottom);       /* 锚点的 bottom 边 */
+  left: anchor(--btn right);       /* 锚点的 right 边 */
+
+  /* anchor-size() 引用锚点的尺寸 */
+  width: anchor-size(--btn width);  /* 与锚点同宽 */
+  height: anchor-size(--btn height, 50px); /* 回退值 */
+}
+
+/* 常用锚点关键字 */
+/*
+  anchor(top)     → 锚点的上边缘
+  anchor(right)   → 锚点的右边缘
+  anchor(bottom)  → 锚点的下边缘
+  anchor(left)    → 锚点的左边缘
+  anchor(center)  → 锚点的中心
+*/
+```
+
+#### position-try-fallbacks 溢出处理
+
+```css
+.tooltip {
+  position: absolute;
+  position-anchor: --btn;
+  bottom: anchor(top);
+  left: anchor(center);
+  translate: -50% 0;
+
+  /* 当上述位置溢出时，尝试其他位置 */
+  position-try-fallbacks:
+    flip-block,           /* 上下翻转 */
+    flip-inline,          /* 左右翻转 */
+    flip-block flip-inline; /* 对角翻转 */
+}
+
+/* 自定义回退位置 */
+@position-try --try-top {
+  bottom: auto;
+  top: anchor(bottom);
+}
+
+@position-try --try-right {
+  left: anchor(right);
+  top: anchor(top);
+}
+
+.tooltip {
+  position-try-fallbacks: --try-top, --try-right, flip-block;
+}
+```
+
+#### 实战：Tooltip 定位
+
+```css
+[popover] {
+  position: absolute;
+  position-anchor: --trigger;
+  margin: 0;
+  inset: unset;
+
+  /* 默认在锚点下方居中 */
+  top: anchor(bottom);
+  left: anchor(center);
+  translate: -50% 4px;
+
+  /* 溢出自动翻转 */
+  position-try-fallbacks:
+    flip-block,
+    flip-inline,
+    flip-block flip-inline;
+}
+
+button {
+  anchor-name: --trigger;
+}
+```
+
+```html
+<button popovertarget="tip" anchor-name="--trigger">鼠标悬停</button>
+<div id="tip" popover>提示内容</div>
+```
+
+> ⚠️ **兼容性**：Anchor Positioning 是较新的 CSS 特性（2024+），Chrome 125+ 支持。使用前建议检测 `CSS.supports('anchor-name', '--test')`。
+
+---
+
+### 1️⃣2️⃣ @scope（CSS 样式作用域）
+
+> 💡 **要点：** @scope 允许将样式限制在特定 DOM 子树内，提供比 BEM / CSS Modules 更原生的样式隔离方案
+
+`@scope` 规则允许将样式限制在页面的特定部分，原生实现作用域隔离。
+
+#### @scope 语法
+
+```css
+/* 将样式限制在 .card 内 */
+@scope (.card) {
+  /* 仅匹配 .card 内的 p 元素 */
+  p {
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+/* 等价于传统写法 */
+/* .card p { color: #333; } */
+/* .card .title { font-size: 1.25rem; } */
+```
+
+#### 深层/浅层选择
+
+```css
+/* @scope 支持"浅层"（只选直接子代）和"深层"（选所有后代） */
+@scope (.card) {
+  /* 默认: 匹配所有后代 */
+  p { color: #333; }
+
+  /* 使用 :scope 选择器限定 */
+  :scope {                 /* 等同 .card */
+    border: 1px solid #ddd;
+    padding: 1rem;
+  }
+
+  /* 仅限直接子代 */
+  > p { margin-bottom: 0.5rem; }
+}
+```
+
+#### 与 Shadow DOM、BEM 对比
+
+```mermaid
+flowchart LR
+    subgraph 样式隔离方案
+        A["BEM 命名约定"]
+        B["CSS Modules"]
+        C["Shadow DOM"]
+        D["@scope"]
+    end
+
+    A --> A1["人为约定，无运行时开销"]
+    A --> A2["命名冗长，易出错"]
+
+    B --> B1["构建时自动重命名"]
+    B --> B2["依赖构建工具"]
+
+    C --> C1["完全 DOM 隔离"]
+    C --> C2["无法外部覆盖"]
+    C --> C3["影响事件冒泡"]
+
+    D --> D1["原生语法，无工具依赖"]
+    D --> D2["运行时无开销"]
+    D --> D3["可被外部覆盖（灵活）"]
+    D --> D4["浏览器原生支持"]
+```
+
+```css
+/* @scope 的优势：无需构建工具、无运行时开销 */
+@scope (.sidebar) {
+  a { color: blue; }
+}
+
+@scope (.main-content) {
+  a { color: green; }
+}
+```
+
+> 💡 **适用场景**：适合组件样式的轻量隔离，不需要 Shadow DOM 的完全隔离时；第三方组件嵌入、微前端样式隔离。
+
+---
+
+### 1️⃣3️⃣ text-wrap 新值
+
+> 💡 **要点：** text-wrap: balance / pretty 分别优化标题和段落的文本换行，提升排版美观度，无需手动插入 `<wbr>` 或 `<br>`
+
+#### text-wrap: balance
+
+```css
+/* balance: 平衡每行文字数量，适合标题 */
+h1, h2, h3 {
+  text-wrap: balance;  /* 每行文字长度尽量均衡 */
+}
+
+/* 效果对比 */
+/*
+  传统 wrap:                    balance 模式:
+  这是一段很长的标题文        这是一段很长的
+  字需要自动换行              标题文字需要
+                              自动换行
+*/
+```
+
+#### text-wrap: pretty
+
+```css
+/* pretty: 优化段落末尾换行，避免"孤行"（widow/orphan） */
+article p {
+  text-wrap: pretty;   /* 段落末尾至少保留 2 个词 */
+}
+
+/* 其他值 */
+.wrap-normal  { text-wrap: wrap; }      /* 默认行为，允许在任意位置换行 */
+.wrap-balance { text-wrap: balance; }   /* 每行文字数量均衡 */
+.wrap-pretty  { text-wrap: pretty; }    /* 优化段落实例 */
+.wrap-nowrap  { text-wrap: nowrap; }    /* 不换行 */
+```
+
+| 值 | 用途 | 性能影响 |
+|----|------|----------|
+| `wrap`（默认） | 常规文本 | 无 |
+| `balance` | 标题、引言 | 有少量计算开销（最多 6 行） |
+| `pretty` | 段落正文 | 有少量计算开销（避免孤行） |
+| `nowrap` | 内联元素 | 无 |
+
+> 💡 **最佳实践**：标题用 `balance`，正文段落用 `pretty`，常规内容保持默认 `wrap`。
+
+---
+
+### 1️⃣4️⃣ light-dark() 颜色函数
+
+> 💡 **要点：** light-dark() 根据 color-scheme 自动切换深浅色模式，无需 CSS 变量或媒体查询，一行代码实现主题适配
+
+#### 基本用法
+
+```css
+/* 1. 声明支持的颜色方案 */
+:root {
+  color-scheme: light dark;  /* 页面支持亮色和暗色 */
+}
+
+/* 2. 使用 light-dark() 双色值 */
+.element {
+  background: light-dark(white, #1a1a2e);     /* light: white, dark: #1a1a2e */
+  color: light-dark(#333, #e0e0e0);           /* light: #333, dark: #e0e0e0 */
+  border-color: light-dark(#ddd, #444);       /* light: #ddd, dark: #444 */
+}
+```
+
+#### 与传统方案的对比
+
+```css
+/* 传统方案: prefers-color-scheme + CSS 变量 */
+:root {
+  --bg: white;
+  --text: #333;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a2e;
+    --text: #e0e0e0;
+  }
+}
+
+/* light-dark() 方案: 更简洁 */
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(white, #1a1a2e);
+  --text: light-dark(#333, #e0e0e0);
+}
+```
+
+```mermaid
+flowchart LR
+    subgraph 传统方案
+        A1["声明 CSS 变量"]
+        A2["@media (prefers-color-scheme: dark)"]
+        A3["覆盖变量"]
+        A4["引用变量"]
+    end
+
+    subgraph light-dark()
+        B1["color-scheme: light dark"]
+        B2["light-dark(亮色值, 暗色值)"]
+        B3["自动适配"]
+    end
+
+    A1 --> A2 --> A3 --> A4
+    B1 --> B2 --> B3
+
+    C["light-dark 优势"] --> C1["无需媒体查询"]
+    C --> C2["无需 CSS 变量"]
+    C --> C3["单行声明"]
+    C --> C4["可嵌套 calc()/var()"]
+```
+
+#### 实战：主题系统
+
+```css
+:root {
+  color-scheme: light dark;
+  --surface: light-dark(#ffffff, #1e1e2e);
+  --text-primary: light-dark(#1a1a2e, #cdd6f4);
+  --text-secondary: light-dark(#6c7086, #a6adc8);
+  --accent: light-dark(#7c3aed, #a78bfa);
+  --border: light-dark(#e2e8f0, #313244);
+  --success: light-dark(#16a34a, #4ade80);
+  --error: light-dark(#dc2626, #f87171);
+}
+
+.card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.button {
+  background: var(--accent);
+  color: light-dark(white, #1a1a2e);
+}
+```
+
+> ⚠️ **前提条件**：必须设置 `color-scheme` 属性，否则 `light-dark()` 始终使用亮色值。
+
+---
+
+### 1️⃣5️⃣ :user-valid / :user-invalid 伪类
+
+> 💡 **要点：** 用户交互后才触发的验证反馈伪类，比 :valid/:invalid 更合理——不会在页面加载时就显示错误状态
+
+#### 与传统 :valid/:invalid 的区别
+
+```css
+/* 传统验证伪类: 页面加载时就会应用 */
+input:valid { border-color: green; }
+input:invalid { border-color: red; }
+
+/* 用户交互伪类: 只在用户操作后生效 */
+input:user-valid { border-color: green; }
+input:user-invalid { border-color: red; }
+```
+
+```html
+<form>
+  <!-- 传统: 页面加载时直接显示红色边框（用户体验差） -->
+  <input type="email" required>
+
+  <!-- :user-invalid 只在用户输入/离开后才显示错误 -->
+  <input type="email" required class="user-validate">
+</form>
+```
+
+```css
+/* 推荐用法: 结合两者实现渐进增强 */
+input {
+  border: 2px solid #ddd;
+  transition: border-color 0.2s;
+}
+
+/* 基础无效样式（默认不显示） */
+input:invalid {
+  border-color: #fca5a5;  /* 浅红色，几乎看不出 */
+}
+
+/* 用户交互后才深红色提示 */
+input:user-invalid {
+  border-color: #dc2626;  /* 深红色，醒目 */
+  background: #fef2f2;
+}
+
+/* 成功状态 */
+input:user-valid {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+```
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant I as 输入框
+    participant S as 样式
+
+    U->>I: 页面加载
+    I->>S: :invalid （默认样式）
+    S->>I: 浅色边框（不明显）
+
+    U->>I: 点击输入框（focus）
+    U->>I: 输入内容...
+    U->>I: 离开输入框（blur）
+    I->>S: :user-invalid 激活
+    S->>I: 深红色边框 + 背景 ✅
+
+    U->>I: 修正输入为有效值
+    I->>S: :user-valid 激活
+    S->>I: 绿色边框 ✅
+```
+
+| 伪类 | 触发时机 | 适用场景 |
+|------|----------|----------|
+| `:valid` / `:invalid` | DOM 加载即生效 | 实时反馈（可结合 `:focus`） |
+| `:user-valid` / `:user-invalid` | 用户交互后（输入/提交/blur） | 表单验证反馈，更好的 UX |
+
+> 💡 **最佳实践**：表单验证反馈推荐使用 `:user-invalid`，避免用户在填写前就看到满屏红色错误提示。
