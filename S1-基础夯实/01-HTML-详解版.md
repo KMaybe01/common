@@ -32,6 +32,13 @@
 - [📦 24. Import Map](#24-import-map)
 - [🔗 25. WebSocket](#25-websocket)
 - [📹 26. WebRTC 简介](#26-webrtc-简介)
+- [🔒 27. 安全和隐私相关新特性](#27-安全和隐私相关新特性)
+- [🫧 28. Popover API](#28-popover-api)
+- [🪟 29. Dialog 元素](#29-dialog-元素)
+- [♿ 30. 可访问性 ARIA](#30-可访问性-aria)
+- [📋 31. HTML 表单高级特性](#31-html-表单高级特性)
+- [⚙️ 32. Service Worker 与 PWA](#32-service-worker-与-pwa)
+- [🔍 33. HTML 解析机制](#33-html-解析机制)
 
 
 ---
@@ -2370,4 +2377,1096 @@ if (crossOriginIsolated) {
 }
 ```
 
-## 
+---
+
+## 2️⃣8️⃣ Popover API
+
+> 🫧 **浏览器原生弹出层 API，无需引入第三方库即可创建弹窗、提示框、菜单等**
+
+### 概念
+
+Popover API 是浏览器原生提供的**弹出层**机制，通过 HTML 属性即可创建弹出层，支持自动定位、轻触关闭（light dismiss）和焦点管理。
+
+```mermaid
+flowchart TD
+    A["Popover API 核心"] --> B["popover 属性<br>声明元素为弹层"]
+    A --> C["popovertarget 属性<br>触发器关联弹层"]
+    A --> D["popovertargetaction<br>控制行为"]
+    B --> E["popover='auto'<br>自动模式（默认）"]
+    B --> F["popover='manual'<br>手动模式"]
+    C --> G["button/input 绑定弹层"]
+    D --> H["show / hide / toggle"]
+```
+
+### 28.1 popover 属性
+
+```html
+<!-- 声明为弹层（自动模式，支持 light dismiss） -->
+<div id="my-popover" popover>
+  <p>这是一个 popover 弹层</p>
+  <button popovertarget="my-popover" popovertargetaction="hide">关闭</button>
+</div>
+
+<!-- 触发器 -->
+<button popovertarget="my-popover">打开弹层</button>
+
+<!-- 手动模式：必须由开发者控制关闭 -->
+<div id="manual-popover" popover="manual">
+  <p>点击外部不会关闭我</p>
+</div>
+```
+
+| popover 值 | light dismiss | 关闭策略 |
+|------------|---------------|----------|
+| `auto`（默认） | 支持 | 点击外部/按 ESC 关闭 |
+| `manual` | 不支持 | 必须通过 API 或按钮关闭 |
+
+### 28.2 popovertarget 与 popovertargetaction
+
+```html
+<button popovertarget="info" popovertargetaction="show">显示</button>
+<button popovertarget="info" popovertargetaction="hide">隐藏</button>
+<button popovertarget="info" popovertargetaction="toggle">切换</button>
+
+<div id="info" popover>
+  popovertargetaction 默认为 toggle，可省略
+</div>
+```
+
+### 28.3 JavaScript API
+
+```javascript
+const popover = document.getElementById('my-popover');
+
+// 显示弹层
+popover.showPopover();
+
+// 隐藏弹层
+popover.hidePopover();
+
+// 切换弹层
+popover.togglePopover();
+
+// 检查是否显示
+console.log(popover.matches(':popover-open')); // true / false
+
+// 事件监听
+popover.addEventListener('beforetoggle', (e) => {
+  if (e.newState === 'open') {
+    console.log('弹层即将打开');
+  } else {
+    console.log('弹层即将关闭');
+  }
+});
+
+popover.addEventListener('toggle', (e) => {
+  console.log('弹层状态已变更为:', e.newState);
+});
+```
+
+### 28.4 顶层层叠与样式
+
+```css
+/* 弹层默认显示在最顶层 */
+[popover] {
+  /* 默认样式 */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 1em;
+  background: Canvas;
+  color: CanvasText;
+}
+
+/* 弹层打开时 */
+[popover]:popover-open {
+  /* 自定义打开样式 */
+}
+
+/* 弹层背板（::backdrop） */
+[popover]::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+```
+
+> 💡 **Popover API 的优势**：无需 z-index 管理、自动焦点捕获、内置 light dismiss、无障碍友好。适合工具提示、下拉菜单、通知面板等场景。
+
+---
+
+## 2️⃣9️⃣ Dialog 元素
+
+> 🪟 **浏览器原生模态框元素，支持模态和非模态两种模式，内置焦点管理和键盘交互**
+
+### 概念
+
+`<dialog>` 是 HTML5 原生的**对话框元素**，提供模态（modal）和非模态（non-modal）两种模式，内置焦点陷阱（focus trap）、ESC 关闭（模态模式）和表单交互。
+
+```mermaid
+flowchart TD
+    A["<dialog> 元素"] --> B["show() <br>非模态"]
+    A --> C["showModal() <br>模态"]
+    A --> D["close() <br>关闭"]
+    B --> E["不阻止其他元素交互"]
+    C --> F["阻止外部交互 + 焦点陷阱"]
+    C --> G["ESC 键关闭"]
+    C --> H["显示 ::backdrop"]
+    D --> I["可传递 returnValue"]
+```
+
+### 29.1 基本用法
+
+```html
+<!-- 非模态对话框 -->
+<dialog id="dialog">
+  <p>这是一个非模态对话框</p>
+  <button onclick="this.closest('dialog').close()">关闭</button>
+</dialog>
+
+<!-- 模态对话框 -->
+<dialog id="modal">
+  <p>这是一个模态对话框</p>
+  <form method="dialog">
+    <button value="confirm">确认</button>
+    <button value="cancel" formmethod="dialog">取消</button>
+  </form>
+</dialog>
+
+<button onclick="document.getElementById('dialog').show()">打开非模态</button>
+<button onclick="document.getElementById('modal').showModal()">打开模态</button>
+```
+
+### 29.2 JavaScript API
+
+```javascript
+const dialog = document.getElementById('dialog');
+const modal = document.getElementById('modal');
+
+// 非模态打开（不阻止外部交互）
+dialog.show();
+
+// 模态打开（阻止外部交互，焦点陷阱）
+modal.showModal();
+
+// 关闭
+dialog.close();
+modal.close('closed-by-user'); // 传递返回值
+
+// 事件监听
+dialog.addEventListener('close', () => {
+  console.log('对话框关闭，返回值:', dialog.returnValue);
+});
+
+dialog.addEventListener('cancel', () => {
+  console.log('用户按 ESC 取消了模态框');
+});
+```
+
+### 29.3 form 与 method="dialog"
+
+```html
+<dialog id="form-dialog">
+  <form method="dialog">
+    <label>
+      姓名：
+      <input type="text" name="username" required>
+    </label>
+    <button type="submit" value="ok">提交</button>
+    <button type="reset" value="cancel">取消</button>
+  </form>
+</dialog>
+```
+
+```javascript
+const fd = document.getElementById('form-dialog');
+
+// 表单 method="dialog" 提交时自动关闭 dialog
+fd.addEventListener('close', () => {
+  if (fd.returnValue === 'ok') {
+    // 获取表单数据需要通过其他方式
+    const form = fd.querySelector('form');
+    const data = new FormData(form);
+    console.log('表单数据:', Object.fromEntries(data));
+  }
+});
+```
+
+### 29.4 样式控制
+
+```css
+/* 模态对话框的背板 */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* 对话框动画 */
+dialog[open] {
+  animation: slide-in 0.3s ease;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 关闭动画 */
+dialog.closing {
+  animation: fade-out 0.2s ease;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+```
+
+> 💡 **dialog vs popover**：`<dialog>` 专为"需要用户确认/输入"的场景设计（表单、确认框）；Popover 适合"展示附加信息"（提示、菜单、面板）。
+
+---
+
+## 3️⃣0️⃣ 可访问性 ARIA
+
+> ♿ **WAI-ARIA 是补充语义的规范，用于弥补 HTML 原生语义的不足，提升残障用户的可访问性**
+
+### 概念
+
+ARIA（Accessible Rich Internet Applications）由 W3C 的 WAI（Web Accessibility Initiative）制定，是一组用于**增强 HTML 语义**的属性和角色，帮助屏幕阅读器等辅助技术理解网页内容和交互。
+
+```mermaid
+flowchart TD
+    A["WAI-ARIA 三大支柱"] --> B["角色 Roles"]
+    A --> C["属性 Properties"]
+    A --> D["状态 States"]
+    B --> E["button / dialog / tab"]
+    B --> F["navigation / banner / main"]
+    C --> G["aria-label / aria-labelledby"]
+    C --> H["aria-describedby / aria-live"]
+    D --> I["aria-expanded / aria-pressed"]
+    D --> J["aria-hidden / aria-disabled"]
+```
+
+### 30.1 ARIA 使用原则
+
+> ⚠️ **第一原则：不要使用 ARIA**——优先使用原生 HTML 语义元素。ARIA 只在原生语义不足时使用。
+
+```html
+<!-- ❌ 错误：用 div 模拟按钮并加 ARIA -->
+<div role="button" tabindex="0" onclick="submit()">提交</div>
+
+<!-- ✅ 正确：直接使用原生 button -->
+<button onclick="submit()">提交</button>
+
+<!-- 何时使用 ARIA：自定义组件且无原生替代时 -->
+<div role="tablist">
+  <button role="tab" aria-selected="true" aria-controls="panel1">标签1</button>
+  <button role="tab" aria-selected="false" aria-controls="panel2">标签2</button>
+</div>
+<div id="panel1" role="tabpanel">面板内容1</div>
+<div id="panel2" role="tabpanel" hidden>面板内容2</div>
+```
+
+### 30.2 常用角色
+
+| 角色 | 作用 | 对应原生元素 |
+|------|------|-------------|
+| `banner` | 页面顶部导航区 | `<header>` |
+| `navigation` | 导航链接集合 | `<nav>` |
+| `main` | 页面主要内容 | `<main>` |
+| `complementary` | 补充内容 | `<aside>` |
+| `contentinfo` | 版权/脚注 | `<footer>` |
+| `form` | 表单区域 | `<form>` |
+| `button` | 可点击按钮 | `<button>` |
+| `link` | 超链接 | `<a>` |
+| `dialog` | 对话框 | `<dialog>` |
+| `alert` | 重要提示 | — |
+
+### 30.3 常用属性和状态
+
+```html
+<!-- aria-label：给元素提供可访问的名称 -->
+<button aria-label="关闭对话框">✕</button>
+
+<!-- aria-labelledby：关联其他元素作为标签 -->
+<h2 id="dialog-title">确认操作</h2>
+<div role="dialog" aria-labelledby="dialog-title">...</div>
+
+<!-- aria-describedby：提供详细描述 -->
+<button aria-describedby="tooltip-text">保存</button>
+<div id="tooltip-text" role="tooltip">将当前更改保存到服务器</div>
+
+<!-- aria-live：动态内容更新通知 -->
+<div aria-live="polite" id="notification">
+  操作成功
+</div>
+```
+
+| 属性 | 值 | 说明 |
+|------|-----|------|
+| `aria-live` | `off` / `polite` / `assertive` | 动态内容更新的通知策略 |
+| `aria-atomic` | `true` / `false` | 是否将整个区域作为整体朗读 |
+| `aria-relevant` | `additions` / `removals` / `text` / `all` | 哪些类型的变更需要通知 |
+| `aria-expanded` | `true` / `false` / `undefined` | 可展开元素（如手风琴）的状态 |
+| `aria-pressed` | `true` / `false` / `mixed` | 切换按钮的按压状态 |
+| `aria-hidden` | `true` / `false` | 从可访问树中移除 |
+| `aria-disabled` | `true` / `false` | 禁用状态（比 disabled 更友好） |
+| `aria-current` | `page` / `step` / `location` / `date` / `time` / `true` | 当前选中项 |
+
+### 30.4 无障碍焦点管理
+
+```javascript
+// 焦点陷阱（Focus Trap）：模态框中循环焦点
+function trapFocus(container) {
+  const focusable = container.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  container.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+}
+```
+
+### 30.5 可访问性测试
+
+```javascript
+// 检查可访问树
+// 开发者工具 -> 更多工具 -> 无障碍功能
+
+// 使用 axe-core 自动化测试
+// npm install @axe-core/cli
+// axe http://localhost:3000
+
+// 程序化检查
+function checkA11y(element) {
+  const name = element.getAttribute('aria-label')
+    || element.getAttribute('aria-labelledby')
+    || element.textContent.trim();
+  if (!name) {
+    console.warn('元素缺少可访问名称:', element);
+  }
+}
+```
+
+> 💡 **WCAG 2.2 核心原则**：可感知（Perceivable）、可操作（Operable）、可理解（Understandable）、健壮性（Robust）。
+
+---
+
+## 3️⃣1️⃣ HTML 表单高级特性
+
+> 📋 **HTML 表单不仅支持基本输入验证，还提供 Constraint Validation API、FormData、自定义表单元素等高级能力**
+
+### 概念
+
+HTML5 表单在基础输入控件之上，提供了**约束验证 API**（Constraint Validation API）、**表单数据序列化**（FormData）和**自定义表单元素注册**等高级特性。
+
+```mermaid
+flowchart TD
+    subgraph 表单高级特性
+        A["约束验证 API"] --> D["ValidityState 对象"]
+        A --> E["setCustomValidity()"]
+        A --> F["checkValidity() / reportValidity()"]
+
+        B["FormData API"] --> G["键值对构造"]
+        B --> H["文件上传"]
+        B --> I["entries() / forEach()"]
+
+        C["表单相关元素"] --> J["form-associated custom elements"]
+        C --> K["form 属性跨元素关联"]
+    end
+```
+
+### 31.1 Constraint Validation API
+
+```html
+<form id="register">
+  <input type="email" id="email" required>
+  <input type="password" id="pwd" minlength="6" pattern="^(?=.*[A-Z])">
+  <input type="number" id="age" min="18" max="120">
+  <button type="submit">注册</button>
+</form>
+```
+
+```javascript
+const form = document.getElementById('register');
+const email = document.getElementById('email');
+
+// ValidityState 对象
+console.log(email.validity);
+// {
+//   valueMissing: false,    // 必填字段为空
+//   typeMismatch: false,    // 类型不匹配（如 email 格式）
+//   patternMismatch: false, // 不匹配 pattern
+//   tooLong: false,         // 超过 maxlength
+//   tooShort: false,        // 不足 minlength
+//   rangeUnderflow: false,  // 小于 min
+//   rangeOverflow: false,   // 大于 max
+//   stepMismatch: false,    // 不匹配 step
+//   badInput: false,        // 输入格式错误
+//   customError: false,     // 自定义验证错误
+//   valid: true
+// }
+
+// 实现自定义验证
+email.addEventListener('input', () => {
+  if (email.value.endsWith('@example.com')) {
+    email.setCustomValidity('不允许使用 example.com 邮箱');
+  } else {
+    email.setCustomValidity('');
+  }
+});
+
+// 手动触发验证
+form.addEventListener('submit', (e) => {
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    form.reportValidity(); // 显示验证提示
+  }
+});
+```
+
+### 31.2 FormData API
+
+```javascript
+// 从表单创建 FormData
+const formData = new FormData(document.getElementById('register'));
+
+// 读取数据
+for (const [name, value] of formData.entries()) {
+  console.log(name, value);
+}
+
+// 手动添加/修改
+formData.append('token', 'abc123');
+formData.set('email', 'new@example.com');
+formData.delete('extra-field');
+
+// 检查内容
+console.log(formData.has('email'));       // true
+console.log(formData.get('email'));        // new@example.com
+console.log(formData.getAll('hobby'));     // 同名多值
+
+// 文件上传
+const fileInput = document.getElementById('avatar');
+const uploadData = new FormData();
+uploadData.append('avatar', fileInput.files[0]);
+
+fetch('/upload', {
+  method: 'POST',
+  body: uploadData
+  // 不要设置 Content-Type，浏览器会自动设置 multipart/form-data
+});
+```
+
+### 31.3 form 属性跨元素关联
+
+```html
+<!-- 表单外的元素通过 form 属性关联 -->
+<form id="main-form" action="/submit">
+  <input name="field1">
+</form>
+
+<!-- 不在 form 内，但通过 form 属性关联 -->
+<input name="field2" form="main-form">
+<select name="field3" form="main-form">
+  <option value="a">A</option>
+</select>
+
+<!-- 表单控件关联多个表单元素 -->
+<fieldset form="main-form">
+  <legend>子区域</legend>
+  <input name="nested">
+</fieldset>
+```
+
+### 31.4 原生表单事件
+
+```javascript
+const form = document.getElementById('myForm');
+
+// input 事件：值每次改变都触发（比 change 更实时）
+form.querySelector('input').addEventListener('input', (e) => {
+  console.log('当前值:', e.target.value);
+});
+
+// change 事件：值改变且失去焦点时触发
+form.querySelector('input').addEventListener('change', (e) => {
+  console.log('最终值:', e.target.value);
+});
+
+// invalid 事件：验证不通过时触发
+form.addEventListener('invalid', (e) => {
+  console.log('无效字段:', e.target.name, e.target.validationMessage);
+}, true); // 捕获阶段
+
+// formdata 事件：FormData 构建时触发
+form.addEventListener('formdata', (e) => {
+  const data = e.formData;
+  data.append('timestamp', Date.now());
+});
+```
+
+### 31.5 form-associated custom elements
+
+```javascript
+class MyInput extends HTMLElement {
+  static formAssociated = true; // 声明为表单关联元素
+
+  constructor() {
+    super();
+    this._internals = this.attachInternals(); // 获取 FormControls 内部接口
+  }
+
+  // 表单控件的值
+  get value() {
+    return this.getAttribute('value') || '';
+  }
+
+  set value(val) {
+    this.setAttribute('value', val);
+    this._internals.setFormValue(val);
+  }
+
+  // 表单验证钩子
+  checkValidity() {
+    const valid = this.value.length >= 3;
+    this._internals.setValidity(
+      valid ? {} : { customError: true },
+      valid ? '' : '至少输入3个字符',
+      this
+    );
+    return valid;
+  }
+}
+
+customElements.define('my-input', MyInput);
+```
+
+```html
+<form>
+  <my-input name="username" value="abc"></my-input>
+  <button>提交</button>
+</form>
+```
+
+> 💡 **表单 API 适用场景**：FormData 适合 AJAX 提交和文件上传；Constraint Validation API 适合实时验证反馈；form 属性跨元素关联适合复杂布局。
+
+---
+
+## 3️⃣2️⃣ Service Worker 与 PWA
+
+> ⚙️ **Service Worker 是浏览器后台脚本，充当网络代理，实现离线缓存、消息推送和后台同步，是 PWA 的核心技术**
+
+### 概念
+
+Service Worker 是一种**独立于网页**的 JavaScript Worker，运行在后台线程，可以拦截和处理网络请求，实现离线缓存、消息推送和后台同步等功能。
+
+```mermaid
+flowchart TD
+    A["PWA 三大核心"] --> B["Service Worker<br>离线缓存与网络代理"]
+    A --> C["Web App Manifest<br>安装到主屏幕"]
+    A --> D["HTTPS<br>安全保障"]
+
+    B --> E["install 事件<br>预缓存资源"]
+    B --> F["activate 事件<br>清理旧缓存"]
+    B --> G["fetch 事件<br>请求拦截与响应"]
+    B --> H["push 事件<br>推送通知"]
+    B --> I["sync 事件<br>后台同步"]
+```
+
+### 32.1 Service Worker 生命周期
+
+```mermaid
+sequenceDiagram
+    participant Page as 网页
+    participant SW as Service Worker
+    participant Cache as 缓存
+    participant Network as 网络
+
+    Page->>SW: 注册 sw.js
+    SW->>SW: install 事件
+    SW->>Cache: 预缓存静态资源
+    SW->>SW: 安装完成，等待激活
+    SW->>SW: activate 事件
+    SW->>Cache: 清理旧版本缓存
+    SW->>SW: 激活完成，开始控制页面
+    Page->>SW: fetch 请求
+    SW->>Cache: 检查缓存
+    alt 缓存命中
+        Cache-->>SW: 返回缓存
+    else 未命中
+        SW->>Network: 请求网络
+        Network-->>SW: 返回响应
+        SW->>Cache: 更新缓存
+    end
+    SW-->>Page: 返回响应
+```
+
+### 32.2 注册与生命周期 API
+
+```javascript
+// 注册 Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', {
+    scope: '/' // SW 控制的路径范围
+  }).then((registration) => {
+    console.log('SW 注册成功:', registration.scope);
+
+    // 监听更新
+    registration.addEventListener('updatefound', () => {
+      const newSW = registration.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          // 新版本已安装，提示用户刷新
+          showUpdatePrompt();
+        }
+      });
+    });
+  }).catch((err) => {
+    console.error('SW 注册失败:', err);
+  });
+
+  // 监听 controller change（新 SW 接管）
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('新版本 SW 已激活');
+  });
+}
+
+// 检查更新
+navigator.serviceWorker.register('/sw.js').then((reg) => {
+  reg.update(); // 手动检查更新
+});
+```
+
+### 32.3 sw.js — 缓存策略
+
+```javascript
+const CACHE_NAME = 'my-app-v1';
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/styles/main.css',
+  '/scripts/app.js',
+  '/images/logo.png'
+];
+
+// install 事件：预缓存核心资源
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('缓存静态资源');
+      return cache.addAll(STATIC_ASSETS);
+    })
+  );
+  // 跳过等待，立即激活
+  self.skipWaiting();
+});
+
+// activate 事件：清理旧缓存
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    }).then(() => {
+      // 立即接管所有页面
+      self.clients.claim();
+    })
+  );
+});
+
+// fetch 事件：请求拦截 —— 不同缓存策略
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    // 策略1: Cache First（静态资源优先读缓存）
+    cacheFirst(event.request)
+    // 策略2: Network First（动态资源优先请求网络）
+    // networkFirst(event.request)
+    // 策略3: Stale While Revalidate（快速响应的同时更新缓存）
+    // staleWhileRevalidate(event.request)
+  );
+});
+
+// Cache First：先缓存，缓存没有才请求网络
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  try {
+    const response = await fetch(request);
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    return new Response('离线', { status: 503 });
+  }
+}
+
+// Network First：先请求网络，失败时回退缓存
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    return new Response('离线', { status: 503 });
+  }
+}
+
+// Stale While Revalidate：同时返回缓存和请求网络
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+
+  const fetchPromise = fetch(request).then((response) => {
+    cache.put(request, response.clone());
+    return response;
+  });
+
+  return cached || fetchPromise;
+}
+```
+
+### 32.4 Web App Manifest
+
+```json
+{
+  "name": "我的 PWA 应用",
+  "short_name": "PWA应用",
+  "description": "这是一个渐进式 Web 应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
+```
+
+```html
+<link rel="manifest" href="/manifest.json">
+```
+
+### 32.5 推送通知
+
+```javascript
+// 请求权限
+async function requestNotificationPermission() {
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    // 订阅推送服务
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: '...' // VAPID 公钥
+    });
+    // 将 subscription 发送到服务器
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      body: JSON.stringify(subscription)
+    });
+  }
+}
+
+// sw.js 中处理推送事件
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/badge.png',
+    vibrate: [200, 100, 200],
+    data: { url: data.url }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// 通知点击事件
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data.url;
+  event.waitUntil(
+    clients.openWindow(url)
+  );
+});
+```
+
+> 💡 **PWA 准入门槛**：HTTPS + Manifest + Service Worker。可使用 Lighthouse 检测 PWA 合规性。
+
+---
+
+## 3️⃣3️⃣ HTML 解析机制
+
+> 🔍 **HTML 解析是浏览器将 HTML 文本转换为 DOM 树的复杂过程，包含标记化（Tokenization）和树构建（Tree Construction）两个阶段**
+
+### 概念
+
+HTML 解析器将 HTML 文档转换为 DOM（文档对象模型）树，不同于 XML 解析，HTML 解析器是**宽容**的——它能处理格式不正确的标签，遵循 HTML5 规范的解析规则。
+
+```mermaid
+flowchart TD
+    A["HTML 解析全过程"] --> B["字节流（Bytes）"]
+    B --> C["字符编码（Encoding）"]
+    C --> D["标记化（Tokenization）"]
+    D --> E["树构建（Tree Construction）"]
+    E --> F["DOM 树"]
+
+    D --> D1["起始标签 StartTagToken"]
+    D --> D2["结束标签 EndTagToken"]
+    D --> D3["文本 CharacterToken"]
+    D --> D4["注释 CommentToken"]
+    D --> D5["DOCTYPE 标签"]
+
+    E --> E1["插入节点到 DOM 树"]
+    E --> E2["维护开放元素栈"]
+    E --> E3["脚本执行暂停解析"]
+```
+
+### 33.1 解析阶段详解
+
+#### 阶段一：字节 → 字符
+
+```mermaid
+sequenceDiagram
+    participant B as 网络/文件
+    participant E as 编码解码器
+    participant T as 标记化器
+    participant P as 树构建器
+
+    B->>E: 原始字节 [68 65 6C 6C 6F]
+    E->>E: 根据编码解码（UTF-8/GBK/...）
+    E->>T: 字符序列 "hello"
+    T->>T: 扫描并生成 Token
+    T->>P: StartTag(html), StartTag(head), ...
+    P->>P: 插入 DOM 节点
+    P->>P: 维护栈/表
+```
+
+```javascript
+// 模拟标记化过程（简化示意）
+function tokenize(html) {
+  const tokens = [];
+  let i = 0;
+  while (i < html.length) {
+    if (html[i] === '<') {
+      if (html[i + 1] === '/') {
+        // 结束标签
+        const end = html.indexOf('>', i);
+        tokens.push({ type: 'EndTag', name: html.slice(i + 2, end) });
+        i = end + 1;
+      } else if (html[i + 1] === '!') {
+        // 注释或 DOCTYPE
+        const end = html.indexOf('>', i);
+        tokens.push({ type: 'Comment', content: html.slice(i + 4, end - 2) });
+        i = end + 1;
+      } else {
+        // 起始标签
+        const end = html.indexOf('>', i);
+        const tag = html.slice(i + 1, end);
+        tokens.push({ type: 'StartTag', name: tag.split(/\s/)[0] });
+        i = end + 1;
+      }
+    } else {
+      // 文本
+      const end = html.indexOf('<', i);
+      tokens.push({ type: 'Character', data: html.slice(i, end === -1 ? html.length : end) });
+      i = end === -1 ? html.length : end;
+    }
+  }
+  return tokens;
+}
+```
+
+### 33.2 解析容错性
+
+```html
+<!-- 以下不规范的 HTML 都会被浏览器正确解析 -->
+<!-- 1. 未闭合标签 -->
+<p>段落
+<p>另一个段落
+
+<!-- 2. 交叉嵌套 -->
+<b>粗体<i>粗斜体</b></i>
+
+<!-- 3. 隐式闭合 -->
+<li>列表项1
+<li>列表项2
+
+<!-- 4. 表格结构自动纠正 -->
+<table>
+  <td>内容</td>
+</table>
+```
+
+> ⚡ **HTML 解析的容错机制**：HTML5 规范定义了超过 80 种错误场景的处理方式，确保浏览器在所有 HTML 文档上行为一致。这也是 HTML 与 XHTML 的核心区别。
+
+### 33.3 脚本与解析阻塞
+
+```html
+<!-- 脚本阻塞解析 -->
+<head>
+  <!-- 普通脚本：下载+执行 会阻塞解析 -->
+  <script src="blocking.js"></script>
+
+  <!-- defer：并行下载，解析完成后执行（保持顺序） -->
+  <script defer src="deferred.js"></script>
+
+  <!-- async：并行下载，下载完即执行（不保证顺序） -->
+  <script async src="async.js"></script>
+
+  <!-- type="module"：类似 defer，自动延迟 -->
+  <script type="module" src="module.js"></script>
+</head>
+<body>
+  <!-- document.write 在解析期间可用 -->
+  <script>
+    document.write('<p>解析期间插入</p>');
+  </script>
+</body>
+```
+
+```mermaid
+sequenceDiagram
+    participant P as HTML Parser
+    participant N as Network
+    participant S as Script Engine
+    participant D as DOM
+
+    P->>P: 解析 HTML
+    P->>N: 遇到 <script src="">
+    P->>P: 暂停解析 ⏸️
+    N->>S: 下载脚本文件
+    S->>S: 编译 + 执行
+    S->>D: 操作 DOM
+    P->>P: 恢复解析 ▶️
+```
+
+### 33.4 预加载扫描器（Preload Scanner）
+
+> ⚡ **现代浏览器使用预加载扫描器加速页面加载**——当主解析器被脚本阻塞时，预加载扫描器会并行扫描剩余的 HTML 文本，提前发现并加载 CSS、图片、脚本等资源。
+
+```html
+<!-- 预加载扫描器会在主解析器阻塞时提前发现这些资源 -->
+<head>
+  <script src="blocking.js"></script>
+  <!-- 预加载扫描器提前发现并开始加载以下资源 -->
+  <link rel="stylesheet" href="styles.css">
+  <img src="hero.jpg">
+  <script defer src="app.js"></script>
+</head>
+```
+
+```mermaid
+flowchart LR
+    subgraph 主解析器
+        A1["解析 HTML..."] --> A2["遇到脚本"]
+        A2 --> A3["⏸️ 暂停"]
+    end
+    subgraph 预加载扫描器
+        B1["并行扫描"] --> B2["发现 link/img"]
+        B2 --> B3["提前下载资源"]
+    end
+    A3 --> C["脚本执行完毕"]
+    C --> A4["▶️ 恢复解析"]
+    A4 --> A5["资源已就绪 ✅"]
+```
+
+### 33.5 重新解析（Reparse）
+
+某些情况下浏览器需要重新解析文档：
+
+```html
+<!-- 1. document.write 可能会触发重解析 -->
+<script>
+  document.open();
+  document.write('全新文档');
+  document.close(); // 触发重解析
+</script>
+
+<!-- 2. innerHTML 解析 -->
+<script>
+  const div = document.createElement('div');
+  div.innerHTML = '<span>解析此 HTML 片段</span>';
+  // 浏览器为 innerHTML 片段创建独立的 HTML 解析器
+</script>
+
+<!-- 3. 编码检测变更 -->
+<!-- 如果内容中指定的编码与 HTTP 头不同，浏览器需要重解析 -->
+```
+
+### 33.6 关键性能指标与优化
+
+```mermaid
+flowchart TD
+    A["解析性能指标"] --> B["DOMContentLoaded<br>DOM 树构建完成"]
+    A --> C["首次内容绘制<br>FCP"]
+    A --> D["首次有意义的绘制<br>FMP"]
+    A --> E["可交互时间<br>TTI"]
+
+    A --> F["优化策略"]
+    F --> F1["减少首屏阻塞脚本"]
+    F --> F2["使用 defer/async"]
+    F --> F3["精简 HTML 大小"]
+    F --> F4["使用预加载 preload"]
+    F --> F5["服务端渲染 SSR"]
+```
+
+```javascript
+// 测量 DOMContentLoaded 时间
+performance.mark('dom-start');
+
+document.addEventListener('DOMContentLoaded', () => {
+  performance.mark('dom-end');
+  performance.measure('DOM 构建时间', 'dom-start', 'dom-end');
+  const measure = performance.getEntriesByName('DOM 构建时间')[0];
+  console.log(`DOM 构建耗时: ${measure.duration}ms`);
+});
+
+// 通过 Performance API 分析解析阶段
+const paintMetrics = performance.getEntriesByType('paint');
+paintMetrics.forEach((metric) => {
+  console.log(`${metric.name}: ${metric.startTime}ms`);
+});
+```
+
+> 💡 **总结**：HTML 解析是浏览器性能的关键环节，理解解析机制有助于优化首屏加载速度、避免不必要的文档写入和 DOM 操作。
+
+---
+
+

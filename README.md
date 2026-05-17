@@ -1,6 +1,6 @@
 # 🎯 前端面试知识体系 · 完整导航
 
-> **手写算法项目知识汇总** — 涵盖前端八股文、算法、框架、工程化、简历指导等全方位知识体系
+>**手写算法项目知识汇总** — 涵盖前端八股文、算法、框架、工程化、简历指导等全方位知识体系
 
 ---
 
@@ -29,9 +29,9 @@ graph LR
 
 | 阶段 | 编号 | 文件（点击跳转） | 内容 |
 |------|------|------------------|------|
-| **🟢 S1 基础夯实** | 01 | [`01-HTML-详解版.md`](S1-基础夯实/01-HTML-详解版.md) | HTML5、语义化、Web Components |
-| | 02 | [`02-CSS-详解版.md`](S1-基础夯实/02-CSS-详解版.md) | 选择器、布局、动画、编程题集 |
-| | 03 | [`03-JavaScript-详解版.md`](S1-基础夯实/03-JavaScript-详解版.md) | 数据类型、闭包、原型链、异步 |
+| **🟢 S1 基础夯实** | 01 | [`01-HTML-详解版.md`](S1-基础夯实/01-HTML-详解版.md) | HTML5、语义化、Web Components、Popover、Dialog、ARIA、Service Worker |
+| | 02 | [`02-CSS-详解版.md`](S1-基础夯实/02-CSS-详解版.md) | 选择器、布局、动画、编程题集、Container Queries、Anchor Positioning、@scope |
+| | 03 | [`03-JavaScript-详解版.md`](S1-基础夯实/03-JavaScript-详解版.md) | 数据类型、闭包、原型链、异步、Immutable Array、Promise.try、Navigation API |
 | | 04 | [`04-代码输出-详解版.md`](S1-基础夯实/04-代码输出-详解版.md) | Promise/this/作用域/原型输出题 |
 | **🔵 S2 框架深入** | 05 | [`05-Vue3-详解版.md`](S2-框架深入/05-Vue3-详解版.md) | Vue 3、Composition API、响应式原理 |
 | | 06 | [`06-React19-详解版.md`](S2-框架深入/06-React19-详解版.md) | React 19、Hooks、Fiber、Next.js |
@@ -41,9 +41,9 @@ graph LR
 | | 10 | [`10-前端工程化-详解版.md`](S3-进阶提升/10-前端工程化-详解版.md) | Webpack、Vite、Monorepo、CI/CD |
 | | 11 | [`11-算法题解-CodeTop100.md`](S3-进阶提升/11-算法题解-CodeTop100.md) | LeetCode Top 100 手写 JS 实现 |
 | **🔴 S4 面试冲刺** | 12 | [`12-前端面试题库.md`](S4-面试冲刺/12-前端面试题库.md) | 综合面试题、扫码登录、设计模式 |
-| | 13 | [`15-简历问题-深度八股.md`](S4-面试冲刺/15-简历问题-深度八股.md) | Fiber、SSE/WebSocket、RxJS、虚拟列表 |
-| | — | [`13-Agent-AI智能体.md`](S4-面试冲刺/13-Agent-AI智能体.md) | Agent 架构、Function Calling、MCP |
-| | — | [`14-简历.md`](S4-面试冲刺/14-简历.md) | 简历模板与项目经验 |
+| | 13 | [`13-Agent-AI智能体.md`](S4-面试冲刺/13-Agent-AI智能体.md) | Agent 架构、Function Calling、MCP、2025/2026 趋势 |
+| | 14 | [`14-简历.md`](S4-面试冲刺/14-简历.md) | 简历模板与项目经验 |
+| | 15 | [`15-简历问题-深度八股.md`](S4-面试冲刺/15-简历问题-深度八股.md) | Fiber、SSE/WebSocket、RxJS、虚拟列表 |
 | **📘 导航** | — | README.md（本文件） | 知识导航与索引 |
 
 ---
@@ -58,9 +58,9 @@ graph LR
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [1-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components |
-| [2-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道 |
-| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现 |
+| [1-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
+| [2-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道、Container Queries、:has()、CSS Nesting、@property、Anchor Positioning、@scope、Scroll-Driven Animations |
+| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现、Immutable Array、RegExp v flag、Promise.try、Navigation API、File System Access、Clipboard API |
 | [4-代码输出-详解版.md](S1-基础夯实/04-代码输出-详解版.md) | 60+ 经典输出题：Promise 顺序、宏任务/微任务、this 指向、变量提升、原型链 |
 
 ---
@@ -90,16 +90,16 @@ graph LR
 
 ---
 
-### 🔴 S4 面试冲刺（12-13 + 简历）
+### 🔴 S4 面试冲刺（12-15）
 
 > **目标：** 刷面试题库、深挖简历八股文、了解 AI Agent 前沿。 **建议用时：** 1-2 周
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
 | [12-前端面试题库.md](S4-面试冲刺/12-前端面试题库.md) | 类型系统、浮点数精度、闭包与内存、this 绑定、Promise 深度、扫码登录、虚拟 DOM |
-| [15-简历问题-深度八股.md](S4-面试冲刺/15-简历问题-深度八股.md) | React Fiber、SSE vs WebSocket、RxJS 操作符、虚拟列表、OnPush、JWT、Event Loop |
-| [13-Agent-AI智能体.md](S4-面试冲刺/13-Agent-AI智能体.md) | Agent vs LLM、ReAct/Plan-and-Execute、Function Calling、MCP 协议、MoE、LoRA |
+| [13-Agent-AI智能体.md](S4-面试冲刺/13-Agent-AI智能体.md) | Agent vs LLM、ReAct/Plan-and-Execute、Function Calling、MCP 协议、MoE、LoRA、2025/2026 趋势 |
 | [14-简历.md](S4-面试冲刺/14-简历.md) | 简历模板、项目经验、技术栈描述 |
+| [15-简历问题-深度八股.md](S4-面试冲刺/15-简历问题-深度八股.md) | React Fiber、SSE vs WebSocket、RxJS 操作符、虚拟列表、OnPush、JWT、Event Loop |
 
 ---
 
@@ -111,6 +111,10 @@ graph LR
 |------|---------|
 | HTML 语义化 & 标签 | [1](S1-基础夯实/01-HTML-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) |
 | CSS 布局 & 动画 | [2](S1-基础夯实/02-CSS-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) |
+| HTML 新特性 (Popover/Dialog/PWA) | [1](S1-基础夯实/01-HTML-详解版.md) |
+| 现代 CSS (Container/Anchor/@scope) | [2](S1-基础夯实/02-CSS-详解版.md) |
+| 现代 JS (Immutable Array/Promise.try) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
+| Web API (Navigation/Clipboard/File) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
 | JS 数据类型 & 类型转换 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
 | 闭包 & 作用域 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [简历八股](S4-面试冲刺/15-简历问题-深度八股.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
 | 原型链 & 继承 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [12](S4-面试冲刺/12-前端面试题库.md) , [4](S1-基础夯实/04-代码输出-详解版.md) |
@@ -142,7 +146,7 @@ graph LR
 
 ## 📁 目录结构
 
-`
+```
 项目根目录/
 |
 |-- 📁 S1-基础夯实/          🟢 基础阶段（01-04）
@@ -162,14 +166,14 @@ graph LR
 |   |-- 10-前端工程化-详解版.md
 |   +-- 11-算法题解-CodeTop100.md
 |
-|-- 📁 S4-面试冲刺/          🔴 冲刺阶段（12-13 + 简历）
+|-- 📁 S4-面试冲刺/          🔴 冲刺阶段（12-15）
 |   |-- 12-前端面试题库.md
-|   |-- 15-简历问题-深度八股.md
 |   |-- 13-Agent-AI智能体.md
-|   +-- 14-简历.md
+|   |-- 14-简历.md
+|   +-- 15-简历问题-深度八股.md
 |
 +-- 📄 README.md             ← 导航文件
-`
+```
 
 ---
 
@@ -209,9 +213,9 @@ graph LR
 ### S4 🔴 面试冲刺
 
 - [ ] [12-前端面试题库.md](S4-面试冲刺/12-前端面试题库.md)
-- [ ] [15-简历问题-深度八股.md](S4-面试冲刺/15-简历问题-深度八股.md)
 - [ ] [13-Agent-AI智能体.md](S4-面试冲刺/13-Agent-AI智能体.md)
 - [ ] [14-简历.md](S4-面试冲刺/14-简历.md)
+- [ ] [15-简历问题-深度八股.md](S4-面试冲刺/15-简历问题-深度八股.md)
 
 ---
 
@@ -226,6 +230,8 @@ graph LR
 | 🟡 进阶文档 | 4 份 |
 | 🔴 冲刺文档 | 4 份（含简历） |
 | 覆盖题型 | 100+ 算法题、60+ 输出题、200+ 面试题 |
+
+> 🔄 **最近更新**：2026/05 - S1 新增 ES2025/2026 CSS/JS 特性；S2 新增 Angular 21/React 2026/Vue 3.6 进展；S3 新增浏览器 2025 特性/INP 优化/工程化新趋势；S4 新增 Agent 2025/2026 趋势
 
 ---
 

@@ -6,11 +6,43 @@
 
 ## 📑 目录结构
 
-- [第一部分：核心基础](#第一部分核心基础)
-- [第二部分：高级特性](#第二部分高级特性)
-- [第三部分：工程实践](#第三部分工程实践)
-- [第四部分：性能优化](#第四部分性能优化)
-- [第五部分：面试题汇总](#第五部分面试题汇总)
+- [📦 第一部分：核心基础](#第一部分核心基础)
+  - [1️⃣ 什么是 Angular？](#1️⃣-什么是-angular)
+  - [2️⃣ Angular 20 新特性](#2️⃣-angular-20-新特性详解)
+  - [2️⃣➕ Angular 21 最新进展](#2️⃣-angular-21-最新进展2025-2026)
+  - [3️⃣ 组件系统](#3️⃣-组件系统)
+  - [4️⃣ 模板语法](#4️⃣-模板语法)
+  - [5️⃣ 数据绑定](#5️⃣-数据绑定)
+  - [6️⃣ 指令系统](#6️⃣-指令系统)
+  - [7️⃣ 生命周期](#7️⃣-生命周期钩子)
+- [🚀 第二部分：高级特性](#第二部分高级特性)
+  - [1️⃣ 依赖注入 (DI)](#1️⃣-依赖注入-di)
+  - [2️⃣ Signals 响应式](#2️⃣-signals-响应式系统)
+  - [3️⃣ RxJS 集成](#3️⃣-rxjs-集成)
+  - [4️⃣ 路由系统](#4️⃣-路由系统)
+  - [5️⃣ 表单处理](#5️⃣-表单处理)
+  - [6️⃣ HTTP 客户端](#6️⃣-http-客户端)
+  - [7️⃣ 状态管理](#7️⃣-状态管理)
+  - [8️⃣ 动画系统](#8️⃣-动画系统)
+- [🛠️ 第三部分：工程实践](#第三部分工程实践)
+  - [1️⃣ Angular CLI](#1️⃣-angular-cli)
+  - [2️⃣ 项目结构](#2️⃣-项目结构)
+  - [3️⃣ 模块系统](#3️⃣-模块系统)
+  - [4️⃣ 测试策略](#4️⃣-测试策略)
+  - [5️⃣ 构建优化](#5️⃣-构建优化)
+  - [6️⃣ 部署方案](#6️⃣-部署方案)
+- [⚡ 第四部分：性能优化](#第四部分性能优化)
+  - [1️⃣ OnPush 策略](#1️⃣-onpush-变更检测)
+  - [2️⃣ 懒加载](#2️⃣-懒加载)
+  - [3️⃣ TrackBy](#3️⃣-trackby-函数)
+  - [4️⃣ 虚拟滚动](#4️⃣-虚拟滚动)
+  - [5️⃣ Zoneless 模式](#5️⃣-zoneless-模式)
+  - [6️⃣ httpResource](#6️⃣-httpresource-声明式数据)
+- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
+  - [1️⃣ 基础面试题](#1️⃣-基础面试题)
+  - [2️⃣ 进阶面试题](#2️⃣-进阶面试题)
+  - [3️⃣ 原理面试题](#3️⃣-原理面试题)
+  - [4️⃣ 实战面试题](#4️⃣-实战面试题)
 
 ---
 
@@ -73,6 +105,131 @@ Angular 20 (2024)
 ├─ Zoneless 检测模式
 └─ 独立组件默认生成
 ```
+
+---
+
+## 2️⃣➕ Angular 21 最新进展（2025-2026）
+
+### 🌟 Angular 21 核心变化
+
+```
+Angular 21 (2025.11 发布)
+├─ Zoneless 变更检测成为默认 ✅
+├─ 内置 HttpClient 默认提供
+├─ 构建工具优化（Vite 集成）
+├─ Signal Forms 实验性引入
+├─ Angular ARIA 无障碍包
+├─ 编译速度提升 40%
+└─ Bundle 体积减少 30-40%
+```
+
+### 🔥 Zoneless 变更检测（默认启用）
+
+Angular 21 最大的变化是 **Zoneless 成为新项目的默认配置**。
+
+```typescript
+// Angular 20 - 手动启用 Zoneless
+import { provideZonelessChangeDetection } from '@angular/core';
+
+bootstrapApplication(AppComponent, {
+  providers: [provideZonelessChangeDetection()]
+});
+
+// Angular 21 - 默认就是 Zoneless，无需手动配置
+// ng new 生成的项目自动使用 Zoneless
+```
+
+#### Zoneless vs Zone.js 对比
+
+| 特性 | Zone.js 模式 | Zoneless 模式 |
+|------|-------------|---------------|
+| 变更检测触发 | 所有异步操作自动触发 | 仅 Signal 变化和事件触发 |
+| Bundle 大小 | +40KB (zone.js) | 0KB (无需 zone.js) |
+| 性能 | 可能过度检测 | 精确检测，减少 25-40% 检查 |
+| 调试体验 | 堆栈复杂 | 堆栈清晰，易于追踪 |
+| 可预测性 | 低（隐式触发） | 高（显式触发） |
+
+#### 迁移步骤
+
+```typescript
+// 1. 从 angular.json 移除 zone.js polyfills
+// "polyfills": ["zone.js"] → 删除
+
+// 2. 确保组件使用 OnPush 或 Signals
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+
+// 3. 使用 Signals 替代部分 Observable
+// 之前
+data$ = this.http.get('/api/data');
+// 之后
+data = resource(() => ({ request: '/api/data' }));
+
+// 4. 测试中移除 zone.js/testing
+// "polyfills": ["zone.js", "zone.js/testing"] → 删除
+```
+
+### 📡 httpResource - 声明式数据获取
+
+```typescript
+import { httpResource } from '@angular/common/http';
+
+@Component({
+  template: `
+    @if (users.isLoading()) {
+      <p>加载中...</p>
+    } @else if (users.error()) {
+      <p>错误: {{ users.error().message }}</p>
+    } @else {
+      <ul>
+        @for (user of users.value(); track user.id) {
+          <li>{{ user.name }}</li>
+        }
+      </ul>
+    }
+  `
+})
+export class UserListComponent {
+  // 声明式 HTTP 请求，自动管理加载/错误状态
+  users = httpResource<User[]>('/api/users');
+
+  // 带参数的请求
+  userById = (id: number) => httpResource<User>(() => `/api/users/${id}`);
+}
+```
+
+### 📝 Signal Forms（实验性）
+
+```typescript
+import { signal, linkedSignal } from '@angular/core';
+
+// 表单状态用 Signals 管理
+const name = signal('');
+const email = signal('');
+
+// 派生验证状态
+const isNameValid = computed(() => name().length >= 2);
+const isEmailValid = computed(() => email().includes('@'));
+const isFormValid = computed(() => isNameValid() && isEmailValid());
+
+// linkedSignal - 依赖其他 Signal 的派生状态
+const displayName = linkedSignal({
+  source: name,
+  computation: (newName) => newName.toUpperCase()
+});
+```
+
+### 🎨 Angular MCP Server（AI 辅助开发）
+
+Angular 21 引入了 **Angular MCP Server**，支持 AI 工具（如 Cursor、Claude Code）直接理解 Angular 项目结构：
+
+- 自动生成组件、服务、模块
+- 智能代码补全和重构建议
+- 自动检测可优化的 Signals 使用
+- 辅助 Zoneless 迁移
+
+---
 
 ### 🔄 Signals 响应式系统详解
 

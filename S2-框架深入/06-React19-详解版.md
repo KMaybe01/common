@@ -6,11 +6,45 @@
 
 ## 📑 目录结构
 
-- [第一部分：核心基础](#第一部分核心基础)
-- [第二部分：高级特性](#第二部分高级特性)
-- [第三部分：工程实践](#第三部分工程实践)
-- [第四部分：性能优化](#第四部分性能优化)
-- [第五部分：面试题汇总](#第五部分面试题汇总)
+- [📦 第一部分：核心基础](#第一部分核心基础)
+  - [1️⃣ React 是什么？](#1️⃣-react-是什么)
+  - [2️⃣ React 19 新特性](#2️⃣-react-19-新特性详解)
+  - [3️⃣ JSX 语法](#3️⃣-jsx-语法)
+  - [4️⃣ 组件基础](#4️⃣-组件基础)
+  - [5️⃣ Props 与 State](#5️⃣-props-与-state)
+  - [6️⃣ 事件处理](#6️⃣-事件处理)
+  - [7️⃣ 条件渲染](#7️⃣-条件渲染)
+  - [8️⃣ 列表与 Key](#8️⃣-列表与-key)
+- [🚀 第二部分：高级特性](#第二部分高级特性)
+  - [1️⃣ Hooks 系统](#1️⃣-hooks-系统)
+  - [2️⃣ Context API](#2️⃣-context-api)
+  - [3️⃣ Refs & DOM](#3️⃣-refs--dom)
+  - [4️⃣ Portals](#4️⃣-portals)
+  - [5️⃣ Error Boundaries](#5️⃣-error-boundaries)
+  - [6️⃣ Fragments](#6️⃣-fragments)
+  - [7️⃣ 高阶组件](#7️⃣-高阶组件)
+  - [8️⃣ Render Props](#8️⃣-render-props)
+- [🛠️ 第三部分：工程实践](#第三部分工程实践)
+  - [1️⃣ Next.js 框架](#1️⃣-nextjs-框架)
+  - [2️⃣ 状态管理](#2️⃣-状态管理)
+  - [3️⃣ 路由系统](#3️⃣-路由系统)
+  - [4️⃣ 测试策略](#4️⃣-测试策略)
+  - [5️⃣ TypeScript 集成](#5️⃣-typescript-集成)
+  - [6️⃣ 代码规范](#6️⃣-代码规范)
+- [⚡ 第四部分：性能优化](#第四部分性能优化)
+  - [1️⃣ React.memo](#1️⃣-reactmemo)
+  - [2️⃣ useMemo & useCallback](#2️⃣-usememo--usecallback)
+  - [3️⃣ 代码分割](#3️⃣-代码分割)
+  - [4️⃣ 虚拟列表](#4️⃣-虚拟列表)
+  - [5️⃣ 并发模式](#5️⃣-并发模式)
+  - [6️⃣ React Compiler](#6️⃣-react-compiler)
+  - [7️⃣ Server Components](#7️⃣-server-components)
+  - [8️⃣ 2026 性能优化趋势](#8️⃣-2026-性能优化趋势)
+- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
+  - [1️⃣ 基础面试题](#1️⃣-基础面试题)
+  - [2️⃣ Hooks 面试题](#2️⃣-hooks-面试题)
+  - [3️⃣ 原理面试题](#3️⃣-原理面试题)
+  - [4️⃣ 实战面试题](#4️⃣-实战面试题)
 
 ---
 
@@ -180,6 +214,72 @@ function App() {
 | Server Components | 实验性 | ✅ 稳定 | ✅ 默认推荐 |
 | ref 传参 | forwardRef | 直接传 ref | 直接传 ref |
 | Compiler | 实验性 | ✅ 自动 memo | ✅ 默认 |
+
+---
+
+### 🚀 React 在 2026 年的最新进展
+
+#### React Compiler 生产就绪
+
+React Compiler 在 2026 年已成为生产环境的标准配置：
+
+```bash
+# Next.js 15+ 默认启用
+npm create next-app@latest
+
+# Vite + React 项目
+npm install babel-plugin-react-compiler
+# vite.config.ts 中配置
+```
+
+**Compiler 带来的改变：**
+- 自动移除 `useMemo`、`useCallback`、`React.memo` 的手动优化
+- 编译期分析依赖关系，生成最优渲染代码
+- 减少 30-50% 的不必要重渲染
+- Bundle 体积可能增加 5-10%，但运行时性能显著提升
+
+#### React Server Components 成为默认
+
+```jsx
+// app/page.jsx - 默认就是 Server Component
+export default async function Page() {
+  const data = await fetch('https://api.example.com/data')
+  return <DataDisplay data={data} />
+}
+
+// app/component.client.jsx - 需要交互时标记
+'use client'
+export function InteractiveComponent() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>
+}
+```
+
+#### View Transitions API 集成
+
+```jsx
+// React 19+ 支持 View Transitions
+import { useViewTransition } from 'react'
+
+function PageTransition({ children }) {
+  return (
+    <ViewTransition>
+      {children}
+    </ViewTransition>
+  )
+}
+```
+
+#### 2026 年前端框架格局
+
+| 框架 | 定位 | 2026 状态 |
+|------|------|-----------|
+| React 19 + Next.js | 全栈应用首选 | 最广泛使用 |
+| Angular 21 | 企业级应用 | Zoneless 默认，性能大幅提升 |
+| Vue 3.6 + Nuxt 4 | 渐进式开发 | Vapor Mode 实验性，性能接近 Solid |
+| Svelte 5 | 编译时优化 | Runes 响应式，轻量级首选 |
+| Solid.js | 细粒度响应式 | 性能标杆，生态增长中 |
+| Astro 5 | 内容型网站 | Islands 架构，零 JS 默认 |
 
 ---
 

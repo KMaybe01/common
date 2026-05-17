@@ -89,6 +89,29 @@ mindmap
 - [🗑️ **九、垃圾回收与内存泄漏**](#九垃圾回收与内存泄漏)
 - [🔄 **十、事件循环（Event Loop）详解**](#十事件循环event-loop详解)
 - [✨ **十一、现代JavaScript新特性**](#十一现代javascript新特性)
+  - [?. 可选链](#1️⃣-可选链操作符-)
+  - [??. 空值合并](#2️⃣-空值合并操作符-)
+  - [Top-level await](#3️⃣-top-level-await)
+  - [Promise 新方法](#4️⃣-promise-新方法)
+  - [structuredClone](#5️⃣-structuredclone-深度克隆)
+  - [Set 新方法](#6️⃣-新的-set-方法)
+  - [Array/Object 新方法](#7️⃣-array-和-object-新方法)
+  - [Error Cause](#8️⃣-error-cause)
+  - [globalThis](#9️⃣-globalthis)
+  - [Atomics](#1️⃣0️⃣-atomics)
+  - [不可变数组](#1️⃣1️⃣-不可变数组方法immutable-array-methods)
+  - [RegExp v 标志](#1️⃣2️⃣-regexp-v-标志unicode-sets)
+  - [Promise.try()](#1️⃣3️⃣-promisetry)
+  - [JSON 源文本访问](#1️⃣4️⃣-jsonparse-源文本访问)
+  - [Float16Array](#1️⃣5️⃣-float16arrayes2025)
+  - [RegExp.escape()](#1️⃣6️⃣-regexpescapees2025)
+  - [Map.getOrInsert()](#1️⃣7️⃣-mapgetorinsertes2026-候选)
+  - [Math.sumPrecise()](#1️⃣8️⃣-mathsumprecisees2026-候选)
+  - [Uint8Array Base64/Hex](#1️⃣9️⃣-uint8array-的-base64--hex-方法es2026-候选)
+  - [Error.isError()](#2️⃣0️⃣-erroriserrores2026-候选)
+  - [Temporal API](#2️⃣1️⃣-temporal-apies2027-候选stage-4)
+  - [using 关键字](#2️⃣2️⃣-using-关键字显式资源管理es2026-候选stage-4)
+  - [Decorators](#2️⃣3️⃣-javascript-decorators装饰器stage-3)
 - [🌐 **十二、浏览器 Web API**](#十二浏览器-web-api)
 - [✍️ **十三、手写代码实现**](#十三手写代码实现)
 - [💻 **十四、代码输出题**](#十四代码输出题)
@@ -3443,6 +3466,562 @@ graph TD
 
 ---
 
+### 1️⃣1️⃣ 不可变数组方法（Immutable Array Methods）
+
+> 💡 **要点：** toReversed/toSorted/toSpliced/with 返回新数组而不修改原数组，解决 sort/reverse/splice 原地修改的问题
+
+ES2023+ 引入了一组不修改原数组的新方法，返回修改后的**副本**。
+
+```javascript
+const arr = [3, 1, 4, 1, 5, 9];
+
+// toSorted() — 返回排序后的副本
+const sorted = arr.toSorted();
+console.log(sorted); // [1, 1, 3, 4, 5, 9]
+console.log(arr);    // [3, 1, 4, 1, 5, 9] （原数组不变）
+
+// 对比 sort() — 原地修改
+const sortedOld = arr.sort();
+console.log(sortedOld); // [1, 1, 3, 4, 5, 9]
+console.log(arr);       // [1, 1, 3, 4, 5, 9] （原数组被修改）
+
+// toReversed() — 返回反转后的副本
+const reversed = [1, 2, 3].toReversed();
+console.log(reversed); // [3, 2, 1]
+
+// toSpliced() — 返回 splice 后的副本（不修改原数组）
+const original = ['a', 'b', 'c', 'd'];
+const spliced = original.toSpliced(1, 2, 'x', 'y');
+console.log(spliced);  // ['a', 'x', 'y', 'd']
+console.log(original); // ['a', 'b', 'c', 'd']（不变）
+
+// with() — 返回替换指定索引后的副本
+const replaced = ['a', 'b', 'c'].with(1, 'z');
+console.log(replaced); // ['a', 'z', 'c']
+
+// 链式调用：安全组合
+const result = [3, 1, 4, 1, 5]
+  .toSorted((a, b) => a - b)    // [1, 1, 3, 4, 5]
+  .toReversed()                   // [5, 4, 3, 1, 1]
+  .with(0, 99);                   // [99, 4, 3, 1, 1]
+```
+
+| 方法 | 原地版本 | 新方法 | 行为 |
+|------|---------|--------|------|
+| sort | `Array.prototype.sort()` | `toSorted()` | 排序后返回新数组 |
+| reverse | `Array.prototype.reverse()` | `toReversed()` | 反转后返回新数组 |
+| splice | `Array.prototype.splice()` | `toSpliced()` | 增删后返回新数组 |
+| arr[i]=v | 直接赋值 | `with(i, v)` | 替换索引值后返回新数组 |
+
+```mermaid
+flowchart LR
+    subgraph 原地修改
+        A["arr.sort()"] --> A1["修改原数组"]
+        A1 --> A2["返回原数组引用"]
+        A2 --> A3["⚠️ 可能产生副作用"]
+    end
+    subgraph 不可变
+        B["arr.toSorted()"] --> B1["创建副本"]
+        B1 --> B2["排序副本"]
+        B2 --> B3["返回新数组"]
+        B3 --> B4["✅ 原数组不变"]
+    end
+```
+
+### 1️⃣2️⃣ RegExp v 标志（Unicode Sets）
+
+> 💡 **要点：** v 标志增强正则的 Unicode 支持，支持集合差集/交集运算和多属性转义
+
+```javascript
+// 基本用法
+const re1 = /^\p{ASCII}+$/v;     // 等价于 u 标志的基础功能
+
+// 集合差集操作 --
+const re2 = /^[\p{Letter}--\p{ASCII}]+$/v;
+// 匹配所有非 ASCII 的字母（如中文字母）
+
+// 集合交集操作 &&
+const re3 = /^[\p{Letter}&&\p{ASCII}]+$/v;
+// 匹配 ASCII 范围内的字母（A-Z, a-z）
+
+// 多属性转义
+const re4 = /^\p{RGI_Emoji}$/v;
+// 匹配完整的 RGI 表情符号（包括序列）
+
+// 忽略空格和注释（类似 x 标志）
+const re5 = /^
+  \p{Letter}     # 字母开头
+  [\p{Letter}--\p{ASCII}]+  # 非 ASCII 字母
+$/v;
+
+// 实战：匹配中文（排除标点）
+const chineseOnly = /^[\p{Script=Han}--\p{Punctuation}]+$/v;
+console.log(chineseOnly.test('你好世界')); // true
+console.log(chineseOnly.test('你好，世界'));  // false（含逗号）
+```
+
+| 能力 | u 标志 | v 标志 |
+|------|--------|--------|
+| Unicode 属性转义 `\p{}` | ✅ 基础 | ✅ 增强 |
+| 集合差集 `--` | ❌ | ✅ |
+| 集合交集 `&&` | ❌ | ✅ |
+| 多属性转义 | ❌ | ✅ |
+| 忽略空格/注释 | ❌ | ✅ |
+| 嵌套字符类 | ❌ | ✅ |
+
+### 1️⃣3️⃣ Promise.try()
+
+> 💡 **要点：** Promise.try() 统一处理同步和异步函数，始终返回 Promise，避免 try/catch 包裹同步代码
+
+```javascript
+// 传统写法：需要区分同步和异步
+function traditional(fn) {
+  try {
+    const result = fn();
+    return result instanceof Promise ? result : Promise.resolve(result);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+// Promise.try() 写法
+function withTry(fn) {
+  return Promise.try(fn);  // 自动处理同步/异步/异常
+}
+
+// 同步函数
+const syncResult = await Promise.try(() => 42);
+console.log(syncResult); // 42
+
+// 异步函数
+const asyncResult = await Promise.try(async () => {
+  const data = await fetch('/api/data');
+  return data.json();
+});
+
+// 抛出异常自动转为 rejected Promise
+const errorResult = await Promise.try(() => {
+  throw new Error('出错了');
+}).catch(err => err.message);
+console.log(errorResult); // '出错了'
+```
+
+```mermaid
+flowchart TD
+    A["Promise.try(fn)"] --> B{"fn 执行"}
+    B -->|"同步返回值"| C["Promise.resolve(value)"]
+    B -->|"异步 Promise"| D["等待 Promise 完成"]
+    B -->|"抛出异常"| E["Promise.reject(error)"]
+    C --> F["返回统一 Promise"]
+    D --> F
+    E --> F
+    F --> G["调用者统一用 await/.then 处理"]
+```
+
+```javascript
+// 实战：批量任务处理
+async function processItems(items) {
+  const results = await Promise.all(
+    items.map(item => Promise.try(() => {
+      if (typeof item === 'function') return item();
+      return item;
+    }))
+  );
+  return results;
+}
+
+// 可链式调用
+Promise.try(() => fetch('/api/user'))
+  .then(res => res.json())
+  .then(user => console.log(user))
+  .catch(err => console.error(err));
+```
+
+### 1️⃣4️⃣ JSON.parse 源文本访问
+
+> 💡 **要点：** JSON.parse() 支持第二个参数 source 访问，JSON.rawJSON() 保留原始 JSON 文本避免精度丢失
+
+```javascript
+// JSON.parse 的 reviver 参数增加 source 属性
+const json = '{"name": "张三", "age": 30}';
+
+// reviver 中的 value 对象增加 source 属性
+const obj = JSON.parse(json, (key, value, context) => {
+  if (typeof value === 'string') {
+    console.log(`字段 ${key} 的原始 JSON 文本:`, context.source);
+    // source: '"张三"'
+  }
+  return value;
+});
+
+// JSON.rawJSON() — 保留原始 JSON 文本
+// 场景：大数字精度丢失
+const largeNumber = JSON.rawJSON('12345678901234567890');
+const data = JSON.stringify({ value: largeNumber });
+console.log(data); // '{"value":12345678901234567890}'
+// 如果不使用 rawJSON，JSON.stringify 会将数字转为科学计数法或丢失精度
+
+// 对比
+const withoutRaw = JSON.stringify({ value: 12345678901234567890 });
+console.log(withoutRaw); // '{"value":12345678901234567891}' （精度丢失）
+
+const withRaw = JSON.stringify({
+  value: JSON.rawJSON('12345678901234567890')
+});
+console.log(withRaw); // '{"value":12345678901234567890}' （保留原值）
+
+// JSON.isRawJSON() — 检查是否是 rawJSON
+const raw = JSON.rawJSON('42');
+console.log(JSON.isRawJSON(raw));   // true
+console.log(JSON.isRawJSON(42));    // false
+```
+
+| API | 说明 |
+|-----|------|
+| `JSON.parse(text, reviver)` | reviver 第三个参数 context.source 获取原始文本 |
+| `JSON.rawJSON(text)` | 创建保留原始文本的"原始 JSON"对象 |
+| `JSON.isRawJSON(value)` | 判断值是否为 rawJSON 对象 |
+
+### 1️⃣5️⃣ Float16Array（ES2025）
+
+> 💡 **要点：** 16 位浮点数类型数组，相比 Float32Array 内存减半，适合 AI/ML 模型和大量浮点数据场景
+
+```javascript
+// 创建 Float16Array
+const f16 = new Float16Array([1.5, 2.5, 3.5])
+console.log(f16.length)       // 3
+console.log(f16.BYTES_PER_ELEMENT)  // 2（16位 = 2字节）
+
+// 内存对比
+const f32 = new Float32Array([1.5, 2.5, 3.5])
+console.log(f32.BYTES_PER_ELEMENT)  // 4（32位 = 4字节）
+
+// 100万个浮点数：Float16Array 占 2MB，Float32Array 占 4MB
+const millionF16 = new Float16Array(1_000_000)  // 2MB
+const millionF32 = new Float32Array(1_000_000)  // 4MB
+
+// 适用场景：AI 模型权重、图像处理、科学计算
+const modelWeights = new Float16Array([0.123, 0.456, 0.789])
+```
+
+| 类型 | 字节数 | 精度 | 适用场景 |
+|------|--------|------|----------|
+| `Float16Array` | 2 | 半精度 | AI/ML、大量浮点数据 |
+| `Float32Array` | 4 | 单精度 | 3D 图形、音频处理 |
+| `Float64Array` | 8 | 双精度 | 科学计算、高精度需求 |
+
+### 1️⃣6️⃣ RegExp.escape()（ES2025）
+
+> 💡 **要点：** 转义正则表达式中的特殊字符，避免用户输入导致正则注入攻击
+
+```javascript
+// 转义用户输入中的正则特殊字符
+const userInput = 'hello.world+test*file'
+const escaped = RegExp.escape(userInput)
+console.log(escaped)  // 'hello\.world\+test\*file'
+
+// 安全构建正则
+const searchTerm = 'file.txt'
+const safeRegex = new RegExp(RegExp.escape(searchTerm), 'gi')
+console.log(safeRegex.test('This is file.txt content'))  // true
+
+// 不使用 escape 的问题
+const unsafeRegex = new RegExp(searchTerm, 'gi')
+console.log(unsafeRegex.test('fileXtxt'))  // true（. 匹配任意字符！）
+
+// 实战：搜索高亮
+function highlightText(text, searchTerm) {
+  const escaped = RegExp.escape(searchTerm)
+  const regex = new RegExp(`(${escaped})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
+}
+
+console.log(highlightText('hello.world', 'hello.'))
+// '<mark>hello.</mark>world'
+```
+
+### 1️⃣7️⃣ Map.getOrInsert()（ES2026 候选）
+
+> 💡 **要点：** 简化 Map 的"获取或插入"模式，避免重复查找和条件判断
+
+```javascript
+const cache = new Map()
+
+// 传统写法：需要两次查找
+function getOrCreateTraditional(key, factory) {
+  if (!cache.has(key)) {
+    cache.set(key, factory())
+  }
+  return cache.get(key)
+}
+
+// Map.getOrInsert() 写法：一次查找
+function getOrCreate(key, factory) {
+  return cache.getOrInsert(key, factory)
+}
+
+// 使用场景：缓存、分组、惰性初始化
+const userCache = new Map()
+
+function getUser(id) {
+  return userCache.getOrInsert(id, () => {
+    return fetch(`/api/users/${id}`).then(r => r.json())
+  })
+}
+
+// getOrInsertWith 接收 key 参数
+const groups = new Map()
+items.forEach(item => {
+  const list = groups.getOrInsertWith(item.category, () => [])
+  list.push(item)
+})
+```
+
+### 1️⃣8️⃣ Math.sumPrecise()（ES2026 候选）
+
+> 💡 **要点：** 精确计算浮点数数组之和，避免 IEEE 754 浮点精度丢失
+
+```javascript
+// 传统 reduce 的精度问题
+[0.1, 0.2, 0.3].reduce((a, b) => a + b, 0)  // 0.6000000000000001 ❌
+
+// Math.sumPrecise 精确求和
+Math.sumPrecise(0.1, 0.2, 0.3)  // 0.6 ✅
+Math.sumPrecise(...[0.1, 0.2, 0.3])  // 0.6 ✅
+
+// 大额财务计算
+const amounts = [100.01, 200.02, 300.03]
+amounts.reduce((a, b) => a + b, 0)       // 600.0599999999999 ❌
+Math.sumPrecise(...amounts)              // 600.06 ✅
+
+// 空数组返回 0
+Math.sumPrecise()  // 0
+```
+
+### 1️⃣9️⃣ Uint8Array 的 Base64 / Hex 方法（ES2026 候选）
+
+> 💡 **要点：** 原生支持 Base64 和 Hex 编码/解码，无需第三方库
+
+```javascript
+// 传统方式：需要 btoa/atob + 复杂转换
+// 新方式：直接调用方法
+
+// Base64 编码/解码
+const data = new Uint8Array([72, 101, 108, 108, 111])  // "Hello"
+const base64 = data.toBase64()
+console.log(base64)  // 'SGVsbG8='
+
+const decoded = Uint8Array.fromBase64('SGVsbG8=')
+console.log(decoded)  // Uint8Array([72, 101, 108, 108, 111])
+
+// Hex 编码/解码
+const hex = data.toHex()
+console.log(hex)  // '48656c6c6f'
+
+const fromHex = Uint8Array.fromHex('48656c6c6f')
+console.log(fromHex)  // Uint8Array([72, 101, 108, 108, 111])
+
+// 实战：图片转 Base64
+async function imageToBase64(url) {
+  const response = await fetch(url)
+  const buffer = await response.arrayBuffer()
+  return new Uint8Array(buffer).toBase64()
+}
+```
+
+### 2️⃣0️⃣ Error.isError()（ES2026 候选）
+
+> 💡 **要点：** 跨 realm（iframe、Web Worker）正确判断 Error 对象
+
+```javascript
+// 传统 instanceof 在跨 realm 时失效
+// iframe 中的 Error 在主窗口中 instanceof Error 为 false
+
+// Error.isError() 跨 realm 判断
+const iframeError = getErrorFromIframe()
+Error.isError(iframeError)  // true ✅
+iframeError instanceof Error  // false ❌（跨 realm）
+
+// 实战：全局错误处理
+window.addEventListener('error', (event) => {
+  if (Error.isError(event.error)) {
+    console.error('Error:', event.error.message)
+    console.error('Stack:', event.error.stack)
+  }
+})
+```
+
+### 2️⃣1️⃣ Temporal API（ES2027 候选，Stage 4）
+
+> 💡 **要点：** 现代日期时间 API，解决 Date 对象的时区、解析、计算等痛点
+
+```javascript
+// 传统 Date 的问题
+new Date('2024-01-01')  // 受时区影响，可能显示 12月31日
+
+// Temporal 解决方案
+Temporal.Now.zonedDateTimeISO('Asia/Shanghai')
+// Temporal.ZonedDateTime { year: 2024, month: 1, day: 1, ... }
+
+// 日期计算
+const today = Temporal.Now.plainDateISO()
+const tomorrow = today.add({ days: 1 })
+const nextWeek = today.add({ weeks: 1 })
+const nextMonth = today.add({ months: 1 })
+
+// 日期差
+const start = Temporal.PlainDate.from('2024-01-01')
+const end = Temporal.PlainDate.from('2024-12-31')
+const diff = end.since(start)
+console.log(diff.days)  // 365
+
+// 时区转换
+const zdt = Temporal.ZonedDateTime.from({
+  timeZone: 'America/New_York',
+  year: 2024, month: 1, day: 1, hour: 12
+})
+const inTokyo = zdt.withTimeZone('Asia/Tokyo')
+console.log(inTokyo.hour)  // 2（纽约中午 = 东京凌晨2点）
+
+// 解析 ISO 字符串
+const parsed = Temporal.PlainDateTime.from('2024-06-15T10:30:00')
+console.log(parsed.year)   // 2024
+console.log(parsed.month)  // 6
+console.log(parsed.hour)   // 10
+
+// 比较日期
+const d1 = Temporal.PlainDate.from('2024-01-01')
+const d2 = Temporal.PlainDate.from('2024-06-01')
+console.log(d1.compareTo(d2))  // -1（d1 < d2）
+console.log(d1.equals(d2))     // false
+```
+
+| 类型 | 说明 | 示例 |
+|------|------|------|
+| `Temporal.Now` | 获取当前时间 | `Temporal.Now.plainDateISO()` |
+| `PlainDate` | 无时区日期 | `2024-01-01` |
+| `PlainDateTime` | 无时区日期时间 | `2024-01-01T10:30:00` |
+| `ZonedDateTime` | 带时区日期时间 | `2024-01-01T10:30:00+08:00[Asia/Shanghai]` |
+| `Duration` | 时间间隔 | `{ days: 1, hours: 2 }` |
+
+> ⚠️ **兼容性**：需使用 polyfill（`@js-temporal/polyfill`），浏览器原生支持即将到来。
+
+### 2️⃣2️⃣ using 关键字（显式资源管理，ES2026 候选，Stage 4）
+
+> 💡 **要点：** 自动释放资源（文件句柄、数据库连接等），类似 Python 的 `with` 和 C# 的 `using`
+
+```javascript
+// 传统方式：需要手动释放
+function readData() {
+  const resource = acquireResource()
+  try {
+    return process(resource)
+  } finally {
+    resource[Symbol.dispose]()  // 手动释放
+  }
+}
+
+// using 写法：自动释放
+function readData() {
+  using resource = acquireResource()
+  return process(resource)
+  // 离开作用域时自动调用 resource[Symbol.dispose]()
+}
+
+// 自定义可释放资源
+class DatabaseConnection {
+  constructor(url) {
+    this.connection = connect(url)
+    this[Symbol.dispose] = () => this.connection.close()
+  }
+  query(sql) { return this.connection.query(sql) }
+}
+
+// 使用
+function getData() {
+  using db = new DatabaseConnection('postgres://localhost/mydb')
+  return db.query('SELECT * FROM users')
+  // 函数返回时自动关闭数据库连接
+}
+
+// await using（异步资源释放）
+async function fetchData() {
+  await using response = await fetch('/api/data')
+  return await response.json()
+  // 离开作用域时自动调用 await response[Symbol.asyncDispose]()
+}
+```
+
+### 2️⃣3️⃣ JavaScript Decorators（装饰器，Stage 3）
+
+> 💡 **要点：** 使用 `@` 语法为类、方法、属性添加元编程能力，类似 Python/Java 装饰器
+
+```javascript
+// 基本装饰器
+function log(target, context) {
+  return function(...args) {
+    console.log(`调用 ${context.name}(${args.join(', ')})`)
+    const result = target.call(this, ...args)
+    console.log(`返回: ${result}`)
+    return result
+  }
+}
+
+class Calculator {
+  @log
+  add(a, b) {
+    return a + b
+  }
+}
+
+const calc = new Calculator()
+calc.add(2, 3)
+// 输出:
+// 调用 add(2, 3)
+// 返回: 5
+
+// 参数验证装饰器
+function validate(target, context) {
+  return function(...args) {
+    for (const arg of args) {
+      if (typeof arg !== 'number') {
+        throw new TypeError(`${context.name} 参数必须是数字`)
+      }
+    }
+    return target.call(this, ...args)
+  }
+}
+
+class MathUtils {
+  @validate
+  divide(a, b) {
+    if (b === 0) throw new Error('除数不能为0')
+    return a / b
+  }
+}
+
+// 属性装饰器
+function frozen(target, context) {
+  return {
+    get() { return this[`#${context.name}`] },
+    set(value) {
+      Object.defineProperty(this, `#${context.name}`, {
+        value, writable: false, configurable: true
+      })
+    }
+  }
+}
+
+class Config {
+  @frozen
+  apiKey = 'secret-key'
+}
+```
+
+> ⚠️ **兼容性**：TypeScript 5.0+ 支持标准装饰器（需配置 `"experimentalDecorators": false`）。Babel 需 `@babel/plugin-proposal-decorators`。浏览器原生支持即将到来。
+
+---
+
 ## 🌐 十二、浏览器 Web API
 
 ### 1️⃣ IntersectionObserver
@@ -4182,6 +4761,320 @@ graph LR
 
     P2 -->|"on(LOGIN)"| U1["更新 UI<br/>显示登录状态"]
     P3 -->|"on(LOGIN)"| U2["更新 UI<br/>同步登录"]
+```
+
+---
+
+### 7️⃣ Navigation API
+
+> 💡 **要点：** 新一代前端路由 API，取代 history.pushState/popstate，提供拦截导航、跨页面跳转、事件管理等完整能力
+
+Navigation API 是浏览器原生的**导航管理** API，用于替代传统的 `history.pushState` + `popstate` 事件。
+
+```javascript
+const navigation = window.navigation;
+
+// 监听所有导航
+navigation.addEventListener('navigate', (event) => {
+  console.log('导航到:', event.destination.url);
+  console.log('导航类型:', event.navigateType); // push/replace/reload/traverse
+
+  // 拦截导航（SPA 路由）
+  if (shouldIntercept(event.destination.url)) {
+    event.intercept({
+      handler: async () => {
+        const content = await loadContent(event.destination.url);
+        document.getElementById('app').innerHTML = content;
+      }
+    });
+  }
+});
+
+// 编程式导航
+navigation.navigate('/about');
+navigation.navigate('/settings', { state: { from: 'home' } });
+navigation.reload();
+
+// 前进/后退
+navigation.back();
+navigation.forward();
+navigation.traverseTo(entry.key); // 跳转到特定历史条目
+
+// 当前导航条目
+console.log('当前条目:', navigation.currentEntry);
+console.log('当前 URL:', navigation.currentEntry.url);
+console.log('当前状态:', navigation.currentEntry.getState());
+```
+
+| 能力 | 传统 history API | Navigation API |
+|------|-----------------|----------------|
+| 导航拦截 | 无法直接拦截 | `navigate` 事件 + `intercept()` |
+| SPA 路由 | 手动监听 popstate | 原生支持 intercept |
+| 导航类型判断 | 无 | `navigateType`: push/replace/reload/traverse |
+| 历史条目管理 | 有限的栈操作 | `navigation.entries()` 遍历全部历史 |
+| 导航完成通知 | 无 | `navigation.navigatesuccess` / `navigatenerror` |
+
+```javascript
+// 导航事件
+navigation.addEventListener('navigatesuccess', () => {
+  console.log('导航成功完成');
+});
+
+navigation.addEventListener('navigatenerror', (event) => {
+  console.error('导航失败:', event.error);
+});
+
+// 导航中止
+const abortController = new AbortController();
+navigation.navigate('/slow-page', {
+  signal: abortController.signal,
+  history: 'replace',
+  info: { transition: 'slide' }
+});
+```
+
+### 8️⃣ File System Access API
+
+> 💡 **要点：** 浏览器原生文件系统 API，允许网页读写本地文件和目录，实现真正的"浏览器 IDE"
+
+```javascript
+// 打开文件选择器（读取）
+async function openFile() {
+  const [fileHandle] = await window.showOpenFilePicker({
+    types: [
+      {
+        description: 'Markdown 文件',
+        accept: { 'text/markdown': ['.md'] }
+      }
+    ],
+    multiple: false
+  });
+
+  const file = await fileHandle.getFile();
+  const content = await file.text();
+  return { content, fileHandle };
+}
+
+// 保存文件（写入）
+async function saveFile(fileHandle, content) {
+  const writable = await fileHandle.createWritable();
+  await writable.write(content);
+  await writable.close();
+}
+
+// 新建文件保存
+async function saveAs(content) {
+  const fileHandle = await window.showSaveFilePicker({
+    suggestedName: 'untitled.txt',
+    types: [
+      {
+        description: '文本文件',
+        accept: { 'text/plain': ['.txt'] }
+      }
+    ]
+  });
+
+  const writable = await fileHandle.createWritable();
+  await writable.write(content);
+  await writable.close();
+}
+
+// 选择目录（读取目录）
+async function openDirectory() {
+  const dirHandle = await window.showDirectoryPicker();
+
+  async function listFiles(dirHandle, path = '') {
+    const result = [];
+    for await (const [name, handle] of dirHandle.entries()) {
+      const fullPath = `${path}/${name}`;
+      if (handle.kind === 'file') {
+        const file = await handle.getFile();
+        result.push({ name, path: fullPath, size: file.size });
+      } else if (handle.kind === 'directory') {
+        result.push(...await listFiles(handle, fullPath));
+      }
+    }
+    return result;
+  }
+
+  return await listFiles(dirHandle);
+}
+```
+
+| API | 说明 | 权限 |
+|-----|------|------|
+| `showOpenFilePicker()` | 打开文件选择器 | 用户手势触发 |
+| `showSaveFilePicker()` | 保存文件对话框 | 用户手势触发 |
+| `showDirectoryPicker()` | 选择目录 | 用户手势触发 |
+| `FileSystemFileHandle` | 文件句柄 | 可持久化（IndexedDB） |
+| `FileSystemDirectoryHandle` | 目录句柄 | 可持久化（IndexedDB） |
+
+```javascript
+// 保留文件句柄（IndexedDB 持久化）
+const db = await openDB('file-store', 1);
+await db.put('handles', fileHandle, 'last-opened');
+
+// 恢复文件操作
+const savedHandle = await db.get('handles', 'last-opened');
+if (savedHandle) {
+  const file = await savedHandle.getFile();
+  console.log('恢复文件:', file.name);
+  // 验证权限
+  if (await savedHandle.queryPermission() !== 'granted') {
+    await savedHandle.requestPermission();
+  }
+}
+```
+
+### 9️⃣ Screen Wake Lock API
+
+> 💡 **要点：** 防止设备屏幕息屏/锁屏，适合阅读器、视频播放、演示等场景
+
+```javascript
+// 请求唤醒锁（保持屏幕亮起）
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('屏幕唤醒锁已激活');
+
+    // 监听释放事件（如用户切换标签页）
+    wakeLock.addEventListener('release', () => {
+      console.log('屏幕唤醒锁被释放');
+    });
+  } catch (err) {
+    console.error('唤醒锁请求失败:', err.name, err.message);
+  }
+}
+
+// 释放唤醒锁
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+
+// 处理页面可见性变化（重新获取唤醒锁）
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && !wakeLock) {
+    await requestWakeLock();
+  }
+});
+
+// 使用场景：阅读器保持屏幕常亮
+readerButton.addEventListener('click', async () => {
+  if (wakeLock) {
+    releaseWakeLock();
+    readerButton.textContent = '自动息屏';
+  } else {
+    await requestWakeLock();
+    readerButton.textContent = '保持亮屏';
+  }
+});
+```
+
+```mermaid
+flowchart TD
+    A["页面请求 Wake Lock"] --> B["navigator.wakeLock.request('screen')"]
+    B --> C{"权限检查"}
+    C -->|"granted"| D["屏幕保持亮起 ✅"]
+    C -->|"denied"| E["抛出 NotAllowedError"]
+    D --> F{"触发释放条件?"}
+    F -->|"页面隐藏"| G["自动释放"]
+    F -->|"用户主动释放"| G
+    F -->|"系统省电"| G
+    G --> H["wakeLock.release 事件触发"]
+    H --> I["屏幕可自动息屏"]
+```
+
+### 🔟 Clipboard API（异步剪贴板）
+
+> 💡 **要点：** 异步剪贴板 API 支持读取/写入文本、图片等格式，比 document.execCommand 更强大，需用户权限
+
+```javascript
+// 写入剪贴板
+async function writeToClipboard() {
+  try {
+    await navigator.clipboard.writeText('要复制的文本');
+    console.log('文本已复制到剪贴板');
+  } catch (err) {
+    console.error('复制失败:', err);
+  }
+}
+
+// 读取剪贴板
+async function readFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    console.log('剪贴板内容:', text);
+    return text;
+  } catch (err) {
+    console.error('读取剪贴板失败:', err);
+  }
+}
+
+// 写入图片（Blob）
+async function copyImage(canvas) {
+  try {
+    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob
+      })
+    ]);
+    console.log('图片已复制到剪贴板');
+  } catch (err) {
+    console.error('图片复制失败:', err);
+  }
+}
+
+// 读取图片
+async function readImage() {
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      if (item.types.includes('image/png')) {
+        const blob = await item.getType('image/png');
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
+        document.body.appendChild(img);
+      }
+    }
+  } catch (err) {
+    console.error('读取图片失败:', err);
+  }
+}
+```
+
+| API | 说明 | 权限要求 |
+|-----|------|----------|
+| `writeText()` | 写入文本 | 无需显式权限（用户手势） |
+| `readText()` | 读取文本 | 需要用户授权 |
+| `write()` | 写入多种格式（Blob） | 无需显式权限（用户手势） |
+| `read()` | 读取多种格式 | 需要用户授权 |
+| `ClipboardItem` | 表示剪贴板中的一项数据 | — |
+
+```mermaid
+flowchart LR
+    subgraph 旧 execCommand
+        A1["document.execCommand('copy')"]
+        A2["仅文本"]
+        A3["同步操作"]
+        A4["可能被浏览器禁用"]
+    end
+
+    subgraph 新 Clipboard API
+        B1["navigator.clipboard.writeText()"]
+        B2["文本 + 图片 + 自定义"]
+        B3["异步操作（Promise）"]
+        B4["权限管理更完善"]
+    end
+
+    A1 --> C["对比"]
+    B1 --> C
+    C --> D["推荐使用新 API"]
 ```
 
 ---
@@ -8329,16 +9222,20 @@ mindmap
     ES2022
       Top-level await
       Error cause
+      Promise.withResolvers
       Array.fromAsync
       .at（） 方法
     ES2023+
       Array findLast/findLastIndex
+      Immutable Array (toSorted/toReversed)
       Hashbang Grammar
       Set 新方法
       Iterator Helpers
-    ES2024
-      Promise.withResolvers
+    ES2024+
       Object.groupBy / Map.groupBy
+      RegExp v flag (Unicode Sets)
+      JSON.rawJSON
+      Promise.try()
     Web API
       IntersectionObserver: 懒加载/曝光
       ResizeObserver: 自适应
@@ -8346,6 +9243,10 @@ mindmap
       AbortController: 请求中止
       PerformanceObserver: 性能监控
       BroadcastChannel: 跨标签通信
+      Navigation API: 前端路由
+      File System Access: 本地读写
+      Screen Wake Lock: 屏幕常亮
+      Clipboard API: 异步剪贴板
     新工具
       structuredClone: 深度克隆
       WeakRef / FinalizationRegistry: 弱引用
