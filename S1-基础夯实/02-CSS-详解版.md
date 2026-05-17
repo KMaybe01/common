@@ -336,7 +336,7 @@ flowchart TD
 stateDiagram-v2
     [*] --> 初始状态
 
-    初始状态 --> 过渡状态: transition 触发事件(如:hover)
+    初始状态 --> 过渡状态: transition
     过渡状态 --> 初始状态: 事件移除
 
     初始状态 --> 关键帧1: animation 开始
@@ -2507,7 +2507,7 @@ flowchart TD
     end
 
     A --> A1["flex-wrap: wrap"]
-    A --> A2["li:nth-of-type("3n") margin-right:0"]
+    A --> A2["li:nth-of-type(3n) margin-right:0"]
 
     B --> B1["grid-template-columns"]
     B --> B2["grid-gap"]
@@ -3404,7 +3404,7 @@ flowchart LR
         A3["无法子 → 父"]
     end
 
-    subgraph :has() 新能力
+    subgraph ":has() 新能力"
         B1["子 → 父"]
         B2["兄弟的后代 → 兄"]
         B3["条件式选择"]
@@ -3412,9 +3412,9 @@ flowchart LR
 
     C1[".parent .child"] --> A1
     C2[".sibling ~ .sibling"] --> A2
-    C3[":has(".child")"] --> B1
-    C4["h2:has("+ p")"] --> B2
-    C5["figure:has("img")"]
+    C3[":has(.child)"] --> B1
+    C4["h2:has(+ p)"] --> B2
+    C5["figure:has(img)"]
     C5 --> B3
     C5 --> B1
 
@@ -3559,13 +3559,13 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph 无@layer
+    subgraph "无@layer"
         A1["框架: .btn { color: blue; }"]
         A2["业务: .btn { color: red; }"]
         A3["结果: red (后定义覆盖)"]
     end
 
-    subgraph 有@layer
+    subgraph "有@layer"
         B1["@layer framework { .btn { color: blue; } }"]
         B2["@layer components { .btn { color: red; } }"]
         B3["结果: red (按层, 非按源顺序)"]

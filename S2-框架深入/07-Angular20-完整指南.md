@@ -110,6 +110,57 @@ Angular 20 (2024)
 
 ## 2️⃣➕ Angular 21 最新进展（2025-2026）
 
+### 🌟 Angular 技术发展演进时间线
+
+```mermaid
+timeline
+    title Angular 框架演进历程
+    2010 : AngularJS (1.x) 发布
+         : MVC 架构
+         : 双向数据绑定
+         : 依赖注入
+    2016 : Angular 2 重写
+         : 组件化架构
+         : TypeScript 支持
+         : 模块化系统
+    2017 : Angular 4/5
+         : 改进的编译器
+         : 构建优化器
+    2018 : Angular 6/7
+         : Angular CLI 增强
+         : 虚拟滚动
+         : 拖放 CDK
+    2019 : Angular 8/9
+         : Ivy 渲染引擎
+         : 延迟加载改进
+    2020 : Angular 10/11
+         : Ivy 默认启用
+         : 组件测试改进
+    2021 : Angular 12/13
+         : 严格模式默认
+         : 模块系统简化
+    2022 : Angular 14/15
+         : 独立组件预览
+         : 类型化表单
+    2023 : Angular 16/17
+         : Signals 引入
+         : 新控制流语法
+         : @defer 延迟加载
+    2024 : Angular 18/19
+         : Signals 生产级
+         : Zoneless 实验性
+         : 控制流正式支持
+    2025 : Angular 20/21
+         : Zoneless 默认启用
+         : httpResource 声明式
+         : Signal Forms 实验性
+         : 编译速度提升 40%
+    2026 : Angular 22 预览
+         : Vapor 模式探索
+         : 更细粒度响应式
+         : 更好的 SSR 支持
+```
+
 ### 🌟 Angular 21 核心变化
 
 ```
@@ -150,6 +201,64 @@ bootstrapApplication(AppComponent, {
 | 可预测性 | 低（隐式触发） | 高（显式触发） |
 
 #### 迁移步骤
+
+```typescript
+// 1. 从 angular.json 移除 zone.js polyfills
+// "polyfills": ["zone.js"] → 删除
+
+// 2. 确保组件使用 OnPush 或 Signals
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+
+// 3. 使用 Signals 替代部分 Observable
+// 之前
+data$ = this.http.get('/api/data');
+// 之后
+data = resource(() => ({ request: '/api/data' }));
+
+// 4. 测试中移除 zone.js/testing
+// "polyfills": ["zone.js", "zone.js/testing"] → 删除
+```
+
+#### Zoneless 变更检测工作原理
+
+```mermaid
+flowchart TB
+    subgraph Zone.js 模式（传统）
+        Z1["异步事件触发"] --> Z2["Zone.js 拦截"]
+        Z2 --> Z3["触发变更检测"]
+        Z3 --> Z4["遍历整个组件树"]
+        Z4 --> Z5["检查每个组件"]
+        Z5 --> Z6["更新 DOM"]
+    end
+
+    subgraph Zoneless 模式（现代）
+        V1["Signal 值变化"] --> V2["精确通知"]
+        V2 --> V3["仅更新相关组件"]
+        V3 --> V4["直接更新 DOM"]
+        
+        E1["事件触发"] --> E2["标记脏组件"]
+        E2 --> E3["仅检测脏组件"]
+        E3 --> E4["更新 DOM"]
+    end
+
+    style Z4 fill:#FFB6C1
+    style V3 fill:#90EE90
+    style E3 fill:#90EE90
+```
+
+#### Zoneless vs Zone.js 性能对比
+
+| 指标 | Zone.js 模式 | Zoneless 模式 | 提升 |
+|------|-------------|---------------|------|
+| 变更检测次数 | 全量遍历 | 精确检测 | -70% |
+| Bundle 大小 | +40KB | 0KB | -40KB |
+| 首次渲染 | 较慢 | 快 | +30% |
+| 内存占用 | 较高 | 低 | -25% |
+| 调试体验 | 堆栈复杂 | 堆栈清晰 | ⭐⭐⭐⭐⭐ |
+
+#### Zoneless 迁移步骤
 
 ```typescript
 // 1. 从 angular.json 移除 zone.js polyfills
@@ -228,6 +337,66 @@ Angular 21 引入了 **Angular MCP Server**，支持 AI 工具（如 Cursor、Cl
 - 智能代码补全和重构建议
 - 自动检测可优化的 Signals 使用
 - 辅助 Zoneless 迁移
+
+### 2026 年 Angular 生态工具链
+
+| 工具 | 最新版本 | 关键变化 |
+|------|----------|----------|
+| Angular | 21 | Zoneless 默认，Signals 成熟 |
+| Angular CLI | 21 | Vite 集成，更快构建 |
+| NgRx | 18+ | SignalStore 改进 |
+| Angular Material | 21 | M3 设计系统 |
+| Nx | 20+ | 更好的模块联邦 |
+| Angular Universal | 废弃 | SSR 内置支持 |
+
+### Angular 生态全景图
+
+```mermaid
+mindmap
+  root((Angular 生态))
+    核心框架
+      Angular 21
+      TypeScript
+      RxJS
+    状态管理
+      NgRx
+      SignalStore
+      Akita
+      Elf
+    UI 组件库
+      Angular Material
+      NG-ZORRO
+      PrimeNG
+      ngx-bootstrap
+    表单处理
+      响应式表单
+      模板驱动表单
+      Signal Forms
+    路由系统
+      Angular Router
+      延迟加载
+      路由守卫
+      路由解析器
+    HTTP 客户端
+      HttpClient
+      httpResource
+      拦截器
+    测试工具
+      Jasmine
+      Karma
+      Jest
+      Cypress
+    开发工具
+      Angular CLI
+      Angular DevTools
+      Nx Workspace
+      Compodoc
+    渲染模式
+      CSR 客户端渲染
+      SSR 服务端渲染
+      SSG 静态生成
+      Zoneless 模式
+```
 
 ---
 
@@ -1585,35 +1754,66 @@ export class UserListComponent {
 ### 📊 优化策略金字塔
 
 ```
-                    🏆 用户满意度
-                   /            \
-                  /              \
-          首屏加载优化            体验优化
-         (LCP < 2.5s)          (CLS, TTI)
-                              
-      ┌─────────────────────────────────┐
-      │  构建时优化                      │
-      │  • AOT 编译                     │
-      │  • Tree Shaking               │
-      │  • 代码分割                    │
-      │  • 压缩混淆                    │
-      └─────────────────────────────────┘
-      
-      ┌─────────────────────────────────┐
-      │  运行时优化                      │
-      │  • 变更检测优化                 │
-      │  • 延迟加载                    │
-      │  • 虚拟滚动                    │
-      │  • 缓存策略                    │
-      └─────────────────────────────────┘
-      
-      ┌─────────────────────────────────┐
-      │  网络优化                        │
-      │  • HTTP 缓存                    │
-      │  • CDN 部署                    │
-      │  • 请求合并                    │
-      │  • 压缩资源                    │
-      └─────────────────────────────────┘
+                    🚀 性能优化
+                   /          \
+                  /            \
+          用户体验优化        运行时优化
+         (Core Web Vitals)  (变更检测)
+
+       ┌──────────────────────────────┐
+       │  网络层优化                   │
+       │  • 模块懒加载                 │
+       │  • 资源预加载                 │
+       │  • CDN 部署                  │
+       │  • HTTP/2 多路复用           │
+       └──────────────────────────────┘
+
+       ┌──────────────────────────────┐
+       │  编译时优化                 │
+       │  • AOT 编译                 │
+       │  • Tree-shaking            │
+       │  • 代码压缩                 │
+       │  • 静态分析                 │
+       └──────────────────────────────┘
+
+       ┌──────────────────────────────┐
+       │  运行时优化                 │
+       │  • OnPush 策略              │
+       │  • Signals 响应式           │
+       │  • trackBy 优化             │
+       │  • 虚拟滚动                 │
+       └──────────────────────────────┘
+```
+
+#### 性能优化决策树
+
+```mermaid
+flowchart TD
+    A["性能问题诊断"] --> B{"问题类型?"}
+    
+    B -->|"首屏加载慢"| C["网络层优化"]
+    C --> C1["模块懒加载"]
+    C --> C2["预加载策略"]
+    C --> C3["资源压缩/CDN"]
+    C --> C4["@defer 延迟加载"]
+    
+    B -->|"变更检测慢"| D["检测优化"]
+    D --> D1{"使用 Zone.js?"}
+    D1 -->|"是"| D2["迁移到 Zoneless"]
+    D1 -->|"否"| D3["检查 Signals 使用"]
+    D --> D4["OnPush 策略"]
+    D --> D5["避免模板函数调用"]
+    
+    B -->|"列表渲染慢"| E["列表优化"]
+    E --> E1["trackBy 函数"]
+    E --> E2["虚拟滚动 CDK"]
+    E --> E3["分页加载"]
+    
+    B -->|"包体积大"| F["构建优化"]
+    F --> F1["AOT 编译"]
+    F --> F2["Tree-shaking"]
+    F --> F3["移除未用依赖"]
+    F --> F4["代码分割"]
 ```
 
 ### ⚡ 包体积优化
@@ -1798,6 +1998,100 @@ describe('用户列表组件', () => {
 ---
 
 # 第五部分：面试题汇总
+
+---
+
+## Angular 技术体系化总结
+
+### 🎯 Angular 核心概念关系图
+
+```mermaid
+mindmap
+  root((Angular 核心))
+    组件系统
+      独立组件
+      模板语法
+      数据绑定
+      生命周期
+    依赖注入
+      Injectable
+      Provider
+      Injector
+      inject() 函数
+    Signals 响应式
+      signal
+      computed
+      effect
+      linkedSignal
+    指令系统
+      结构指令
+      属性指令
+      自定义指令
+      新控制流
+    路由系统
+      Angular Router
+      路由守卫
+      延迟加载
+      路由解析器
+    表单处理
+      响应式表单
+      模板驱动表单
+      表单验证
+    HTTP 客户端
+      HttpClient
+      httpResource
+      拦截器
+    状态管理
+      NgRx
+      SignalStore
+      Services
+    工程化
+      Angular CLI
+      TypeScript
+      测试策略
+      Nx Workspace
+```
+
+### 📈 Angular 技术栈完整知识体系
+
+```mermaid
+flowchart TB
+    subgraph 基础层
+        A1["HTML/CSS/JS"] --> A2["TypeScript"]
+        A2 --> A3["RxJS 响应式"]
+    end
+    
+    subgraph Angular 核心
+        B1["组件架构"] --> B2["依赖注入"]
+        B2 --> B3["模板系统"]
+        B3 --> B4["变更检测"]
+    end
+    
+    subgraph 响应式系统
+        C1["Signals"] --> C2["computed"]
+        C2 --> C3["effect"]
+        C3 --> C4["linkedSignal"]
+    end
+    
+    subgraph 企业级特性
+        D1["模块化"] --> D2["路由系统"]
+        D2 --> D3["表单处理"]
+        D3 --> D4["HTTP 客户端"]
+    end
+    
+    subgraph 高级主题
+        E1["性能优化"] --> E2["Zoneless 模式"]
+        E2 --> E3["AOT 编译"]
+        E3 --> E4["懒加载策略"]
+    end
+    
+    A3 --> B1
+    B4 --> C1
+    C4 --> D1
+    D4 --> E1
+```
+
+---
 
 ## 核心概念面试题
 

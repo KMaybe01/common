@@ -219,24 +219,92 @@ function App() {
 
 ### 🚀 React 在 2026 年的最新进展
 
-#### React Compiler 生产就绪
+#### React 技术发展演进时间线
 
-React Compiler 在 2026 年已成为生产环境的标准配置：
-
-```bash
-# Next.js 15+ 默认启用
-npm create next-app@latest
-
-# Vite + React 项目
-npm install babel-plugin-react-compiler
-# vite.config.ts 中配置
+```mermaid
+timeline
+    title React 框架演进历程
+    2013 : React 首次开源
+         : JSX 语法引入
+         : 虚拟 DOM 概念
+    2015 : React 0.14
+         : 函数组件引入
+         : Stateless Functional Components
+    2016 : React 15
+         : 虚拟 DOM 优化
+         : 错误边界
+    2017 : React 16
+         : Fiber 架构重构
+         : 错误边界组件
+         : Portals / Fragments
+    2018 : React 16.8
+         : Hooks 正式发布
+         : useState / useEffect
+    2019 : React 16.9-16.13
+         : Concurrent Mode 预览
+         : Suspense 实验性
+    2021 : React 17
+         : 新 JSX 转换
+         : 事件代理迁移到根节点
+    2022 : React 18
+         : 并发特性正式发布
+         : Automatic Batching
+         : startTransition
+         : Suspense SSR
+    2023 : React Server Components
+         : Next.js App Router
+         : 'use client' 指令
+    2024 : React 19
+         : React Compiler (Forget)
+         : Actions 机制
+         : use() Hook
+         : useOptimistic
+    2025 : React 20
+         : Compiler 默认启用
+         : Server Components 稳定
+         : View Transitions API
+    2026 : React 21 预览
+         : 更智能的编译优化
+         : 细粒度响应式探索
+         : 更好的 DevTools
 ```
 
-**Compiler 带来的改变：**
-- 自动移除 `useMemo`、`useCallback`、`React.memo` 的手动优化
-- 编译期分析依赖关系，生成最优渲染代码
-- 减少 30-50% 的不必要重渲染
-- Bundle 体积可能增加 5-10%，但运行时性能显著提升
+#### React Compiler 工作原理
+
+```mermaid
+flowchart TB
+    subgraph 编译前
+        A1["原始 React 代码"] --> A2["手动 useMemo/useCallback"]
+        A2 --> A3["React.memo 包裹"]
+        A3 --> A4["容易出错/遗漏"]
+    end
+
+    subgraph Compiler 转换
+        B1["AST 解析"] --> B2["依赖关系分析"]
+        B2 --> B3["值可达性分析"]
+        B3 --> B4["自动生成记忆化代码"]
+    end
+
+    subgraph 编译后
+        C1["优化的 React 代码"] --> C2["自动缓存函数"]
+        C2 --> C3["自动缓存计算"]
+        C3 --> C4["零运行时开销"]
+    end
+
+    A4 --> B1
+    B4 --> C1
+```
+
+#### Compiler 优化对比
+
+| 优化项 | 手动优化 | Compiler 自动优化 |
+|--------|---------|------------------|
+| 函数缓存 | useCallback | 自动识别并缓存 |
+| 计算缓存 | useMemo | 自动识别并缓存 |
+| 组件缓存 | React.memo | 自动包裹 |
+| 依赖数组 | 手动维护 | 自动推导 |
+| 性能收益 | 60-70% | 90%+ |
+| 代码量 | 增加 30% | 减少 50% |
 
 #### React Server Components 成为默认
 
@@ -255,6 +323,25 @@ export function InteractiveComponent() {
 }
 ```
 
+#### RSC 架构工作原理
+
+```mermaid
+flowchart TB
+    subgraph 服务端
+        S1["Server Component"] --> S2["直接访问数据库"]
+        S2 --> S3["生成序列化 UI"]
+        S3 --> S4["发送 RSC Payload"]
+    end
+
+    subgraph 客户端
+        C1["接收 RSC Payload"] --> C2["Client Component 水合"]
+        C2 --> C3["交互式 UI"]
+        C3 --> C4["事件处理"]
+    end
+
+    S4 --> C1
+```
+
 #### View Transitions API 集成
 
 ```jsx
@@ -270,6 +357,18 @@ function PageTransition({ children }) {
 }
 ```
 
+#### 2026 年 React 生态工具链
+
+| 工具 | 最新版本 | 关键变化 |
+|------|----------|----------|
+| React | 19/20 | Compiler 默认，RSC 稳定 |
+| Next.js | 15+ | App Router 默认，Turbopack |
+| React Router | 7+ | 统一客户端/服务端路由 |
+| Redux | 5+ | RTK 简化，更好的 TS |
+| Zustand | 5+ | 更轻量，持久化内置 |
+| TanStack Query | 5+ | 更精细缓存，SSR 优化 |
+| React Testing Library | 16+ | 更好的异步测试 |
+
 #### 2026 年前端框架格局
 
 | 框架 | 定位 | 2026 状态 |
@@ -280,6 +379,54 @@ function PageTransition({ children }) {
 | Svelte 5 | 编译时优化 | Runes 响应式，轻量级首选 |
 | Solid.js | 细粒度响应式 | 性能标杆，生态增长中 |
 | Astro 5 | 内容型网站 | Islands 架构，零 JS 默认 |
+
+#### React 生态全景图
+
+```mermaid
+mindmap
+  root((React 生态))
+    核心库
+      React 19/20
+      React DOM
+      React Native
+    元框架
+      Next.js 15
+      Remix
+      Gatsby
+    路由
+      React Router 7
+      TanStack Router
+    状态管理
+      Zustand
+      Redux Toolkit
+      Jotai
+      Recoil
+      Valtio
+    数据获取
+      TanStack Query
+      SWR
+      Apollo Client
+      urql
+    表单
+      React Hook Form
+      Formik
+      Zod 验证
+    样式方案
+      Tailwind CSS
+      Styled Components
+      CSS Modules
+      Vanilla Extract
+    测试
+      Vitest
+      Jest
+      React Testing Library
+      Playwright
+    开发工具
+      React DevTools
+      ESLint
+      Prettier
+      Storybook
+```
 
 ---
 
@@ -1734,24 +1881,67 @@ function MyComponent() {
 ### 📊 优化策略金字塔
 
 ```
-                   🚀 性能优化
-                  /          \
-           代码分割        变更检测优化
-        (Lazy Load)    (Memo/useMemo)
+                    🚀 性能优化
+                   /          \
+                  /            \
+          用户体验优化        运行时优化
+         (Core Web Vitals)  (渲染/状态)
 
-      ┌──────────────────────────────┐
-      │  渲染优化                    │
-      │  • React.memo                │
-      │  • useMemo / useCallback     │
-      │  • 正确使用 key 属性         │
-      └──────────────────────────────┘
+       ┌──────────────────────────────┐
+       │  网络层优化                   │
+       │  • 代码分割                   │
+       │  • 资源预加载                 │
+       │  • CDN 部署                  │
+       │  • HTTP/2 多路复用           │
+       └──────────────────────────────┘
 
-      ┌──────────────────────────────┐
-      │  构建优化                    │
-      │  • Tree Shaking              │
-      │  • 代码分割                  │
-      │  • 压缩 & Minify             │
-      └──────────────────────────────┘
+       ┌──────────────────────────────┐
+       │  编译时优化                 │
+       │  • React Compiler           │
+       │  • Tree-shaking            │
+       │  • 代码压缩                 │
+       │  • 静态分析                 │
+       └──────────────────────────────┘
+
+       ┌──────────────────────────────┐
+       │  运行时优化                 │
+       │  • React.memo               │
+       │  • useMemo / useCallback    │
+       │  • 虚拟列表                 │
+       │  • 并发特性                 │
+       └──────────────────────────────┘
+```
+
+#### 性能优化决策树
+
+```mermaid
+flowchart TD
+    A["性能问题诊断"] --> B{"问题类型?"}
+    
+    B -->|"首屏加载慢"| C["网络层优化"]
+    C --> C1["路由懒加载"]
+    C --> C2["组件 React.lazy"]
+    C --> C3["资源压缩/CDN"]
+    C --> C4["预加载关键资源"]
+    
+    B -->|"运行时卡顿"| D["渲染优化"]
+    D --> D1{"列表渲染?"}
+    D1 -->|"是"| D2["react-window 虚拟列表"]
+    D1 -->|"否"| D3["React.memo 缓存组件"]
+    D --> D4["useMemo 缓存计算"]
+    D --> D5["useCallback 缓存函数"]
+    
+    B -->|"频繁重渲染"| E["状态优化"]
+    E --> E1["拆分状态"]
+    E --> E2["提升状态位置"]
+    E --> E3["使用 Context 优化"]
+    E --> E4["原子化状态 Jotai"]
+    
+    B -->|"交互响应慢"| F["并发优化"]
+    F --> F1["startTransition"]
+    F --> F2["useDeferredValue"]
+    F --> F3["Suspense 边界"]
+    F --> F4["流式 SSR"]
 ```
 
 ### 🎯 渲染优化技巧
@@ -1973,6 +2163,99 @@ function LazyImage({ src, alt }: { src: string; alt: string }) {
 
   return <img ref={imgRef} alt={alt} style={{ opacity: isLoaded ? 1 : 0.5 }} />;
 }
+```
+
+---
+
+---
+
+## React 技术体系化总结
+
+### 🎯 React 核心概念关系图
+
+```mermaid
+mindmap
+  root((React 核心))
+    组件系统
+      函数组件
+      JSX 语法
+      Props / State
+      组合模式
+    Hooks 系统
+      useState
+      useEffect
+      useContext
+      useReducer
+      useRef
+      自定义 Hooks
+    并发特性
+      startTransition
+      useDeferredValue
+      Suspense
+      ["use()"]
+    服务端组件
+      RSC 架构
+      'use client'
+      流式 SSR
+      选择性水合
+    状态管理
+      Context API
+      Zustand
+      Redux Toolkit
+      Jotai/Recoil
+    数据获取
+      TanStack Query
+      SWR
+      React Query
+    路由系统
+      React Router
+      Next.js App Router
+      动态路由
+      嵌套路由
+    工程化
+      Vite / Webpack
+      TypeScript
+      测试策略
+      React Compiler
+```
+
+### 📈 React 技术栈完整知识体系
+
+```mermaid
+flowchart TB
+    subgraph 基础层
+        A1["HTML/CSS/JS"] --> A2["TypeScript"]
+        A2 --> A3["ES6+ 语法"]
+    end
+    
+    subgraph React 核心
+        B1["组件化思想"] --> B2["JSX 语法"]
+        B2 --> B3["Hooks 系统"]
+        B3 --> B4["状态管理"]
+    end
+    
+    subgraph 并发特性
+        C1["Fiber 架构"] --> C2["时间切片"]
+        C2 --> C3["优先级调度"]
+        C3 --> C4["Suspense"]
+    end
+    
+    subgraph 服务端渲染
+        D1["Next.js"] --> D2["SSR/SSG/ISR"]
+        D2 --> D3["RSC 架构"]
+        D3 --> D4["流式渲染"]
+    end
+    
+    subgraph 高级主题
+        E1["性能优化"] --> E2["React Compiler"]
+        E2 --> E3["虚拟列表"]
+        E3 --> E4["内存管理"]
+    end
+    
+    A3 --> B1
+    B4 --> C1
+    C4 --> D1
+    D4 --> E1
 ```
 
 ---
