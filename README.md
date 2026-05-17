@@ -30,24 +30,24 @@ graph LR
 
 本项目按 **准备面试四阶段** 编排，覆盖前端面试全部核心领域。
 
-| 阶段 | 编号 | 文件（点击跳转） | 内容 |
-|------|------|------------------|------|
-| **🟢 S1 基础夯实** | 01 | [`01-HTML-详解版.md`](S1-基础夯实/01-HTML-详解版.md) | HTML5、语义化、Web Components、Popover、Dialog、ARIA、Service Worker |
-| | 02 | [`02-CSS-详解版.md`](S1-基础夯实/02-CSS-详解版.md) | 选择器、布局、动画、编程题集、Container Queries、Anchor Positioning、@scope |
-| | 03 | [`03-JavaScript-详解版.md`](S1-基础夯实/03-JavaScript-详解版.md) | 数据类型、闭包、原型链、异步、Immutable Array、Promise.try、Navigation API |
-| **🔵 S2 框架深入** | 04 | [`04-Vue3-详解版.md`](S2-框架深入/04-Vue3-详解版.md) | Vue 3、Composition API、响应式原理 |
-| | 05 | [`05-React19-详解版.md`](S2-框架深入/05-React19-详解版.md) | React 19、Hooks、Fiber、Next.js |
-| | 06 | [`06-Angular20-完整指南.md`](S2-框架深入/06-Angular20-完整指南.md) | Angular 20、Signals、DI、RxJS |
-| **🟡 S3 进阶提升** | 07 | [`07-浏览器原理-详解版.md`](S3-进阶提升/07-浏览器原理-详解版.md) | 安全、缓存、渲染原理、事件循环 |
-| | 08 | [`08-性能优化-详解版.md`](S3-进阶提升/08-性能优化-详解版.md) | CDN、懒加载、Web Vitals、渲染优化 |
-| | 09 | [`09-前端工程化-详解版.md`](S3-进阶提升/09-前端工程化-详解版.md) | Webpack、Vite、Monorepo、CI/CD |
-| | 10 | [`10-算法题解-CodeTop100.md`](S3-进阶提升/10-算法题解-CodeTop100.md) | LeetCode Top 100 手写 JS 实现 |
-| **🔴 S4 面试冲刺** | 11 | [`11-前端面试题库.md`](S4-面试冲刺/11-前端面试题库.md) | 综合面试题、扫码登录、设计模式 |
-| | 12 | [`12-简历.md`](S4-面试冲刺/12-简历.md) | 简历模板与项目经验 |
-| | 13 | [`13-简历问题-深度八股.md`](S4-面试冲刺/13-简历问题-深度八股.md) | Fiber、SSE/WebSocket、RxJS、虚拟列表 |
-| **🟣 S5 AI 前沿** | 14 | [`14-AI前端开发体系化学习指南.md`](S5-AI/14-AI前端开发体系化学习指南.md) | AI 辅助前端开发体系化学习路径 |
-| | 15 | [`15-Agent-AI智能体.md`](S5-AI/15-Agent-AI智能体.md) | Agent 架构、Function Calling、MCP、2025/2026 趋势 |
-| **📘 导航** | — | README.md（本文件） | 知识导航与索引 |
+| 阶段 | 文件（点击跳转） | 内容 |
+|------|------------------|------|
+| **🟢 S1 基础夯实** | [`01-HTML.md`](S1-基础夯实/01-HTML.md) | HTML5、语义化、Web Components、Popover、Dialog、ARIA、Service Worker |
+| | [`02-CSS.md`](S1-基础夯实/02-CSS.md) | 选择器、布局、动画、编程题集、Container Queries、Anchor Positioning、@scope |
+| | [`03-JavaScript.md`](S1-基础夯实/03-JavaScript.md) | 数据类型、闭包、原型链、异步、Immutable Array、Promise.try、Navigation API |
+| **🔵 S2 框架深入** | [`04-Vue3.md`](S2-框架深入/04-Vue3.md) | Vue 3、Composition API、响应式原理 |
+| | [`05-React19.md`](S2-框架深入/05-React19.md) | React 19、Hooks、Fiber、Next.js |
+| | [`06-Angular20.md`](S2-框架深入/06-Angular20.md) | Angular 20、Signals、DI、RxJS |
+| **🟡 S3 进阶提升** | [`07-浏览器原理.md`](S3-进阶提升/07-浏览器原理.md) | 安全、缓存、渲染原理、事件循环 |
+| | [`08-性能优化.md`](S3-进阶提升/08-性能优化.md) | CDN、懒加载、Web Vitals、渲染优化 |
+| | [`09-前端工程化.md`](S3-进阶提升/09-前端工程化.md) | Webpack、Vite、Monorepo、CI/CD |
+| | [`10-算法题解.md`](S3-进阶提升/10-算法题解.md) | LeetCode Top 100 手写 JS 实现 |
+| **🔴 S4 面试冲刺** | [`11-前端面试题库.md`](S4-面试冲刺/11-前端面试题库.md) | 综合面试题、扫码登录、设计模式 |
+| | [`12-简历.md`](S4-面试冲刺/12-简历.md) | 简历模板与项目经验 |
+| | [`13-简历问题.md`](S4-面试冲刺/13-简历问题.md) | Fiber、SSE/WebSocket、RxJS、虚拟列表 |
+| **🟣 S5 AI 前沿** | [`14-AI前端开发体系化学习指南.md`](S5-AI/14-AI前端开发体系化学习指南.md) | AI 辅助前端开发体系化学习路径 |
+| | [`15-Agent.md`](S5-AI/15-Agent.md) | Agent 架构、Function Calling、MCP、2025/2026 趋势 |
+| **📘 导航** | README.md（本文件） | 知识导航与索引 |
 
 ---
 
@@ -61,9 +61,9 @@ graph LR
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [1-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
-| [2-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道、Container Queries、:has()、CSS Nesting、@property、Anchor Positioning、@scope、Scroll-Driven Animations |
-| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现、Immutable Array、RegExp v flag、Promise.try、Navigation API、File System Access、Clipboard API |
+| [1-HTML-详解版.md](S1-基础夯实/01-HTML.md) | src vs href、语义化标签、DOCTYPE、defer vs async、HTML5 新特性、Web Components、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
+| [2-CSS-详解版.md](S1-基础夯实/02-CSS.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、CSS 编程题 15 道、Container Queries、:has()、CSS Nesting、@property、Anchor Positioning、@scope、Scroll-Driven Animations |
+| [3-JavaScript-详解版.md](S1-基础夯实/03-JavaScript.md) | 8 种数据类型、原型链、闭包、this 绑定、Promise、async/await、20+ 手写实现、Immutable Array、RegExp v flag、Promise.try、Navigation API、File System Access、Clipboard API |
 
 ---
 
@@ -73,9 +73,9 @@ graph LR
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [4-Vue3-详解版.md](S2-框架深入/04-Vue3-详解版.md) | Composition API、ref/reactive、Proxy 响应式、模板指令、组件通信、Pinia、diff 算法 |
-| [5-React19-详解版.md](S2-框架深入/05-React19-详解版.md) | Hooks 系统、Fiber 架构、React 19 Compiler/Actions、状态管理、Next.js、并发模式 |
-| [6-Angular20-完整指南.md](S2-框架深入/06-Angular20-完整指南.md) | Signals、@if/@for/@defer、DI 系统、RxJS、路由守卫、表单、OnPush、httpResource |
+| [4-Vue3-详解版.md](S2-框架深入/04-Vue3.md) | Composition API、ref/reactive、Proxy 响应式、模板指令、组件通信、Pinia、diff 算法 |
+| [5-React19-详解版.md](S2-框架深入/05-React19.md) | Hooks 系统、Fiber 架构、React 19 Compiler/Actions、状态管理、Next.js、并发模式 |
+| [6-Angular20-完整指南.md](S2-框架深入/06-Angular20.md) | Signals、@if/@for/@defer、DI 系统、RxJS、路由守卫、表单、OnPush、httpResource |
 
 ---
 
@@ -85,10 +85,10 @@ graph LR
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [7-浏览器原理-详解版.md](S3-进阶提升/07-浏览器原理-详解版.md) | XSS/CSRF、多进程架构、缓存策略、渲染流水线、事件循环、V8 垃圾回收、bfcache |
-| [8-性能优化-详解版.md](S3-进阶提升/08-性能优化-详解版.md) | CDN、懒加载、回流重绘、防抖节流、Web Vitals (LCP/INP/CLS)、代码分割 |
-| [9-前端工程化-详解版.md](S3-进阶提升/09-前端工程化-详解版.md) | 模块化、Git、Webpack/Vite/esbuild、Babel、pnpm、Monorepo、微前端、CI/CD |
-| [10-算法题解-CodeTop100.md](S3-进阶提升/10-算法题解-CodeTop100.md) | 哈希表、双指针、链表、二叉树、动态规划、二分查找、回溯、LRU 缓存设计 |
+| [7-浏览器原理-详解版.md](S3-进阶提升/07-浏览器原理.md) | XSS/CSRF、多进程架构、缓存策略、渲染流水线、事件循环、V8 垃圾回收、bfcache |
+| [8-性能优化-详解版.md](S3-进阶提升/08-性能优化.md) | CDN、懒加载、回流重绘、防抖节流、Web Vitals (LCP/INP/CLS)、代码分割 |
+| [9-前端工程化-详解版.md](S3-进阶提升/09-前端工程化.md) | 模块化、Git、Webpack/Vite/esbuild、Babel、pnpm、Monorepo、微前端、CI/CD |
+| [10-算法题解.md](S3-进阶提升/10-算法题解.md) | 哈希表、双指针、链表、二叉树、动态规划、二分查找、回溯、LRU 缓存设计 |
 
 ---
 
@@ -100,7 +100,7 @@ graph LR
 |------------------|-----------|
 | [11-前端面试题库.md](S4-面试冲刺/11-前端面试题库.md) | 类型系统、浮点数精度、闭包与内存、this 绑定、Promise 深度、扫码登录、虚拟 DOM |
 | [12-简历.md](S4-面试冲刺/12-简历.md) | 简历模板、项目经验、技术栈描述 |
-| [13-简历问题-深度八股.md](S4-面试冲刺/13-简历问题-深度八股.md) | React Fiber、SSE vs WebSocket、RxJS 操作符、虚拟列表、OnPush、JWT、Event Loop |
+| [13-简历问题.md](S4-面试冲刺/13-简历问题.md) | React Fiber、SSE vs WebSocket、RxJS 操作符、虚拟列表、OnPush、JWT、Event Loop |
 
 ---
 
@@ -111,49 +111,7 @@ graph LR
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
 | [14-AI前端开发体系化学习指南.md](S5-AI/14-AI前端开发体系化学习指南.md) | AI 辅助编码、Prompt 工程、AI 工具链、前端 AI 应用场景 |
-| [15-Agent-AI智能体.md](S5-AI/15-Agent-AI智能体.md) | Agent vs LLM、ReAct/Plan-and-Execute、Function Calling、MCP 协议、MoE、LoRA、2025/2026 趋势 |
-
----
-
-## 🧭 快速索引
-
-### 按面试考点查找
-
-| 考点 | 相关文档 |
-|------|---------|
-| HTML 语义化 & 标签 | [1](S1-基础夯实/01-HTML-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| CSS 布局 & 动画 | [2](S1-基础夯实/02-CSS-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| HTML 新特性 (Popover/Dialog/PWA) | [1](S1-基础夯实/01-HTML-详解版.md) |
-| 现代 CSS (Container/Anchor/@scope) | [2](S1-基础夯实/02-CSS-详解版.md) |
-| 现代 JS (Immutable Array/Promise.try) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
-| Web API (Navigation/Clipboard/File) | [3](S1-基础夯实/03-JavaScript-详解版.md) |
-| JS 数据类型 & 类型转换 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| 闭包 & 作用域 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| 原型链 & 继承 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| this 指向 & 箭头函数 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| Promise & async/await | [3](S1-基础夯实/03-JavaScript-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| 事件循环 Event Loop | [3](S1-基础夯实/03-JavaScript-详解版.md) , [7](S3-进阶提升/07-浏览器原理-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| 浏览器渲染原理 | [7](S3-进阶提升/07-浏览器原理-详解版.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| 浏览器缓存 | [7](S3-进阶提升/07-浏览器原理-详解版.md) , [11](S4-面试冲刺/11-前端面试题库.md) |
-| 性能优化 (Web Vitals) | [8](S3-进阶提升/08-性能优化-详解版.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| 虚拟列表 | [13](S4-面试冲刺/13-简历问题-深度八股.md) , [8](S3-进阶提升/08-性能优化-详解版.md) |
-| React Hooks & Fiber | [5](S2-框架深入/05-React19-详解版.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| Vue 响应式原理 | [4](S2-框架深入/04-Vue3-详解版.md) |
-| Angular DI & RxJS | [6](S2-框架深入/06-Angular20-完整指南.md) , [13](S4-面试冲刺/13-简历问题-深度八股.md) |
-| 算法 & 数据结构 | [10](S3-进阶提升/10-算法题解-CodeTop100.md) |
-| AI Agent & MCP | [15-Agent](S5-AI/15-Agent-AI智能体.md) |
-| 手写代码 & 输出题 | [3](S1-基础夯实/03-JavaScript-详解版.md) , [10](S3-进阶提升/10-算法题解-CodeTop100.md) |
-| 简历指导 | [12-简历.md](S4-面试冲刺/12-简历.md) |
-
-### 按难度等级
-
-| 难度 | 推荐文件夹 | 说明 |
-|------|-----------|------|
-| 🟢 基础 | S1-基础夯实/ | 必读，零基础入门 |
-| 🔵 进阶 | S2-框架深入/ | 选 1-2 个框架精读 |
-| 🟡 高阶 | S3-进阶提升/ | 全面提升综合实力 |
-| 🔴 冲刺 | S4-面试冲刺/ | 面试前最后冲刺 |
-| 🟣 AI | S5-AI/ | AI Agent 与 AI 辅助开发 |
+| [15-Agent.md](S5-AI/15-Agent.md) | Agent vs LLM、ReAct/Plan-and-Execute、Function Calling、MCP 协议、MoE、LoRA、2025/2026 趋势 |
 
 ---
 
@@ -163,29 +121,29 @@ graph LR
 项目根目录/
 |
 |-- 📁 S1-基础夯实/          🟢 基础阶段（01-03）
-|   |-- 01-HTML-详解版.md
-|   |-- 02-CSS-详解版.md
-|   +-- 03-JavaScript-详解版.md
+|   |-- 01-HTML.md
+|   |-- 02-CSS.md
+|   +-- 03-JavaScript.md
 |
 |-- 📁 S2-框架深入/          🔵 框架阶段（04-06）
-|   |-- 04-Vue3-详解版.md
-|   |-- 05-React19-详解版.md
-|   +-- 06-Angular20-完整指南.md
+|   |-- 04-Vue3.md
+|   |-- 05-React19.md
+|   +-- 06-Angular20.md
 |
 |-- 📁 S3-进阶提升/          🟡 进阶阶段（07-10）
-|   |-- 07-浏览器原理-详解版.md
-|   |-- 08-性能优化-详解版.md
-|   |-- 09-前端工程化-详解版.md
-|   +-- 10-算法题解-CodeTop100.md
+|   |-- 07-浏览器原理.md
+|   |-- 08-性能优化.md
+|   |-- 09-前端工程化.md
+|   +-- 10-算法题解.md
 |
 |-- 📁 S4-面试冲刺/          🔴 冲刺阶段（11-13）
 |   |-- 11-前端面试题库.md
 |   |-- 12-简历.md
-|   +-- 13-简历问题-深度八股.md
+|   +-- 13-简历问题.md
 |
 |-- 📁 S5-AI/                🟣 AI 阶段（14-15）
 |   |-- 14-AI前端开发体系化学习指南.md
-|   +-- 15-Agent-AI智能体.md
+|   +-- 15-Agent.md
 |
 +-- 📄 README.md             ← 导航文件
 ```
@@ -208,33 +166,33 @@ graph LR
 
 ### S1 🟢 基础夯实
 
-- [ ] [01-HTML-详解版.md](S1-基础夯实/01-HTML-详解版.md)
-- [ ] [02-CSS-详解版.md](S1-基础夯实/02-CSS-详解版.md)
-- [ ] [03-JavaScript-详解版.md](S1-基础夯实/03-JavaScript-详解版.md)
+- [ ] [01-HTML.md](S1-基础夯实/01-HTML.md)
+- [ ] [02-CSS.md](S1-基础夯实/02-CSS.md)
+- [ ] [03-JavaScript.md](S1-基础夯实/03-JavaScript.md)
 
 ### S2 🔵 框架深入
 
-- [ ] [04-Vue3-详解版.md](S2-框架深入/04-Vue3-详解版.md)
-- [ ] [05-React19-详解版.md](S2-框架深入/05-React19-详解版.md)
-- [ ] [06-Angular20-完整指南.md](S2-框架深入/06-Angular20-完整指南.md)
+- [ ] [04-Vue3.md](S2-框架深入/04-Vue3.md)
+- [ ] [05-React19.md](S2-框架深入/05-React19.md)
+- [ ] [06-Angular20.md](S2-框架深入/06-Angular20.md)
 
 ### S3 🟡 进阶提升
 
-- [ ] [07-浏览器原理-详解版.md](S3-进阶提升/07-浏览器原理-详解版.md)
-- [ ] [08-性能优化-详解版.md](S3-进阶提升/08-性能优化-详解版.md)
-- [ ] [09-前端工程化-详解版.md](S3-进阶提升/09-前端工程化-详解版.md)
-- [ ] [10-算法题解-CodeTop100.md](S3-进阶提升/10-算法题解-CodeTop100.md)
+- [ ] [07-浏览器原理.md](S3-进阶提升/07-浏览器原理.md)
+- [ ] [08-性能优化.md](S3-进阶提升/08-性能优化.md)
+- [ ] [09-前端工程化.md](S3-进阶提升/09-前端工程化.md)
+- [ ] [10-算法题解.md](S3-进阶提升/10-算法题解.md)
 
 ### S4 🔴 面试冲刺
 
 - [ ] [11-前端面试题库.md](S4-面试冲刺/11-前端面试题库.md)
 - [ ] [12-简历.md](S4-面试冲刺/12-简历.md)
-- [ ] [13-简历问题-深度八股.md](S4-面试冲刺/13-简历问题-深度八股.md)
+- [ ] [13-简历问题.md](S4-面试冲刺/13-简历问题.md)
 
 ### S5 🟣 AI 前沿
 
 - [ ] [14-AI前端开发体系化学习指南.md](S5-AI/14-AI前端开发体系化学习指南.md)
-- [ ] [15-Agent-AI智能体.md](S5-AI/15-Agent-AI智能体.md)
+- [ ] [15-Agent.md](S5-AI/15-Agent.md)
 
 ---
 
