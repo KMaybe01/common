@@ -226,7 +226,7 @@ data = resource(() => ({ request: '/api/data' }));
 
 ```mermaid
 flowchart TB
-    subgraph Zone.js 模式（传统）
+    subgraph "Zone.js 模式（传统）"
         Z1["异步事件触发"] --> Z2["Zone.js 拦截"]
         Z2 --> Z3["触发变更检测"]
         Z3 --> Z4["遍历整个组件树"]
@@ -234,7 +234,7 @@ flowchart TB
         Z5 --> Z6["更新 DOM"]
     end
 
-    subgraph Zoneless 模式（现代）
+    subgraph "Zoneless 模式（现代）"
         V1["Signal 值变化"] --> V2["精确通知"]
         V2 --> V3["仅更新相关组件"]
         V3 --> V4["直接更新 DOM"]
@@ -531,33 +531,40 @@ export class DashboardComponent {
 装饰器是 Angular 的核心，它为类、属性、方法添加元数据：
 
 ```typescript
-// 📍 类装饰器
+// 📍 类装饰器（Angular 20+ 默认 standalone，无需显式声明）
 @Component({
   selector: 'app-hero',
   template: `...`,
   styles: [`...`],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeroComponent { }
 
-// 📍 属性装饰器
+// 📍 属性装饰器（现代推荐：信号式）
 export class ChildComponent {
-  @Input() heroName!: string;
-  @Input() set age(value: number) { /* getter */ }
-  @Output() heroSelected = new EventEmitter<Hero>();
+  heroName = input<string>('');
+  age = input<number>(0);
+  heroSelected = output<Hero>();
   
-  @ViewChild(ChartComponent) chart!: ChartComponent;
-  @ViewChildren(ListItemComponent) items!: QueryList<ListItemComponent>;
-  @ContentChild(ActionBarComponent) actionBar!: ActionBarComponent;
+  chart = viewChild.required<ChartComponent>();
+  items = viewChildren<ListItemComponent>();
+  actionBar = contentChild(ActionBarComponent);
 }
 
-// 📍 方法装饰器（如果在库中）
-@HostListener('click', ['$event'])
-onClick(event: MouseEvent) { }
+// 📍 宿主绑定（现代推荐：host 属性）
+@Component({
+  host: {
+    '(click)': 'onClick($event)'
+  }
+})
+export class ClickComponent {
+  onClick(event: MouseEvent) { }
+}
 
-// 📍 参数装饰器
-constructor(@Inject(DOCUMENT) doc: Document) { }
+// 📍 依赖注入（现代推荐：inject() 函数）
+constructor() {
+  const doc = inject(DOCUMENT);
+}
 ```
 
 ### 📝 类型安全的组件
@@ -582,8 +589,7 @@ interface Product {
       />
     }
   `,
-  standalone: true,
-  imports: [CommonModule, ProductCardComponent]
+  imports: [ProductCardComponent]
 })
 export class ProductListComponent {
   // Signal 类型约束
@@ -612,8 +618,7 @@ export class ProductListComponent {
 ### 🧩 组件解剖
 
 ```typescript
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, signal, computed } from '@angular/core';
 
 interface TodoItem {
   id: number;
@@ -623,8 +628,6 @@ interface TodoItem {
 
 @Component({
   selector: 'app-todo-list',
-  standalone: true,
-  imports: [CommonModule],
   template: `
     <!-- 1️⃣ 模板：定义视图 -->
     <div class="todo-container">
@@ -670,8 +673,8 @@ interface TodoItem {
 })
 export class TodoListComponent {
   // 3️⃣ 数据：响应式状态管理
-  @Input() title: string = '我的任务列表';
-  @Output() todoAdded = new EventEmitter<TodoItem>();
+  title = input('我的任务列表');
+  todoAdded = output<TodoItem>();
   
   todos = signal<TodoItem[]>([
     { id: 1, text: '学习 Angular', completed: false },
@@ -902,37 +905,39 @@ source$.pipe(
   selector: 'app-search',
   template: `
     <input 
-      [formControl]="searchControl" 
+      #searchInput
+      (input)="onSearch(searchInput.value)"
       placeholder="搜索用户..."
     />
-    
-    @for (result of results$ | async) {
-      <div class="result">{{ result.name }}</div>
+
+    @if (results.value(); as data) {
+      @for (result of data; track result.id) {
+        <div class="result">{{ result.name }}</div>
+      }
     }
   `
 })
-export class SearchComponent implements OnInit {
-  searchControl = new FormControl('');
-  results$: Observable<User[]>;
-  
-  constructor(private userService: UserService) {}
-  
-  ngOnInit() {
-    this.results$ = this.searchControl.valueChanges.pipe(
-      // 第一步：等待用户停止输入
-      debounceTime(300),
-      // 第二步：过滤重复搜索词
-      distinctUntilChanged(),
-      // 第三步：过滤空值
-      filter(term => term.length > 0),
-      // 第四步：发起 HTTP 请求
-      switchMap(term => this.userService.search(term)),
-      // 第五步：错误处理
-      catchError(error => {
-        console.error('搜索失败', error);
-        return of([]);
-      })
-    );
+export class SearchComponent {
+  private userService = inject(UserService);
+
+  searchTerm = signal('');
+
+  results = resource({
+    request: () => this.searchTerm(),
+    loader: ({ request: term }) => {
+      if (!term) return of([] as User[]);
+      return this.userService.search(term).pipe(
+        debounceTime(300),
+        catchError(error => {
+          console.error('搜索失败', error);
+          return of([] as User[]);
+        })
+      );
+    }
+  });
+
+  onSearch(term: string) {
+    this.searchTerm.set(term);
   }
 }
 ```
@@ -996,10 +1001,8 @@ export const DATABASE = new InjectionToken('app.database');
 
 @Injectable()
 export class DataService {
-  constructor(
-    @Inject(API_URL) private apiUrl: string,
-    @Inject(DATABASE) private db: Database
-  ) {}
+  private apiUrl = inject(API_URL);
+  private db = inject(DATABASE);
 }
 ```
 
@@ -1028,8 +1031,7 @@ export class DataService {
 ```typescript
 // ✅ 推荐：使用 inject() 的函数式方式
 @Component({
-  selector: 'app-user',
-  standalone: true
+  selector: 'app-user'
 })
 export class UserComponent {
   // 在组件类中直接使用
@@ -1164,21 +1166,28 @@ export class UserDetailComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   
-  userId = '';
-  user: User | null = null;
+  userId = signal('');
+  user = signal<User | null>(null);
+  private userService = inject(UserService);
   
-  ngOnInit() {
-    // 方式 1：从 resolve 获取数据
-    this.user = this.route.snapshot.data['user'];
+  constructor() {
+    // 方式 1：使用 signal 从 resolve 获取数据
+    const resolvedUser = this.route.snapshot.data['user'] as User | undefined;
+    if (resolvedUser) this.user.set(resolvedUser);
     
-    // 方式 2：从参数获取
-    this.userId = this.route.snapshot.paramMap.get('id') || '';
-    
-    // 方式 3：监听参数变化（当组件复用时）
-    this.route.params.subscribe(params => {
-      this.userId = params['id'];
+    // 方式 2：监听参数变化（组件复用时自动更新）
+    const id$ = this.route.paramMap.pipe(
+      map(params => params.get('id') || ''),
+      takeUntilDestroyed()
+    );
+    id$.subscribe(id => {
+      this.userId.set(id);
       this.loadUser();
     });
+    
+    // 方式 3（推荐）：使用 input 转换路由参数
+    // Angular 20+ 支持: userId = input<string>(); 
+    // 配合路由配置: { path: 'user/:id', ...}
   }
   
   goBack() {
@@ -1317,14 +1326,11 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
       <button type="submit" [disabled]="!userForm.valid">保存</button>
     </form>
   `,
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule]
+  imports: [ReactiveFormsModule]
 })
 export class UserFormComponent {
-  userForm: FormGroup;
-  
-  constructor(private fb: FormBuilder) {
-    this.userForm = this.fb.group({
+  private fb = inject(FormBuilder);
+  userForm: FormGroup = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       // 嵌套 FormGroup
@@ -1336,7 +1342,6 @@ export class UserFormComponent {
       // 动态 FormArray
       hobbies: this.fb.array([])
     });
-  }
   
   // 获取 FormArray
   hobbies() {
@@ -1496,10 +1501,9 @@ export class OnPushComponent {
   user = signal({ name: 'John' });
   
   // OnPush 何时触发变更检测？
-  // 1️⃣ @Input 引用改变
-  @Input() set inputData(value: any) { 
-    // 触发检测
-  }
+  // 1️⃣ Signal input 或 @Input 引用改变
+  inputData = input.required<any>();
+  // 或 @Input() set inputData(value: any) { }
   
   // 2️⃣ 事件从该组件发出
   onClick() {
@@ -1647,59 +1651,55 @@ export class ApiService {
 }
 ```
 
-### 🔐 HTTP 拦截器系统
+### 🔐 HTTP 拦截器系统（函数式拦截器）
 
 ```typescript
-// 📍 认证拦截器
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService, private router: Router) {}
-  
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 1️⃣ 添加 Token
-    const token = this.authService.getToken();
-    if (token) {
-      request = request.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      });
-    }
-    
-    // 2️⃣ 处理响应
-    return next.handle(request).pipe(
-      catchError(error => {
-        if (error.status === 401) {
-          // Token 过期，重新登录
-          this.authService.logout();
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
-  }
-}
+import { HttpInterceptorFn } from '@angular/common/http';
 
-// 📍 日志拦截器
-@Injectable()
-export class LoggingInterceptor implements HttpInterceptor {
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const startTime = Date.now();
-    console.log(`[${request.method}] ${request.url}`);
-    
-    return next.handle(request).pipe(
-      tap(event => {
-        if (event instanceof HttpResponse) {
-          const duration = Date.now() - startTime;
-          console.log(`✅ ${request.method} ${request.url} (${duration}ms)`);
-        }
-      }),
-      catchError(error => {
-        const duration = Date.now() - startTime;
-        console.error(`❌ ${request.method} ${request.url} (${duration}ms)`);
-        return throwError(() => error);
-      })
-    );
+// 📍 认证拦截器（函数式）
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  
+  // 1️⃣ 添加 Token
+  const token = authService.getToken();
+  if (token) {
+    req = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` }
+    });
   }
-}
+  
+  // 2️⃣ 处理响应
+  return next(req).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        authService.logout();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
+};
+
+// 📍 日志拦截器（函数式）
+export const loggingInterceptor: HttpInterceptorFn = (req, next) => {
+  const startTime = Date.now();
+  console.log(`[${req.method}] ${req.url}`);
+  
+  return next(req).pipe(
+    tap(event => {
+      if (event instanceof HttpResponse) {
+        const duration = Date.now() - startTime;
+        console.log(`✅ ${req.method} ${req.url} (${duration}ms)`);
+      }
+    }),
+    catchError(error => {
+      const duration = Date.now() - startTime;
+      console.error(`❌ ${req.method} ${req.url} (${duration}ms)`);
+      return throwError(() => error);
+    })
+  );
+};
 
 // 📍 在 main.ts 中注册
 bootstrapApplication(AppComponent, {
@@ -1714,7 +1714,8 @@ bootstrapApplication(AppComponent, {
 ### 🎯 现代方式：httpResource()
 
 ```typescript
-import { resource, httpResource } from '@angular/core/http';
+import { resource } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 
 @Component({...})
 export class UserListComponent {
@@ -1918,7 +1919,8 @@ export class ListComponent {
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 
 describe('用户服务', () => {
   let service: UserService;
@@ -1926,8 +1928,11 @@ describe('用户服务', () => {
   
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UserService],
-      imports: [HttpClientTestingModule]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        UserService
+      ]
     });
     
     service = TestBed.inject(UserService);
@@ -1974,9 +1979,13 @@ describe('用户列表组件', () => {
   
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserListComponent, HttpClientTestingModule]
+      imports: [UserListComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
-    
+
     fixture = TestBed.createComponent(UserListComponent);
     component = fixture.componentInstance;
   });
@@ -2350,8 +2359,7 @@ OnPush 策略：
       <button (click)="nextPage()">下一页</button>
     </div>
   `,
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [ReactiveFormsModule]
 })
 export class DataTableComponent {
   private dataService = inject(DataService);
