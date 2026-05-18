@@ -1,6 +1,7 @@
 # 📚 HTML 知识点详解版
 
-> 🎯 前端面试必备 - HTML 核心知识全面梳理 | 建议收藏 ⭐
+> 🎯 **面试星级**：★★★★☆ | **建议用时**：2 天
+> HTML 核心知识全面梳理，涵盖语义化、HTML5 新特性、Web Components、Resource Hints、Service Worker 等核心考点
 
 ---
 
