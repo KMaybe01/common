@@ -112,7 +112,7 @@ React 19 (2024)
 ├─ Actions (统一表单处理)
 ├─ use() Hook (异步数据)
 ├─ useOptimistic() (乐观更新)
-├─ useFormStatus/useFormState
+├─ useFormStatus/useActionState (原 useFormState)
 ├─ Server Components 支持
 └─ Web Components 增强
 ```
@@ -146,13 +146,18 @@ function MyComponent(props) {
 **性能收益：**
 - 自动消除不必要的重新渲染
 - 减少 90%+ 的手写优化代码
-- 编译时静态分析，零运行时成本
+- 编译时静态分析，极低运行时开销（仍需要运行时支持）
 
 ### 🎯 Actions 机制
 
 ```typescript
+// 注意：useFormStatus 需要从 'react-dom' 导入
+import { useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+
 async function submitForm(prevState, formData) {
   const username = formData.get('username');
+  const password = formData.get('password');
   try {
     const response = await fetch('/api/login', {
       method: 'POST',
@@ -165,7 +170,7 @@ async function submitForm(prevState, formData) {
 }
 
 export function LoginForm() {
-  const [state, formAction] = useFormState(submitForm, null);
+  const [state, formAction] = useActionState(submitForm, null);
   const { pending } = useFormStatus();
 
   return (
@@ -185,29 +190,34 @@ export function LoginForm() {
 - ✅ 简化异步操作处理
 - ✅ 内置乐观更新支持
 
-### ⏳ `use()` Hook - 异步数据获取
+### ⏳ `use()` Hook - 异步数据获取与 Context 读取
+
+`use()` 是 React 19 新增的 Hook，可用于：
+1. 读取 Promise（需配合 Suspense 使用）
+2. 读取 Context（替代 `useContext`）
 
 ```typescript
 import { use, Suspense } from 'react';
 
+// 方式 1：读取 Promise
 function DataComponent() {
-  const data = use(fetchPromise);
+  const data = use(fetchPromise); // fetchPromise 是一个 Promise 对象
   return <div>{data.title}</div>;
 }
 
-function App() {
-  return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <DataComponent />
-    </Suspense>
-  );
+// 方式 2：读取 Context（React 19 新用法）
+function ThemedButton() {
+  const theme = use(ThemeContext); // 替代 useContext(ThemeContext)
+  return <button style={{ color: theme }}>按钮</button>;
 }
 ```
 
-### ⏱️ React 18 vs 19 vs 20 关键变化
+> ⚠️ **注意**：`use()` 可以在条件语句中调用（与 Hooks 规则不同），但 Promise 必须在 Suspense 边界内使用。
 
-| 特性 | React 18 (2022) | React 19 (2024) | React 20 (2025+) |
-|------|-----------------|-----------------|------------------|
+### ⏱️ React 18 vs 19 vs 20（预期）关键变化
+
+| 特性 | React 18 (2022) | React 19 (2024) | React 20 (预期 2025+) |
+|------|-----------------|-----------------|----------------------|
 | 并发模式 | 可选启用 | 默认启用 | 默认启用 |
 | startTransition | ✅ | ✅ 增强 | ✅ 自动 |
 | use() | ❌ | ✅ | ✅ 增强 |
@@ -215,6 +225,8 @@ function App() {
 | Server Components | 实验性 | ✅ 稳定 | ✅ 默认推荐 |
 | ref 传参 | forwardRef | 直接传 ref | 直接传 ref |
 | Compiler | 实验性 | ✅ 自动 memo | ✅ 默认 |
+
+> ⚠️ **注意**：React 20/21 的特性基于官方 RFC 和社区预测，实际发布可能有所调整。
 
 ---
 
@@ -260,14 +272,11 @@ timeline
          : Actions 机制
          : use() Hook
          : useOptimistic
-    2025 : React 20
-         : Compiler 默认启用
-         : Server Components 稳定
-         : View Transitions API
-    2026 : React 21 预览
-         : 更智能的编译优化
-         : 细粒度响应式探索
-         : 更好的 DevTools
+    2025+ : React 未来规划（预期）
+          : Compiler 默认启用
+          : Server Components 稳定
+          : View Transitions API
+          : 更智能的编译优化
 ```
 
 #### React Compiler 工作原理
@@ -304,7 +313,7 @@ flowchart TB
 | 计算缓存 | useMemo | 自动识别并缓存 |
 | 组件缓存 | React.memo | 自动包裹 |
 | 依赖数组 | 手动维护 | 自动推导 |
-| 性能收益 | 60-70% | 90%+ |
+| 性能收益 | 60-70% | 90%+（实验阶段） |
 | 代码量 | 增加 30% | 减少 50% |
 
 #### React Server Components 成为默认
@@ -362,7 +371,7 @@ function PageTransition({ children }) {
 
 | 工具 | 最新版本 | 关键变化 |
 |------|----------|----------|
-| React | 19/20 | Compiler 默认，RSC 稳定 |
+| React | 19/20 | Compiler 推荐启用，RSC 稳定 |
 | Next.js | 15+ | App Router 默认，Turbopack |
 | React Router | 7+ | 统一客户端/服务端路由 |
 | Redux | 5+ | RTK 简化，更好的 TS |
@@ -824,12 +833,14 @@ flowchart TD
 
 ```typescript
 // use() - 异步数据获取
+import { use } from 'react';
 function DataComponent() {
   const data = use(fetchPromise);
   return <div>{data}</div>;
 }
 
 // useOptimistic() - 乐观更新
+import { useOptimistic } from 'react';
 function TodoList() {
   const [optimisticTodos, addOptimisticTodo] = useOptimistic(todos);
   const handleAdd = async (todo: Todo) => {
@@ -839,15 +850,17 @@ function TodoList() {
   return <ul>{optimisticTodos.map(todo => <li key={todo.id}>{todo.text}</li>)}</ul>;
 }
 
-// useFormStatus() - 表单状态
+// useFormStatus() - 表单状态（需从 react-dom 导入）
+import { useFormStatus } from 'react-dom';
 function SubmitButton() {
   const { pending } = useFormStatus();
   return <button disabled={pending}>{pending ? '提交中...' : '提交'}</button>;
 }
 
-// useFormState() - 表单结果
+// useActionState() - 表单结果（React 19 中 useFormState 已重命名）
+import { useActionState } from 'react';
 function LoginForm() {
-  const [state, formAction] = useFormState(login, null);
+  const [state, formAction] = useActionState(login, null);
   return (
     <form action={formAction}>
       <input name="email" type="email" />
@@ -1188,7 +1201,7 @@ export function useTheme() {
 ### 💡 Zustand 实例（推荐）
 
 ```typescript
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 interface TodoStore {
@@ -1558,10 +1571,11 @@ function Accordion({ children }) {
 
 function Item({ index, children }) {
   const { openIndex, setOpenIndex } = useContext(AccordionContext);
+  const isOpen = openIndex === index;
   return (
     <div className="accordion-item">
       <button onClick={() => setOpenIndex(isOpen ? null : index)}>{children}</button>
-      {openIndex === index && <div>{children}</div>}
+      {isOpen && <div>{children}</div>}
     </div>
   );
 }
