@@ -356,7 +356,7 @@ flowchart TB
 
 ```jsx
 // React 19+ 支持 View Transitions
-import { useViewTransition } from 'react'
+import { ViewTransition } from 'react'
 
 function PageTransition({ children }) {
   return (

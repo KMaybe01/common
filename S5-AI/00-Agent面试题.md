@@ -1,7 +1,7 @@
 # 🤖 Agent 工程师面试题库（完整详解版）
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
-> Agent 工程师面试题库，涵盖 Agent 架构、工具调用协议、大模型基础、LangChain 框架、实战项目、前沿趋势六大模块
+> Agent 工程师面试题库，涵盖 Agent 架构、工具调用协议、大模型基础、框架与工具链、实战项目、前沿趋势六大模块
 
 ---
 
@@ -138,7 +138,7 @@
   - [Q82: 个性化是 LLM 应用的重要方向](#q82-个性化是-llm-应用的重要方向)
   - [Q83: 你认为 Transformer 架构会长久地统治这个领域吗？](#q83-你认为-transformer-架构会长久地统治这个领域吗)
   - [Q84: 展望未来 3-5 年，你认为 LLM 和 Agent 技术最有可能在哪个行业或领域率先实现颠覆性的应用？](#q84-展望未来-3-5-年你认为-llm-和-agent-技术最有可能在哪个行业或领域率先实现颠覆性的应用)
-- [🔗 四、LangChain 框架篇](#四langchain-框架篇)
+- [🔗 四、框架与工具链篇](#四框架与工具链篇)
   - [Q1: 什么是 LangChain？核心概念？](#q1-什么是-langchain核心概念)
   - [Q2: LangChain 的 Chain 是什么？有哪些类型？](#q2-langchain-的-chain-是什么有哪些类型)
   - [Q3: LangChain Agent 是如何工作的？](#q3-langchain-agent-是如何工作的)
@@ -149,6 +149,16 @@
   - [Q8: LangSmith 和 LangServe 是什么？](#q8-langsmith-和-langserve-是什么)
   - [Q9: LangChain 的主要竞争对手？](#q9-langchain-的主要竞争对手)
   - [Q10: LangChain 的优缺点？](#q10-langchain-的优缺点)
+  - [Q11: 什么是 CrewAI？](#q11-什么是-crewai)
+  - [Q12: 什么是 AutoGen？](#q12-什么是-autogen)
+  - [Q13: 什么是 Dify？](#q13-什么是-dify)
+  - [Q14: 什么是 Semantic Kernel？](#q14-什么是-semantic-kernel)
+  - [Q15: 什么是 Pydantic AI？](#q15-什么是-pydantic-ai)
+  - [Q16: 什么是 Instructor？](#q16-什么是-instructor)
+  - [Q17: LLM 可观测性工具？](#q17-llm-可观测性工具)
+  - [Q18: 主流 Agent 框架如何选型？](#q18-主流-agent-框架如何选型)
+  - [Q19: 什么是 vLLM？](#q19-什么是-vllm)
+  - [Q20: SGLang 的核心创新？](#q20-sglang-的核心创新)
 - [🚀 五、实战项目篇](#五实战项目篇)
   - [Q1: 如何设计一个生产级的 Agent 架构？](#q1-如何设计一个生产级的-agent-架构)
   - [Q2: 如何优化 Agent 的响应延迟？](#q2-如何优化-agent-的响应延迟)
@@ -191,6 +201,13 @@
   - [Q13: Agent 与区块链的结合？](#q13-agent-与区块链的结合)
   - [Q14: Agent 开源生态的发展趋势？](#q14-agent-开源生态的发展趋势)
   - [Q15: Agent 技术的伦理与合规挑战？](#q15-agent-技术的伦理与合规挑战)
+  - [Q16: Prompt 压缩和优化技术？](#q16-prompt-压缩和优化技术)
+  - [Q17: 推理加速技术？Speculative Decoding？](#q17-推理加速技术)
+  - [Q18: AI Coding 工具技术原理？](#q18-ai-coding-工具技术原理)
+  - [Q19: Agentic RAG？](#q19-agentic-rag)
+  - [Q20: 上下文窗口扩展技术？](#q20-上下文窗口扩展技术)
+  - [Q21: Agent 的信任层？](#q21-agent-的信任层)
+  - [Q22: 2026 Agent 技术关键转折点？](#q22-2026-agent-技术关键转折点)
 
 ---
 
@@ -4700,9 +4717,9 @@ graph LR
 
 ---
 
-# 🔗 四、LangChain 框架篇
+# 🔗 四、框架与工具链篇
 
-> 🎯 **核心考点：** LangChain 核心概念、Chain/Agent/Memory、RAG 实现、LCEL、LangSmith/LangServe、竞品对比 | **题数：** 10 题
+> 🎯 **核心考点：** LangChain/框架/工具链、多 Agent 编排、可观测性、推理引擎 | **题数：** 20 题
 
 ---
 
@@ -4922,9 +4939,437 @@ graph TB
 
 ---
 
+### Q11: 什么是 CrewAI？它如何简化多 Agent 编排？
+
+> 💡 **要点**：CrewAI 是专注于"角色协作"的多 Agent 框架，核心概念是 Crew（团队）、Agent（角色）、Task（任务）
+
+**CrewAI** 是一个以**角色扮演（Role-Playing）**为核心的多 Agent 编排框架。它将 Agent 视为具有特定角色、目标和技能的"团队成员"，通过定义清晰的分工和协作流程完成复杂任务。
+
+```mermaid
+graph TB
+    Crew["Crew 团队"] --> PM["Product Manager<br/>目标: 分析需求"]
+    Crew --> Dev["Developer<br/>目标: 编写代码"]
+    Crew --> QA["QA Engineer<br/>目标: 测试验证"]
+    
+    PM -->|"分配任务"| Dev
+    Dev -->|"提交代码"| QA
+    QA -->|"反馈 Bug"| Dev
+    
+    subgraph "Task 流程"
+        T1["Task 1: 需求分析"] --> T2["Task 2: 编码实现"]
+        T2 --> T3["Task 3: 测试验证"]
+    end
+    
+    Crew --> Process["Process 流程<br/>顺序 / 分层"]
+```
+
+**核心概念：**
+
+| 概念 | 说明 | 代码示例 |
+|------|------|---------|
+| **Agent** | 角色化的智能体，有角色、目标、LLM 配置 | `Agent(role='Developer', goal='Write code')` |
+| **Task** | 要完成的具体任务，可指定 Agent 和工具 | `Task(description='Implement login', agent=dev)` |
+| **Crew** | Agent 和 Task 的集合，定义执行流程 | `Crew(agents=[...], tasks=[...], process=Process.sequential)` |
+| **Process** | 执行流程（顺序/分层） | `Process.sequential` / `Process.hierarchical` |
+| **Tool** | Agent 可使用的工具 | `tool=SearchTool()` |
+
+**CrewAI 的核心优势：**
+- **角色驱动**：每个 Agent 有明确的角色和目标，交互更自然
+- **内置流程**：支持顺序执行和分层管理，开箱即用
+- **任务委托**：高层 Agent 可自动分配任务给下层 Agent
+- **与 LangChain 兼容**：可直接使用 LangChain 的工具和 LLM
+
+**适用场景：** 团队协作模拟、内容创作流水线、软件开发流程自动化、调研分析任务。
+
 ---
 
-> 📖 **本文档覆盖 Agent 面试六大核心模块**：Agent 架构设计、工具调用协议、大模型原理、LangChain 框架、实战项目、前沿趋势
+### Q12: 什么是 AutoGen？它和 CrewAI 有什么不同？
+
+> 💡 **要点**：AutoGen 侧重"对话驱动"的多 Agent 通信，核心是 Agent 间的消息对话
+
+**AutoGen** 由微软推出，核心思路是让多个 Agent 通过**对话（Conversation）**进行协作——Agent 之间发送和接收消息，在对话中完成任务。
+
+```mermaid
+graph TB
+    subgraph "AutoGen 对话模式"
+        Moderator["Moderator<br/>协调者"] -->|"发送任务"| Assistant["Assistant Agent"]
+        Assistant -->|"请求工具"| Tool["Tool Agent"]
+        Tool -->|"返回结果"| Assistant
+        Assistant -->|"需要反馈"| Critic["Critic Agent"]
+        Critic -->|"提出改进"| Assistant
+        Assistant -->|"完成"| Moderator
+    end
+```
+
+**CrewAI vs AutoGen 对比：**
+
+| 维度 | CrewAI | AutoGen |
+|------|--------|---------|
+| **核心思想** | 角色+任务编排 | 对话驱动协作 |
+| **通信方式** | Task 分配 + 结果传递 | Agent 间自由对话 |
+| **灵活性** | 结构化流程 | 灵活但难控制 |
+| **学习成本** | 低（概念直观） | 中（对话流调试复杂） |
+| **适用场景** | 明确分工的任务 | 开放式的对话/讨论 |
+| **Human-in-loop** | 有限 | ✅ 原生支持人类介入 |
+
+**选型建议：** 任务分工明确的场景选 **CrewAI**；需要 Agent 间自由讨论、迭代优化的场景选 **AutoGen**。
+
+---
+
+### Q13: 什么是 Dify？它和传统开发框架有什么不同？
+
+> 💡 **要点**：Dify 是 LLMOps 平台，通过可视化编排降低 AI 应用开发门槛
+
+**Dify** 是一个**开源 LLMOps 平台**，提供可视化的 Prompt 编排、RAG 管道、Agent 定义和监控运维能力。它的定位是"AI 应用的操作系统"。
+
+```mermaid
+graph TB
+    subgraph "Dify 平台"
+        Orchestrator["可视化编排"] --> Prompt["Prompt 管理"]
+        Orchestrator --> RAG["RAG 管道"]
+        Orchestrator --> Agent["Agent 定义"]
+        Orchestrator --> Monitor["监控运维"]
+        
+        Prompt --> P1["版本管理"]
+        Prompt --> P2["变量注入"]
+        Prompt --> P3["A/B 测试"]
+        
+        RAG --> R1["文档上传"]
+        RAG --> R2["自动切块"]
+        RAG --> R3["检索调试"]
+        
+        Agent --> A1["工具注册"]
+        Agent --> A2["模型配置"]
+        Agent --> A3["记忆设置"]
+    end
+```
+
+**Dify vs 传统框架对比：**
+
+| 维度 | LangChain（框架） | Dify（平台） |
+|------|------------------|-------------|
+| **开发方式** | 代码开发 | 可视化拖拽 + 配置 |
+| **目标用户** | 开发者 | 开发者 + 非技术人员 |
+| **灵活性** | 高（代码级控制） | 中（受平台能力限制） |
+| **部署** | 自建 | 平台托管 / Docker |
+| **运维** | 自建 | 内置监控 + 日志 |
+| **插件生态** | pip 包 | 工具市场 |
+| **适用场景** | 核心业务/深度定制 | 快速原型/内部工具 |
+
+**Dify 的核心优势：**
+- **快速原型**：从想法到可用应用只需几十分钟
+- **Prompt 工程可视化**：在线调试 Prompt，版本对比
+- **内置 RAG 引擎**：支持多种文档格式，自动分割检索
+- **API 一键发布**：配置好的应用自动生成 API
+
+---
+
+### Q14: 什么是 Semantic Kernel？它与 LangChain 的主要区别？
+
+> 💡 **要点**：Semantic Kernel 是微软推出的企业级 AI 编排 SDK，深度集成 Azure/.NET 生态
+
+**Semantic Kernel (SK)** 是微软推出的 AI 编排 SDK，支持 C#、Python 和 Java。核心设计理念是将 AI 能力**作为函数（Function）** 集成到传统应用中。
+
+```mermaid
+graph TB
+    SK["Semantic Kernel"] --> Planner["Planner<br/>自动规划"]
+    SK --> Plugins["Plugins<br/>插件系统"]
+    SK --> Memory["Memory<br/>记忆系统"]
+    SK --> Connectors["Connectors<br/>连接器"]
+    
+    Planner --> P1["顺序规划"]
+    Planner --> P2["步骤规划"]
+    Planner --> P3["自定义规划"]
+    
+    Plugins --> PL1["Native Plugin<br/>原生代码"]
+    Plugins --> PL2["Semantic Plugin<br/>LLM Prompt"]
+    
+    Memory --> M1["语义记忆"]
+    Memory --> M2["文本记忆"]
+```
+
+**LangChain vs Semantic Kernel 对比：**
+
+| 维度 | LangChain | Semantic Kernel |
+|------|-----------|----------------|
+| **语言** | Python/JS | C#/Python/Java |
+| **设计理念** | LLM 应用框架 | AI 能力嵌入传统应用 |
+| **核心抽象** | Chain + Agent + Tool | Plugin + Planner + Memory |
+| **规划能力** | 需手动实现 | 内置 Planner 自动编排 |
+| **企业集成** | 需额外配置 | ✅ 原生 Azure AD/Auth |
+| **.NET 支持** | ❌ 有限 | ✅ 首选 |
+| **微软生态** | 独立 | ✅ Azure OpenAI + Copilot |
+
+**选型建议：** 团队以 **C#/.NET** 为主或深度使用 Azure 生态，选 **Semantic Kernel**；Python 技术栈选 **LangChain**。
+
+---
+
+### Q15: 什么是 Pydantic AI？有什么核心优势？
+
+> 💡 **要点**：Pydantic AI 以类型安全为核心，用 Pydantic Model 定义 LLM 的输入输出结构
+
+**Pydantic AI** 是一个基于 Pydantic 的 LLM 应用框架，核心思想是用 **Python 类型系统** 来定义 LLM 的输入 Schema 和输出结构，天然支持类型检查和 IDE 自动补全。
+
+```python
+from pydantic import BaseModel
+from pydantic_ai import Agent
+
+# 用 Pydantic Model 定义输出结构
+class WeatherResult(BaseModel):
+    city: str
+    temperature: float
+    humidity: float
+    description: str
+
+# Agent 的返回类型就是 Pydantic Model
+agent = Agent(
+    'openai:gpt-4o',
+    result_type=WeatherResult,
+    system_prompt='Extract weather info'
+)
+
+result = agent.run_sync('北京今天天气怎么样')
+print(result.data.temperature)  # ✅ 类型安全，IDE 自动补全
+```
+
+**核心优势：**
+
+| 特性 | 说明 |
+|------|------|
+| **类型安全** | 输入输出都有类型定义，编译时检查 |
+| **自动验证** | LLM 输出自动校验和转换 |
+| **IDE 支持** | 完整的类型提示和自动补全 |
+| **依赖注入** | 原生支持服务依赖注入 |
+| **流式支持** | 支持结构化输出的流式返回 |
+
+**对比传统方式：**
+- 传统：LLM 返回 JSON string → 手动解析 → 手动验证
+- Pydantic AI：LLM 返回 → 自动解析 + 自动验证 → 类型安全的数据
+
+---
+
+### Q16: 什么是 Instructor？它和 Pydantic AI 有什么不同？
+
+> 💡 **要点**：Instructor 专注于"结构化数据提取"，核心能力是让 LLM 输出符合 Schema 的可靠数据
+
+**Instructor** 是一个轻量级库，通过**函数调用（Function Calling）** 机制强制 LLM 输出符合 Pydantic Schema 的结构化数据。
+
+```python
+from pydantic import BaseModel
+import instructor
+from openai import OpenAI
+
+client = instructor.from_openai(OpenAI())
+
+class UserInfo(BaseModel):
+    name: str
+    age: int
+    email: str
+
+user = client.chat.completions.create(
+    model="gpt-4o",
+    response_model=UserInfo,
+    messages=[{"role": "user", "content": "张三，28岁，zhangsan@example.com"}]
+)
+
+print(user.name)  # "张三" - 类型安全
+```
+
+**Pydantic AI vs Instructor 对比：**
+
+| 维度 | Pydantic AI | Instructor |
+|------|------------|------------|
+| **定位** | 全功能 AI 框架 | 结构化提取工具 |
+| **核心能力** | Agent + 工具 + 依赖注入 | 强制结构化输出 |
+| **框架依赖** | 独立框架 | 轻量封装（兼容任何框架） |
+| **流式输出** | ✅ 原生支持 | ✅ 支持 |
+| **重试机制** | ✅ 内置自动重试 | ✅ 自动重试+验证 |
+| **适用场景** | 构建完整 AI 应用 | 数据提取/分类/实体识别 |
+
+**选型建议：** 需要完整 Agent 框架选 **Pydantic AI**；只需要可靠的结构化输出选 **Instructor**。
+
+---
+
+### Q17: LLM 可观测性工具有哪些？Langfuse 和 Helicone 的核心对比？
+
+> 💡 **要点**：可观测性 = Tracing + 监控 + 评估 + 成本分析，是生产级 LLM 应用的必备基础设施
+
+```mermaid
+graph TB
+    Observability["LLM 可观测性"] --> Tracing["Tracing<br/>全链路追踪"]
+    Observability --> Monitor["监控<br/>延迟/错误/Token"]
+    Observability --> Eval["评估<br/>质量评分/回归"]
+    Observability --> Cost["成本<br/>Token 统计/预算"]
+    
+    Tracing --> T1["请求追踪"]
+    Tracing --> T2["调用链"]
+    Tracing --> T3["参数记录"]
+    
+    Monitor --> M1["延迟 P50/P99"]
+    Monitor --> M2["错误率"]
+    Monitor --> M3["Token 使用量"]
+    
+    Eval --> E1["LLM-as-Judge"]
+    Eval --> E2["回归测试"]
+    Eval --> E3["人工标注"]
+    
+    Cost --> C1["按模型统计"]
+    Cost --> C2["按用户统计"]
+    Cost --> C3["预算告警"]
+```
+
+**主流 LLM 可观测性工具：**
+
+| 工具 | 开源/商业 | 核心特点 | 适用场景 |
+|------|---------|---------|---------|
+| **Langfuse** | 开源 | 开源友好，Tracing + 评估 + 数据集管理 | 创业团队/自建 |
+| **Helicone** | 商业 | 简单接入，Token 统计 + 成本分析 | 快速集成 |
+| **LangSmith** | 商业(LangChain) | 深度集成 LangChain，回归测试强大 | LangChain 用户 |
+| **Weights & Biases** | 商业 | 实验追踪 + 模型评估 | ML 团队 |
+| **Arize AI** | 商业 | 监控 + 漂移检测 + 调试 | 企业级 |
+
+**Langfuse vs Helicone：**
+
+| 对比维度 | Langfuse | Helicone |
+|---------|---------|----------|
+| **开源** | ✅ 开源可自部署 | ❌ 商业 SaaS |
+| **Tracing** | ✅ 详细 | ✅ 基础 |
+| **评估功能** | ✅ LLM-as-Judge + 数据集 | ❌ 无 |
+| **成本控制** | ❌ 有限 | ✅ 强（预算管理） |
+| **集成方式** | SDK 埋点 | Proxy / SDK |
+| **适合团队** | 需要完整 Observable | 需要快速控制成本 |
+
+---
+
+### Q18: 主流 Agent 框架如何选型？LangChain vs CrewAI vs AutoGen vs Dify 对比？
+
+> 💡 **要点**：选型要综合考虑团队技术栈、场景复杂度、开发效率和运维成本
+
+```mermaid
+graph TD
+    Selection["Agent 框架选型"] --> TechStack{"技术栈?"}
+    TechStack -->|Python| Lang
+    TechStack -->|.NET| SK["Semantic Kernel"]
+    TechStack -->|低代码/非技术| Dify
+    
+    Lang --> Complexity{"场景复杂度?"}
+    Complexity -->|简单 RAG/问答| LangChain["LangChain<br/>快速开发"]
+    Complexity -->|多 Agent 编排| CrewAI["CrewAI<br/>角色分工"]
+    Complexity -->|Agent 对话| AutoGen["AutoGen<br/>对话驱动"]
+    Complexity -->|结构化输出| Pydantic["Pydantic AI<br/>类型安全"]
+    
+    style Selection fill:#e3f2fd
+```
+
+**综合对比表：**
+
+| 维度 | LangChain | CrewAI | AutoGen | Dify | Semantic Kernel |
+|------|-----------|--------|---------|------|----------------|
+| **定位** | 通用 LLM 框架 | 多 Agent 编排 | 对话式 Multi-Agent | LLMOps 平台 | 企业 AI SDK |
+| **上手难度** | 中 | 低 | 中 | 低 | 中 |
+| **灵活性** | 高 | 中 | 中 | 低 | 高 |
+| **多 Agent** | 需手动 | ✅ 原生 | ✅ 原生 | 有限 | 有限 |
+| **RAG 能力** | ✅ 强 | 需集成 | 需集成 | ✅ 内置 | ✅ 中 |
+| **监控运维** | LangSmith | 自建 | 自建 | ✅ 内置 | Azure Monitor |
+| **社区生态** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| **生产案例** | 最多 | 增长中 | 微软内部 | 中小企业 | 企业客户 |
+
+**选型决策原则：**
+1. **第一优先级**：团队技术栈（Python → LangChain/Pydantic AI, .NET → SK）
+2. **第二优先级**：场景需求（多 Agent → CrewAI/AutoGen, 简单 RAG → LangChain）
+3. **第三优先级**：运维能力（缺运维 → Dify, 有团队 → 自建框架）
+4. **通用建议**：**先用 LangChain 做原型**，复杂了拆出 CrewAI/AutoGen，需要产品化上 Dify
+
+---
+
+### Q19: 什么是 vLLM？它是如何优化 LLM 推理性能的？
+
+> 💡 **要点**：vLLM 通过 PagedAttention 和高效 KV Cache 管理，将 LLM 推理吞吐提升 2-4 倍
+
+**vLLM** 是一个高吞吐、低延迟的 LLM 推理引擎，核心创新是 **PagedAttention**——借鉴操作系统虚拟内存的分页思想来管理 KV Cache。
+
+```mermaid
+graph TB
+    subgraph "传统 KV Cache"
+        T1["Token 1"] --> T2["Token 2"]
+        T2 --> T3["Token 3"]
+        T3 --> T4["..."]
+        Note1["❌ 预分配固定大小<br/>❌ 内存碎片严重<br/>❌ 利用率仅 20-40%"]
+    end
+    
+    subgraph "vLLM PagedAttention"
+        P1["Page 1"] --> P2["Page 2"]
+        P2 --> P3["Page 3"]
+        P3 --> P4["Page N"]
+        Note2["✅ 按需分配 Page<br/>✅ 非连续内存<br/>✅ 利用率提升至 95%+"]
+    end
+    
+    style Note1 fill:#ffebee
+    style Note2 fill:#e8f5e9
+```
+
+**vLLM 核心优化技术：**
+
+| 技术 | 原理 | 效果 |
+|------|------|------|
+| **PagedAttention** | KV Cache 分页管理，非连续内存 | 内存利用率 95%+，吞吐提升 2-4x |
+| **Continuous Batching** | 动态添加/移除请求到批次 | 满负载时吞吐提升 2x+ |
+| **Prefix Caching** | 公共前缀 KV Cache 复用 | 共享 Prompt 场景加速 50%+ |
+| **Speculative Decoding** | 用小模型草稿 + 大模型验证 | 延迟降低 1.5-2x（实验性） |
+| **Tensor Parallelism** | 张量并行多卡推理 | 支持超大规模模型推理 |
+
+**vLLM vs 其他推理框架：**
+
+| 框架 | 语言 | 核心优势 | 局限 |
+|------|------|---------|------|
+| **vLLM** | Python | 吞吐最高，PagedAttention | CUDA 依赖 |
+| **TGI (HuggingFace)** | Rust | HF 深度集成，生态好 | 吞吐略逊于 vLLM |
+| **SGLang** | Python | 结构化生成，RadixAttention | 较新，社区小 |
+| **llama.cpp** | C++ | CPU 友好，边缘部署 | GPU 推理效率低 |
+| **Ollama** | Go | 用户友好，开箱即用 | 定制化有限 |
+
+---
+
+### Q20: SGLang 的核心创新是什么？和 vLLM 有什么不同？
+
+> 💡 **要点**：SGLang 提出 RadixAttention 和结构化生成语言，专为复杂 LLM 推理模式优化
+
+**SGLang** 是一个结构化 LLM 推理框架，核心创新包括 **RadixAttention**（前缀树缓存的注意力机制）和 **结构化生成语言**。
+
+```python
+# SGLang 的结构化生成语言示例
+@function
+def multi_turn_qa(s, question, context):
+    s += "Question: " + question
+    s += "Context: " + context
+    s += "Answer: "
+    s += gen(  # 结构化生成约束
+        model="llama",
+        max_tokens=256,
+        stop=["\n", "Question:"],
+        regex="(Yes|No|Maybe) because.*"  # 正则约束
+    )
+```
+
+**vLLM vs SGLang 对比：**
+
+| 维度 | vLLM | SGLang |
+|------|------|--------|
+| **核心创新** | PagedAttention | RadixAttention + 结构化语言 |
+| **缓存机制** | 前缀 KV 缓存 | 前缀树缓存（更细粒度） |
+| **结构化生成** | ❌ 不支持 | ✅ 原生支持 regex/JSON |
+| **多模态** | 有限 | ✅ 原生多模态 |
+| **Agent 场景** | 通用 | ✅ 专为 Agent 优化 |
+| **开源时间** | 2023 (成熟) | 2024 (发展中) |
+| **适用场景** | 通用高并发推理 | Agent/复杂结构化推理 |
+
+**选型建议：** 通用推理场景（聊天、RAG）用 **vLLM**；Agent 场景、需要结构化输出的用 **SGLang**。
+
+---
+
+---
+
+> 📖 **本文档覆盖 Agent 面试六大核心模块**：Agent 架构设计、工具调用协议、大模型原理、框架与工具链、实战项目、前沿趋势
 
 > 🎯 **整理时间**：2026 年 5 月 | 📚 **持续更新中**
 
@@ -5751,7 +6196,7 @@ graph TB
 
 # 🔮 六、前沿趋势篇
 
-> 🎯 **核心考点：** 2025-2026 技术趋势、新兴协议、行业落地 | **题数：** 15 题
+> 🎯 **核心考点：** 2025-2026 技术趋势、新兴协议、行业落地、推理加速、Agentic RAG、信任层 | **题数：** 22 题
 
 ---
 
@@ -6250,9 +6695,399 @@ graph TB
 
 ---
 
+### Q16: Prompt 压缩和优化技术有哪些？Token 节省的实践经验？
+
+> 💡 **要点**：Prompt 压缩是降低 Token 成本和延迟的关键工程手段，主流方法包括 LLMLingua、选择性压缩和结构化压缩
+
+**Prompt 压缩的核心动机：** 长 Prompt 导致 Token 成本高、推理延迟长、中间信息丢失（Lost in the Middle）。压缩旨在**保留核心语义**的同时**大幅减少 Token 数**。
+
+```mermaid
+graph TB
+    Compression["Prompt 压缩技术"] --> TokenRemoval["Token 级删除"]
+    Compression --> Summary["摘要压缩"]
+    Compression --> Selective["选择性压缩"]
+    Compression --> Structural["结构化压缩"]
+    
+    TokenRemoval --> TR1["LLMLingua<br/>逐 Token 重要性评分"]
+    TokenRemoval --> TR2["删除低分 Token"]
+    TokenRemoval --> TR3["压缩比: 2-5x"]
+    
+    Summary --> S1["LLM 自动摘要"]
+    Summary --> S2["保留关键信息"]
+    Summary --> S3["压缩比: 5-10x"]
+    
+    Selective --> SE1["只保留关键句子"]
+    Selective --> SE2["句子重要性排序"]
+    Selective --> SE3["压缩比: 2-3x"]
+    
+    Structural --> ST1["JSON/表格提取"]
+    Structural --> ST2["模板化去除冗余"]
+    Structural --> ST3["压缩比: 3-8x"]
+```
+
+**主流压缩方案对比：**
+
+| 方案 | 原理 | 压缩比 | 信息损失 | 额外成本 |
+|------|------|--------|---------|---------|
+| **LLMLingua** | 小模型评分 Token 重要性 | 2-5x | 低 | 小模型推理 |
+| **Selective Context** | 句子级重要性排序截断 | 2-3x | 中 | 无 |
+| **LLM 摘要** | LLM 压缩历史对话 | 5-10x | 中高 | LLM 调用 |
+| **结构化提取** | 提取关键实体/数据 | 3-8x | 低 | 少量 LLM 调用 |
+| **KV Cache 复用** | 共享前缀 KV 缓存 | 不定 | 无损 | 缓存存储 |
+
+**工程实践经验：**
+
+| 场景 | 推荐方案 | 预期节省 |
+|------|---------|---------|
+| **长对话历史** | LLM 摘要压缩 | Token 减少 70%+ |
+| **RAG 上下文** | LLMLingua 选择性压缩 | Token 减少 50-60% |
+| **System Prompt** | 结构优化 + 模板化 | Token 减少 30% |
+| **Few-shot 示例** | 动态示例选择，不全部注入 | Token 减少 40-80% |
+| **多工具描述** | 按需注入工具描述 | Token 减少 50%+ |
+
+---
+
+### Q17: 推理加速技术有哪些？Speculative Decoding 的原理是什么？
+
+> 💡 **要点**：Speculative Decoding 用"小模型草稿 + 大模型验证"突破自回归生成的串行瓶颈，实现 1.5-3x 加速
+
+**核心推理加速技术对比：**
+
+```mermaid
+graph TB
+    Acceleration["推理加速技术"] --> PD["PagedAttention<br/>KV 缓存优化"]
+    Acceleration --> CP["Continuous Batching<br/>动态批处理"]
+    Acceleration --> SD["Speculative Decoding<br/>推测解码"]
+    Acceleration --> QUANT["量化加速<br/>INT4/INT8"]
+    Acceleration --> FLASH["Flash Attention<br/>注意力计算优化"]
+    
+    SD --> SD1["小模型快速生成 K 个 Token<br/>(草稿 Draft)"]
+    SD --> SD2["大模型并行验证<br/>(验证 Verify)"]
+    SD --> SD3["接受正确草稿<br/>拒绝错误重新生成"]
+    SD --> SD4["加速比: 1.5-3x"]
+    
+    style SD fill:#e8f5e9
+```
+
+**Speculative Decoding 原理：**
+
+```
+传统方式（串行）:
+  LLM: Token1 → Token2 → Token3 → Token4  (4 步推理)
+  
+推测解码（并行）:
+  Step 1: 小模型快速生成 [Token1, Token2, Token3, Token4] (草稿)
+  Step 2: 大模型并行验证 4 个 Token (只需 1 步)
+  Step 3: 接受正确草稿 Token，从第一个错误处重新生成
+  → 理想情况下: 4 Token 只需 2 步 (1 草稿 + 1 验证)
+```
+
+**各加速技术的适用场景和收益：**
+
+| 技术 | 延迟降低 | 吞吐提升 | 适用场景 | 实现难度 |
+|------|---------|---------|---------|---------|
+| **PagedAttention** | 30-50% | 2-4x | 高并发推理 | 低（用 vLLM） |
+| **Continuous Batching** | - | 1.5-2x | 在线服务 | 中 |
+| **Speculative Decoding** | 40-70% | - | 低延迟场景 | 高 |
+| **INT4 量化** | 20-40% | 1.5-2x | 资源受限 | 低 |
+| **Flash Attention** | 20-30% | 1.2-2x | 长序列 | 低（内置支持） |
+| **KV Cache 量化** | 10-20% | 1.3-1.5x | 长对话场景 | 中 |
+
+**实践组合推荐：** **vLLM + Flash Attention + INT4 量化** 是性价比最高的方案；需要极致低延迟时叠加 **Speculative Decoding**。
+
+---
+
+### Q18: AI Coding 工具（Cursor、Copilot、Devin 等）的技术原理和演进趋势？
+
+> 💡 **要点**：AI Coding 工具正从"代码补全"向"自主编程 Agent"演进，底层技术包括 RAG、Agent 和定制模型
+
+**AI Coding 工具代际演进：**
+
+```mermaid
+graph LR
+    Gen1["Gen1<br/>代码补全<br/>Copilot/TabNine"] --> Gen2["Gen2<br/>对话式编程<br/>Cursor/ChatGPT"]
+    Gen2 --> Gen3["Gen3<br/>工程级 Agent<br/>Devin/OpenHands"]
+    Gen3 --> Gen4["Gen4<br/>自主开发<br/>未来形态"]
+    
+    Gen1 --> G1["Next Token Prediction<br/>单行/多行补全"]
+    Gen2 --> G2["多文件编辑<br/>上下文理解"]
+    Gen3 --> G3["Issue→PR<br/>全流程自动化"]
+    Gen4 --> G4["需求→部署<br/>完全自主"]
+```
+
+**主流 AI Coding 工具对比：**
+
+| 工具 | 代际 | 核心能力 | 技术原理 | IDE 支持 |
+|------|------|---------|---------|---------|
+| **GitHub Copilot** | Gen1 | 代码补全 + 对话 | 定制 Codex 模型 + RAG | 多 IDE |
+| **Cursor** | Gen2 | 多文件编辑 + Agent | Claude/GPT + 索引 + Agent 循环 | 独立 IDE |
+| **Windsurf (Codeium)** | Gen2 | 上下文感知补全 | 专有模型 + Agent | 多 IDE |
+| **Devin** | Gen3 | 工程级 Agent | 多 Agent + 沙箱 + Planner | 独立平台 |
+| **OpenHands** | Gen3 | 开源 Agent 替代 | SWE-agent + 沙箱 | 开源 |
+| **Augment** | Gen2 | 全仓库理解 | Code Graph + RAG | 多 IDE |
+
+**核心技术原理：**
+
+```
+Cursor 的工作流程:
+1. 索引阶段: 对整个代码库建立向量索引 + 代码图谱
+2. 上下文理解: 将当前文件 + 相关文件注入 Context
+3. Agent 循环: 用户请求 → 理解 → 检索 → 生成 → 修改文件
+4. Diff 应用: 将生成的代码变更应用到项目
+
+Devin 的工作流程 (更复杂):
+1. Plan: 理解 Issue/需求 → 制定计划
+2. Code: 类似 Agent 的编码循环
+3. Test: 自动运行测试验证
+4. Debug: 失败则反思重试
+5. PR: 自动创建 Pull Request
+```
+
+**演进趋势：**
+- **上下文更大**：从当前文件 → 相关文件 → 全仓库索引
+- **自主性更强**：从补全推荐 → 对话生成 → Agent 自动完成
+- **验证闭环**：从无验证 → 编译检查 → 测试验证 → 部署
+- **多模态融合**：从纯代码 → 设计稿 → 前端代码生成
+
+---
+
+### Q19: 什么是 Agentic RAG？与经典 RAG 的核心区别？
+
+> 💡 **要点**：Agentic RAG 将 Agent 的规划/推理能力注入 RAG 流程，实现"按需检索、自适应推理"
+
+**Agentic RAG** 是在经典 RAG 基础上引入 Agent 的自主决策能力——Agent 决定**何时检索、检索什么、是否需要多轮检索、是否需要调用其他工具**。
+
+```mermaid
+graph TB
+    subgraph "经典 RAG"
+        Q1["问题"] --> R1["固定检索一次"]
+        R1 --> G1["LLM 生成"]
+        G1 --> A1["直接回答"]
+        Note1["❌ 单次检索<br/>❌ 无反思机制"]
+    end
+    
+    subgraph "Agentic RAG"
+        Q2["问题"] --> Agent
+        Agent --> Decide{"是否需要检索?"}
+        Decide -->|是| Retrieve["检索"]
+        Retrieve --> Evaluate{"结果是否充分?"}
+        Evaluate -->|否| Rewrite["改写查询<br/>再次检索"]
+        Evaluate -->|是| Generate["生成回答"]
+        Decide -->|否| Direct["直接回答"]
+        Agent -->|额外需求| Tools["调用其他工具<br/>计算/搜索/API"]
+    end
+    
+    style Note1 fill:#ffebee
+    style Agent fill:#e3f2fd
+```
+
+**经典 RAG vs Agentic RAG 对比：**
+
+| 维度 | 经典 RAG | Agentic RAG |
+|------|---------|-------------|
+| **检索时机** | 固定（每次必定检索） | **按需**（判断是否需要） |
+| **检索次数** | 单次 | **多轮**（可重复检索） |
+| **查询优化** | 无 | **查询重写**、多角度生成 |
+| **结果反思** | 无 | **评估结果质量**，不满意则重试 |
+| **工具使用** | 只有检索 | **多种工具**（检索+搜索+代码+...） |
+| **灵活度** | 低（固定流程） | **高**（Agent 自主决策） |
+| **适用场景** | 简单问答 | 复杂多步推理、交叉验证 |
+| **代表实现** | RetrievalQA Chain | Self-RAG、Corrective RAG、Agent RAG |
+
+**Agentic RAG 的典型工作流：**
+
+```
+用户提问 → Agent 分析:
+  1. 判断: "这个问题需要外部知识吗？"
+     - 不需要 → 直接回答
+     - 需要 → 进入检索流程
+  
+  2. 检索: "如何最好地找到相关信息？"
+     - 重写查询 → 向量检索
+     - 可能切换为互联网搜索
+     - 可能同时多路检索
+  
+  3. 评估: "检索结果充分吗？"
+     - 充分 → 基于结果生成
+     - 不充分 → 回到步骤 2，改进查询
+  
+  4. 综合: 结合多轮检索结果，生成最终回答
+```
+
+**工程落地建议：** 先从经典 RAG 开始建立基线，再逐步加入 Agent 能力（查询重写 → 结果评估 → 多轮检索 → 多工具），**不要一开始就上完整的 Agentic RAG**。
+
+---
+
+### Q20: 什么是 LLM 的"上下文窗口扩展"技术？RoPE 外推和位置插值的原理？
+
+> 💡 **要点**：上下文窗口扩展让模型在长序列上保持推理质量，核心方法包括位置插值（PI）、NTK-aware 缩放和 YaRN
+
+**问题背景：** 大多数 LLM 训练时的上下文窗口是固定的（如 4K、8K），直接输入更长的序列会导致注意力分数分布异常、位置编码外推失败。
+
+```mermaid
+graph TB
+    Extend["上下文窗口扩展方法"] --> PI["位置插值<br/>Position Interpolation"]
+    Extend --> NTK["NTK-aware<br/>神经切线核缩放"]
+    Extend --> YaRN["YaRN<br/>改进 RoPE 扩展"]
+    Extend --> LongRoPE["LongRoPE<br/>渐进式扩展"]
+    
+    PI --> P1["将长序列位置<br/>均匀压缩到<br/>原始位置范围"]
+    PI --> P2["如: 32K 位置<br/>缩放到 [0, 8K]"]
+    PI --> P3["简单有效<br/>但高频信息丢失"]
+    
+    YaRN --> Y1["保留高频旋转<br/>拉伸低频旋转"]
+    YaRN --> Y2["关键改进:<br/>保留局部位置感知"]
+    YaRN --> Y3["目前最优方案"]
+```
+
+**各方法对比：**
+
+| 方法 | 原理 | 最大扩展 | 微调需求 | 信息损失 |
+|------|------|---------|---------|---------|
+| **Direct Extrapolation** | 直接用未训练的位置 | 1.2-1.5x | 无 | 高（质量快速下降） |
+| **Position Interpolation (PI)** | 线性压缩位置索引 | 8-32x | 少量微调 | 低 |
+| **NTK-aware Scaling** | 高频不变，低频缩放 | 8-32x | 无或少量 | 极低 |
+| **YaRN** | 改进 NTK + 注意力温度 | 32-128x | 少量微调 | 极低 |
+| **LongRoPE** | 渐进式扩展 + 位置调整 | 512x+ | 逐步微调 | 低 |
+| **Ring Attention** | 分布式环状注意力 | 无限 | 无 | 无（高效分块） |
+
+**工程实践：**
+- **无需微调**：使用 YaRN 或 NTK-aware 可直接扩展 2-4x（如 4K→16K）
+- **需要微调**：NTK + 少量长序列微调可扩展到 32K+
+- **极致扩展**：LongRoPE + Ring Attention 可实现百万级上下文
+
+---
+
+### Q21: 什么是 AI Agent 的"信任层"？如何构建可信任的 Agent 系统？
+
+> 💡 **要点**：信任层是 Agent 在关键决策点上设置的"检查点"，通过透明化、可验证、可干预的机制建立用户信任
+
+**信任层（Trust Layer）** 是 Agent 系统中确保决策过程**透明、可验证、可控制**的一系列机制。它是用户愿意将任务交给 Agent 的关键前提。
+
+```mermaid
+graph TB
+    Trust["Agent 信任层"] --> Transparency["透明化"]
+    Trust --> Verification["可验证"]
+    Trust --> Control["可控制"]
+    Trust --> Audit["可审计"]
+    
+    Transparency --> T1["思考过程公开"]
+    Transparency --> T2["工具调用可视化"]
+    Transparency --> T3["置信度显示"]
+    
+    Verification --> V1["引用信息来源"]
+    Verification --> V2["中间结果展示"]
+    Verification --> V3["步骤可勾选确认"]
+    
+    Control --> C1["关键步骤需确认"]
+    Control --> C2["随时可中止操作"]
+    Control --> C3["回滚上个操作"]
+    
+    Audit --> A1["完整轨迹日志"]
+    Audit --> A2["操作可回放"]
+    Audit --> A3["定期合规审查"]
+    
+    style Trust fill:#e3f2fd
+```
+
+**信任级别的递进设计：**
+
+| 信任等级 | 行为策略 | 用户感知 | 适用场景 |
+|---------|---------|---------|---------|
+| **L0-无信任** | 完全黑盒，不展示过程 | Agent 不可预测 | 简单辅助 |
+| **L1-透明** | 展示思考过程和工具调用链 | 知道 Agent 在做什么 | 信息查询 |
+| **L2-可验证** | 提供引用来源和中间结果 | 可验证答案正确性 | 知识问答 |
+| **L3-可干预** | 关键操作需用户确认 | 对结果有控制感 | 支付/删除 |
+| **L4-高度信任** | 无需确认，事后可回滚 | 信任已建立 | 个人助理 |
+
+**实际工程实现：**
+
+```python
+class TrustLayer:
+    """信任层实现示例"""
+    
+    async def execute_with_trust(self, task: str, trust_level: int):
+        # 1. 透明化：流式输出思考过程
+        async for thought in self.agent.think_stream(task):
+            await self.push_to_ui("thought", thought)
+        
+        # 2. 工具调用前确认（L3+）
+        tool_call = self.agent.get_next_tool_call()
+        if trust_level >= 3 and tool_call.risk == "high":
+            confirmed = await self.ask_user_confirm(tool_call)
+            if not confirmed:
+                return {"status": "cancelled"}
+        
+        # 3. 执行并展示引用
+        result = await self.agent.execute(tool_call)
+        await self.push_to_ui("reference", result.sources)
+        
+        # 4. 输出时标注置信度
+        final_answer = result.answer
+        await self.push_to_ui("confidence", result.confidence_score)
+        
+        return final_answer
+```
+
+---
+
+### Q22: 如何看待 2026 年 Agent 技术的关键转折点和新范式？
+
+> 💡 **要点**：2026 年 Agent 技术正经历从"工具调用"到"自主代理"的范式转变，关键转折点包括推理模型成熟、协议标准化、评估体系完善
+
+**2026 年 Agent 技术的七大关键趋势：**
+
+```mermaid
+graph TB
+    subgraph "2026 关键转折点"
+        T1["推理模型成熟<br/>o1/R1 系列普及"]
+        T2["MCP 协议标准化<br/>工具生态爆发"]
+        T3["Agent 评估体系<br/>SWE-bench 等成熟"]
+        T4["端侧 Agent 可用<br/>小模型+量化"]
+        T5["多模态 Agent<br/>视觉+语音融合"]
+        T6["自主 Agent 崛起<br/>从辅助到自主"]
+        T7["Agent Economy<br/>Agent 间交易"]
+    end
+    
+    T1 --> Impact1["Agent 可靠性大幅提升<br/>复杂任务成功率 > 80%"]
+    T2 --> Impact2["工具开发门槛降低<br/>MCP Server 快速构建"]
+    T3 --> Impact3["Agent 质量可量化<br/>企业敢于采用"]
+    T4 --> Impact4["个人 Agent 普及<br/>隐私安全可控"]
+```
+
+**各趋势的产业影响：**
+
+| 趋势 | 技术成熟度 | 产业影响 | 典型信号 |
+|------|----------|---------|---------|
+| **推理模型成熟** | ⭐⭐⭐⭐⭐ | Agent 可靠性质变，复杂任务成功率从 50%→80%+ | o3、DeepSeek-R2、Claude 推理升级 |
+| **MCP 标准化** | ⭐⭐⭐⭐ | 工具生态爆发，MCP Server 从千→百万级 | MCP Registry、Gateway 上线 |
+| **Agent 评估体系** | ⭐⭐⭐ | 企业可量化 Agent ROI，敢用于生产 | SWE-bench/GAIA 成为行业标准 |
+| **端侧 Agent** | ⭐⭐⭐⭐ | 个人 Agent 在手机/PC 上运行 | Apple Intelligence、高通 AI Hub |
+| **多模态 Agent** | ⭐⭐⭐⭐ | Agent 从"读文本"到"看屏幕/听语音" | GPT-5、Gemini 2.0 |
+| **自主 Agent** | ⭐⭐ | 从"问答助手"到"自动完成任务" | Devin 类工具进入企业 |
+| **Agent Economy** | ⭐ | Agent 间服务和价值交换 | MCP Registry、Agent 交易平台 |
+
+**范式转变的核心认知：**
+
+```
+2024 年：Agent = LLM + Function Calling + ReAct
+2025 年：Agent = LLM + MCP + Multi-Agent
+2026 年：Agent = Reasoning Model + MCP/A2A + Evaluator + Trust Layer
+```
+
+**Agent 开发者的应对策略：**
+1. **紧跟推理模型**：尝试 o1/R1 等推理模型替代传统 GPT-4 作为 Agent 大脑
+2. **拥抱 MCP 生态**：将工具封装为 MCP Server，无需依赖特定框架
+3. **建立评估体系**：尽早建立 Agent 评估 Pipeline，量化 Agent 质量
+4. **关注端侧部署**：关注小模型和端侧推理技术的发展
+5. **设计信任层**：在 Agent 中内置透明化和人工干预机制
+6. **投资可观测性**：没有观测就没有改进，Tracing 是 Agent 工程的基石
+
+---
+
 [🔝 返回目录](#top)
 
 ---
 
-> 📖 **实战项目篇和前沿趋势篇为新增内容**，补充了原题库在工程实践和技术趋势方面的不足
-> 🎯 **建议结合前四篇使用**，形成完整的知识体系
+> 📖 **本文档覆盖 Agent 面试六大核心模块**：Agent 架构设计、工具调用协议、大模型原理、框架与工具链、实战项目、前沿趋势
+> 🎯 **建议结合全篇使用**，形成完整的 Agent 知识体系
