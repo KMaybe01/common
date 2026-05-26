@@ -65,7 +65,7 @@ graph LR
 |   |-- 02-简历.md
 |   +-- 03-简历问题.md
 |
-|-- 📁 S5-AI/                🟣 AI 阶段（00-10）
+|-- 📁 S5-AI/                🟣 AI 阶段（00-17）
 |   |-- 01-AI前端开发体系化学习指南.md
 |   |-- 02-入门期-AI聊天室.md
 |   |-- 03-进阶期-RAG应用.md
@@ -76,7 +76,14 @@ graph LR
 |   |-- 08-技术选型对比合集.md
 |   |-- 09-开发实战与架构指南.md
 |   |-- 10-附录与参考资料.md
-|   |-- 11-Agent面试题.md
+|   |-- 11-Agent面试题.md (总索引)
+|   |-- 11-Agent面试题-基础篇.md
+|   |-- 12-Agent面试题-工具协议篇.md
+|   |-- 13-Agent面试题-大模型基础篇.md
+|   |-- 14-Agent面试题-框架工具链篇.md
+|   |-- 15-Agent面试题-实战项目篇.md
+|   |-- 16-Agent面试题-前沿趋势篇.md
+|   |-- README.md
 |
 +-- 📄 README.md             ← 导航文件
 ```
@@ -197,23 +204,24 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 
 ---
 
-### 🟣 S5 AI 前沿（00-10）
+### 🟣 S5 AI 前沿（00-17）
 
-> **目标：** 掌握 AI Agent 架构与 AI 辅助前端开发体系，从入门到专家期。 **建议用时：** 1-2 周
+> **目标：** 掌握 AI Agent 架构与 AI 辅助前端开发体系，从入门到专家期。 **建议用时：** 2-3 周
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [01-AI前端开发体系化学习指南.md](S5-AI/01-AI前端开发体系化学习指南.md) | 6 阶段学习路径、Prompt Engineering、LangGraph 工作流、Ollama 本地部署、高级 RAG 模式、AI 测试与 CI/CD、成本估算、架构模式对比、Next.js AI 架构 |
-| [02-入门期-AI聊天室.md](S5-AI/02-入门期-AI聊天室.md) | 基于 Vite + React 搭建 AI Chat、Stream 流式渲染、Markdown 渲染、Prompt 技巧 |
-| [03-进阶期-RAG应用.md](S5-AI/03-进阶期-RAG应用.md) | 检索增强生成、向量库集成、Embedding 策略、Rerank 排序、知识库构建 |
-| [04-深耕期-端侧推理.md](S5-AI/04-深耕期-端侧推理.md) | WebGPU/WebNN、ONNX Runtime、Transformers.js、模型量化、本地 LLM 部署 |
-| [05-专家期-Agent设计.md](S5-AI/05-专家期-Agent设计.md) | Agent 范式（ReAct/Plan-and-Execute/Reflection）、记忆机制、Multi-Agent、Function Calling、MCP/A2A、AI Gateway、Transformer 原理、LoRA/DPO/PPO、KV Cache |
-| [06-生产化与工程化.md](S5-AI/06-生产化与工程化.md) | AI 应用 CI/CD、监控与可观测性、成本控制、A/B 测试、安全与合规 |
-| [07-前沿技术与生态.md](S5-AI/07-前沿技术与生态.md) | 多模态模型、AI 编程助手演进、Agent 互操作协议、AI 芯片趋势 |
+| [01-AI前端开发体系化学习指南.md](S5-AI/01-AI前端开发体系化学习指南.md) | Transformer 架构深度剖析、RLHF/DPO 对齐、多模态融合、大规模 RAG 设计、多 Agent 编排、AI 可观测性、FinOps 成本治理（总纲 + 技术原理深究） |
+| [02-入门期-AI聊天室.md](S5-AI/02-入门期-AI聊天室.md) | LLM 核心参数、流式/同步调用、Vercel AI SDK、BPE Tokenizer 原理、SSE 协议详解、上下文窗口管理策略 |
+| [03-进阶期-RAG应用.md](S5-AI/03-进阶期-RAG应用.md) | RAG 全景架构、LangChain 流水线、混合检索 (RRF)、语义分块、查询重写 (HyDE)、检索质量评估体系 |
+| [04-深耕期-端侧推理.md](S5-AI/04-深耕期-端侧推理.md) | Transformers.js Pipeline、WebGPU Compute Shader (WGSL)、Buffer 复用池、模型量化 (INT4/AWQ/GPTQ)、离线缓存 |
+| [05-专家期-Agent设计.md](S5-AI/05-专家期-Agent设计.md) | Agent 架构 (ReAct/PE/Reflection)、工具注册系统、多 Agent 协作 (Orchestrator/辩论)、Agent 通信协议、记忆管理、HITL 人机协同 |
+| [06-生产化与工程化.md](S5-AI/06-生产化与工程化.md) | A/B 测试框架、灰度发布与回滚、生产监控仪表盘、Token Bucket 限流、Content Guardrails、SLA/SLO 定义 |
+| [07-前沿技术与生态.md](S5-AI/07-前沿技术与生态.md) | MCP 协议深度解析 (JSON-RPC/工具发现/资源订阅)、A2A Agent Card 规范、AI 生成 UI (v0/Bolt)、Agentic Web、WASM AI 推理 |
 | [08-技术选型对比合集.md](S5-AI/08-技术选型对比合集.md) | 模型/框架/工具链选型对比、开源 vs 商业方案、成本效益分析 |
 | [09-开发实战与架构指南.md](S5-AI/09-开发实战与架构指南.md) | 完整项目架构、代码组织、调试技巧、性能调优、最佳实践 |
 | [10-附录与参考资料.md](S5-AI/10-附录与参考资料.md) | 推荐阅读、学习资源、工具清单、术语表 |
-| [11-Agent面试题.md](S5-AI/11-Agent面试题.md) | AI Agent 面试高频题、MCP/A2A/Function Calling、RAG/端侧推理、Agent 范式与安全 |
+| [11-Agent面试题.md](S5-AI/11-Agent面试题.md) | **总索引** → 6 模块拆分 199 题：基础篇(32题)、工具协议(16题)、大模型基础(84题)、框架工具链(20题)、实战项目(25题)、前沿趋势(22题) |
+| [11~16-Agent面试题库](S5-AI/11-Agent面试题-基础篇.md) | Agent 基础/工具协议/大模型基础/框架工具链/实战项目/前沿趋势 — 每题含 💡要点+Mermaid图+对比表+代码示例 |
 
 ---
 
@@ -226,8 +234,9 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 | 第 3-4 周 | 🌳 S2-框架深入/ → 选主攻框架精读 | 复习 S1 错题 |
 | 第 5-6 周 | 🌿 S3-进阶提升/ → 01+02+03 系统学习 | Code Top 100 2-3 题/日 |
 | 第 7-8 周 | 🏆 S4-面试冲刺/ → 01+03 反复刷 | Code Top 100 1 题/日 |
-| 第 9-10 周 | 🤖 S5-AI/ → 01+02+05+11 核心必读，其余选读 | 关注 AI 工具更新 |
+| 第 9-10 周 | 🤖 S5-AI/ → 01+05+06+11~13 核心必读，其余选读 | 关注 AI 工具更新 |
+| 第 11-12 周 | 🤖 S5-AI/ → 14~16 面试题库冲刺 + 08 选型对比 | 模拟面试自测 |
 
 ---
 
-**🚀 祝面试顺利！** 按阶段逐步推进，每天坚持代码输出 + 算法，9 周拿下 offer 💪
+**🚀 祝面试顺利！** 按阶段逐步推进，每天坚持代码输出 + 算法，12 内 周拿下 offer 💪
