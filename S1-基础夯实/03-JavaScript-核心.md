@@ -2,7 +2,74 @@
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
 > JavaScript 核心知识全面梳理，涵盖数据类型、闭包、原型链、异步编程、ES6+ 等核心考点
-> 📌 浏览器 Web API、手写实现、代码输出题已移至 [`03-JavaScript-WebAPI.md`](./03-JavaScript-WebAPI.md) → 侧重点拨跳转
+> 📌 浏览器 Web API、手写实现、代码输出题已移至 [`04-JavaScript-WebAPI.md`](./04-JavaScript-WebAPI.md) → 侧重点拨跳转
+
+---
+
+## 📈 ECMAScript / JavaScript 版本演进史
+
+> JavaScript 从诞生时 10 天设计的"玩具语言"，演变为全球最广泛使用的编程语言。
+
+### ECMAScript 版本时间线
+
+```mermaid
+timeline
+    title ECMAScript 版本演进（1997—2026）
+    1997-1999 : ES1（1997）语言诞生
+              : ES2（1998）ISO 标准
+              : ES3（1999）try/catch/正则
+    2000-2008 : ES4 流产（过于激进）
+              : AJAX 兴起（2005）
+              : jQuery 时代（2006）
+    2009-2015 : ES5（2009）严格模式/JSON
+              : ES6/ES2015（2015）重大变革
+              : let/const/class/Promise/模块
+    2016-2020 : ES2016（async/await）
+              : ES2017（Object.entries/values）
+              : ES2018（rest/spread/异步迭代）
+              : ES2019（flat/flatMap）
+              : ES2020（可选链/空值合并/globalThis）
+    2021-2024 : ES2021（replaceAll/逻辑赋值）
+              : ES2022（类字段/顶层 await）
+              : ES2023（数组 toSorted/toReversed）
+              : ES2024（Records/Tuples/正则 v 标志）
+    2025-2026 : ES2025（模式匹配/装饰器稳定）
+              : ES2026（显式资源管理/管道运算符草案）
+```
+
+### 关键版本对比
+
+| 版本 | 年份 | 核心新特性 | 对前端的影响 |
+|------|------|-----------|-------------|
+| **ES3** | 1999 | try/catch、正则、switch | 语言基础定型 |
+| **ES5** | 2009 | 严格模式、JSON、bind | jQuery 时代 |
+| **ES6/ES2015** | 2015 | **let/const、class、Promise、模块** | **现代 JS 起点** |
+| **ES2016** | 2016 | async/await | 异步编程范式革新 |
+| **ES2017** | 2017 | Object entries/values | 对象操作增强 |
+| **ES2020** | 2020 | 可选链、空值合并、globalThis | 代码简洁性提升 |
+| **ES2022** | 2022 | 类字段、顶层 await | OOP + 模块完善 |
+| **ES2023** | 2023 | 数组不可变方法 | 函数式编程增强 |
+| **ES2024** | 2024 | Records/Tuples、正则 v | 数据结构扩展 |
+| **ES2025** | 2025 | 装饰器稳定、模式匹配 | 元编程成熟 |
+
+### 为什么 ES6 是 JavaScript 的分水岭？
+
+```
+ES5 时代（2009-2015）："增强的脚本语言"
+  ├─ var 函数作用域（变量提升陷阱）
+  ├─ function 声明
+  ├─ 回调地狱
+  ├─ 手动模块化（IIFE/AMD/CMD）
+  └─ Object.defineProperty 开始可用
+
+ES6 时代（2015+）："现代化的编程语言"
+  ├─ let/const 块级作用域
+  ├─ 箭头函数 + class 语法糖
+  ├─ Promise + async/await
+  ├─ 原生模块（import/export）
+  ├─ Proxy/Reflect 元编程
+  └─ Symbol/BigInt/Map/Set 新数据结构
+```
 
 ---
 

@@ -36,6 +36,58 @@
   - [Q26: 对于想要进入 Agent 领域的初学者，你会给他/她什么建议？](#q26-对于想要进入-agent-领域的初学者你会给他她什么建议)
   - [Q27: 总结一下，你认为一个顶尖的 AI Agent 工程师，应该具备哪些核心素质？](#q27-总结一下你认为一个顶尖的-ai-agent-工程师应该具备哪些核心素质)
   - [Q28: 平常使用 AI 吗，都用来干嘛？如果我想使用 AI，比如 coding 领域，你有何建议给我？](#q28-平常使用-ai-吗都用来干嘛如果我想使用-ai比如-coding-领域你有何建议给我)
+---
+
+## 📈 Agent 技术发展脉络
+
+> Agent 从概念到落地，经历了从"对话机器人"到"自主智能体"的跨越。
+
+### Agent 技术演进时间线
+
+```mermaid
+timeline
+    title Agent 技术演进（2022—2026）
+    2022 : ChatGPT 发布（对话式 AI）
+          : 单一 Prompt-Response 模式
+    2023 : GPT-4 Function Calling
+          : LangChain / AutoGPT / BabyAGI
+          : ReAct 模式流行
+          : Agent 概念爆发
+    2024 : MCP 协议（模型上下文协议）
+          : Multi-Agent 框架
+          : Anthropic Tool Use
+          : Agent 互操作标准化开始
+    2025 : A2A 协议（Agent-to-Agent）
+          : AI Gateway 成熟
+          : Agent 安全/治理框架
+          : MCP + A2A 成为行业标准
+    2026 : Agent 全面商业化
+          : 端侧 Agent 推理
+          : AI Agent 原生应用
+```
+
+### Agent 代际划分
+
+| 代际 | 时间 | 代表方案 | 核心能力 | 局限 |
+|------|------|---------|---------|------|
+| **L0 对话** | 2022 | ChatGPT | 聊天问答 | 无工具、无记忆 |
+| **L1 工具** | 2023 | Function Calling | 调用 API/数据库 | 单步、无规划 |
+| **L2 规划** | 2023-2024 | ReAct / Plan-and-Execute | 多步推理 + 工具 | 成功率有限 |
+| **L3 反思** | 2024 | Reflexion / Self-Critique | 自我评估 + 修正 | 计算开销大 |
+| **L4 多 Agent** | 2024-2025 | Multi-Agent 协作 | 分工 + 辩论 + 共识 | 协调复杂度高 |
+| **L5 自主** | 2025-2026 | MCP + A2A 互操作 | 跨系统自主协作 | 安全/对齐难题 |
+
+### 关键协议对比
+
+| 协议 | 全称 | 用途 | 通信方式 | 发布方 |
+|------|------|------|---------|-------|
+| **Function Calling** | — | LLM 调用单个工具 | JSON 函数描述 | OpenAI |
+| **MCP** | Model Context Protocol | LLM 标准化访问外部数据/工具 | JSON-RPC + SSE/Stdio | Anthropic |
+| **A2A** | Agent-to-Agent | Agent 间互操作通信 | JSON-RPC + SSE | Google |
+| **Tool Use** | — | 结构化工具调用 | 系统 prompt 嵌入 | Anthropic |
+
+---
+
 - [🔧 二、工具调用与协议篇](#二工具调用与协议篇)
   - [Q1: 什么是 Function Calling？原理是什么？](#q1-什么是-function-calling原理是什么)
   - [Q2: LLM 是如何学会调用外部工具的？](#q2-llm-是如何学会调用外部工具的)

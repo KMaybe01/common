@@ -44,6 +44,71 @@
 
 ---
 
+## 📈 HTML 版本演进史
+
+> HTML 自 1993 年诞生以来，经历了从"文档标记语言"到"应用开发平台"的蜕变。
+
+### HTML 版本时间线
+
+```mermaid
+timeline
+    title HTML 版本演进（1993—2026）
+    1993-1995 : HTML 1.0（基本文本标记）
+              : HTML 2.0（表单 + 表格）
+    1997-1999 : HTML 3.2（CSS 支持）
+              : HTML 4.01（标准化巅峰）
+              : XHTML 1.0（XML 严格化）
+    2000-2008 : HTML 4.01 长期统治
+              : XHTML 2.0 失败
+              : WHATWG 成立（2004）
+              : HTML5 草案开始（2008）
+    2014-2016 : HTML5 正式推荐标准
+              : 语义化标签 + 多媒体
+              : Canvas + Web 存储
+    2017-2022 : HTML 生活标准（持续演进）
+              : Web Components 原生化
+              : Import Map + CSS 容器查询
+              : Dialog + Popover API
+    2023-2026 : HTML 平台化成熟
+              : View Transitions API
+              : Declarative Shadow DOM
+              : AI 集成（WebNN/WebGPU）
+```
+
+### HTML 各版本核心变化
+
+| 版本 | 年份 | 关键特性 | 历史意义 |
+|------|------|---------|---------|
+| **HTML 1.0** | 1993 | 基本文本标记、超链接 | Web 的开端 |
+| **HTML 2.0** | 1995 | 表单、表格、图像 | 交互式网页诞生 |
+| **HTML 3.2** | 1997 | CSS 支持、脚本、iframe | 样式与内容分离开始 |
+| **HTML 4.01** | 1999 | 标准化、框架、对象 | 最稳定的传统版本 |
+| **XHTML 1.0** | 2000 | XML 严格语法 | 向 XML 过渡（未普及） |
+| **HTML5** | 2014 | 语义化、Canvas、Web 存储、多媒体 | **现代 Web 应用基础** |
+| **HTML 生活标准** | 2016+ | 持续演进（Dialog/Popover/Transitions） | 平台化成熟 |
+
+### HTML5 为何是里程碑？
+
+```
+HTML5 之前的 Web：文档展示平台
+  ├─ Flash 承担多媒体
+  ├─ 无原生语义化
+  └─ 无本地存储能力
+
+HTML5 之后的 Web：应用开发平台
+  ├─ 原生多媒体（<video>/<audio>）
+  ├─ 语义化标签（<header>/<nav>/<article>）
+  ├─ Canvas + SVG → 图形化能力
+  ├─ Web Storage / IndexedDB → 客户端存储
+  ├─ Web Worker → 多线程
+  ├─ Service Worker → 离线/推送
+  ├─ Web Components → 组件化
+  ├─ WebSocket/WebRTC → 实时通信
+  └─ WebGPU/WebNN → AI 计算
+```
+
+---
+
 ## 🧠 知识脑图
 
 ```mermaid

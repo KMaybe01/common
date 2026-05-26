@@ -102,12 +102,87 @@ graph TD
 
 ---
 
+## 1️⃣➕ React 版本迭代史（2013—2026）
+
+> React 的演进史，就是前端声明式编程的进化史。
+
+### 版本演进路线图
+
+```mermaid
+timeline
+    title React 版本演进（2013—2026）
+    2013 : React 0.3 开源
+         : 虚拟 DOM 新范式
+    2015 : React 15
+         : React Native 跨平台
+    2017 : React 16 Fiber
+         : 架构重写（核心转折）
+    2019 : React 16.8 Hooks
+         : 函数式革命
+    2022 : React 18
+         : 并发模式
+    2025 : React 19
+         : Actions + Compiler
+    2026 : React 19 生态成熟
+         : RSC 普及化
+```
+
+### 关键版本逐代解析
+
+| 版本 | 年份 | 核心变化 | 对开发者的影响 |
+|------|------|---------|--------------|
+| **React 0.3** | 2013 | 虚拟 DOM，JSX 首次开源 | 开创性范式：声明式 UI |
+| **React 15** | 2016 | DOM 重构 + React Native | 跨平台能力，一次学习随处编写 |
+| **React 16** | 2017 | **Fiber 架构重写** | 可中断渲染，优先级调度 |
+| **React 16.8** | 2019 | **Hooks** 发布 | 函数组件拥有状态，告别 class |
+| **React 17** | 2020 | 渐进升级桥梁版 | 无重大新特性，平滑过渡 |
+| **React 18** | 2022 | 并发模式、自动批处理 | 更好的用户体验，Suspense 完善 |
+| **React 19** | 2025 | Actions、use()、React Compiler | 表单革新、自动记忆化、RSC |
+
+### React 15 → 16 → 17 → 18 → 19 核心变化
+
+| 维度 | 15 (DOM) | 16 (Fiber) | 17 | 18 (Concurrent) | 19 (Compiler) |
+|------|---------|-----------|-----|-----------------|---------------|
+| **架构** | Stack 栈递归 | Fiber 链表中断 | 桥接 | 并发模式 | 编译优化 |
+| **渲染** | 同步不可中断 | 可中断/恢复 | 渐进升级 | 自动批处理 | 自动记忆化 |
+| **组件** | class 为主 | class + function | 过渡 | 函数为主 | 函数 + Server |
+| **状态** | setState | setState + Hooks(2019) | Hooks 完善 | useDeferredValue | Actions + use() |
+| **编译** | 无 | 无 | React Refresh | 基础优化 | **React Compiler** |
+| **生态** | 早期 | Redux 为主 | Context 增强 | Suspense + Streaming | RSC 主流 |
+
+**Fiber 架构核心突破：**
+```typescript
+// Fiber 节点结构（简化）
+interface Fiber {
+  tag: WorkTag          // 节点类型
+  key: string | null    // 唯一标识
+  type: any             // 函数/类/原生标签
+  stateNode: any        // 对应真实 DOM
+  
+  return: Fiber | null  // 父节点
+  child: Fiber | null   // 第一个子节点
+  sibling: Fiber | null // 右边兄弟节点
+  
+  pendingProps: any     // 新 props
+  memoizedProps: any    // 旧 props
+  memoizedState: any    // 状态
+  updateQueue: any      // 更新队列
+  
+  lanes: Lanes          // 优先级
+  alternate: Fiber | null // workInProgress 树关联
+}
+```
+
+Fiber 将原本不可中断的**递归渲染**（Stack Reconciler）改造成了可中断/恢复的**链表遍历**（Fiber Reconciler），这是 React 并发能力的基石。
+
+---
+
 ## 2️⃣ React 19 新特性详解
 
 ### 🌟 重要特性速览
 
 ```
-React 19 (2024)
+React 19 (2025)
 ├─ React Compiler (自动优化)
 ├─ Actions (统一表单处理)
 ├─ use() Hook (异步数据)

@@ -162,6 +162,56 @@ timeline
          : 更好的 SSR 支持
 ```
 
+### 关键版本逐代解析
+
+| 版本 | 年份 | 核心变化 | 对开发者的影响 |
+|------|------|---------|--------------|
+| **AngularJS** | 2010 | MVC 架构、双向绑定、DI | 首次将 MVVM 理念带入前端 |
+| **Angular 2** | 2016 | **完全重写**：TypeScript、组件化 | 断裂式升级，生态重建 |
+| **Angular 4** | 2017 | 体积更小、编译优化 | 小版本平稳迭代 |
+| **Angular 5** | 2017 | 构建优化器、HttpClient 替换 Http | HTTP 模块统一 |
+| **Angular 8** | 2019 | Ivy 编译器**预览** | 可选的增量 DOM 编译 |
+| **Angular 9** | 2020 | **Ivy 默认**、体积减少 40% | 编译速度↑，包体积↓ |
+| **Angular 12** | 2021 | 严格模式默认、移除 IE11 | 告别旧兼容 |
+| **Angular 14** | 2022 | 独立组件预览、类型化表单 | 迈向 standalone 架构 |
+| **Angular 15** | 2022 | **Standalone API 稳定** | 可创建无 NgModule 应用 |
+| **Angular 17** | 2024 | Signals、`@if/@for` 控制流 | 响应式范式革命 |
+| **Angular 18** | 2024 | **Zoneless 实验性** | 可选的精确变更检测 |
+| **Angular 19** | 2025 | `linkedSignal`、`resource()` | 声明式数据获取 |
+| **Angular 20** | 2025 | `httpResource`、Signal Forms | 响应式全面化 |
+| **Angular 21** | 2026 | **Zoneless 默认**、esbuild 原生 | 全面现代化 |
+
+### ⚡ Angular 关键转折点：AngularJS → Angular 2 → Ivy → Zoneless
+
+```
+2010: AngularJS（MVC + 双向绑定）     ← 先驱
+  │    断裂式升级（完全重写）
+  ▼
+2016: Angular 2（TypeScript + 组件）   ← 重建根基
+  │    View Engine 编译器
+  ▼
+2020: Angular 9（Ivy 默认）            ← 性能飞跃
+  │    增量 DOM，包体积 -40%
+  ▼
+2024: Angular 17（Signals + 控制流）   ← 响应式革命
+  │    新语法，新范式
+  ▼
+2026: Angular 21（Zoneless 默认）      ← 全面现代化
+      精确依赖追踪，无需 Zone.js
+```
+
+### AngularJS → Angular 2 核心差异
+
+| 维度 | AngularJS (1.x) | Angular 2+ |
+|------|----------------|-------------|
+| **架构** | MVC | 组件化 + DI |
+| **语言** | JavaScript | **TypeScript** |
+| **响应式** | 脏检查 ($digest) | Zone.js / Signals |
+| **编译** | 无 | Ahead-of-Time (AOT) |
+| **路由** | $routeProvider | Angular Router |
+| **性能** | 慢（大量 watcher） | 快（Ivy 增量 DOM） |
+| **移动端** | 不支持 | 支持 |
+
 ### 🌟 Angular 21 核心变化
 
 ```
@@ -259,26 +309,102 @@ flowchart TB
 | 内存占用 | 较高 | 低 | -25% |
 | 调试体验 | 堆栈复杂 | 堆栈清晰 | ⭐⭐⭐⭐⭐ |
 
-#### Zoneless 迁移步骤
+### 🔬 Signals 引擎原理深度解析
+
+Angular Signals 的底层实现与 Vue 3 的响应式系统类似，但独立设计：
 
 ```typescript
-// 1. 从 angular.json 移除 zone.js polyfills
-// "polyfills": ["zone.js"] → 删除
+// Angular Signals 核心引擎（简化版）
 
-// 2. 确保组件使用 OnPush 或 Signals
-@Component({
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
+type Node = {
+  value: unknown
+  version: number       // 版本号，每次变化递增
+  sources: Node[] | null  // 依赖的上游信号
+  subscribers: Node[] | null  // 订阅的下游信号
+  
+  computationFn: (() => unknown) | null  // computed 计算函数
+  equal: (a: unknown, b: unknown) => boolean  // 值比较函数
+}
 
-// 3. 使用 Signals 替代部分 Observable
-// 之前
-data$ = this.http.get('/api/data');
-// 之后
-data = resource(() => ({ request: '/api/data' }));
+// 全局追踪上下文
+let activeSubscriber: Node | null = null
 
-// 4. 测试中移除 zone.js/testing
-// "polyfills": ["zone.js", "zone.js/testing"] → 删除
+function signal<T>(initialValue: T): Signal<T> {
+  const node: Node = {
+    value: initialValue,
+    version: 0,
+    sources: null,
+    subscribers: null,
+    computationFn: null,
+    equal: Object.is
+  }
+  
+  function get(): T {
+    // 读取时注册依赖
+    if (activeSubscriber) {
+      node.subscribers ??= []
+      if (!node.subscribers.includes(activeSubscriber)) {
+        node.subscribers.push(activeSubscriber)
+      }
+      activeSubscriber.sources ??= []
+      if (!activeSubscriber.sources.includes(node)) {
+        activeSubscriber.sources.push(node)
+      }
+    }
+    return node.value as T
+  }
+  
+  function set(newValue: T): void {
+    if (node.equal(node.value, newValue)) return
+    node.value = newValue
+    node.version++
+    // 通知所有下游订阅者
+    node.subscribers?.forEach(sub => {
+      if (sub.computationFn) {
+        sub.value = sub.computationFn()
+        sub.version++
+      }
+    })
+  }
+  
+  return { get, set }
+}
+
+function computed<T>(fn: () => T): Signal<T> {
+  const node: Node = {
+    value: undefined,
+    version: 0,
+    sources: null,
+    subscribers: null,
+    computationFn: fn as () => unknown,
+    equal: Object.is
+  }
+  
+  function get(): T {
+    // 懒计算：只在被读取时才计算结果
+    if (activeSubscriber && node.version === 0) {
+      const prev = activeSubscriber
+      activeSubscriber = node
+      node.value = fn()
+      node.version++
+      activeSubscriber = prev
+    }
+    return node.value as T
+  }
+  
+  return { get }
+}
 ```
+
+**Angular Signals vs Vue 3 响应式对比：**
+
+| 特性 | Angular Signals | Vue 3 (ref/reactive) |
+|------|----------------|---------------------|
+| **依赖追踪** | 手动 `get()` 调用 | Proxy 自动拦截 |
+| **底层机制** | 版本号 + 订阅列表 | Proxy + WeakMap + Dep |
+| **惰性计算** | computed 懒计算 | computed 即时计算（带缓存） |
+| **变更检测** | 精确到信号级 | 组件级（Proxy 触发） |
+| **框架耦合** | 可脱离 Angular 使用 | 需 Vue 运行时 |
 
 ### 📡 httpResource - 声明式数据获取
 
