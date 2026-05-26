@@ -1,4 +1,4 @@
-﻿# 🧠 Agent 工程师面试题库·大模型基础篇
+# 🧠 Agent 工程师面试题库·大模型基础篇
 # 📐 三、大模型基础篇
 
 > 🎯 **核心考点：** Transformer 架构、位置编码、训练流程、Scaling Law、微调方案、解码策略、KV Cache、量化、MoE、部署评测 | **题数：** 22 题
@@ -98,7 +98,7 @@ graph TB
 | 编码方式 | 原理 | 特点 | 代表模型 |
 |---------|------|------|---------|
 | **Sinusoidal** | 固定频率的正余弦函数 | 绝对位置编码，无参数 | Transformer 原始论文 |
-| **RoPE** | 旋转矩阵编码相对位置 | 相对位置感知，外推性好 | LLaMA、Qwen、ChatGLM |
+| **RoPE** | 旋转矩阵编码相对位置 | 相对位置感知，外推性好 | [Llama](https://llama.meta.com)、[Qwen](https://qwen.alibaba.com)、ChatGLM |
 | **ALiBi** | 线性偏置注意力分数 | 简单高效，外推性强 | MPT、Bloom |
 
 **RoPE 为何成为主流：**
@@ -126,7 +126,7 @@ graph LR
 | **BPE** | 合并高频子词对 | GPT 系列 |
 | **WordPiece** | 基于概率的合并 | BERT |
 | **Unigram** | 基于概率的删除 | T5、XLNet |
-| **SentencePiece** | 纯数据驱动（含空格编码） | LLaMA、Gemma |
+| **SentencePiece** | 纯数据驱动（含空格编码） | [Llama](https://llama.meta.com)、Gemma |
 
 ---
 
@@ -245,8 +245,8 @@ graph TB
 | 方法 | 需要奖励模型 | 复杂度 | 代表模型 |
 |------|-------------|--------|---------|
 | **RLHF (PPO)** | ✅ | 高 | GPT-4、Claude |
-| **DPO** | ❌ | 低 | Qwen、LLaMA-3 |
-| **GRPO** | ❌ | 中 | DeepSeek-R1 |
+| **DPO** | ❌ | 低 | [Qwen](https://qwen.alibaba.com)、[Llama](https://llama.meta.com)-3 |
+| **GRPO** | ❌ | 中 | [DeepSeek](https://deepseek.com)-R1 |
 | **拒绝采样** | ❌ | 低 | 多数开源模型 |
 
 ---
@@ -450,7 +450,7 @@ graph TB
     Note1["每次只激活 Top-K 个专家<br/>如 DeepSeek-V3: 激活 2/256"]
 ```
 
-**代表模型：** DeepSeek-V3（671B 总参，37B 激活参）、Mixtral 8x7B、Qwen2-MoE
+**代表模型：** [DeepSeek](https://deepseek.com)-V3（671B 总参，37B 激活参）、Mixtral 8x7B、[Qwen](https://qwen.alibaba.com)2-MoE
 
 **为什么用 MoE：**
 - **训练效率**：参数量大但计算量小
@@ -463,11 +463,11 @@ graph TB
 
 | 方案 | 语言 | 推理框架 | 适用场景 | 特点 |
 |------|------|---------|---------|------|
-| **vLLM** | Python | PagedAttention | 高并发在线推理 | 吞吐量最高 |
+| **[vLLM](https://github.com/vllm-project/vllm)** | Python | PagedAttention | 高并发在线推理 | 吞吐量最高 |
 | **TGI** | Rust | Text Generation Inference | HuggingFace 生态 | 与 HF 深度集成 |
-| **llama.cpp** | C++ | GGUF | 本地/边缘部署 | CPU 友好 |
+| **[Llama](https://llama.meta.com).cpp** | C++ | GGUF | 本地/边缘部署 | CPU 友好 |
 | **SGLang** | Python | RadixAttention | 复杂推理模式 | 结构化生成 |
-| **Ollama** | Go | llama.cpp 封装 | 开发者本地测试 | 开箱即用 |
+| **[Ollama](https://ollama.ai)** | Go | [Llama](https://llama.meta.com).cpp 封装 | 开发者本地测试 | 开箱即用 |
 
 **选型建议：**
 
@@ -503,11 +503,11 @@ graph TD
 
 | 模型 | 厂商 | 架构 | 特点 | 适合场景 |
 |------|------|------|------|---------|
-| **GPT-4o** | OpenAI | Dense | 多模态、生态最好 | 通用、对话 |
-| **Claude 3.5** | Anthropic | Dense | 长上下文、安全 | 分析、代码 |
-| **DeepSeek-V3** | 深度求索 | MoE 671B | 性价比极高 | 推理、编码 |
-| **Qwen2.5** | 阿里 | Dense/MoE | 中文最优 | 中文应用 |
-| **LLaMA-3** | Meta | Dense | 开源标杆 | 自部署 |
+| **GPT-4o** | [OpenAI](https://openai.com) | Dense | 多模态、生态最好 | 通用、对话 |
+| **Claude 3.5** | [Anthropic](https://anthropic.com) | Dense | 长上下文、安全 | 分析、代码 |
+| **[DeepSeek](https://deepseek.com)-V3** | 深度求索 | MoE 671B | 性价比极高 | 推理、编码 |
+| **[Qwen](https://qwen.alibaba.com)2.5** | 阿里 | Dense/MoE | 中文最优 | 中文应用 |
+| **[Llama](https://llama.meta.com)-3** | Meta | Dense | 开源标杆 | 自部署 |
 
 ---
 
@@ -533,13 +533,13 @@ graph TB
 | 维度 | Encoder-Only | Decoder-Only | Encoder-Decoder |
 |------|-------------|-------------|----------------|
 | **注意力机制** | 双向（Bidirectional） | 因果（Causal） | 编码器双向 + 解码器因果 |
-| **代表模型** | BERT、RoBERTa、DeBERTa | GPT 系列、LLaMA、Qwen | T5、BART、Flan-T5 |
+| **代表模型** | BERT、RoBERTa、DeBERTa | GPT 系列、[Llama](https://llama.meta.com)、[Qwen](https://qwen.alibaba.com) | T5、BART、Flan-T5 |
 | **擅长任务** | 理解类（分类、NER、QA） | 生成类（对话、写作、代码） | 序列转换（翻译、摘要） |
 | **优势** | 充分理解上下文语义 | 自回归生成流畅，可扩展性强 | 输入输出长度不对称时灵活 |
 | **劣势** | 无法直接做生成 | 单向注意力不擅长纯理解 | 结构复杂，训练推理效率低 |
-| **当前主流** | ⬇️ 逐渐被 Decoder-only 替代 | ⬆️ 绝对主流（GPT/LLaMA） | ➡️ 特定场景使用 |
+| **当前主流** | ⬇️ 逐渐被 Decoder-only 替代 | ⬆️ 绝对主流（GPT/[Llama](https://llama.meta.com)） | ➡️ 特定场景使用 |
 
-**为什么 Decoder-Only 成为主流：** GPT 系列的巨大成功证明了 Decoder-Only 架构的 **Scaling 潜力**——同样的参数量下，Decoder-Only 在生成任务上表现更优。此外，统一的 causual LM 预训练目标（Next Token Prediction）天然支持 zero-shot 和 in-context learning，而 Encoder-Only 需要额外的任务特定头（classification head）。目前主流模型（GPT-4、Claude、LLaMA、Qwen、DeepSeek）几乎全部采用 Decoder-Only 架构。
+**为什么 Decoder-Only 成为主流：** GPT 系列的巨大成功证明了 Decoder-Only 架构的 **Scaling 潜力**——同样的参数量下，Decoder-Only 在生成任务上表现更优。此外，统一的 causual LM 预训练目标（Next Token Prediction）天然支持 zero-shot 和 in-context learning，而 Encoder-Only 需要额外的任务特定头（classification head）。目前主流模型（GPT-4、Claude、[Llama](https://llama.meta.com)、[Qwen](https://qwen.alibaba.com)、[DeepSeek](https://deepseek.com)）几乎全部采用 Decoder-Only 架构。
 
 ---
 
@@ -621,7 +621,7 @@ graph TB
 |---------|------|------|---------|
 | **ReLU** | max(0, x) | 简单高效，但存在 Dead ReLU | 早期模型 |
 | **GELU** | x·Φ(x) | 平滑版 ReLU，性能优于 ReLU | GPT-3、BERT |
-| **SwiGLU** | Swish(x·W₁) ⊙ (x·W₂) | gated 结构 + 平滑激活 | **LLaMA、Qwen、DeepSeek** |
+| **SwiGLU** | Swish(x·W₁) ⊙ (x·W₂) | gated 结构 + 平滑激活 | **[Llama](https://llama.meta.com)、[Qwen](https://qwen.alibaba.com)、[DeepSeek](https://deepseek.com)** |
 | **GeGLU** | GELU(x·W₁) ⊙ (x·W₂) | GELU + gated 变体 | PaLM、T5 |
 | **SwiGLU** | Swish(x·W₁) ⊙ (x·W₂) | 本质是门控机制 + Swish | 当前最主流 |
 
@@ -629,7 +629,7 @@ graph TB
 - **门控机制**：SwiGLU 引入可学习的门控（⊙ 乘法门），让网络可以动态**选择**要传递的信息，表达能力更强
 - **平滑性**：Swish（Sigmoid 加权）比 ReLU 更平滑，缓解 Dead ReLU 和梯度不稳定
 - **经验证明**：PaLM 论文实验表明，在相同参数量下，SwiGLU 比 ReLU 和 GELU 的评估指标明显更好
-- **代价**：SwiGLU 需要 3 个权重矩阵（两个线性投影 + 一个门控），参数量是普通 FFN 的 1.5 倍，所以 LLaMA 将 hidden_size 缩小以保持总参数量不变
+- **代价**：SwiGLU 需要 3 个权重矩阵（两个线性投影 + 一个门控），参数量是普通 FFN 的 1.5 倍，所以 [Llama](https://llama.meta.com) 将 hidden_size 缩小以保持总参数量不变
 
 ---
 
@@ -678,11 +678,11 @@ graph TB
 
 ---
 
-### Q28: 开源框架了解过哪些？Qwen，Deepseek 的论文是否有研读过，说一下其中的创新点主要体现在哪？
+### Q28: 开源框架了解过哪些？[Qwen](https://qwen.alibaba.com)，[DeepSeek](https://deepseek.com) 的论文是否有研读过，说一下其中的创新点主要体现在哪？
 
-> 💡 **要点**：Qwen 和 DeepSeek 代表了**强化开源生态**和**极致工程创新**两条路线。
+> 💡 **要点**：[Qwen](https://qwen.alibaba.com) 和 [DeepSeek](https://deepseek.com) 代表了**强化开源生态**和**极致工程创新**两条路线。
 
-**Qwen（通义千问）系列核心创新：**
+**[Qwen](https://qwen.alibaba.com)（通义千问）系列核心创新：**
 
 | 创新点 | 详细说明 |
 |-------|---------|
@@ -691,14 +691,14 @@ graph TB
 | **强大的 SFT 数据策略** | 使用"先粗筛后精炼"的数据迭代方法，通过 Rejection Sampling 构建高质量 SFT 数据 |
 | **多阶段对齐** | SFT + RM + PPO 全套对齐流程，且提出使用 **DPO** 作为替代方案 |
 
-**DeepSeek 系列核心创新：**
+**[DeepSeek](https://deepseek.com) 系列核心创新：**
 
 | 创新点 | 详细说明 |
 |-------|---------|
-| **MoE 架构极致优化** | DeepSeek-V2 设计 DeepSeekMoE，使用 **Fine-grained Expert Segmentation**（细粒度专家拆分） + **Shared Expert Isolation**（共享专家隔离），激活参数少但保持高性能 |
+| **MoE 架构极致优化** | [DeepSeek](https://deepseek.com)-V2 设计 [DeepSeek](https://deepseek.com)MoE，使用 **Fine-grained Expert Segmentation**（细粒度专家拆分） + **Shared Expert Isolation**（共享专家隔离），激活参数少但保持高性能 |
 | **Multi-head Latent Attention (MLA)** | 将 KV 压缩到低维隐空间，大幅降低 KV Cache 大小（约 75%），推理成本大幅降低 |
-| **GRPO（Group Relative Policy Optimization）** | 抛弃 PPO 中的 Critic 模型，使用**组内相对奖励**进行优化，训练成本大降（DeepSeek-R1） |
-| **DeepSeek-R1 的 Pure RL** | 完全不需要 SFT 冷启动数据，仅靠 RL + 规则奖励就训练出推理能力，提出 **DeepSeek-R1-Zero** |
+| **GRPO（Group Relative Policy Optimization）** | 抛弃 PPO 中的 Critic 模型，使用**组内相对奖励**进行优化，训练成本大降（[DeepSeek](https://deepseek.com)-R1） |
+| **[DeepSeek](https://deepseek.com)-R1 的 Pure RL** | 完全不需要 SFT 冷启动数据，仅靠 RL + 规则奖励就训练出推理能力，提出 **[DeepSeek](https://deepseek.com)-R1-Zero** |
 
 **两者的共性：** 都极其重视**推理效率**（GQA / MLA）和**训练稳定性**，都是开源社区的中坚力量。
 
@@ -708,16 +708,16 @@ graph TB
 
 > 💡 **要点**：前沿论文可以围绕"长上下文"、"推理能力"、"对齐效率"三个方向展开回答。
 
-**示例：DeepSeek-R1（2025 年 1 月）**
+**示例：[DeepSeek](https://deepseek.com)-R1（2025 年 1 月）**
 
 | 论文维度 | 内容 |
 |---------|------|
-| **论文标题** | DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning |
+| **论文标题** | [DeepSeek](https://deepseek.com)-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning |
 | **针对问题** | 大模型在数学、推理等复杂任务上能力不足，且传统 SFT 难以教会模型"推理过程" |
-| **提出方法** | 提出 **DeepSeek-R1-Zero**——完全通过 RL（GRPO）训练推理能力，过程中自然涌现"思辨"（Aha Moment），即模型自主学会反思和验证推理步骤 |
+| **提出方法** | 提出 **[DeepSeek](https://deepseek.com)-R1-Zero**——完全通过 RL（GRPO）训练推理能力，过程中自然涌现"思辨"（Aha Moment），即模型自主学会反思和验证推理步骤 |
 | **冷启动策略** | R1 在 Zero 的基础上加入少量冷启动 SFT 数据 + 面向语言一致性的 RL，解决 Zero 版本输出可读性差、语言混杂的问题 |
-| **对比实验** | 在 AIME 2024 上 R1 达到 79.8%（≈ OpenAI o1-1217），MATH-500 达 97.3%，同时在推理密集任务上显著优于 GPT-4o 和 Claude 3.5 |
-| **蒸馏实验** | 将 R1 的推理模式蒸馏到小模型（Qwen-7B/14B、LLaMA-8B）中，小模型也能获得显著提升，验证了推理模式的迁移性 |
+| **对比实验** | 在 AIME 2024 上 R1 达到 79.8%（≈ [OpenAI](https://openai.com) o1-1217），MATH-500 达 97.3%，同时在推理密集任务上显著优于 GPT-4o 和 Claude 3.5 |
+| **蒸馏实验** | 将 R1 的推理模式蒸馏到小模型（[Qwen](https://qwen.alibaba.com)-7B/14B、[Llama](https://llama.meta.com)-8B）中，小模型也能获得显著提升，验证了推理模式的迁移性 |
 
 **其他前沿方向：**
 - **LongRoPE（2024）**：解决位置编码外推问题，通过位置插值 + 渐进扩展将上下文窗口从 4K 延长至 2048K
@@ -795,7 +795,7 @@ graph TB
 |------|------|
 | **Zero-shot 能力** | 训练后可直接用于 zero-shot 图像分类——将候选类别文本编码，与图像特征算相似度，取最高者 |
 | **表征通用性** | 学到的图文表征可以迁移到其他任务（检索、VQA、图像生成引导） |
-| **成为 VLM 基石** | 几乎所有现代 VLM（LLaVA、MiniGPT-4、Qwen-VL）都使用 CLIP 的视觉编码器作为视觉 backbone |
+| **成为 VLM 基石** | 几乎所有现代 VLM（LLaVA、MiniGPT-4、[Qwen](https://qwen.alibaba.com)-VL）都使用 CLIP 的视觉编码器作为视觉 backbone |
 | **局限性** | 对比学习**只能对齐粗粒度语义**（整体图文匹配），无法捕捉细粒度物体关系和位置信息 |
 
 ---
@@ -825,12 +825,12 @@ graph TB
 
 **关键架构对比：**
 
-| 组件 | LLaVA | MiniGPT-4 | Qwen-VL |
+| 组件 | LLaVA | MiniGPT-4 | [Qwen](https://qwen.alibaba.com)-VL |
 |------|-------|-----------|---------|
 | **视觉编码器** | CLIP ViT-L/14 | ViT-G/14 (EVA-CLIP) | ViT-bigG (OpenCLIP) |
 | **连接器** | 简单的 **MLP**（2层） | 单线性层 + Q-Former | 单线性层 + 位置感知 |
 | **视觉 Token 数** | 256 (从 576 压缩) | 32 (Q-Former 压缩) | 256 |
-| **LLM Backbone** | Vicuna-7B/13B | LLaMA-2-7B/13B | Qwen-7B/14B |
+| **LLM Backbone** | Vicuna-7B/13B | [Llama](https://llama.meta.com)-2-7B/13B | [Qwen](https://qwen.alibaba.com)-7B/14B |
 | **训练阶段** | Pre-align → Visual SFT | Pre-align → SFT | Pre-train → SFT |
 
 **LLaVA 的架构创新（代表性最强）：**
@@ -930,7 +930,7 @@ graph TB
 | **效率** | Token 数爆炸（32帧×256 Tokens=8192） | **帧间 Token 压缩**、**Tube Token**（时空合并） |
 
 **代表模型：**
-- **Video-LLaMA**：使用 **Video Q-Former** 压缩帧的时空特征，引入帧级位置编码
+- **Video-[Llama](https://llama.meta.com)**：使用 **Video Q-Former** 压缩帧的时空特征，引入帧级位置编码
 - **VideoChat**：均匀采样 16 帧，每帧用 ViT 提取特征后拼接输入 LLM
 - **VTimeLLM**：引入**时间戳感知**的 LLM，可以精确回答"什么时候发生某事"
 
@@ -1014,7 +1014,7 @@ graph TB
 | **视觉保留度** | ✅ 保留更丰富细节 | ⚠️ 压缩后有一定丢失 |
 | **训练数据需求** | 需要大量对比数据 | 相对较少 |
 | **迁移灵活性** | 可快速切换 LLM Backbone | 需要重新连接器训练 |
-| **代表模型** | Flamingo, BLIP-2, IDEFICS | LLaVA, MiniGPT-4, Qwen-VL |
+| **代表模型** | Flamingo, BLIP-2, IDEFICS | LLaVA, MiniGPT-4, [Qwen](https://qwen.alibaba.com)-VL |
 | **推理效率** | 较低（多了交叉注意力计算） | ✅ 高（纯自回归） |
 
 **深度分析：**
@@ -1023,7 +1023,7 @@ graph TB
 
 **连接器范式（LLaVA 系）** 的核心理念是"把图像变成文本 Token"——用 MLP 将视觉特征线性映射到 LLM 的 Embedding 空间，然后作为文本 Token 一样输入。它**修改了 LLM 的输入分布**，让原本只见过文本的 LLM 也"理解"了图像。优势是极简且高效，但要求 LLM 参与训练来适应新的视觉 Token 分布。
 
-**当下趋势：** 连接器范式成为绝对主流（LLaVA-1.5/1.6, Qwen-VL, InternVL2），因为简单、高效、效果好。跨模态注意力范式逐渐被边缘化，除了需要 LLM 能力完全保留的场景。
+**当下趋势：** 连接器范式成为绝对主流（LLaVA-1.5/1.6, [Qwen](https://qwen.alibaba.com)-VL, InternVL2），因为简单、高效、效果好。跨模态注意力范式逐渐被边缘化，除了需要 LLM 能力完全保留的场景。
 
 ---
 
@@ -1051,11 +1051,11 @@ graph TB
 
 | 方案 | 原理 | 优缺点 | 代表模型 |
 |------|------|--------|---------|
-| **切片（Crop）** | 将高分辨率大图切成多个子图分别处理 + 全局缩略图 | ✅ 保留细节 ⚠️ Token 数仍多 | LLaVA-1.6、Qwen-VL |
+| **切片（Crop）** | 将高分辨率大图切成多个子图分别处理 + 全局缩略图 | ✅ 保留细节 ⚠️ Token 数仍多 | LLaVA-1.6、[Qwen](https://qwen.alibaba.com)-VL |
 | **ViT 动态分辨率** | ViT 直接处理任意分辨率，后接 Resampler 压缩 | ✅ 灵活 ⚠️ 训练复杂 | InternLM-XComposer2 |
 | **Token 压缩** | 使用 Q-Former 或 Perceiver 压缩视觉 Token | ✅ Token 可控 ⚠️ 细节丢失 | BLIP-2、MiniGPT-4 |
 | **双分辨率** | 低分辨率全局图 + 高分辨率局部区域 | ✅ 兼顾全局与细节 ⚠️ 需区域选择 | LLaVA-1.6 |
-| **VarCO** | 可变长压缩，根据复杂度动态分配 Token | ✅ 效率高 ⚠️ 实现复杂 | Qwen2-VL |
+| **VarCO** | 可变长压缩，根据复杂度动态分配 Token | ✅ 效率高 ⚠️ 实现复杂 | [Qwen](https://qwen.alibaba.com)2-VL |
 
 **LLaVA-1.6 的高分策略（代表性方案）：**
 1. 将原始图像缩放到最大分辨率（336×336 或 672×672）
@@ -1123,12 +1123,12 @@ graph TB
 
 | 应用方向 | 说明 | 代表工作 |
 |---------|------|---------|
-| **文档理解 / OCR** | 理解复杂文档布局、表格、图表、公式 | Qwen2-VL、InternVL2、DocVQA |
+| **文档理解 / OCR** | 理解复杂文档布局、表格、图表、公式 | [Qwen](https://qwen.alibaba.com)2-VL、InternVL2、DocVQA |
 | **GUI Agent / GUI 导航** | 理解屏幕截图，完成 APP 操作（点击、输入、滑动） | Apple Ferret-UI、CogAgent、OS-Copilot |
-| **图表分析** | 从折线图、柱状图、流程图中抽取数据和趋势 | ChartLlama、ChartQA |
+| **图表分析** | 从折线图、柱状图、流程图中抽取数据和趋势 | Chart[Llama](https://llama.meta.com)、ChartQA |
 | **视觉推理** | 需要多步推理的视觉问题（"谁在拿着伞？伞的颜色是？"） | MMMU、MathVista |
 | **医学影像分析** | X 光、CT、MRI 的自动解读和报告生成 | LLaVA-Med、Med-PaLM M |
-| **视频理解** | 视频摘要、事件定位、时序推理 | Video-LLaMA、VideoChat、VTimeLLM |
+| **视频理解** | 视频摘要、事件定位、时序推理 | Video-[Llama](https://llama.meta.com)、VideoChat、VTimeLLM |
 | **交互式 Agent（具身智能）** | 机器人根据视觉输入和环境指令执行任务 | RT-2、PaLM-E、Octopus |
 | **视觉生成辅助** | 根据文本 + 图像进行编辑、修补、扩展（Inpainting + VLM 理解） | SEED-X、Emu |
 | **多模态 RAG** | 同时检索图像和文本知识，回答多模态问题 | ColPali、V-RAG |
@@ -1168,7 +1168,7 @@ graph TB
 - **Caption 和 VQA 数据混用**：纯 Caption 数据会导致模型只会描述，加入 VQA 数据才能学会对话
 - **分辨率影响大**：低分辨率下细节丢失严重，使用 LLaVA-1.6 的动态高分策略显著改善
 
-**如何回答（如果没有实际经验）：** "虽然我目前没有在生产环境中做过 VLM 微调，但我在研究和复现工作中深入了解了 **LLaVA-Factory** 和 **SWIFT** 框架，了解其微调流程和关键参数设置。我关注过 **Qwen2-VL** 和 **InternVL2** 的开源微调方案，尤其是它们对高分辨率图像的处理和对话数据的构造策略。"
+**如何回答（如果没有实际经验）：** "虽然我目前没有在生产环境中做过 VLM 微调，但我在研究和复现工作中深入了解了 **LLaVA-Factory** 和 **SWIFT** 框架，了解其微调流程和关键参数设置。我关注过 **[Qwen](https://qwen.alibaba.com)2-VL** 和 **InternVL2** 的开源微调方案，尤其是它们对高分辨率图像的处理和对话数据的构造策略。"
 
 ---
 
@@ -1341,7 +1341,7 @@ graph TB
 
 | 组件 | 说明 |
 |------|------|
-| **Base Model** | 与目标 LLM 同架构（如 LLaMA-7B/13B），或稍小（LLaMA-1B） |
+| **Base Model** | 与目标 LLM 同架构（如 [Llama](https://llama.meta.com)-7B/13B），或稍小（[Llama](https://llama.meta.com)-1B） |
 | **修改** | 去掉 LM Head，替换为 **线性投影层**（隐藏层大小 → 1），输出标量 |
 | **输入** | 拼接 `[CLS] + prompt + [SEP] + reply` |
 | **输出** | 一个标量 **reward score**（如 0.2 或 -0.5） |
@@ -1620,13 +1620,13 @@ graph TB
 
 ---
 
-### Q50: 你知道 Deepseek 的 GRPO 吗，它和 PPO 的主要区别是什么？优劣是什么？
+### Q50: 你知道 [DeepSeek](https://deepseek.com) 的 GRPO 吗，它和 PPO 的主要区别是什么？优劣是什么？
 
 > 💡 **要点**：GRPO（Group Relative Policy Optimization）取消了 PPO 中的 Critic 模型，使用组内采样回复的相对奖励进行优化，大幅降低了显存和工程复杂度。
 
 **GRPO（Group Relative Policy Optimization）核心思想：**
 
-GRPO 由 DeepSeek 在 DeepSeek-R1 和 DeepSeek-V2 论文中提出。对于一个 prompt，GRPO 采样一组回复 $\{y_1, y_2, ..., y_G\}$，然后使用组内回复奖励的相对值作为优化信号，完全抛弃了价值函数（Critic）网络。
+GRPO 由 [DeepSeek](https://deepseek.com) 在 [DeepSeek](https://deepseek.com)-R1 和 [DeepSeek](https://deepseek.com)-V2 论文中提出。对于一个 prompt，GRPO 采样一组回复 $\{y_1, y_2, ..., y_G\}$，然后使用组内回复奖励的相对值作为优化信号，完全抛弃了价值函数（Critic）网络。
 
 ```mermaid
 graph TB
@@ -1672,7 +1672,7 @@ graph TB
 1. **显存减半**：省去了 Critic 模型的加载和梯度计算，模型从 4 个减为 2-3 个
 2. **稳定性更好**：组内相对奖励消除了 RM 的绝对偏移（某些 prompt 天然 RM 分高或低）
 3. **实现简单**：无需 GAE（广义优势估计）等复杂计算
-4. **规则奖励天然匹配**：DeepSeek-R1 在数学推理场景中可以直接用"答案是否正确"作为规则奖励，无需 RM
+4. **规则奖励天然匹配**：[DeepSeek](https://deepseek.com)-R1 在数学推理场景中可以直接用"答案是否正确"作为规则奖励，无需 RM
 
 **GRPO 的劣势：**
 1. **组大小 G 的影响敏感**：G 太小（< 8）组内统计不准确，G 太大（> 128）采样成本高
@@ -1682,7 +1682,7 @@ graph TB
 
 **最终对比：**
 - **通用对齐任务**（对话、写作）：PPO 仍然是更成熟的选择
-- **数学/推理等规则奖励易定义任务**：GRPO 更优（DeepSeek-R1 已验证）
+- **数学/推理等规则奖励易定义任务**：GRPO 更优（[DeepSeek](https://deepseek.com)-R1 已验证）
 - **显存受限场景**：GRPO 可以省掉 Critic 的显存
 
 ---
@@ -1736,7 +1736,7 @@ DAPO 主要针对 GRPO 中"固定组大小 G"的低效问题。改进点：
 **与 GRPO 的区别：** DAPO 使用**两个正在训练的策略**（GRPO 只有一个 Policy + 冻结的 Reference），且通过动态组大小降低了采样成本。但 DAPO 工程实现复杂度高于 GRPO。
 
 **实践建议：**
-- 需要简单稳定的方案 → **GRPO**（DeepSeek 已验证）
+- 需要简单稳定的方案 → **GRPO**（[DeepSeek](https://deepseek.com) 已验证）
 - 需要灵活的偏好形式 → **GSPO** 框架
 - 资源充足追求极致效率 → **DAPO**
 
@@ -1797,7 +1797,7 @@ Step 3: "所以剩 4 个"   → PRM 评分: -0.8 (❌ 错误结论)
          → Seq RM: -0.3
 ```
 
-**当前实践：** 绝大多数工业界 RLHF 系统（GPT-4、Claude）仍然使用 **Seq-level 奖励** 因为 PRM 的标注成本极高（每一步都需要人工验证）。但 DeepSeek-R1 和 OpenAI 的 o1 都强调了**过程奖励**在推理任务中的重要性，PRM 是未来的重要方向。
+**当前实践：** 绝大多数工业界 RLHF 系统（GPT-4、Claude）仍然使用 **Seq-level 奖励** 因为 PRM 的标注成本极高（每一步都需要人工验证）。但 [DeepSeek](https://deepseek.com)-R1 和 [OpenAI](https://openai.com) 的 o1 都强调了**过程奖励**在推理任务中的重要性，PRM 是未来的重要方向。
 
 ---
 
@@ -1866,7 +1866,7 @@ graph TB
 | **对抗 Reward Hacking** | ✅ 人类能发现细微问题 | ⚠️ AI 容易被欺骗 |
 | **伦理对齐** | ✅ 人类能处理复杂伦理问题 | ⚠️ AI 的伦理判断可能偏离人类 |
 
-**实践建议：** 最好的方案是 **RLAIF + RLHF 混合**——用 RLAIF 生成大量基础偏好数据，用少量高质量的人类标注数据来校准和纠正 AI 的偏差。Anthropic 的 Constitutional AI（CAI）正是这种思路的实践：AI 根据宪法规则自动生成反馈，人类只做**最终审核**。
+**实践建议：** 最好的方案是 **RLAIF + RLHF 混合**——用 RLAIF 生成大量基础偏好数据，用少量高质量的人类标注数据来校准和纠正 AI 的偏差。[Anthropic](https://anthropic.com) 的 Constitutional AI（CAI）正是这种思路的实践：AI 根据宪法规则自动生成反馈，人类只做**最终审核**。
 
 **未来展望：** RLAIF 不会完全取代 RLHF，但会让偏好数据的边界**极大扩展**。人类将从"标注者"变为"审核者"和"规则制定者"，专注于定义"什么是对的"而非"每条标注都要亲自做"。
 
@@ -1932,7 +1932,7 @@ graph LR
 1. **文档解析与清洗**：将 PDF/HTML/Word 等格式转为纯文本，去除噪声（广告、页眉页脚、无关标签）
 2. **文本切块（Chunking）**：将长文档按策略切分为语义完整的短片段（如 512 tokens），是影响检索质量的**最关键因素之一**
 3. **向量化（Embedding）**：使用 Embedding 模型将文本块转为稠密向量
-4. **索引存储**：将向量存入向量数据库（如 Chroma、Pinecone、Milvus），并建立快速近邻检索索引（如 HNSW、IVF）
+4. **索引存储**：将向量存入向量数据库（如 [Chroma](https://www.trychroma.com)、[Pinecone](https://www.pinecone.io)、[Milvus](https://milvus.io)），并建立快速近邻检索索引（如 HNSW、IVF）
 
 **检索生成阶段（在线）：**
 
@@ -2232,11 +2232,11 @@ graph TB
 | 框架 | 语言 | 核心特点 | 适用场景 |
 |------|------|---------|---------|
 | **RagFlow** | Python | 深度文档理解（PDF/表格解析）、可视化调试 | 企业知识库、复杂文档场景 |
-| **LangChain** | Python/JS | 组件最全、生态最大 | 通用 RAG、快速原型 |
-| **LlamaIndex** | Python | RAG 能力最强、索引策略丰富 | 文档问答、数据框架 |
+| **[LangChain](https://langchain.com)** | Python/JS | 组件最全、生态最大 | 通用 RAG、快速原型 |
+| **[Llama](https://llama.meta.com)Index** | Python | RAG 能力最强、索引策略丰富 | 文档问答、数据框架 |
 | **Haystack** | Python | 模块化管道、企业级支持 | 生产级搜索系统 |
 | **Qdrant** | Python | 向量数据库产品 | 高性能向量存储 |
-| **Milvus** | Go/Python | 分布式向量数据库 | 大规模部署场景 |
+| **[Milvus](https://milvus.io)** | Go/Python | 分布式向量数据库 | 大规模部署场景 |
 
 **选型决策树：**
 
@@ -2391,7 +2391,7 @@ graph TB
 |------|--------|---------|------|
 | **事实性/幻觉** | TruthfulQA、事实验证集 | 准确性、引用正确性 | **幻觉率**、**F1-Score**、**引文准确率** |
 | **推理能力** | GSM8K、MATH、Big-Bench Hard | 推理步骤、最终答案 | **Pass@K**、**步骤正确率**、**CoT 质量** |
-| **安全性** | Anthropic Red Team、SafetyBench | 拒绝有害请求、边界处理 | **拒绝率**、**有害性分数**、**越狱成功率** |
+| **安全性** | [Anthropic](https://anthropic.com) Red Team、SafetyBench | 拒绝有害请求、边界处理 | **拒绝率**、**有害性分数**、**越狱成功率** |
 | **指令遵循** | IFEval、FollowBench | 格式约束、约束满足 | **硬约束 TPR**、**软约束 TPR** |
 
 ---
@@ -2709,7 +2709,7 @@ graph TB
 
 > 💡 **要点**：开源和闭源正形成"双轨演进"格局——闭源领跑前沿，开源推动普惠，两者在差异化市场中共存
 
-| 对比维度 | 闭源模型 (GPT-4, Claude) | 开源模型 (LLaMA, Qwen, DeepSeek) |
+| 对比维度 | 闭源模型 (GPT-4, Claude) | 开源模型 ([Llama](https://llama.meta.com), [Qwen](https://qwen.alibaba.com), [DeepSeek](https://deepseek.com)) |
 |---------|------------------------|-------------------------------|
 | **性能** | ✅ 最强（前沿领跑 6-12 个月） | ⚠️ 接近但仍有差距 |
 | **成本** | 按量付费，长期成本高 | ✅ 自部署成本可控 |
@@ -2734,10 +2734,10 @@ graph LR
 
 **未来演进趋势：**
 
-- **性能差距缩小**：DeepSeek-V3 等开源模型已证明性能可接近 GPT-4，差距从数年缩小到数月
+- **性能差距缩小**：[DeepSeek](https://deepseek.com)-V3 等开源模型已证明性能可接近 GPT-4，差距从数年缩小到数月
 - **闭源走"上"**：闭源将更专注于训练超大模型（万亿参数级），主打全能通用智能
 - **开源走"专"**：开源生态将深耕垂直领域（医疗、法律、金融），通过领域数据微调实现超越
-- **互相促进**：开源论文推动技术突破（如 DeepSeek 的 MoE），闭源通过 API 推动商业模式创新
+- **互相促进**：开源论文推动技术突破（如 [DeepSeek](https://deepseek.com) 的 MoE），闭源通过 API 推动商业模式创新
 
 ---
 
@@ -2804,7 +2804,7 @@ graph TB
 
 | 角色 | 说明 | 典型应用 |
 |------|------|---------|
-| **推理能力增强** | 生成海量 CoT 推理链作为训练数据 | DeepSeek-R1 的推理数据 |
+| **推理能力增强** | 生成海量 CoT 推理链作为训练数据 | [DeepSeek](https://deepseek.com)-R1 的推理数据 |
 | **偏好对齐** | 生成对比对用于 DPO/RLHF | Constitutional AI |
 | **数据稀释保护** | 在私有数据中混入合成数据保护隐私 | 差分隐私合成 |
 | **长尾覆盖** | 补充低资源领域的训练数据 | 稀缺语言翻译 |
@@ -3050,7 +3050,7 @@ M = 2 × 80 × 64 × 4096 × 2 × 1 = 83.9 GB
 
 ### 📌 导航
 
-| [⬅️ 上一部分：工具与协议篇](./12-Agent面试题-工具协议篇.md) | [🏠 返回主指南](./01-AI前端开发体系化学习指南.md) | [➡️ 下一部分：框架与工具链篇](./14-Agent面试题-框架工具链篇.md) |
+| [⬅️ 上一部分：工具与协议篇](./11-Agent面试题-工具协议篇.md) | [🏠 返回主指南](./README.md) | [➡️ 下一部分：框架与工具链篇](./13-Agent面试题-框架工具链篇.md) |
 |:---:|:---:|:---:|
 
 

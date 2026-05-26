@@ -1,4 +1,4 @@
-﻿# 🔧 二、工具调用与协议篇
+# 🔧 二、工具调用与协议篇
 
 > 🎯 **核心考点：** Function Calling 原理、MCP 协议、Skill/A2A、通信协议对比、AI Gateway | **题数：** 16 题
 
@@ -69,7 +69,7 @@ graph TB
 
 ### Q4: 什么是 MCP（模型上下文协议）？核心内容？
 
-**MCP（Model Context Protocol）** 是 Anthropic 提出的**开源协议**，用于标准化 LLM 与外部工具/数据源的通信方式。类似「AI 应用的 USB-C 接口」。
+**MCP（Model Context Protocol）** 是 [Anthropic](https://anthropic.com) 提出的**开源协议**，用于标准化 LLM 与外部工具/数据源的通信方式。类似「AI 应用的 USB-C 接口」。
 
 ```mermaid
 graph TB
@@ -93,7 +93,7 @@ graph TB
 | **Tools** | 可调用的函数，定义 Schema 和 handler |
 | **Resources** | 可读取的数据源（文件、数据库等） |
 | **Prompts** | 可复用的提示模板 |
-| **Transport** | 通信层（stdio / SSE / WebSocket） |
+| **Transport** | 通信层（stdio / SSE / [WebSocket](https://websockets.spec.whatwg.org)） |
 | **JSON-RPC** | 消息格式标准 |
 
 ---
@@ -133,7 +133,7 @@ graph TD
 | **标准化** | 各厂商自定格式 | 开放标准协议 |
 | **工具发现** | 需开发者手动传入 Schema | 工具可动态发现 (tools/list) |
 | **连接方式** | 一次性调用 | 长连接会话 |
-| **适用厂商** | OpenAI / Anthropic / 各家 | Anthropic 发起，社区支持 |
+| **适用厂商** | [OpenAI](https://openai.com) / [Anthropic](https://anthropic.com) / 各家 | [Anthropic](https://anthropic.com) 发起，社区支持 |
 | **实际部署** | 简单，代码直接调用 | 需运行 MCP Server 进程 |
 
 **一句话总结：** Function Calling 是 LLM 的「输出格式」，MCP 是「工具和 LLM 之间」的通信标准。
@@ -174,7 +174,7 @@ graph LR
     style N1 fill:#ffcccc
 ```
 
-- 纯推理模型（如 o1、DeepSeek-R1）专门优化了推理链，没有经过 Function Calling 的指令微调
+- 纯推理模型（如 o1、[DeepSeek](https://deepseek.com)-R1）专门优化了推理链，没有经过 Function Calling 的指令微调
 - MCP 依赖 Model 端输出特定 JSON 格式，如果模型不支持，MCP 无法工作
 - 解决方法：使用 Gateway 层将推理模型的输出转为 MCP 格式
 
@@ -259,7 +259,7 @@ graph LR
 | **定位** | Agent → 工具 | Agent ↔ Agent |
 | **通信方向** | 垂直（应用调工具） | 水平（Agent 间协作） |
 | **核心问题** | 工具如何标准化接入 | Agent 如何协作完成任务 |
-| **提出方** | Anthropic | Google |
+| **提出方** | [Anthropic](https://anthropic.com) | Google |
 | **关系** | **互补**：Agent 先用 MCP 调工具，再用 A2A 与其他 Agent 通信 |
 
 ---
@@ -270,15 +270,15 @@ graph LR
 |---------|---------|------|------|
 | **stdio** | 本地子进程 | 简单、低延迟 | 限于本地 |
 | **SSE** | 服务端推送 | 标准 HTTP，兼容好 | 单向推送 |
-| **WebSocket** | 实时双向通信 | 全双工、低延迟 | 额外复杂度 |
+| **[WebSocket](https://websockets.spec.whatwg.org)** | 实时双向通信 | 全双工、低延迟 | 额外复杂度 |
 
-**推荐：** 本地开发用 stdio，生产环境用 SSE 或 WebSocket。
+**推荐：** 本地开发用 stdio，生产环境用 SSE 或 [WebSocket](https://websockets.spec.whatwg.org)。
 
 ---
 
-### Q14: WebSocket 和 SSE 通信的区别及局限性？
+### Q14: [WebSocket](https://websockets.spec.whatwg.org) 和 SSE 通信的区别及局限性？
 
-| 对比维度 | WebSocket | SSE (Server-Sent Events) |
+| 对比维度 | [WebSocket](https://websockets.spec.whatwg.org) | SSE (Server-Sent Events) |
 |---------|-----------|-------------------------|
 | **方向** | 双向全双工 | 服务器→客户端单向 |
 | **协议** | ws:// / wss:// | HTTP 长连接 |
@@ -288,14 +288,14 @@ graph LR
 | **适用场景** | 实时聊天、游戏 | 通知推送、日志流 |
 
 **局限性：**
-- **WebSocket**：需要心跳保活、有连接数限制、防火墙可能拦截 ws 协议
+- **[WebSocket](https://websockets.spec.whatwg.org)**：需要心跳保活、有连接数限制、防火墙可能拦截 ws 协议
 - **SSE**：不支持二进制、单向（仅服务器推送）、HTTP/1.1 限制并发连接数（HTTP/2 解决）
 
 ---
 
-### Q15: 为什么用 WebRTC？与 WebSocket 在 AI 对话中的核心差异？
+### Q15: 为什么用 [WebRTC](https://webrtc.org)？与 [WebSocket](https://websockets.spec.whatwg.org) 在 AI 对话中的核心差异？
 
-| 维度 | WebSocket | WebRTC |
+| 维度 | [WebSocket](https://websockets.spec.whatwg.org) | [WebRTC](https://webrtc.org) |
 |------|-----------|--------|
 | **定位** | 消息传输协议 | 实时通信框架（音视频+数据） |
 | **延迟** | 低（~100ms） | 极低（~10ms，UDP） |
@@ -304,8 +304,8 @@ graph LR
 | **适用场景** | 文本对话、指令传输 | 语音对话、视频通话 |
 
 **AI 对话场景：**
-- **文本 AI**：WebSocket 足够，简单可靠
-- **语音 AI**：WebRTC 是首选，原生支持低延迟音频流
+- **文本 AI**：[WebSocket](https://websockets.spec.whatwg.org) 足够，简单可靠
+- **语音 AI**：[WebRTC](https://webrtc.org) 是首选，原生支持低延迟音频流
 
 ---
 
@@ -339,7 +339,7 @@ graph TB
 | **安全合规** | 输入输出审核、脱敏、限流 |
 | **监控观测** | 请求日志、延迟追踪、Token 统计 |
 
-**常用方案：** OpenAI API Gateway / Kong / APISIX / 自建
+**常用方案：** [OpenAI](https://openai.com) API Gateway / Kong / APISIX / 自建
 
 ---
 
@@ -366,8 +366,8 @@ graph TB
 | 协议 | 延迟 | 方向 | 连接开销 | 自动重连 | 适用场景 |
 |:---|:---:|:---:|:---:|:---:|:---|
 | **HTTP/SSE** | 100-500ms | 服务端→客户端单向 | 低 | ✅ 原生 | 流式文本生成、MCP 通知 |
-| **WebSocket** | 50-200ms | 双向 | 中 | ❌ 需实现 | Function Calling 结果返回、Agent 间通信 |
-| **WebRTC** | 10-50ms | 双向 P2P | 高 | ✅ 自适应 | 语音 AI 对话、视频交互 |
+| **[WebSocket](https://websockets.spec.whatwg.org)** | 50-200ms | 双向 | 中 | ❌ 需实现 | Function Calling 结果返回、Agent 间通信 |
+| **[WebRTC](https://webrtc.org)** | 10-50ms | 双向 P2P | 高 | ✅ 自适应 | 语音 AI 对话、视频交互 |
 | **STDIO** | 进程内 | 双向 | 无 | — | MCP 本地子进程通信 |
 
 #### MCP 传输层设计的分场景选择
@@ -387,6 +387,5 @@ graph TB
 
 ### 📌 导航
 
-| [⬅️ 上一部分：基础篇](./11-Agent面试题-基础篇.md) | [🏠 返回主指南](./01-AI前端开发体系化学习指南.md) | [➡️ 下一部分：大模型基础篇](./13-Agent面试题-大模型基础篇.md) |
+| [⬅️ 上一部分：基础篇](./10-Agent面试题-基础篇.md) | [🏠 返回主指南](./README.md) | [➡️ 下一部分：大模型基础篇](./12-Agent面试题-大模型基础篇.md) |
 |:---:|:---:|:---:|
-

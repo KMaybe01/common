@@ -1,7 +1,7 @@
-﻿# 🤖 Agent 工程师面试题库 · 基础篇
+# 🤖 Agent 工程师面试题库 · 基础篇
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
-> 本文为 [Agent 工程师面试题库](./11-Agent面试题-基础篇.md) 的基础篇，涵盖 Agent 核心概念、架构设计、ReAct 范式、记忆系统、Multi-Agent、规划与反思机制等面试高频考点。
+> 本文为 [Agent 工程师面试题库](./10-Agent面试题-基础篇.md) 的基础篇，涵盖 Agent 核心概念、架构设计、[React](https://react.dev) 范式、记忆系统、Multi-Agent、规划与反思机制等面试高频考点。
 
 ---
 
@@ -9,12 +9,12 @@
 
 | 文档 | 内容 | 题数 |
 |:---|:---|:---:|
-| **📖 11 基础篇**（当前） | Agent 定义、架构、ReAct、记忆、Multi-Agent、安全对齐 | 32 题 |
-| **[🔧 12 工具与协议篇](./12-Agent面试题-工具协议篇.md)** | Function Calling、MCP、A2A、SSE/WebSocket、AI Gateway | 16 题 |
-| **[📐 13 大模型基础篇](./13-Agent面试题-大模型基础篇.md)** | Transformer、RLHF/DPO/GRPO、RAG、模型评估、多模态 VLM | 84 题 |
-| **[🔗 14 框架与工具链篇](./14-Agent面试题-框架工具链篇.md)** | LangChain、CrewAI、AutoGen、vLLM、SGLang、Dify | 20 题 |
-| **[🚀 15 实战项目篇](./15-Agent面试题-实战项目篇.md)** | 架构设计、性能优化、成本控制、安全监控、CI/CD | 25 题 |
-| **[🔮 16 前沿趋势篇](./16-Agent面试题-前沿趋势篇.md)** | MCP/A2A 演进、端侧 Agent、Agent Economy、多模态 | 22 题 |
+| **📖 11 基础篇**（当前） | Agent 定义、架构、[React](https://react.dev)、记忆、Multi-Agent、安全对齐 | 32 题 |
+| **[🔧 12 工具与协议篇](./11-Agent面试题-工具协议篇.md)** | Function Calling、MCP、A2A、SSE/[WebSocket](https://websockets.spec.whatwg.org)、AI Gateway | 16 题 |
+| **[📐 13 大模型基础篇](./12-Agent面试题-大模型基础篇.md)** | Transformer、RLHF/DPO/GRPO、RAG、模型评估、多模态 VLM | 84 题 |
+| **[🔗 14 框架与工具链篇](./13-Agent面试题-框架工具链篇.md)** | [LangChain](https://langchain.com)、[CrewAI](https://crewai.com)、[AutoGen](https://microsoft.github.io/autogen)、[vLLM](https://github.com/vllm-project/vllm)、SGLang、[Dify](https://dify.ai) | 20 题 |
+| **[🚀 15 实战项目篇](./14-Agent面试题-实战项目篇.md)** | 架构设计、性能优化、成本控制、安全监控、CI/CD | 25 题 |
+| **[🔮 16 前沿趋势篇](./15-Agent面试题-前沿趋势篇.md)** | MCP/A2A 演进、端侧 Agent、Agent Economy、多模态 | 22 题 |
 
 
 ## 📈 Agent 技术发展脉络
@@ -51,7 +51,7 @@ timeline
 |------|------|---------|---------|------|
 | **L0 对话** | 2022 | ChatGPT | 聊天问答 | 无工具、无记忆 |
 | **L1 工具** | 2023 | Function Calling | 调用 API/数据库 | 单步、无规划 |
-| **L2 规划** | 2023-2024 | ReAct / Plan-and-Execute | 多步推理 + 工具 | 成功率有限 |
+| **L2 规划** | 2023-2024 | [React](https://react.dev) / Plan-and-Execute | 多步推理 + 工具 | 成功率有限 |
 | **L3 反思** | 2024 | Reflexion / Self-Critique | 自我评估 + 修正 | 计算开销大 |
 | **L4 多 Agent** | 2024-2025 | Multi-Agent 协作 | 分工 + 辩论 + 共识 | 协调复杂度高 |
 | **L5 自主** | 2025-2026 | MCP + A2A 互操作 | 跨系统自主协作 | 安全/对齐难题 |
@@ -60,10 +60,10 @@ timeline
 
 | 协议 | 全称 | 用途 | 通信方式 | 发布方 |
 |------|------|------|---------|-------|
-| **Function Calling** | — | LLM 调用单个工具 | JSON 函数描述 | OpenAI |
-| **MCP** | Model Context Protocol | LLM 标准化访问外部数据/工具 | JSON-RPC + SSE/Stdio | Anthropic |
+| **Function Calling** | — | LLM 调用单个工具 | JSON 函数描述 | [OpenAI](https://openai.com) |
+| **MCP** | Model Context Protocol | LLM 标准化访问外部数据/工具 | JSON-RPC + SSE/Stdio | [Anthropic](https://anthropic.com) |
 | **A2A** | Agent-to-Agent | Agent 间互操作通信 | JSON-RPC + SSE | Google |
-| **Tool Use** | — | 结构化工具调用 | 系统 prompt 嵌入 | Anthropic |
+| **Tool Use** | — | 结构化工具调用 | 系统 prompt 嵌入 | [Anthropic](https://anthropic.com) |
 
 ---
 
@@ -81,8 +81,8 @@ timeline
   - [Q11: Function Calling、Skill、MCP 三者的区别？](#q11-function-callingskillmcp-三者的区别)
   - [Q12: 什么是 A2A 协议？它和 MCP 协议的区别？](#q12-什么是-a2a-协议它和-mcp-协议的区别)
   - [Q13: MCP 协议通常采用什么通信方式？](#q13-mcp-协议通常采用什么通信方式)
-  - [Q14: WebSocket 和 SSE 通信的区别及局限性？](#q14-websocket-和-sse-通信的区别及局限性)
-  - [Q15: 为什么用 WebRTC？与 WebSocket 在 AI 对话中的核心差异？](#q15-为什么用-webrtc与-websocket-在-ai-对话中的核心差异)
+  - [Q14: [WebSocket](https://websockets.spec.whatwg.org) 和 SSE 通信的区别及局限性？](#q14-[WebSocket](https://websockets.spec.whatwg.org)-和-sse-通信的区别及局限性)
+  - [Q15: 为什么用 [WebRTC](https://webrtc.org)？与 [WebSocket](https://websockets.spec.whatwg.org) 在 AI 对话中的核心差异？](#q15-为什么用-[WebRTC](https://webrtc.org)与-[WebSocket](https://websockets.spec.whatwg.org)-在-ai-对话中的核心差异)
   - [Q16: 有没有用过大型模型的网关框架？网关层解决了什么问题？](#q16-有没有用过大型模型的网关框架网关层解决了什么问题)
 - [📐 三、大模型基础篇](#三大模型基础篇)
   - [Q1: 什么是大语言模型？和传统 NLP 模型有什么区别？](#q1-什么是大语言模型和传统-nlp-模型有什么区别)
@@ -112,7 +112,7 @@ timeline
   - [Q25: L1 和 L2 正则化分别是什么，什么场景适合使用呢？](#q25-l1-和-l2-正则化分别是什么什么场景适合使用呢)
   - [Q26: 激活函数有了解吗，你知道哪些 LLM 常用的激活函数？](#q26-激活函数有了解吗你知道哪些-llm-常用的激活函数)
   - [Q27: 在训练一个百或千亿参数级别的 LLM 时，你会面临哪些主要的工程和算法挑战？](#q27-在训练一个百或千亿参数级别的-llm-时你会面临哪些主要的工程和算法挑战)
-  - [Q28: 开源框架了解过哪些？Qwen，Deepseek 的论文是否有研读过？](#q28-开源框架了解过哪些qwendeepseek-的论文是否有研读过)
+  - [Q28: 开源框架了解过哪些？[Qwen](https://qwen.alibaba.com)，[DeepSeek](https://deepseek.com) 的论文是否有研读过？](#q28-开源框架了解过哪些[Qwen](https://qwen.alibaba.com)[DeepSeek](https://deepseek.com)-的论文是否有研读过)
   - [Q29: 最近读过哪些 LLM 比较前沿的论文？](#q29-最近读过哪些-llm-比较前沿的论文)
   - [Q30: 多模态大模型（如 VLM）的核心挑战是什么？](#q30-多模态大模型如-vlm的核心挑战是什么)
   - [Q31: 请解释 CLIP 模型的工作原理](#q31-请解释-clip-模型的工作原理)
@@ -134,7 +134,7 @@ timeline
   - [Q47: 什么是"奖励作弊/奖励黑客"？](#q47-什么是奖励作弊奖励黑客)
   - [Q48: RLHF 流程复杂且不稳定。近年来出现了一些替代方案，例如 DPO](#q48-rlhf-流程复杂且不稳定近年来出现了一些替代方案例如-dpo)
   - [Q49: 想象一下，你训练完成的 RLHF 模型在离线评估中表现优异，但上线后用户反馈其回答变得越来越"模式化"](#q49-想象一下你训练完成的-rlhf-模型在离线评估中表现优异但上线后用户反馈其回答变得越来越模式化)
-  - [Q50: 你知道 Deepseek 的 GRPO 吗，它和 PPO 的主要区别是什么？](#q50-你知道-deepseek-的-grpo-吗它和-ppo-的主要区别是什么)
+  - [Q50: 你知道 [DeepSeek](https://deepseek.com) 的 GRPO 吗，它和 PPO 的主要区别是什么？](#q50-你知道-[DeepSeek](https://deepseek.com)-的-grpo-吗它和-ppo-的主要区别是什么)
   - [Q51: GSPO 和 DAPO 有听说过吗？他们和 GRPO 有什么区别？](#q51-gspo-和-dapo-有听说过吗他们和-grpo-有什么区别)
   - [Q52: 如何解决信用分配问题？token 级别和 seq 级别的奖励有何不同？](#q52-如何解决信用分配问题token-级别和-seq-级别的奖励有何不同)
   - [Q53: 除了人类反馈，我们还可以利用 AI 自身的反馈来做对齐，即 RLAIF](#q53-除了人类反馈我们还可以利用-ai-自身的反馈来做对齐即-rlaif)
@@ -170,25 +170,25 @@ timeline
   - [Q83: 你认为 Transformer 架构会长久地统治这个领域吗？](#q83-你认为-transformer-架构会长久地统治这个领域吗)
   - [Q84: 展望未来 3-5 年，你认为 LLM 和 Agent 技术最有可能在哪个行业或领域率先实现颠覆性的应用？](#q84-展望未来-3-5-年你认为-llm-和-agent-技术最有可能在哪个行业或领域率先实现颠覆性的应用)
 - [🔗 四、框架与工具链篇](#四框架与工具链篇)
-  - [Q1: 什么是 LangChain？核心概念？](#q1-什么是-langchain核心概念)
-  - [Q2: LangChain 的 Chain 是什么？有哪些类型？](#q2-langchain-的-chain-是什么有哪些类型)
-  - [Q3: LangChain Agent 是如何工作的？](#q3-langchain-agent-是如何工作的)
-  - [Q4: LangChain 的 Memory 有哪些类型？](#q4-langchain-的-memory-有哪些类型)
-  - [Q5: LangChain 如何实现 RAG？](#q5-langchain-如何实现-rag)
-  - [Q6: LangChain 的 Callback 机制有什么用？](#q6-langchain-的-callback-机制有什么用)
-  - [Q7: LangChain Expression Language (LCEL) 是什么？](#q7-langchain-expression-language-lcel-是什么)
-  - [Q8: LangSmith 和 LangServe 是什么？](#q8-langsmith-和-langserve-是什么)
-  - [Q9: LangChain 的主要竞争对手？](#q9-langchain-的主要竞争对手)
-  - [Q10: LangChain 的优缺点？](#q10-langchain-的优缺点)
-  - [Q11: 什么是 CrewAI？](#q11-什么是-crewai)
-  - [Q12: 什么是 AutoGen？](#q12-什么是-autogen)
-  - [Q13: 什么是 Dify？](#q13-什么是-dify)
-  - [Q14: 什么是 Semantic Kernel？](#q14-什么是-semantic-kernel)
+  - [Q1: 什么是 [LangChain](https://langchain.com)？核心概念？](#q1-什么是-[LangChain](https://langchain.com)核心概念)
+  - [Q2: [LangChain](https://langchain.com) 的 Chain 是什么？有哪些类型？](#q2-[LangChain](https://langchain.com)-的-chain-是什么有哪些类型)
+  - [Q3: [LangChain](https://langchain.com) Agent 是如何工作的？](#q3-[LangChain](https://langchain.com)-agent-是如何工作的)
+  - [Q4: [LangChain](https://langchain.com) 的 Memory 有哪些类型？](#q4-[LangChain](https://langchain.com)-的-memory-有哪些类型)
+  - [Q5: [LangChain](https://langchain.com) 如何实现 RAG？](#q5-[LangChain](https://langchain.com)-如何实现-rag)
+  - [Q6: [LangChain](https://langchain.com) 的 Callback 机制有什么用？](#q6-[LangChain](https://langchain.com)-的-callback-机制有什么用)
+  - [Q7: [LangChain](https://langchain.com) Expression Language (LCEL) 是什么？](#q7-[LangChain](https://langchain.com)-expression-language-lcel-是什么)
+  - [Q8: [LangSmith](https://smith.langchain.com) 和 [LangServe](https://python.langchain.com/v0.2/docs/langserve) 是什么？](#q8-[LangSmith](https://smith.langchain.com)-和-[LangServe](https://python.langchain.com/v0.2/docs/langserve)-是什么)
+  - [Q9: [LangChain](https://langchain.com) 的主要竞争对手？](#q9-[LangChain](https://langchain.com)-的主要竞争对手)
+  - [Q10: [LangChain](https://langchain.com) 的优缺点？](#q10-[LangChain](https://langchain.com)-的优缺点)
+  - [Q11: 什么是 [CrewAI](https://crewai.com)？](#q11-什么是-[CrewAI](https://crewai.com))
+  - [Q12: 什么是 [AutoGen](https://microsoft.github.io/autogen)？](#q12-什么是-[AutoGen](https://microsoft.github.io/autogen))
+  - [Q13: 什么是 [Dify](https://dify.ai)？](#q13-什么是-[Dify](https://dify.ai))
+  - [Q14: 什么是 [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel)？](#q14-什么是-semantic-kernel)
   - [Q15: 什么是 Pydantic AI？](#q15-什么是-pydantic-ai)
   - [Q16: 什么是 Instructor？](#q16-什么是-instructor)
   - [Q17: LLM 可观测性工具？](#q17-llm-可观测性工具)
   - [Q18: 主流 Agent 框架如何选型？](#q18-主流-agent-框架如何选型)
-  - [Q19: 什么是 vLLM？](#q19-什么是-vllm)
+  - [Q19: 什么是 [vLLM](https://github.com/vllm-project/vllm)？](#q19-什么是-[vLLM](https://github.com/vllm-project/vllm))
   - [Q20: SGLang 的核心创新？](#q20-sglang-的核心创新)
 - [🚀 五、实战项目篇](#五实战项目篇)
   - [Q1: 如何设计一个生产级的 Agent 架构？](#q1-如何设计一个生产级的-agent-架构)
@@ -244,7 +244,7 @@ timeline
 
 # 🧠 一、Agent 基础篇
 
-> 🎯 **核心考点：** Agent 定义、架构设计、ReAct 范式、记忆系统、Multi-Agent、规划与反思机制 | **题数：** 16 题
+> 🎯 **核心考点：** Agent 定义、架构设计、[React](https://react.dev) 范式、记忆系统、Multi-Agent、规划与反思机制 | **题数：** 16 题
 
 ---
 
@@ -319,9 +319,9 @@ graph TB
 
 | 组件 | 职责 | 技术方案 |
 |------|------|---------|
-| **LLM 推理引擎** | 理解、推理、决策 | GPT-4o / Claude / DeepSeek |
+| **LLM 推理引擎** | 理解、推理、决策 | GPT-4o / Claude / [DeepSeek](https://deepseek.com) |
 | **记忆系统** | 存储和检索历史信息 | RAG + 向量数据库 + 摘要 |
-| **规划模块** | 分解任务、制定步骤 | ReAct / Plan-and-Execute |
+| **规划模块** | 分解任务、制定步骤 | [React](https://react.dev) / Plan-and-Execute |
 | **工具调用** | 与外部世界交互 | Function Calling / MCP / API |
 | **反馈循环** | 评估结果、自我反思 | Reflection + 重试机制 |
 | **安全护栏** | 内容过滤、权限控制 | Guardrails / 输入输出审核 |
@@ -400,23 +400,23 @@ graph TD
 
 ---
 
-### Q5: Agent 推理模式有哪些？ReAct 是什么？
+### Q5: Agent 推理模式有哪些？[React](https://react.dev) 是什么？
 
 **主要推理模式：**
 
 | 模式 | 核心思想 | 适用场景 |
 |------|---------|---------|
-| **ReAct** | 推理 + 行动交替循环 | 通用问题解决 |
+| **[React](https://react.dev)** | 推理 + 行动交替循环 | 通用问题解决 |
 | **Plan-and-Execute** | 先制定计划再逐步执行 | 复杂多步任务 |
 | **Reflection** | 执行后自我评估修正 | 编码、数学推理 |
 | **Tree-of-Thought** | 同时探索多条推理路径 | 需要探索的问题 |
 | **Self-Consistency** | 多次采样取多数结果 | 开放性问题 |
 
-**ReAct（Reasoning + Acting）详解：**
+**[React](https://react.dev)（Reasoning + Acting）详解：**
 
-> ⚠️ **注意**：ReAct 是 Agent 最基础也是最广泛使用的设计范式，面试高频考点
+> ⚠️ **注意**：[React](https://react.dev) 是 Agent 最基础也是最广泛使用的设计范式，面试高频考点
 
-ReAct 的核心思想是让 LLM 在**推理（思考）**和**行动（工具调用）**之间交替进行，每一步的观察结果反馈到下一步推理。
+[React](https://react.dev) 的核心思想是让 LLM 在**推理（思考）**和**行动（工具调用）**之间交替进行，每一步的观察结果反馈到下一步推理。
 
 ```mermaid
 sequenceDiagram
@@ -436,7 +436,7 @@ sequenceDiagram
     end
 ```
 
-**ReAct 的 Prompt 模板示例：**
+**[React](https://react.dev) 的 Prompt 模板示例：**
 
 ```
 你是一个 AI 助手，请按照以下格式思考并行动：
@@ -452,7 +452,7 @@ Final Answer: 最终回答
 
 ---
 
-### Q6: ReAct、Plan-and-Execute、Reflection 三种范式的核心区别？
+### Q6: [React](https://react.dev)、Plan-and-Execute、Reflection 三种范式的核心区别？
 
 ```mermaid
 graph TB
@@ -483,7 +483,7 @@ graph TB
     end
 ```
 
-| 维度 | ReAct | Plan-and-Execute | Reflection |
+| 维度 | [React](https://react.dev) | Plan-and-Execute | Reflection |
 |------|-------|-----------------|------------|
 | **核心思路** | 边想边做 | 先想后做 | 做后检查 |
 | **规划时机** | 动态规划（每步思考） | 静态规划（事先制定） | 执行后修正 |
@@ -493,9 +493,9 @@ graph TB
 | **选型建议** | **默认首选** | 任务步骤清晰时 | 质量要求极高时 |
 
 **实际项目选型建议：**
-- **大多数场景 → ReAct**：灵活且高效
+- **大多数场景 → [React](https://react.dev)**：灵活且高效
 - **任务明确、步骤稳定 → Plan-and-Execute**：如数据处理 Pipeline
-- **需要高质量输出 → ReAct + Reflection**：如代码生成、报告撰写
+- **需要高质量输出 → [React](https://react.dev) + Reflection**：如代码生成、报告撰写
 
 ---
 
@@ -772,7 +772,7 @@ graph LR
 | 方法 | 原理 | 优缺点 |
 |------|------|--------|
 | **Prompt Engineering** | 在 System Prompt 中给出规划框架 | ✅ 简单 ❌ 不可靠 |
-| **ReAct Pattern** | 边推理边行动 | ✅ 动态灵活 |
+| **[React](https://react.dev) Pattern** | 边推理边行动 | ✅ 动态灵活 |
 | **Plan-and-Execute** | 先制定完整计划再执行 | ✅ 稳定性高 ❌ 计划可能错 |
 | **Fine-tuning** | 在规划类数据上微调 | ✅ 效果好 ❌ 成本高 |
 | **Tree-of-Thought** | 同时探索多条路径 | ✅ 质量高 ❌ 成本高 |
@@ -868,7 +868,7 @@ graph TB
 | 机制 | 说明 | 实现方式 |
 |------|------|---------|
 | **意图路由** | 根据用户输入分配 Agent | 分类器 / LLM 决策 |
-| **事件总线** | Agent 间异步通信 | Redis Pub/Sub / 消息队列 |
+| **事件总线** | Agent 间异步通信 | [Redis](https://redis.io) Pub/Sub / 消息队列 |
 | **共享记忆** | Agent 访问同一记忆库 | 向量数据库 + 上下文窗口 |
 | **Supervisor** | 协调者仲裁冲突 | 独立的 LLM 裁决 |
 | **动态切换** | 某 Agent 无法处理时切换 | 降级策略 + 超时回退 |
@@ -1127,7 +1127,7 @@ graph TB
 | **数据飞轮** | Agent 成功执行的轨迹可用于微调，形成正反馈 |
 | **开源影响** | 验证了"Agent 可以解决真实软件工程问题"这一命题 |
 
-**另一个值得关注的工作：Anthropic 的 Computer Use（2024.10）**，它让 Agent 直接操控计算机界面（移动鼠标、点击、键盘输入），跳过了对 API 的依赖。这个方向展示了 **Agent 不应局限于工具调用**，而是可以做人类能做的一切操作。
+**另一个值得关注的工作：[Anthropic](https://anthropic.com) 的 Computer Use（2024.10）**，它让 Agent 直接操控计算机界面（移动鼠标、点击、键盘输入），跳过了对 API 的依赖。这个方向展示了 **Agent 不应局限于工具调用**，而是可以做人类能做的一切操作。
 
 ---
 
@@ -1161,7 +1161,7 @@ graph TB
 | 维度 | 模型派观点 | 架构派观点 | 我的看法 |
 |------|-----------|-----------|---------|
 | **核心主张** | 更强的模型 = 更强的 Agent | 精巧架构可弥补模型不足 | **两者互补** |
-| **论据** | GPT-4 Agent 远强于 GPT-3.5 Agent | ReAct 架构释放了模型潜力 | 架构利用模型能力 |
+| **论据** | GPT-4 Agent 远强于 GPT-3.5 Agent | [React](https://react.dev) 架构释放了模型潜力 | 架构利用模型能力 |
 | **局限** | 最强的模型也难以一键解决复杂任务 | 架构无法凭空创造出模型没有的能力 | 需要协同发展 |
 | **投入产出** | 模型提升需要巨大算力投入 | 架构优化成本低，见效快 | **短期做架构，长期跟模型** |
 
@@ -1280,21 +1280,21 @@ graph LR
 
 | 阶段 | 学习内容 | 动手项目 | 参考资源 |
 |------|---------|---------|---------|
-| **1. 动手入门** | Python、OpenAI/Claude API、Function Calling | 用 50 行代码手写一个 ReAct Agent（搜索+计算器） | OpenAI Cookbook |
-| **2. 深度理解** | LLM 原理、Prompt Engineering、RAG、Embedding | 做一个带记忆的对话 Agent + 知识库 RAG | LangChain 官方教程 |
+| **1. 动手入门** | Python、[OpenAI](https://openai.com)/Claude API、Function Calling | 用 50 行代码手写一个 [React](https://react.dev) Agent（搜索+计算器） | [OpenAI](https://openai.com) Cookbook |
+| **2. 深度理解** | LLM 原理、Prompt Engineering、RAG、Embedding | 做一个带记忆的对话 Agent + 知识库 RAG | [LangChain](https://langchain.com) 官方教程 |
 | **3. 架构进阶** | Agent 设计范式、Multi-Agent、MCP 协议、工具链 | 参与开源项目（如 OpenHands）或复现一篇论文 | SWE-agent 源码 |
-| **4. 生产化** | 评估体系、Tracing、部署、成本优化、安全对齐 | 将 Agent 部署到线上，接入监控和评估 | LangSmith / Weights & Biases |
+| **4. 生产化** | 评估体系、Tracing、部署、成本优化、安全对齐 | 将 Agent 部署到线上，接入监控和评估 | [LangSmith](https://smith.langchain.com) / Weights & Biases |
 
 **关键建议：**
 
-> ⚠️ **核心建议**：不要一开始就深入 LangChain 框架，先**手写一个最小的 ReAct Agent**，理解每个环节的原理，再用框架加速开发
+> ⚠️ **核心建议**：不要一开始就深入 [LangChain](https://langchain.com) 框架，先**手写一个最小的 [React](https://react.dev) Agent**，理解每个环节的原理，再用框架加速开发
 
 **重点技术清单：**
 - **LLM 基础**：Transformer 原理、Tokenization、解码策略、上下文窗口
 - **Prompt Engineering**：System Prompt、Few-shot、CoT、结构化输出
 - **Function Calling / Tool Use**：Schema 定义、参数传入、结果处理
 - **RAG**：文档分割、Embedding 模型、向量检索、检索策略优化
-- **Agent 范式**：ReAct、Plan-and-Execute、Reflection
+- **Agent 范式**：[React](https://react.dev)、Plan-and-Execute、Reflection
 - **评估与监控**：AgentBench、Tracing、成功率统计
 
 ---
@@ -1324,7 +1324,7 @@ graph TB
 |------|-----------|---------|
 | **全栈思维** | Agent 是端到端系统——从用户输入到 LLM 推理到工具执行 | 能自己搭建完整的 Agent 应用前后端 + 部署 |
 | **系统设计能力** | Agent 架构涉及记忆、规划、工具、多 Agent 协调等组件 | 能设计合理的架构而非堆砌框架 |
-| **工程调试能力** | 框架抽象层多，Agent 行为不可预测，Debug 是常态 | 愿意读到 LangChain 源码里找问题 |
+| **工程调试能力** | 框架抽象层多，Agent 行为不可预测，Debug 是常态 | 愿意读到 [LangChain](https://langchain.com) 源码里找问题 |
 | **ML 理解** | 理解模型能力边界，知道什么时候该微调、该换模型 | 能判断某个问题是模型问题还是工程问题 |
 | **成本敏感** | Agent 调用的 Token 成本可能失控 | 设计时考虑 Token 消耗，主动做成本优化 |
 | **用户体验意识** | Agent 的延迟和不确定性直接影响用户感受 | 设计进度反馈、超时处理、优雅降级 |
@@ -1360,7 +1360,7 @@ graph LR
 
 | 场景 | 工具 | 频率 | 用途 |
 |------|------|------|------|
-| **日常编程** | Cursor + Claude / Copilot | 每天 | 代码补全、重构、Bug 修复、测试生成 |
+| **日常编程** | [Cursor](https://cursor.com) + Claude / Copilot | 每天 | 代码补全、重构、Bug 修复、测试生成 |
 | **技术调研** | Perplexity / ChatGPT | 每天 | 快速了解新技术、查 API 文档、对比方案 |
 | **写作** | Claude + Obsidian | 每周 | 写技术博客、周报、设计文档润色 |
 | **数据分析** | ChatGPT Code Interpreter | 每月 | 数据清洗、可视化、报表生成 |
@@ -1372,13 +1372,13 @@ graph LR
 
 **具体建议：**
 
-1. **选对工具**：目前推荐 **Cursor + Claude 3.5/4** 组合。Cursor 的 Tab 补全效率极高，Chat 面板适合复杂任务
+1. **选对工具**：目前推荐 **[Cursor](https://cursor.com) + Claude 3.5/4** 组合。[Cursor](https://cursor.com) 的 Tab 补全效率极高，Chat 面板适合复杂任务
 2. **思路先行**：不要直接说"帮我写一个登录功能"，而是先描述需求、技术栈、约束条件。AI 理解上下文越充分，输出质量越高
 3. **分步验证**：让 AI 先生成接口定义 → 确认后再生成实现 → 生成测试。分步比一次性生成更可控
 4. **把 AI 当 Review 伙伴**：写完代码后让 AI Review，"这段代码有什么问题？"——AI 很擅长发现边缘情况
 5. **用 AI 写测试**：这是 AI 当前最擅长的 Coding 场景之一，能大幅提升测试覆盖率
 6. **必须 Review AI 代码**：AI 可能产生**看似正确实则错误**的代码，特别是安全性（SQL 注入、权限检查）和边界情况
-7. **建立个人 Prompt 库**：将常用的代码生成 Prompt（如"生成 React 组件"、"写 Go 单元测试"）模板化保存，提升效率
+7. **建立个人 Prompt 库**：将常用的代码生成 Prompt（如"生成 [React](https://react.dev) 组件"、"写 Go 单元测试"）模板化保存，提升效率
 
 ```mermaid
 graph TB
@@ -1445,7 +1445,6 @@ Agent 的工具集设计直接影响 LLM 选择工具的准确率：
 
 ### 📌 导航
 
-| [🏠 返回主指南](./01-AI前端开发体系化学习指南.md) | [➡️ 下一部分：工具与协议篇](./12-Agent面试题-工具协议篇.md) |
+| [🏠 返回主指南](./README.md) | [➡️ 下一部分：工具与协议篇](./11-Agent面试题-工具协议篇.md) |
 |:---:|:---:|
-
 

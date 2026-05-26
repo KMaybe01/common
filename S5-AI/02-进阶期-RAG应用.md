@@ -1,7 +1,7 @@
 # 🔵 阶段二：进阶期 - RAG 应用
 
 > 📖 **本文档为《AI 前端开发体系化学习指南》的阶段拆分文档**
-> 完整指南请查看：[01-AI前端开发体系化学习指南.md](./01-AI前端开发体系化学习指南.md)
+> 完整指南请查看：[README.md](./README.md)
 
 ---
 
@@ -23,19 +23,19 @@
 ### 💡 你将学到
 - RAG（检索增强生成）的完整架构与工作原理
 - 文本分块（Chunking）策略与 Embedding 向量化技术
-- 使用 LangChain.js 搭建企业级 RAG 流水线
-- 向量数据库（Pinecone）的集成与语义搜索
+- 使用 [LangChain](https://langchain.com).js 搭建企业级 RAG 流水线
+- 向量数据库（[Pinecone](https://www.pinecone.io)）的集成与语义搜索
 - 检索质量优化：重排序、混合检索、查询扩展
 
 ### 🔗 前置知识
-- 完成 [🟢 阶段一：入门期](./02-入门期-AI聊天室.md)
+- 完成 [🟢 阶段一：入门期](./01-入门期-AI聊天室.md)
 - 熟悉 Node.js 文件系统与异步编程
 - 了解 HTTP API 与基础网络概念
 
 ### 📚 核心能力指标
 - [ ] 深入理解 RAG (检索增强生成) 架构原理
 - [ ] 掌握文本分块 (Chunking) 与向量化 (Embedding) 技术
-- [ ] 熟练使用向量数据库 (Pinecone/Milvus/Chroma) 进行语义搜索
+- [ ] 熟练使用向量数据库 ([Pinecone](https://www.pinecone.io)/[Milvus](https://milvus.io)/[Chroma](https://www.trychroma.com)) 进行语义搜索
 - [ ] 构建完整的 `检索 -> 增强 -> 生成` 流水线
 - [ ] 掌握检索质量优化策略 (重排序、混合检索)
 
@@ -72,7 +72,7 @@ graph TD
 | 概念 | 通俗解释 | 技术实现 |
 |:---|:---|:---|
 | **Embedding** | 将文字翻译成数学坐标 | `text-embedding-3-small` (1536 维) |
-| **向量数据库** | 语义搜索引擎 | Pinecone, Milvus, Chroma |
+| **向量数据库** | 语义搜索引擎 | [Pinecone](https://www.pinecone.io), [Milvus](https://milvus.io), [Chroma](https://www.trychroma.com) |
 | **相似度** | 坐标轴上的距离 | 余弦相似度 (Cosine Similarity) |
 | **分块 (Chunking)** | 把长文章切成小段落 | 固定长度、递归字符、语义分块 |
 | **上下文窗口** | LLM 的短期记忆容量 | 4K, 8K, 32K, 128K Tokens |
@@ -526,5 +526,5 @@ class RAGEvaluator {
 
 ### 📌 导航
 
-| [⬅️ 上一阶段：入门期](./02-入门期-AI聊天室.md) | [🏠 返回主指南](./01-AI前端开发体系化学习指南.md) | [➡️ 下一阶段：深耕期 - 端侧推理](./04-深耕期-端侧推理.md) |
+| [⬅️ 上一阶段：入门期](./01-入门期-AI聊天室.md) | [🏠 返回主指南](./README.md) | [➡️ 下一阶段：深耕期 - 端侧推理](./03-深耕期-端侧推理.md) |
 |:---:|:---:|:---:|

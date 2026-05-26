@@ -1,7 +1,7 @@
 # 🔴 阶段四：专家期 - 全自动 Agent
 
 > 📖 **本文档为《AI 前端开发体系化学习指南》的阶段拆分文档**
-> 完整指南请查看：[01-AI前端开发体系化学习指南.md](./01-AI前端开发体系化学习指南.md)
+> 完整指南请查看：[README.md](./README.md)
 
 ---
 
@@ -14,27 +14,27 @@
   - [主流设计模式](#42-主流设计模式)
 - [核心实现](#-核心实现)
   - [工具注册系统](#43-工具注册系统)
-  - [ReAct Agent 核心](#44-react-agent-核心)
+  - [[React](https://react.dev) Agent 核心](#44-[React](https://react.dev)-agent-核心)
 - [实战项目](#-阶段四实战项目)
 
 ### 💡 你将学到
-- Agent 三大核心架构：ReAct、Plan-and-Execute、Reflexion
+- Agent 三大核心架构：[React](https://react.dev)、Plan-and-Execute、Reflexion
 - 工具注册系统设计与动态调用机制
 - Thought-Action-Observation 循环的实现
 - 多步工作流与任务分解逻辑
 - 反思机制（Self-Correction）与结果评估
 
 ### 🔗 前置知识
-- 完成 [🟣 阶段三：深耕期](./04-深耕期-端侧推理.md)
+- 完成 [🟣 阶段三：深耕期](./03-深耕期-端侧推理.md)
 - 熟悉函数式编程与组合模式
 - 了解 AST 解析与正则表达式基础
 
 ### 📚 核心能力指标
-- [ ] 理解 Agent 核心架构 (ReAct, Plan-and-Execute, Reflexion)
+- [ ] 理解 Agent 核心架构 ([React](https://react.dev), Plan-and-Execute, Reflexion)
 - [ ] 实现工具注册系统与动态调用机制
 - [ ] 构建多步工作流与任务分解逻辑
 - [ ] 掌握反思机制 (Self-Correction) 与结果评估
-- [ ] 使用 WebAssembly 优化复杂计算性能
+- [ ] 使用 [WebAssembly](https://webassembly.org).org) 优化复杂计算性能
 
 ### 🧠 核心概念解析
 
@@ -57,7 +57,7 @@ graph TD
 
 | 模式 | 原理 | 适用场景 |
 |:---|:---|:---|
-| **ReAct** | 思考 (Thought) → 行动 (Action) → 观察 (Observation) 循环 | 复杂多步推理、工具密集型任务 |
+| **[React](https://react.dev)** | 思考 (Thought) → 行动 (Action) → 观察 (Observation) 循环 | 复杂多步推理、工具密集型任务 |
 | **Plan-and-Execute** | 先制定完整计划，再逐步执行 | 流程固定、可分解的长任务 |
 | **Reflexion** | 执行后自我评估，失败则修正重试 | 对准确率要求极高的场景 |
 
@@ -103,7 +103,7 @@ export const toolRegistry = new Map<string, Tool>([
 ]);
 ```
 
-#### 4.4 ReAct Agent 核心
+#### 4.4 [React](https://react.dev) Agent 核心
 
 ```typescript
 // lib/agent/react-agent.ts
@@ -496,12 +496,13 @@ interface StoredMemory {
 
 | 文档 | 内容 | 相关章节 |
 |:---|:---|:---|
-| [📊 技术选型对比合集](./08-技术选型对比合集.md) | Agent 平台对比、智能体方案评估 | 常用 AI 智能体平台对比 |
-| [🛠️ 开发实战与架构指南](./09-开发实战与架构指南.md) | LangGraph 工作流编排、Prompt 进阶 | 第5章：LangGraph 工作流编排 |
+| [📊 技术选型对比合集](./07-技术选型对比合集.md) | Agent 平台对比、智能体方案评估 | 常用 AI 智能体平台对比 |
+| [🛠️ 开发实战与架构指南](./08-开发实战与架构指南.md) | [LangGraph](https://langchain-ai.github.io/langgraph) 工作流编排、Prompt 进阶 | 第5章：[LangGraph](https://langchain-ai.github.io/langgraph) 工作流编排 |
 
 ---
 
 ### 📌 导航
 
-| [⬅️ 上一阶段：深耕期](./04-深耕期-端侧推理.md) | [🏠 返回主指南](./01-AI前端开发体系化学习指南.md) | [➡️ 下一阶段：生产化](./06-生产化与工程化.md) |
+| [⬅️ 上一阶段：深耕期](./03-深耕期-端侧推理.md) | [🏠 返回主指南](./README.md) | [➡️ 下一阶段：生产化](./05-生产化与工程化.md) |
 |:---:|:---:|:---:|
+

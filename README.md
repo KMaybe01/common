@@ -1,4 +1,4 @@
-# 🎯 前端面试知识体系
+﻿# 🎯 前端面试知识体系
 
 ---
 
@@ -65,25 +65,23 @@ graph LR
 |   |-- 02-简历.md
 |   +-- 03-简历问题.md
 |
-|-- 📁 S5-AI/                🟣 AI 阶段（00-17）
-|   |-- 01-AI前端开发体系化学习指南.md
-|   |-- 02-入门期-AI聊天室.md
-|   |-- 03-进阶期-RAG应用.md
-|   |-- 04-深耕期-端侧推理.md
-|   |-- 05-专家期-Agent设计.md
-|   |-- 06-生产化与工程化.md
-|   |-- 07-前沿技术与生态.md
-|   |-- 08-技术选型对比合集.md
-|   |-- 09-开发实战与架构指南.md
-|   |-- 10-附录与参考资料.md
-|   |-- 11-Agent面试题.md (总索引)
-|   |-- 11-Agent面试题-基础篇.md
-|   |-- 12-Agent面试题-工具协议篇.md
-|   |-- 13-Agent面试题-大模型基础篇.md
-|   |-- 14-Agent面试题-框架工具链篇.md
-|   |-- 15-Agent面试题-实战项目篇.md
-|   |-- 16-Agent面试题-前沿趋势篇.md
+|-- 📁 S5-AI/                🟣 AI 阶段（00-15）
 |   |-- README.md
+|   |-- 01-入门期-AI聊天室.md
+|   |-- 02-进阶期-RAG应用.md
+|   |-- 03-深耕期-端侧推理.md
+|   |-- 04-专家期-Agent设计.md
+|   |-- 05-生产化与工程化.md
+|   |-- 06-前沿技术与生态.md
+|   |-- 07-技术选型对比合集.md
+|   |-- 08-开发实战与架构指南.md
+|   |-- 09-附录与参考资料.md
+|   |-- 10-Agent面试题-基础篇.md
+|   |-- 11-Agent面试题-工具协议篇.md
+|   |-- 12-Agent面试题-大模型基础篇.md
+|   |-- 13-Agent面试题-框架工具链篇.md
+|   |-- 14-Agent面试题-实战项目篇.md
+|   |-- 15-Agent面试题-前沿趋势篇.md
 |
 +-- 📄 README.md             ← 导航文件
 ```
@@ -139,12 +137,12 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 | 框架 | 第一代 | 重大重写 | 现代起点 | 最新版本 | 关键转折 |
 |------|--------|---------|---------|---------|---------|
 | **Vue** | Vue 1.0 (2014) | Vue 2.0 (2016) | Vue 3.0 (2020) | 3.6 (2026) | Options → Composition API |
-| **React** | React 0.3 (2013) | React 16 Fiber (2017) | React 18 (2022) | 19 (2025) | Class → Hooks → Compiler |
+| **[React](https://react.dev)** | [React](https://react.dev) 0.3 (2013) | [React](https://react.dev) 16 Fiber (2017) | [React](https://react.dev) 18 (2022) | 19 (2025) | Class → Hooks → Compiler |
 | **Angular** | AngularJS (2010) | Angular 2 (2016) | Angular 15 (2022) | 21 (2026) | MVC → Component + Ivy |
-| **构建工具** | Grunt → Gulp | Webpack 1-4 | Vite (2021) | Vite 6 (2025) | Bundle → ESM native |
+| **构建工具** | Grunt → Gulp | Webpack 1-4 | [Vite](https://vitejs.dev) (2021) | [Vite](https://vitejs.dev) 6 (2025) | Bundle → ESM native |
 | **Node.js** | 0.10 (2013) | 4.x LTS (2015) | 18 LTS (2022) | 22 LTS (2025) | CommonJS → ESM dual |
 
-> 💡 **面试价值**：了解版本迭代的关键节点（如 AngularJS→Angular 2 的断裂式升级、React 16 Fiber 架构重写），能让面试官感受到你的"技术纵深"。
+> 💡 **面试价值**：了解版本迭代的关键节点（如 AngularJS→Angular 2 的断裂式升级、[React](https://react.dev) 16 Fiber 架构重写），能让面试官感受到你的"技术纵深"。
 
 ---
 
@@ -158,7 +156,7 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [01-HTML.md](S1-基础夯实/01-HTML.md) | src vs href、语义化标签、DOCTYPE、defer vs async、meta、HTML5 新特性、img srcset、行内/块级/空元素、Web Worker、离线存储、Canvas vs SVG、iframe、label、Web Components、Resource Hints、View Transitions、Import Map、WebSocket、WebRTC、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
+| [01-HTML.md](S1-基础夯实/01-HTML.md) | src vs href、语义化标签、DOCTYPE、defer vs async、meta、HTML5 新特性、img srcset、行内/块级/空元素、Web Worker、离线存储、Canvas vs SVG、iframe、label、Web Components、Resource Hints、View Transitions、Import Map、[WebSocket](https://websockets.spec.whatwg.org)、WebRTC、Popover API、Dialog、ARIA、表单高级特性、Service Worker/PWA、HTML 解析机制 |
 | [02-CSS.md](S1-基础夯实/02-CSS.md) | 选择器优先级、盒模型、Flex/Grid、BFC、定位、动画、场景应用(三角形/扇形/0.5px)、CSS 编程题 15 道、Container Queries、:has()、@layer、CSS Nesting、@property、Scroll-Driven Animations、Anchor Positioning、@scope、Subgrid、Tailwind、现代视口单位、light-dark()、:user-valid/:user-invalid |
 | [3-JavaScript-核心.md](S1-基础夯实/03-JavaScript-核心.md) 🆕 | 8 种数据类型、原型链、闭包、this 绑定、执行上下文、Promise、async/await、ES6+(Map/Set/Symbol/BigInt)、面向对象继承、GC/内存泄漏、ES2024-2027 新特性 |
 | [4-JavaScript-WebAPI.md](S1-基础夯实/04-JavaScript-WebAPI.md) 🆕 | 浏览器 Web API(IntersectionObserver/Clipboard/FileSystem/Navigation/Worker等)、20+ 手写实现(防抖节流/深拷贝/Promise/发布订阅)、经典代码输出题 |
@@ -171,10 +169,10 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [01-Vue3.md](S2-框架深入/01-Vue3.md) | Composition API、ref/reactive、Proxy 响应式、模板指令、组件通信、Vue Router、Pinia、高级组件、自定义指令、TypeScript 集成、Vite 工程实践、性能优化、Vue 3.6 Alien Signals、面试题 |
-| [02-React19.md](S2-框架深入/02-React19.md) | JSX 语法、Hooks 系统、Context API、Refs/Portals、Error Boundaries、HOC/Render Props、Fiber 架构、React 19 Actions/use()、React Compiler、Next.js、状态管理、并发模式、Server Components、性能优化、面试题 |
+| [01-Vue3.md](S2-框架深入/01-Vue3.md) | Composition API、ref/[React](https://react.dev)ive、Proxy 响应式、模板指令、组件通信、Vue Router、Pinia、高级组件、自定义指令、[TypeScript](https://www.typescriptlang.org) 集成、[Vite](https://vitejs.dev) 工程实践、性能优化、Vue 3.6 Alien Signals、面试题 |
+| [02-[React](https://react.dev)19.md](S2-框架深入/02-[React](https://react.dev)19.md) | JSX 语法、Hooks 系统、Context API、Refs/Portals、Error Boundaries、HOC/Render Props、Fiber 架构、[React](https://react.dev) 19 Actions/use()、[React](https://react.dev) Compiler、[Next.js](https://nextjs.org)、状态管理、并发模式、Server Components、性能优化、面试题 |
 | [03-Angular20.md](S2-框架深入/03-Angular20.md) | Angular 20 新特性、Angular 21 进展、组件/模板/指令、数据绑定、生命周期、DI 系统、Signals、RxJS、路由系统、表单处理、HTTP 客户端、状态管理、动画、OnPush、Zoneless、httpResource、工程实践、面试题 |
-| [04-框架对比.md](S2-框架深入/04-框架对比.md) 🆕 | 三大框架核心哲学、响应式原理、组件化、状态管理、路由、构建工具、TypeScript 集成、性能优化策略、学习曲线、面试问答、技术选型决策树 |
+| [04-框架对比.md](S2-框架深入/04-框架对比.md) 🆕 | 三大框架核心哲学、响应式原理、组件化、状态管理、路由、构建工具、[TypeScript](https://www.typescriptlang.org) 集成、性能优化策略、学习曲线、面试问答、技术选型决策树 |
 
 ---
 
@@ -186,9 +184,9 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 |------------------|-----------|
 | [01-浏览器原理.md](S3-进阶提升/01-浏览器原理.md) | XSS/CSRF/MITM、多进程架构、缓存策略、渲染流水线、事件机制、事件循环、V8 垃圾回收、bfcache、预渲染(Speculation Rules API) |
 | [02-性能优化.md](S3-进阶提升/02-性能优化.md) | CDN、懒加载、回流重绘、防抖节流、图片优化(WebP/雪碧图/Base64)、Webpack 优化、Core Web Vitals (LCP/INP/CLS)、资源加载优化(Resource Hints)、GPU 加速、Critical CSS、Edge Computing、Islands Architecture、Streaming SSR |
-| [03-前端工程化.md](S3-进阶提升/03-前端工程化.md) | 模块化、Git、Webpack、Babel、现代构建(Vite/esbuild/Turbopack/SWC/Rspack)、包管理(pnpm/Bun/Deno)、Monorepo(Turborepo)、微前端(Module Federation/qiankun/wujie)、代码质量(ESLint/Vitest/Playwright)、CI/CD(Docker/GitHub Actions)、新趋势(Biome/Rolldown/Vite 6/MF 2.0) |
+| [03-前端工程化.md](S3-进阶提升/03-前端工程化.md) | 模块化、Git、Webpack、Babel、现代构建([Vite](https://vitejs.dev)/esbuild/Turbopack/SWC/Rspack)、包管理(pnpm/Bun/Deno)、Monorepo(Turborepo)、微前端(Module Federation/qiankun/wujie)、代码质量(ESLint/[Vite](https://vitejs.dev)st/Playwright)、CI/CD([Docker](https://docker.com)/GitHub Actions)、新趋势(Biome/Rolldown/[Vite](https://vitejs.dev) 6/MF 2.0) |
 | [04-算法题解.md](S3-进阶提升/04-算法题解.md) | Code Top 100 · 哈希表、双指针/滑动窗口、链表、二叉树、动态规划、字符串、二分查找、栈/队列、排序/TopK、回溯、DFS/BFS/图、设计题(LRU/Rand10) |
-| [05-计算机网络.md](S3-进阶提升/05-计算机网络.md) 🆕 | HTTP 发展史(1.1→3)、HTTPS/TLS、TCP/UDP、DNS、缓存、CDN、CORS、安全、状态码、WebSocket/SSE、WebTransport |
+| [05-计算机网络.md](S3-进阶提升/05-计算机网络.md) 🆕 | HTTP 发展史(1.1→3)、HTTPS/TLS、TCP/UDP、DNS、缓存、CDN、CORS、安全、状态码、[WebSocket](https://websockets.spec.whatwg.org)/SSE、WebTransport |
 
 ---
 
@@ -198,30 +196,29 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [01-前端面试题库.md](S4-面试冲刺/01-前端面试题库.md) | JS 核心(类型/原型/闭包/继承)、异步/Promise/Event Loop、ES6+(Proxy/Reflect/ES2024-2025)、浏览器API、网络协议(HTTP/3/WebTransport/CORS/CDN)、CSS 布局、工程化(Vite/Rspack/Turbopack)、框架机制(React 19/Zustand/Pinia/RTK)、设计模式、编程题 |
+| [01-前端面试题库.md](S4-面试冲刺/01-前端面试题库.md) | JS 核心(类型/原型/闭包/继承)、异步/Promise/Event Loop、ES6+(Proxy/Reflect/ES2024-2025)、浏览器API、网络协议(HTTP/3/WebTransport/CORS/CDN)、CSS 布局、工程化([Vite](https://vitejs.dev)/Rspack/Turbopack)、框架机制([React](https://react.dev) 19/Zustand/Pinia/RTK)、设计模式、编程题 |
 | [02-简历.md](S4-面试冲刺/02-简历.md) | 简历模板、项目经验、技术栈描述 |
-| [03-简历问题.md](S4-面试冲刺/03-简历问题.md) | React Fiber、SSE vs WebSocket、RxJS 操作符、虚拟列表、OnPush 变更检测、JWT 安全、Event Loop、渲染流水线、TypeScript 工具类型、Web Vitals、Webpack vs Vite、状态管理、微前端、XSS 攻击 |
+| [03-简历问题.md](S4-面试冲刺/03-简历问题.md) | [React](https://react.dev) Fiber、SSE vs [WebSocket](https://websockets.spec.whatwg.org)、RxJS 操作符、虚拟列表、OnPush 变更检测、JWT 安全、Event Loop、渲染流水线、[TypeScript](https://www.typescriptlang.org) 工具类型、Web Vitals、Webpack vs [Vite](https://vitejs.dev)、状态管理、微前端、XSS 攻击 |
 
 ---
 
-### 🟣 S5 AI 前沿（00-17）
+### 🟣 S5 AI 前沿（00-15）
 
 > **目标：** 掌握 AI Agent 架构与 AI 辅助前端开发体系，从入门到专家期。 **建议用时：** 2-3 周
 
 | 路径（点击跳转） | 核心知识点 |
 |------------------|-----------|
-| [01-AI前端开发体系化学习指南.md](S5-AI/01-AI前端开发体系化学习指南.md) | Transformer 架构深度剖析、RLHF/DPO 对齐、多模态融合、大规模 RAG 设计、多 Agent 编排、AI 可观测性、FinOps 成本治理（总纲 + 技术原理深究） |
-| [02-入门期-AI聊天室.md](S5-AI/02-入门期-AI聊天室.md) | LLM 核心参数、流式/同步调用、Vercel AI SDK、BPE Tokenizer 原理、SSE 协议详解、上下文窗口管理策略 |
-| [03-进阶期-RAG应用.md](S5-AI/03-进阶期-RAG应用.md) | RAG 全景架构、LangChain 流水线、混合检索 (RRF)、语义分块、查询重写 (HyDE)、检索质量评估体系 |
-| [04-深耕期-端侧推理.md](S5-AI/04-深耕期-端侧推理.md) | Transformers.js Pipeline、WebGPU Compute Shader (WGSL)、Buffer 复用池、模型量化 (INT4/AWQ/GPTQ)、离线缓存 |
-| [05-专家期-Agent设计.md](S5-AI/05-专家期-Agent设计.md) | Agent 架构 (ReAct/PE/Reflection)、工具注册系统、多 Agent 协作 (Orchestrator/辩论)、Agent 通信协议、记忆管理、HITL 人机协同 |
-| [06-生产化与工程化.md](S5-AI/06-生产化与工程化.md) | A/B 测试框架、灰度发布与回滚、生产监控仪表盘、Token Bucket 限流、Content Guardrails、SLA/SLO 定义 |
-| [07-前沿技术与生态.md](S5-AI/07-前沿技术与生态.md) | MCP 协议深度解析 (JSON-RPC/工具发现/资源订阅)、A2A Agent Card 规范、AI 生成 UI (v0/Bolt)、Agentic Web、WASM AI 推理 |
-| [08-技术选型对比合集.md](S5-AI/08-技术选型对比合集.md) | 模型/框架/工具链选型对比、开源 vs 商业方案、成本效益分析 |
-| [09-开发实战与架构指南.md](S5-AI/09-开发实战与架构指南.md) | 完整项目架构、代码组织、调试技巧、性能调优、最佳实践 |
-| [10-附录与参考资料.md](S5-AI/10-附录与参考资料.md) | 推荐阅读、学习资源、工具清单、术语表 |
-| [11-Agent面试题.md](S5-AI/11-Agent面试题.md) | **总索引** → 6 模块拆分 199 题：基础篇(32题)、工具协议(16题)、大模型基础(84题)、框架工具链(20题)、实战项目(25题)、前沿趋势(22题) |
-| [11~16-Agent面试题库](S5-AI/11-Agent面试题-基础篇.md) | Agent 基础/工具协议/大模型基础/框架工具链/实战项目/前沿趋势 — 每题含 💡要点+Mermaid图+对比表+代码示例 |
+| [README.md](S5-AI/README.md) | 主指南 · 总纲、技术原理深究、学习路线图、AI 技术发展时间线（总览 + 索引） |
+| [01-入门期-AI聊天室.md](S5-AI/01-入门期-AI聊天室.md) | LLM 核心参数、流式/同步调用、[Vercel](https://vercel.com) AI SDK、BPE Tokenizer 原理、SSE 协议详解、上下文窗口管理策略 |
+| [02-进阶期-RAG应用.md](S5-AI/02-进阶期-RAG应用.md) | RAG 全景架构、[LangChain](https://langchain.com) 流水线、混合检索 (RRF)、语义分块、查询重写 (HyDE)、检索质量评估体系 |
+| [03-深耕期-端侧推理.md](S5-AI/03-深耕期-端侧推理.md) | [Transformers.js](https://huggingface.co/docs/transformers.js) Pipeline、[WebGPU](https://www.w3.org/TR/webgpu/) Compute Shader (WGSL)、Buffer 复用池、模型量化 (INT4/AWQ/GPTQ)、离线缓存 |
+| [04-专家期-Agent设计.md](S5-AI/04-专家期-Agent设计.md) | Agent 架构 (ReAct/PE/Reflection)、工具注册系统、多 Agent 协作 (Orchestrator/辩论)、Agent 通信协议、记忆管理、HITL 人机协同 |
+| [05-生产化与工程化.md](S5-AI/05-生产化与工程化.md) | A/B 测试框架、灰度发布与回滚、生产监控仪表盘、Token Bucket 限流、Content Guardrails、SLA/SLO 定义 |
+| [06-前沿技术与生态.md](S5-AI/06-前沿技术与生态.md) | MCP 协议深度解析 (JSON-RPC/工具发现/资源订阅)、A2A Agent Card 规范、AI 生成 UI (v0/Bolt)、Agentic Web、WASM AI 推理 |
+| [07-技术选型对比合集.md](S5-AI/07-技术选型对比合集.md) | 模型/框架/工具链选型对比、开源 vs 商业方案、成本效益分析 |
+| [08-开发实战与架构指南.md](S5-AI/08-开发实战与架构指南.md) | 完整项目架构、代码组织、调试技巧、性能调优、最佳实践 |
+| [09-附录与参考资料.md](S5-AI/09-附录与参考资料.md) | 推荐阅读、学习资源、工具清单、术语表 |
+| [10~15-Agent面试题库](S5-AI/10-Agent面试题-基础篇.md) | 6 模块 199 题：基础篇(32题)、工具协议(16题)、大模型基础(84题)、框架工具链(20题)、实战项目(25题)、前沿趋势(22题) — 每题含 💡要点+Mermaid图+对比表+代码示例 |
 
 ---
 
@@ -234,8 +231,8 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 | 第 3-4 周 | 🌳 S2-框架深入/ → 选主攻框架精读 | 复习 S1 错题 |
 | 第 5-6 周 | 🌿 S3-进阶提升/ → 01+02+03 系统学习 | Code Top 100 2-3 题/日 |
 | 第 7-8 周 | 🏆 S4-面试冲刺/ → 01+03 反复刷 | Code Top 100 1 题/日 |
-| 第 9-10 周 | 🤖 S5-AI/ → 01+05+06+11~13 核心必读，其余选读 | 关注 AI 工具更新 |
-| 第 11-12 周 | 🤖 S5-AI/ → 14~16 面试题库冲刺 + 08 选型对比 | 模拟面试自测 |
+| 第 9-10 周 | 🤖 S5-AI/ → README+04+05+10~12 核心必读，其余选读 | 关注 AI 工具更新 |
+| 第 11-12 周 | 🤖 S5-AI/ → 13~15 面试题库冲刺 + 07 选型对比 | 模拟面试自测 |
 
 ---
 
