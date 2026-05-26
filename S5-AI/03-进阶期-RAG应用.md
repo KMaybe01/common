@@ -290,6 +290,230 @@ export class RAGChain {
 }
 ```
 
+---
+
+### 🔀 混合检索 (Hybrid Search)
+
+> **向量 + 关键词融合**：向量搜索捕获语义相似性，关键词搜索保证精确匹配，二者互补。
+
+```mermaid
+graph TD
+    Query["🔍 用户查询"] --> VectorBranch["向量搜索 (语义)<br/>text-embedding-3-small"]
+    Query --> KeywordBranch["关键词搜索 (精确)<br/>BM25 / Elasticsearch"]
+    
+    VectorBranch --> VectorResults["Top-20 语义结果"]
+    KeywordBranch --> KeywordResults["Top-20 关键词结果"]
+    
+    VectorResults --> Fusion["结果融合<br/>RRF (Reciprocal Rank Fusion)"]
+    KeywordResults --> Fusion
+    
+    Fusion --> Rerank["重排序<br/>Cross-encoder"]
+    Rerank --> Final["最终 Top-5 结果"]
+    
+    classDef vector fill:#e3f2fd,stroke:#1565c0;
+    classDef keyword fill:#fff3e0,stroke:#e65100;
+    classDef fusion fill:#e8f5e9,stroke:#2e7d32;
+    class VectorBranch,VectorResults vector;
+    class KeywordBranch,KeywordResults keyword;
+    class Fusion,Rerank fusion;
+```
+
+#### RRF (Reciprocal Rank Fusion) 算法
+
+```typescript
+// lib/hybrid-search.ts
+export class HybridSearch {
+  private vectorStore: VectorStoreManager;
+  
+  async search(
+    query: string,
+    options: {
+      topK: number;
+      alpha: number; // 0 = 纯关键词, 1 = 纯向量
+    } = { topK: 5, alpha: 0.5 }
+  ): Promise<ScoredResult[]> {
+    // 1. 向量搜索
+    const vectorResults = await this.vectorStore.search(query, 20);
+    
+    // 2. 关键词搜索 (BM25)
+    const keywordResults = await this.keywordSearch(query, 20);
+    
+    // 3. RRF 融合
+    const fused = this.rrfFusion(vectorResults, keywordResults, 60);
+    
+    // 4. 按 alpha 加权重排序
+    const weighted = fused.map(item => ({
+      ...item,
+      score: options.alpha * item.vectorScore 
+             + (1 - options.alpha) * item.keywordScore,
+    }));
+    
+    return weighted.sort((a, b) => b.score - a.score).slice(0, options.topK);
+  }
+
+  private rrfFusion(
+    vector: ScoredResult[],
+    keyword: ScoredResult[],
+    k: number = 60
+  ): RankedResult[] {
+    const rankMap = new Map<string, { vectorRank: number; keywordRank: number }>();
+    
+    vector.forEach((item, i) => {
+      rankMap.set(item.id, { vectorRank: i + 1, keywordRank: Infinity });
+    });
+    keyword.forEach((item, i) => {
+      const existing = rankMap.get(item.id);
+      rankMap.set(item.id, {
+        vectorRank: existing?.vectorRank ?? Infinity,
+        keywordRank: i + 1,
+      });
+    });
+    
+    return Array.from(rankMap.entries()).map(([id, ranks]) => ({
+      id,
+      rrfScore: (1 / (k + ranks.vectorRank)) + (1 / (k + ranks.keywordRank)),
+      vectorScore: 1 / (k + ranks.vectorRank),
+      keywordScore: 1 / (k + ranks.keywordRank),
+    })).sort((a, b) => b.rrfScore - a.rrfScore);
+  }
+}
+```
+
+| 检索方式 | 优势 | 劣势 | 适用场景 |
+|:---|:---|:---|:---|
+| **纯向量搜索** | 语义理解强，同义词匹配 | 精确匹配弱，罕见词召回差 | 开放域问答 |
+| **纯关键词搜索 (BM25)** | 精确匹配强，速度快 | 无法理解语义 | 专有名词搜索、代码搜索 |
+| **混合检索** | 兼顾语义 + 精确 | 多一次检索，延迟增加 | 生产级 RAG（推荐） |
+
+---
+
+### 📐 高级分块策略对比
+
+> **分块质量 = RAG 质量**：分块策略直接影响检索准确率，不同文档类型需要不同策略。
+
+| 策略 | 实现方式 | 最佳文档类型 | 检索准确率 | 块数控制 |
+|:---|:---|:---|:---:|:---:|
+| **固定长度** | 按字符/Token 数硬切 | 结构统一的文本 | ⭐⭐ | ✅ |
+| **递归分块** | 按段落 → 句子 → 字符递归切分 | 通用文档（推荐） | ⭐⭐⭐ | ✅ |
+| **语义分块** | 检测主题/语义边界 | 长文、研究报告 | ⭐⭐⭐⭐ | ❌ |
+| **Agentic 分块** | LLM 判断自然断点 | 复杂混合内容 | ⭐⭐⭐⭐⭐ | ❌ |
+| **特定格式** | 解析 HTML/Markdown/代码 AST | 结构化内容 | ⭐⭐⭐⭐ | ✅ |
+
+```typescript
+// 语义分块实现（基于 Embedding 相似度检测主题转折）
+export class SemanticChunker {
+  async split(text: string, maxChunkSize = 1000): Promise<string[]> {
+    // 1. 按句子分割
+    const sentences = text.match(/[^。！？\n]+[。！？\n]/g) || [text];
+    
+    // 2. 对每对相邻句子计算语义相似度
+    const embeddings = await this.embedder.embedBatch(sentences);
+    const breaks: number[] = [0];
+    
+    for (let i = 1; i < sentences.length; i++) {
+      const similarity = cosineSimilarity(embeddings[i - 1], embeddings[i]);
+      if (similarity < 0.5) breaks.push(i); // 语义转折点
+    }
+    
+    // 3. 按转折点合并段落，不超过 maxChunkSize
+    return this.mergeChunks(sentences, breaks, maxChunkSize);
+  }
+  
+  private cosineSimilarity(a: number[], b: number[]): number {
+    const dot = a.reduce((s, v, i) => s + v * b[i], 0);
+    const normA = Math.sqrt(a.reduce((s, v) => s + v * v, 0));
+    const normB = Math.sqrt(b.reduce((s, v) => s + v * b[i], 0));
+    return dot / (normA * normB);
+  }
+}
+```
+
+---
+
+### 📊 查询重写与扩展 (Query Transformation)
+
+> **提升检索命中率**：用户原始问题往往不适合直接检索，需要"转化"为更易匹配的形式。
+
+```mermaid
+graph LR
+    RawQuery["🤷 原始问题<br/>『那本书的作者是谁？』"] --> Rewriter["查询重写器"]
+    Rewriter --> Techniques["多种策略"]
+    Techniques --> Decompose["策略1: 分解<br/>→ 书名叫什么？<br/>→ 作者是谁？"]
+    Techniques --> Hypothetical["策略2: HyDE<br/>→ 生成假设答案<br/>→ 用答案去检索"]
+    Techniques --> Expand["策略3: 扩展<br/>→ 那本书+作者+创作背景"]
+    Techniques --> Stepback["策略4: 后退<br/>→ 『书』指什么作品？"]
+    
+    classDef query fill:#e3f2fd,stroke:#1565c0;
+    classDef tech fill:#fff3e0,stroke:#e65100;
+    class RawQuery query;
+    class Decompose,Hypothetical,Expand,Stepback tech;
+```
+
+```typescript
+// 查询重写器
+export class QueryRewriter {
+  constructor(private llm: ChatOpenAI) {}
+
+  async rewrite(original: string, strategy: 'decompose' | 'hyde' | 'expand' | 'stepback'): Promise<string[]> {
+    const prompts: Record<string, string> = {
+      decompose: `将以下问题分解为 2-3 个更具体的子问题：\n${original}`,
+      hyde: `假设你已经知道了答案，请生成一段包含详细信息的假设回答：\n${original}`,
+      expand: `扩展以下查询，补充同义词和相关术语：\n${original}`,
+      stepback: `为了回答这个问题，我们需要先知道什么更一般的信息？\n${original}`,
+    };
+
+    const response = await this.llm.invoke(prompts[strategy]);
+    return this.parseQueries(response.content);
+  }
+}
+```
+
+---
+
+### 🎯 检索质量评估体系
+
+> **无评估，不优化**：建立量化指标是持续改进 RAG 的前提。
+
+| 指标 | 计算方式 | 目标值 | 测量方法 |
+|:---|:---|:---:|:---|
+| **命中率 (Hit Rate)** | 检索结果包含答案的比例 | > 85% | 人工标注的 Q&A 测试集 |
+| **MRR** | 首个正确答案的平均倒数排名 | > 0.8 | 同上 |
+| **NDCG@K** | 考虑排序位置的累积增益 | > 0.75 | 多级相关性评分 |
+| **检索延迟 P95** | 检索阶段 95% 分位延迟 | < 500ms | 生产环境采样 |
+| **上下文利用率** | 最终回答实际引用的检索片段比例 | > 60% | LLM 输出解析 |
+
+```typescript
+// 评估脚本
+class RAGEvaluator {
+  async evaluate(testSet: QAPair[]): Promise<EvaluationReport> {
+    let hits = 0;
+    const reciprocalRanks: number[] = [];
+    
+    for (const { question, groundTruth } of testSet) {
+      const results = await this.retriever.search(question, 5);
+      
+      // 检查是否有结果包含标准答案
+      const hitIndex = results.findIndex(r => 
+        this.containsGroundTruth(r.content, groundTruth)
+      );
+      
+      if (hitIndex >= 0) {
+        hits++;
+        reciprocalRanks.push(1 / (hitIndex + 1));
+      }
+    }
+    
+    return {
+      hitRate: hits / testSet.length,
+      mrr: reciprocalRanks.reduce((a, b) => a + b, 0) / testSet.length,
+      totalTests: testSet.length,
+    };
+  }
+}
+```
+
+---
+
 ### 🏆 阶段二实战项目
 
 | 项目 | 难度 | 核心考察点 | 完成标准 |
