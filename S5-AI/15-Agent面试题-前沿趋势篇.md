@@ -13,10 +13,10 @@
 | 趋势 | 说明 | 代表技术/项目 |
 |------|------|--------------|
 | **协议标准化** | MCP、A2A 等协议推动 Agent 互联互通 | MCP、A2A、Agent Protocol |
-| **多模态 Agent** | 从文本扩展到图像、音频、视频 | GPT-4o、Gemini、[Qwen](https://qwen.alibaba.com)2-VL |
+| **多模态 Agent** | 从文本扩展到图像、音频、视频 | GPT-4o、Gemini、Qwen2-VL |
 | **具身智能** | Agent 与物理世界交互 | RT-2、Figure 01、Tesla Optimus |
 | **自主 Agent** | 从被动响应到主动规划执行 | OpenHands、Devin、SWE-agent |
-| **端侧部署** | 小模型在设备端运行 | [Ollama](https://ollama.ai)、MLC LLM、[Llama](https://llama.meta.com).cpp |
+| **端侧部署** | 小模型在设备端运行 | Ollama、MLC LLM、Llama.cpp |
 | **Agent 评估** | 标准化评估体系建立 | AgentBench、SWE-bench、GAIA |
 
 **趋势演进时间线：**
@@ -117,8 +117,8 @@ graph TB
 
 | 模型 | 参数量 | 量化后大小 | 适用设备 | 典型延迟 |
 |------|--------|-----------|---------|---------|
-| **[Qwen](https://qwen.alibaba.com)2.5-0.5B** | 0.5B | 300MB (Q4) | 手机/平板 | 50-100ms |
-| **[Llama](https://llama.meta.com)-3.2-1B** | 1B | 600MB (Q4) | 手机/平板 | 100-200ms |
+| **Qwen2.5-0.5B** | 0.5B | 300MB (Q4) | 手机/平板 | 50-100ms |
+| **Llama-3.2-1B** | 1B | 600MB (Q4) | 手机/平板 | 100-200ms |
 | **Phi-3-mini** | 3.8B | 2GB (Q4) | 笔记本/边缘 | 200-500ms |
 | **Mistral-7B** | 7B | 4GB (Q4) | 高性能笔记本 | 500-1000ms |
 
@@ -316,9 +316,9 @@ graph LR
 | 范式 | 开发效率 | 灵活性 | 学习成本 | 代表工具 |
 |------|---------|--------|---------|---------|
 | 手写代码 | 低 | 高 | 高 | 原生 API |
-| 框架封装 | 中 | 中 | 中 | [LangChain](https://langchain.com) |
-| 低代码平台 | 高 | 低 | 低 | [Dify](https://dify.ai)、Coze |
-| AI 生成 | 极高 | 中 | 极低 | [Cursor](https://cursor.com)、 Devin |
+| 框架封装 | 中 | 中 | 中 | LangChain |
+| 低代码平台 | 高 | 低 | 低 | Dify、Coze |
+| AI 生成 | 极高 | 中 | 极低 | Cursor、 Devin |
 | 意图驱动 | 最高 | 高 | 无 | 未来形态 |
 
 ---
@@ -432,11 +432,11 @@ graph LR
 
 | 类别 | 项目 | 特点 |
 |------|------|------|
-| **框架** | [LangChain](https://langchain.com)、[Llama](https://llama.meta.com)Index | 组件丰富 |
+| **框架** | LangChain、LlamaIndex | 组件丰富 |
 | **协议** | MCP、A2A | 标准化 |
 | **工具** | OpenHands、SWE-agent | 垂直场景 |
 | **评估** | AgentBench、GAIA | 标准化评估 |
-| **部署** | [Ollama](https://ollama.ai)、[vLLM](https://github.com/vllm-project/vllm) | 高效推理 |
+| **部署** | Ollama、vLLM | 高效推理 |
 
 **生态趋势：**
 
@@ -590,7 +590,7 @@ graph TB
 
 | 技术 | 延迟降低 | 吞吐提升 | 适用场景 | 实现难度 |
 |------|---------|---------|---------|---------|
-| **PagedAttention** | 30-50% | 2-4x | 高并发推理 | 低（用 [vLLM](https://github.com/vllm-project/vllm)） |
+| **PagedAttention** | 30-50% | 2-4x | 高并发推理 | 低（用 vLLM） |
 | **Continuous Batching** | - | 1.5-2x | 在线服务 | 中 |
 | **Speculative Decoding** | 40-70% | - | 低延迟场景 | 高 |
 | **INT4 量化** | 20-40% | 1.5-2x | 资源受限 | 低 |
@@ -624,7 +624,7 @@ graph LR
 | 工具 | 代际 | 核心能力 | 技术原理 | IDE 支持 |
 |------|------|---------|---------|---------|
 | **GitHub Copilot** | Gen1 | 代码补全 + 对话 | 定制 Codex 模型 + RAG | 多 IDE |
-| **[Cursor](https://cursor.com)** | Gen2 | 多文件编辑 + Agent | Claude/GPT + 索引 + Agent 循环 | 独立 IDE |
+| **Cursor** | Gen2 | 多文件编辑 + Agent | Claude/GPT + 索引 + Agent 循环 | 独立 IDE |
 | **Windsurf (Codeium)** | Gen2 | 上下文感知补全 | 专有模型 + Agent | 多 IDE |
 | **Devin** | Gen3 | 工程级 Agent | 多 Agent + 沙箱 + Planner | 独立平台 |
 | **OpenHands** | Gen3 | 开源 Agent 替代 | SWE-agent + 沙箱 | 开源 |
@@ -863,7 +863,7 @@ graph TB
 
 | 趋势 | 技术成熟度 | 产业影响 | 典型信号 |
 |------|----------|---------|---------|
-| **推理模型成熟** | ⭐⭐⭐⭐⭐ | Agent 可靠性质变，复杂任务成功率从 50%→80%+ | o3、[DeepSeek](https://deepseek.com)-R2、Claude 推理升级 |
+| **推理模型成熟** | ⭐⭐⭐⭐⭐ | Agent 可靠性质变，复杂任务成功率从 50%→80%+ | o3、DeepSeek-R2、Claude 推理升级 |
 | **MCP 标准化** | ⭐⭐⭐⭐ | 工具生态爆发，MCP Server 从千→百万级 | MCP Registry、Gateway 上线 |
 | **Agent 评估体系** | ⭐⭐⭐ | 企业可量化 Agent ROI，敢用于生产 | SWE-bench/GAIA 成为行业标准 |
 | **端侧 Agent** | ⭐⭐⭐⭐ | 个人 Agent 在手机/PC 上运行 | Apple Intelligence、高通 AI Hub |

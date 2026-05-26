@@ -57,7 +57,7 @@ graph TD
 
 | 模式 | 原理 | 适用场景 |
 |:---|:---|:---|
-| **[React](https://react.dev)** | 思考 (Thought) → 行动 (Action) → 观察 (Observation) 循环 | 复杂多步推理、工具密集型任务 |
+| **React** | 思考 (Thought) → 行动 (Action) → 观察 (Observation) 循环 | 复杂多步推理、工具密集型任务 |
 | **Plan-and-Execute** | 先制定完整计划，再逐步执行 | 流程固定、可分解的长任务 |
 | **Reflexion** | 执行后自我评估，失败则修正重试 | 对准确率要求极高的场景 |
 
@@ -497,7 +497,7 @@ interface StoredMemory {
 | 文档 | 内容 | 相关章节 |
 |:---|:---|:---|
 | [📊 技术选型对比合集](./07-技术选型对比合集.md) | Agent 平台对比、智能体方案评估 | 常用 AI 智能体平台对比 |
-| [🛠️ 开发实战与架构指南](./08-开发实战与架构指南.md) | [LangGraph](https://langchain-ai.github.io/langgraph) 工作流编排、Prompt 进阶 | 第5章：[LangGraph](https://langchain-ai.github.io/langgraph) 工作流编排 |
+| [🛠️ 开发实战与架构指南](./08-开发实战与架构指南.md) | LangGraph 工作流编排、Prompt 进阶 | 第5章：LangGraph 工作流编排 |
 
 ---
 

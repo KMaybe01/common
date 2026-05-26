@@ -72,7 +72,7 @@ graph TD
 | 概念 | 通俗解释 | 技术实现 |
 |:---|:---|:---|
 | **Embedding** | 将文字翻译成数学坐标 | `text-embedding-3-small` (1536 维) |
-| **向量数据库** | 语义搜索引擎 | [Pinecone](https://www.pinecone.io), [Milvus](https://milvus.io), [Chroma](https://www.trychroma.com) |
+| **向量数据库** | 语义搜索引擎 | Pinecone, Milvus, Chroma |
 | **相似度** | 坐标轴上的距离 | 余弦相似度 (Cosine Similarity) |
 | **分块 (Chunking)** | 把长文章切成小段落 | 固定长度、递归字符、语义分块 |
 | **上下文窗口** | LLM 的短期记忆容量 | 4K, 8K, 32K, 128K Tokens |

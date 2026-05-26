@@ -1,6 +1,6 @@
 # 🔗 四、框架与工具链篇
 
-> 🎯 **核心考点：** [LangChain](https://langchain.com)/框架/工具链、多 Agent 编排、可观测性、推理引擎 | **题数：** 20 题
+> 🎯 **核心考点：** LangChain/框架/工具链、多 Agent 编排、可观测性、推理引擎 | **题数：** 20 题
 
 ---
 
@@ -160,7 +160,7 @@ answer = qa_chain.run("问题")
 
 ### Q7: [LangChain](https://langchain.com) Expression Language (LCEL) 是什么？
 
-**LCEL** 是 [LangChain](https://langchain.com) 的声明式语法，用 `|` 操作符组合组件，类似 Unix Pipe。
+**LCEL** 是 LangChain 的声明式语法，用 `|` 操作符组合组件，类似 Unix Pipe。
 
 ```python
 # 传统写法
@@ -182,8 +182,8 @@ chain = prompt | llm | output_parser
 
 | 工具 | 用途 | 核心功能 |
 |------|------|---------|
-| **[LangSmith](https://smith.langchain.com)** | LLM 应用调试与监控 | Trace 追踪、性能分析、数据集管理、回归测试 |
-| **[LangServe](https://python.langchain.com/v0.2/docs/langserve)** | 将 Chain 部署为 API | 自动生成 REST API、JSON Schema、交互式 Playground |
+| **LangSmith** | LLM 应用调试与监控 | Trace 追踪、性能分析、数据集管理、回归测试 |
+| **LangServe** | 将 Chain 部署为 API | 自动生成 REST API、JSON Schema、交互式 Playground |
 
 ```mermaid
 graph TB
@@ -200,11 +200,11 @@ graph TB
 
 | 框架 | 语言 | 特点 | 适用场景 |
 |------|------|------|---------|
-| **[LangChain](https://langchain.com)** | Python/JS | 功能最全，生态最大 | 通用 LLM 应用 |
-| **[Llama](https://llama.meta.com)Index** | Python | RAG 能力最强 | 知识库/检索场景 |
-| **[Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel)** | C#/Python | 微软出品，企业级 | .NET 生态 |
-| **[Dify](https://dify.ai)** | Python | 可视化编排 | 低代码 Agent |
-| **[AutoGen](https://microsoft.github.io/autogen)** | Python | Multi-Agent | 多 Agent 协作 |
+| **LangChain** | Python/JS | 功能最全，生态最大 | 通用 LLM 应用 |
+| **LlamaIndex** | Python | RAG 能力最强 | 知识库/检索场景 |
+| **Semantic Kernel** | C#/Python | 微软出品，企业级 | .NET 生态 |
+| **Dify** | Python | 可视化编排 | 低代码 Agent |
+| **AutoGen** | Python | Multi-Agent | 多 Agent 协作 |
 
 ---
 
@@ -284,7 +284,7 @@ graph TB
 
 **[CrewAI](https://crewai.com) vs [AutoGen](https://microsoft.github.io/autogen) 对比：**
 
-| 维度 | [CrewAI](https://crewai.com) | [AutoGen](https://microsoft.github.io/autogen) |
+| 维度 | CrewAI | AutoGen |
 |------|--------|---------|
 | **核心思想** | 角色+任务编排 | 对话驱动协作 |
 | **通信方式** | Task 分配 + 结果传递 | Agent 间自由对话 |
@@ -327,12 +327,12 @@ graph TB
 
 **[Dify](https://dify.ai) vs 传统框架对比：**
 
-| 维度 | [LangChain](https://langchain.com)（框架） | [Dify](https://dify.ai)（平台） |
+| 维度 | LangChain（框架） | Dify（平台） |
 |------|------------------|-------------|
 | **开发方式** | 代码开发 | 可视化拖拽 + 配置 |
 | **目标用户** | 开发者 | 开发者 + 非技术人员 |
 | **灵活性** | 高（代码级控制） | 中（受平台能力限制） |
-| **部署** | 自建 | 平台托管 / [Docker](https://docker.com) |
+| **部署** | 自建 | 平台托管 / Docker |
 | **运维** | 自建 | 内置监控 + 日志 |
 | **插件生态** | pip 包 | 工具市场 |
 | **适用场景** | 核心业务/深度定制 | 快速原型/内部工具 |
@@ -371,7 +371,7 @@ graph TB
 
 **[LangChain](https://langchain.com) vs [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel) 对比：**
 
-| 维度 | [LangChain](https://langchain.com) | [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel) |
+| 维度 | LangChain | Semantic Kernel |
 |------|-----------|----------------|
 | **语言** | Python/JS | C#/Python/Java |
 | **设计理念** | LLM 应用框架 | AI 能力嵌入传统应用 |
@@ -379,7 +379,7 @@ graph TB
 | **规划能力** | 需手动实现 | 内置 Planner 自动编排 |
 | **企业集成** | 需额外配置 | ✅ 原生 Azure AD/Auth |
 | **.NET 支持** | ❌ 有限 | ✅ 首选 |
-| **微软生态** | 独立 | ✅ Azure [OpenAI](https://openai.com) + Copilot |
+| **微软生态** | 独立 | ✅ Azure OpenAI + Copilot |
 
 **选型建议：** 团队以 **C#/.NET** 为主或深度使用 Azure 生态，选 **[Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel)**；Python 技术栈选 **[LangChain](https://langchain.com)**。
 
@@ -505,7 +505,7 @@ graph TB
 |------|---------|---------|---------|
 | **Langfuse** | 开源 | 开源友好，Tracing + 评估 + 数据集管理 | 创业团队/自建 |
 | **Helicone** | 商业 | 简单接入，Token 统计 + 成本分析 | 快速集成 |
-| **[LangSmith](https://smith.langchain.com)** | 商业([LangChain](https://langchain.com)) | 深度集成 [LangChain](https://langchain.com)，回归测试强大 | [LangChain](https://langchain.com) 用户 |
+| **LangSmith** | 商业(LangChain) | 深度集成 LangChain，回归测试强大 | LangChain 用户 |
 | **Weights & Biases** | 商业 | 实验追踪 + 模型评估 | ML 团队 |
 | **Arize AI** | 商业 | 监控 + 漂移检测 + 调试 | 企业级 |
 
@@ -544,14 +544,14 @@ graph TD
 
 **综合对比表：**
 
-| 维度 | [LangChain](https://langchain.com) | [CrewAI](https://crewai.com) | [AutoGen](https://microsoft.github.io/autogen) | [Dify](https://dify.ai) | [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel) |
+| 维度 | LangChain | CrewAI | AutoGen | Dify | Semantic Kernel |
 |------|-----------|--------|---------|------|----------------|
 | **定位** | 通用 LLM 框架 | 多 Agent 编排 | 对话式 Multi-Agent | LLMOps 平台 | 企业 AI SDK |
 | **上手难度** | 中 | 低 | 中 | 低 | 中 |
 | **灵活性** | 高 | 中 | 中 | 低 | 高 |
 | **多 Agent** | 需手动 | ✅ 原生 | ✅ 原生 | 有限 | 有限 |
 | **RAG 能力** | ✅ 强 | 需集成 | 需集成 | ✅ 内置 | ✅ 中 |
-| **监控运维** | [LangSmith](https://smith.langchain.com) | 自建 | 自建 | ✅ 内置 | Azure Monitor |
+| **监控运维** | LangSmith | 自建 | 自建 | ✅ 内置 | Azure Monitor |
 | **社区生态** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
 | **生产案例** | 最多 | 增长中 | 微软内部 | 中小企业 | 企业客户 |
 
@@ -603,11 +603,11 @@ graph TB
 
 | 框架 | 语言 | 核心优势 | 局限 |
 |------|------|---------|------|
-| **[vLLM](https://github.com/vllm-project/vllm)** | Python | 吞吐最高，PagedAttention | CUDA 依赖 |
-| **TGI (HuggingFace)** | Rust | HF 深度集成，生态好 | 吞吐略逊于 [vLLM](https://github.com/vllm-project/vllm) |
+| **vLLM** | Python | 吞吐最高，PagedAttention | CUDA 依赖 |
+| **TGI (HuggingFace)** | Rust | HF 深度集成，生态好 | 吞吐略逊于 vLLM |
 | **SGLang** | Python | 结构化生成，RadixAttention | 较新，社区小 |
-| **[Llama](https://llama.meta.com).cpp** | C++ | CPU 友好，边缘部署 | GPU 推理效率低 |
-| **[Ollama](https://ollama.ai)** | Go | 用户友好，开箱即用 | 定制化有限 |
+| **Llama.cpp** | C++ | CPU 友好，边缘部署 | GPU 推理效率低 |
+| **Ollama** | Go | 用户友好，开箱即用 | 定制化有限 |
 
 ---
 
@@ -634,7 +634,7 @@ def multi_turn_qa(s, question, context):
 
 **[vLLM](https://github.com/vllm-project/vllm) vs SGLang 对比：**
 
-| 维度 | [vLLM](https://github.com/vllm-project/vllm) | SGLang |
+| 维度 | vLLM | SGLang |
 |------|------|--------|
 | **核心创新** | PagedAttention | RadixAttention + 结构化语言 |
 | **缓存机制** | 前缀 KV 缓存 | 前缀树缓存（更细粒度） |
@@ -656,16 +656,16 @@ def multi_turn_qa(s, question, context):
 
 | 场景 | 推荐框架 | 理由 | 不推荐 |
 |:---|:---|:---|:---|
-| **快速原型** | [LangChain](https://langchain.com) + LCEL | 组件丰富，文档完善，社区最大 | 手搓（太慢） |
-| **生产级 RAG** | [Llama](https://llama.meta.com)Index + [LangChain](https://langchain.com) | RAG 工具链最完善 | [CrewAI](https://crewai.com)（不适合 RAG） |
-| **多 Agent 协作** | [CrewAI](https://crewai.com) / [AutoGen](https://microsoft.github.io/autogen) | 原生多 Agent 编排 | [LangChain](https://langchain.com) Agent（单 Agent 为主） |
-| **结构化输出** | Instructor / Pydantic AI | [TypeScript](https://www.typescriptlang.org)/Pydantic 类型安全 | [LangChain](https://langchain.com)（JSON 解析脆弱） |
-| **低代码 AI 应用** | [Dify](https://dify.ai) | 可视化编排，非技术人员可用 | [LangChain](https://langchain.com)（需编码） |
-| **.NET 生态** | [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel) | 深度集成 C#/.NET 技术栈 | [LangChain](https://langchain.com)（JS/Python 为主） |
-| **高吞吐推理** | [vLLM](https://github.com/vllm-project/vllm) | PagedAttention 吞吐最高 | TGI（吞吐略低） |
-| **Agent 结构化推理** | SGLang | RadixAttention + 结构化语言 | [vLLM](https://github.com/vllm-project/vllm)（无结构化支持） |
-| **可观测性** | [LangSmith](https://smith.langchain.com) / LangFuse | LLM 调用链路追踪 | 通用 APM（缺乏 LLM 语义） |
-| **私有化部署** | [Ollama](https://ollama.ai) + [Llama](https://llama.meta.com).cpp | 离线/边缘运行，无需 GPU | [vLLM](https://github.com/vllm-project/vllm)（需要 CUDA） |
+| **快速原型** | LangChain + LCEL | 组件丰富，文档完善，社区最大 | 手搓（太慢） |
+| **生产级 RAG** | LlamaIndex + LangChain | RAG 工具链最完善 | CrewAI（不适合 RAG） |
+| **多 Agent 协作** | CrewAI / AutoGen | 原生多 Agent 编排 | LangChain Agent（单 Agent 为主） |
+| **结构化输出** | Instructor / Pydantic AI | TypeScript/Pydantic 类型安全 | LangChain（JSON 解析脆弱） |
+| **低代码 AI 应用** | Dify | 可视化编排，非技术人员可用 | LangChain（需编码） |
+| **.NET 生态** | Semantic Kernel | 深度集成 C#/.NET 技术栈 | LangChain（JS/Python 为主） |
+| **高吞吐推理** | vLLM | PagedAttention 吞吐最高 | TGI（吞吐略低） |
+| **Agent 结构化推理** | SGLang | RadixAttention + 结构化语言 | vLLM（无结构化支持） |
+| **可观测性** | LangSmith / LangFuse | LLM 调用链路追踪 | 通用 APM（缺乏 LLM 语义） |
+| **私有化部署** | Ollama + Llama.cpp | 离线/边缘运行，无需 GPU | vLLM（需要 CUDA） |
 
 #### 框架生态的"甜蜜区"原则
 

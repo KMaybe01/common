@@ -9,10 +9,10 @@
 
 | 文档 | 内容 | 题数 |
 |:---|:---|:---:|
-| **📖 11 基础篇**（当前） | Agent 定义、架构、[React](https://react.dev)、记忆、Multi-Agent、安全对齐 | 32 题 |
-| **[🔧 12 工具与协议篇](./11-Agent面试题-工具协议篇.md)** | Function Calling、MCP、A2A、SSE/[WebSocket](https://websockets.spec.whatwg.org)、AI Gateway | 16 题 |
+| **📖 11 基础篇**（当前） | Agent 定义、架构、React、记忆、Multi-Agent、安全对齐 | 32 题 |
+| **[🔧 12 工具与协议篇](./11-Agent面试题-工具协议篇.md)** | Function Calling、MCP、A2A、SSE/WebSocket、AI Gateway | 16 题 |
 | **[📐 13 大模型基础篇](./12-Agent面试题-大模型基础篇.md)** | Transformer、RLHF/DPO/GRPO、RAG、模型评估、多模态 VLM | 84 题 |
-| **[🔗 14 框架与工具链篇](./13-Agent面试题-框架工具链篇.md)** | [LangChain](https://langchain.com)、[CrewAI](https://crewai.com)、[AutoGen](https://microsoft.github.io/autogen)、[vLLM](https://github.com/vllm-project/vllm)、SGLang、[Dify](https://dify.ai) | 20 题 |
+| **[🔗 14 框架与工具链篇](./13-Agent面试题-框架工具链篇.md)** | LangChain、CrewAI、AutoGen、vLLM、SGLang、Dify | 20 题 |
 | **[🚀 15 实战项目篇](./14-Agent面试题-实战项目篇.md)** | 架构设计、性能优化、成本控制、安全监控、CI/CD | 25 题 |
 | **[🔮 16 前沿趋势篇](./15-Agent面试题-前沿趋势篇.md)** | MCP/A2A 演进、端侧 Agent、Agent Economy、多模态 | 22 题 |
 
@@ -60,10 +60,10 @@ timeline
 
 | 协议 | 全称 | 用途 | 通信方式 | 发布方 |
 |------|------|------|---------|-------|
-| **Function Calling** | — | LLM 调用单个工具 | JSON 函数描述 | [OpenAI](https://openai.com) |
-| **MCP** | Model Context Protocol | LLM 标准化访问外部数据/工具 | JSON-RPC + SSE/Stdio | [Anthropic](https://anthropic.com) |
+| **Function Calling** | — | LLM 调用单个工具 | JSON 函数描述 | OpenAI |
+| **MCP** | Model Context Protocol | LLM 标准化访问外部数据/工具 | JSON-RPC + SSE/Stdio | Anthropic |
 | **A2A** | Agent-to-Agent | Agent 间互操作通信 | JSON-RPC + SSE | Google |
-| **Tool Use** | — | 结构化工具调用 | 系统 prompt 嵌入 | [Anthropic](https://anthropic.com) |
+| **Tool Use** | — | 结构化工具调用 | 系统 prompt 嵌入 | Anthropic |
 
 ---
 
@@ -73,7 +73,7 @@ timeline
 
 # 🧠 一、Agent 基础篇
 
-> 🎯 **核心考点：** Agent 定义、架构设计、[React](https://react.dev) 范式、记忆系统、Multi-Agent、规划与反思机制 | **题数：** 16 题
+> 🎯 **核心考点：** Agent 定义、架构设计、React 范式、记忆系统、Multi-Agent、规划与反思机制 | **题数：** 16 题
 
 ---
 
@@ -148,9 +148,9 @@ graph TB
 
 | 组件 | 职责 | 技术方案 |
 |------|------|---------|
-| **LLM 推理引擎** | 理解、推理、决策 | GPT-4o / Claude / [DeepSeek](https://deepseek.com) |
+| **LLM 推理引擎** | 理解、推理、决策 | GPT-4o / Claude / DeepSeek |
 | **记忆系统** | 存储和检索历史信息 | RAG + 向量数据库 + 摘要 |
-| **规划模块** | 分解任务、制定步骤 | [React](https://react.dev) / Plan-and-Execute |
+| **规划模块** | 分解任务、制定步骤 | React / Plan-and-Execute |
 | **工具调用** | 与外部世界交互 | Function Calling / MCP / API |
 | **反馈循环** | 评估结果、自我反思 | Reflection + 重试机制 |
 | **安全护栏** | 内容过滤、权限控制 | Guardrails / 输入输出审核 |
@@ -235,7 +235,7 @@ graph TD
 
 | 模式 | 核心思想 | 适用场景 |
 |------|---------|---------|
-| **[React](https://react.dev)** | 推理 + 行动交替循环 | 通用问题解决 |
+| **React** | 推理 + 行动交替循环 | 通用问题解决 |
 | **Plan-and-Execute** | 先制定计划再逐步执行 | 复杂多步任务 |
 | **Reflection** | 执行后自我评估修正 | 编码、数学推理 |
 | **Tree-of-Thought** | 同时探索多条推理路径 | 需要探索的问题 |
@@ -312,7 +312,7 @@ graph TB
     end
 ```
 
-| 维度 | [React](https://react.dev) | Plan-and-Execute | Reflection |
+| 维度 | React | Plan-and-Execute | Reflection |
 |------|-------|-----------------|------------|
 | **核心思路** | 边想边做 | 先想后做 | 做后检查 |
 | **规划时机** | 动态规划（每步思考） | 静态规划（事先制定） | 执行后修正 |
@@ -601,7 +601,7 @@ graph LR
 | 方法 | 原理 | 优缺点 |
 |------|------|--------|
 | **Prompt Engineering** | 在 System Prompt 中给出规划框架 | ✅ 简单 ❌ 不可靠 |
-| **[React](https://react.dev) Pattern** | 边推理边行动 | ✅ 动态灵活 |
+| **React Pattern** | 边推理边行动 | ✅ 动态灵活 |
 | **Plan-and-Execute** | 先制定完整计划再执行 | ✅ 稳定性高 ❌ 计划可能错 |
 | **Fine-tuning** | 在规划类数据上微调 | ✅ 效果好 ❌ 成本高 |
 | **Tree-of-Thought** | 同时探索多条路径 | ✅ 质量高 ❌ 成本高 |
@@ -697,7 +697,7 @@ graph TB
 | 机制 | 说明 | 实现方式 |
 |------|------|---------|
 | **意图路由** | 根据用户输入分配 Agent | 分类器 / LLM 决策 |
-| **事件总线** | Agent 间异步通信 | [Redis](https://redis.io) Pub/Sub / 消息队列 |
+| **事件总线** | Agent 间异步通信 | Redis Pub/Sub / 消息队列 |
 | **共享记忆** | Agent 访问同一记忆库 | 向量数据库 + 上下文窗口 |
 | **Supervisor** | 协调者仲裁冲突 | 独立的 LLM 裁决 |
 | **动态切换** | 某 Agent 无法处理时切换 | 降级策略 + 超时回退 |
@@ -990,7 +990,7 @@ graph TB
 | 维度 | 模型派观点 | 架构派观点 | 我的看法 |
 |------|-----------|-----------|---------|
 | **核心主张** | 更强的模型 = 更强的 Agent | 精巧架构可弥补模型不足 | **两者互补** |
-| **论据** | GPT-4 Agent 远强于 GPT-3.5 Agent | [React](https://react.dev) 架构释放了模型潜力 | 架构利用模型能力 |
+| **论据** | GPT-4 Agent 远强于 GPT-3.5 Agent | React 架构释放了模型潜力 | 架构利用模型能力 |
 | **局限** | 最强的模型也难以一键解决复杂任务 | 架构无法凭空创造出模型没有的能力 | 需要协同发展 |
 | **投入产出** | 模型提升需要巨大算力投入 | 架构优化成本低，见效快 | **短期做架构，长期跟模型** |
 
@@ -1109,10 +1109,10 @@ graph LR
 
 | 阶段 | 学习内容 | 动手项目 | 参考资源 |
 |------|---------|---------|---------|
-| **1. 动手入门** | Python、[OpenAI](https://openai.com)/Claude API、Function Calling | 用 50 行代码手写一个 [React](https://react.dev) Agent（搜索+计算器） | [OpenAI](https://openai.com) Cookbook |
-| **2. 深度理解** | LLM 原理、Prompt Engineering、RAG、Embedding | 做一个带记忆的对话 Agent + 知识库 RAG | [LangChain](https://langchain.com) 官方教程 |
+| **1. 动手入门** | Python、OpenAI/Claude API、Function Calling | 用 50 行代码手写一个 React Agent（搜索+计算器） | OpenAI Cookbook |
+| **2. 深度理解** | LLM 原理、Prompt Engineering、RAG、Embedding | 做一个带记忆的对话 Agent + 知识库 RAG | LangChain 官方教程 |
 | **3. 架构进阶** | Agent 设计范式、Multi-Agent、MCP 协议、工具链 | 参与开源项目（如 OpenHands）或复现一篇论文 | SWE-agent 源码 |
-| **4. 生产化** | 评估体系、Tracing、部署、成本优化、安全对齐 | 将 Agent 部署到线上，接入监控和评估 | [LangSmith](https://smith.langchain.com) / Weights & Biases |
+| **4. 生产化** | 评估体系、Tracing、部署、成本优化、安全对齐 | 将 Agent 部署到线上，接入监控和评估 | LangSmith / Weights & Biases |
 
 **关键建议：**
 
@@ -1153,7 +1153,7 @@ graph TB
 |------|-----------|---------|
 | **全栈思维** | Agent 是端到端系统——从用户输入到 LLM 推理到工具执行 | 能自己搭建完整的 Agent 应用前后端 + 部署 |
 | **系统设计能力** | Agent 架构涉及记忆、规划、工具、多 Agent 协调等组件 | 能设计合理的架构而非堆砌框架 |
-| **工程调试能力** | 框架抽象层多，Agent 行为不可预测，Debug 是常态 | 愿意读到 [LangChain](https://langchain.com) 源码里找问题 |
+| **工程调试能力** | 框架抽象层多，Agent 行为不可预测，Debug 是常态 | 愿意读到 LangChain 源码里找问题 |
 | **ML 理解** | 理解模型能力边界，知道什么时候该微调、该换模型 | 能判断某个问题是模型问题还是工程问题 |
 | **成本敏感** | Agent 调用的 Token 成本可能失控 | 设计时考虑 Token 消耗，主动做成本优化 |
 | **用户体验意识** | Agent 的延迟和不确定性直接影响用户感受 | 设计进度反馈、超时处理、优雅降级 |
@@ -1189,7 +1189,7 @@ graph LR
 
 | 场景 | 工具 | 频率 | 用途 |
 |------|------|------|------|
-| **日常编程** | [Cursor](https://cursor.com) + Claude / Copilot | 每天 | 代码补全、重构、Bug 修复、测试生成 |
+| **日常编程** | Cursor + Claude / Copilot | 每天 | 代码补全、重构、Bug 修复、测试生成 |
 | **技术调研** | Perplexity / ChatGPT | 每天 | 快速了解新技术、查 API 文档、对比方案 |
 | **写作** | Claude + Obsidian | 每周 | 写技术博客、周报、设计文档润色 |
 | **数据分析** | ChatGPT Code Interpreter | 每月 | 数据清洗、可视化、报表生成 |
