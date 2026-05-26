@@ -5341,3 +5341,11 @@ mindmap
       structuredClone: 深度克隆
       WeakRef / FinalizationRegistry: 弱引用
 ```
+
+---
+
+### 📌 导航
+
+| [⬅️ 上一章：JavaScript 核心](./03-JavaScript-核心.md) | [🏠 返回主指南](../README.md) | [🔝 返回顶部](#top) |
+|:---:|:---:|:---:|
+

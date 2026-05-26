@@ -1,4 +1,4 @@
-# 📚 HTML 知识点详解版
+﻿# 📚 HTML 知识点详解版
 
 > 🎯 **面试星级**：★★★★☆ | **建议用时**：2 天
 > HTML 核心知识全面梳理，涵盖语义化、HTML5 新特性、Web Components、Resource Hints、Service Worker 等核心考点
@@ -3533,6 +3533,10 @@ paintMetrics.forEach((metric) => {
 
 > 💡 **总结**：HTML 解析是浏览器性能的关键环节，理解解析机制有助于优化首屏加载速度、避免不必要的文档写入和 DOM 操作。
 
----
+---\n\n### 📌 导航
+
+| [🏠 返回主指南](../README.md) | [➡️ 下一章：CSS](./02-CSS.md) |
+|:---:|:---:|
+
 
 

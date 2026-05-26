@@ -1,4 +1,4 @@
-# 🚀 [Angular 20](https://angular.dev) 完整学习指南
+﻿# 🚀 [Angular 20](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
 > Angular 20 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题
@@ -3318,3 +3318,11 @@ export class PerformanceService {
 ---
 
 **如有问题或建议，欢迎提出！** 🚀
+
+---
+
+### 📌 导航
+
+| [⬅️ 上一章：React 19](./02-React19.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：框架对比](./04-框架对比.md) |
+|:---:|:---:|:---:|
+

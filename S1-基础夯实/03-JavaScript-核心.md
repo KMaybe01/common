@@ -3531,5 +3531,10 @@ graph TD
     globalThis --> APIs["统一API访问<br/>setTimeout, fetch, console, Math"]
 ```
 
----
+---\n\n### 📌 导航
+
+| [⬅️ 上一章：CSS](./02-CSS.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：JavaScript WebAPI](./04-JavaScript-WebAPI.md) |
+|:---:|:---:|:---:|
+
+
 
