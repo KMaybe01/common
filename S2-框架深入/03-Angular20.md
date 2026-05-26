@@ -39,11 +39,21 @@
   - [4️⃣ 虚拟滚动](#4️⃣-虚拟滚动)
   - [5️⃣ Zoneless 模式](#5️⃣-zoneless-模式)
   - [6️⃣ httpResource](#6️⃣-httpresource-声明式数据)
-- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
-  - [1️⃣ 基础面试题](#1️⃣-基础面试题)
-  - [2️⃣ 进阶面试题](#2️⃣-进阶面试题)
-  - [3️⃣ 原理面试题](#3️⃣-原理面试题)
-  - [4️⃣ 实战面试题](#4️⃣-实战面试题)
+- [🤖 Angular in AI Era](#-angular-in-ai-era)
+- [🎯 第五部分：高频面试题精选](#第五部分面试题汇总)
+  - [Q1 变更检测机制](#q1-变更检测机制)
+  - [Q2 DI 依赖注入](#q2-di-依赖注入)
+  - [Q3 Signals vs Observables](#q3-signals-vs-observables)
+  - [Q4 生命周期](#q4-生命周期)
+  - [Q5 @Input/@Output](#q5-inputoutput)
+  - [Q6 路由守卫](#q6-路由守卫)
+  - [Q7 表单处理](#q7-表单处理)
+  - [Q8 内存泄漏](#q8-内存泄漏)
+  - [Q9 resource()/httpResource()](#q9-resourcehttpresource)
+  - [Q10 Zoneless 迁移](#q10-zoneless-迁移)
+  - [Q11 AOT vs JIT](#q11-aot-vs-jit)
+  - [Q12 跨组件通信](#q12-跨组件通信)
+  - [Q13 性能优化](#q13-性能优化)
 
 ---
 
@@ -81,15 +91,144 @@ graph TD
     C --> C3["注入器层级"]
 ```
 
+### 🎨 Angular 五大设计理念深度解析
+
+Angular 的设计哲学可以概括为：**"全栈框架，开箱即用，强约束规范"**。与 Vue 的渐进式和 React 的库式不同，Angular 从一开始就定位为企业级全栈平台。
+
+#### ① 全栈平台（Full-fledged Platform）
+
+> **核心思想**：开发者需要的一切，框架都内置好了
+
+```
+Angular 内置的完整工具链：
+  ├─ 路由系统（Angular Router）
+  ├─ 表单处理（Reactive Forms / Template-driven Forms）
+  ├─ HTTP 客户端（HttpClient）
+  ├─ 动画系统（@angular/animations）
+  ├─ 依赖注入（DI — 框架核心）
+  ├─ 测试工具（TestBed + Jasmine/Karma）
+  ├─ 构建工具（Angular CLI + esbuild）
+  ├─ 国际化（@angular/localize）
+  ├─ CDK（Component DevKit：虚拟滚动/拖放/覆盖层…）
+  └─ 无障碍（Angular ARIA 包）
+```
+
+**为什么重要？**
+- **统一标准**：整个团队用同一套方案，无需争论选型
+- **降低决策疲劳**：路由用 Angular Router，表单用 Reactive Forms，HTTP 用 HttpClient
+- **开箱即用**：`ng new` 就能获得完整开发环境
+- **长期维护**：Google 大厂背书，版本迭代稳定
+
+#### ② 强约束（Opinionated）
+
+> **核心思想**：框架规定"最佳实践"，开发者遵循规范
+
+```typescript
+// Angular 的强约束体现在：
+// 1. 强制 TypeScript（没有 JS 选项）
+// 2. 强制模块化（NgModule / Standalone）
+// 3. 强制分层架构（组件 → 服务 → 模块）
+// 4. 强制依赖注入（所有服务通过 DI 管理）
+// 5. 模板与逻辑分离（.html + .ts 或 @Component template）
+```
+
+**对比 React/Vue：**
+```
+React：一切皆函数（极自由，容易写出不规范代码）
+Vue：灵活（Options vs Composition，模板 vs JSX）
+Angular：强制规范（大型团队协作的利器）
+```
+
+#### ③ 依赖注入（Dependency Injection）
+
+> **核心思想**：控制反转（IoC），框架管理依赖的创建和生命周期
+
+```typescript
+@Injectable({ providedIn: 'root' })
+class UserService {
+  constructor(private http: HttpClient) {}  // DI 自动注入
+}
+
+@Component({})
+class UserComponent {
+  constructor(private userService: UserService) {}  // DI 自动注入
+}
+```
+
+**Angular DI 的核心优势：**
+- **松耦合**：组件不负责创建依赖，只声明需要什么
+- **可测试性**：依赖可 mock，每个类独立测试
+- **层级注入器**：模块级 / 组件级 / 根级，灵活控制作用域
+- **Tree-shakable**：`providedIn: 'root'` 让未使用的服务自动移除
+
+#### ④ 变更检测（Change Detection）
+
+> **核心思想**：自动同步数据与视图
+
+```
+Angular 变更检测的演进：
+  ├─ Zone.js 时代（Angular 2-17）
+  │   └─ 拦截所有异步操作 → 全量遍历组件树 → 检查值变化
+  │   └─ 优点：开发者无感 / 缺点：过度检测
+  ├─ OnPush 优化（Angular 5+）
+  │   └─ 仅检查输入属性变化的组件
+  ├─ Signals 时代（Angular 17+）
+  │   └─ 精确依赖追踪 → 仅更新相关组件
+  └─ Zoneless（Angular 18+，21 默认）
+      └─ 完全取消 Zone.js → 按需精确更新
+```
+
+#### ⑤ 可测试性（Testability）
+
+> **核心思想**：框架从设计之初就为测试而生
+
+```typescript
+// Angular 的 DI 让测试极其简单
+const userServiceSpy = jasmine.createSpyObj('UserService', ['getUser']);
+const component = new UserComponent(userServiceSpy);
+
+// TestBed 测试模块
+TestBed.configureTestingModule({
+  providers: [{ provide: UserService, useValue: mockUserService }]
+});
+const fixture = TestBed.createComponent(UserComponent);
+```
+
+**测试基础设施：**
+- `TestBed`：完整的测试环境模拟
+- DI 替换：每个依赖都可 mock
+- `async` / `fakeAsync`：异步测试支持
+- `ComponentFixture`：组件渲染测试
+- E2E：Protractor（已弃用）/ Playwright / Cypress
+
+---
+
+### 💡 一个公式理解 Angular
+
+```
+UI = class + template + DI
+│      │       │         │
+▼      ▼       ▼         ▼
+视图  组件类  声明式模板  依赖注入
+```
+
+- **class**：包含状态和方法（@Component 装饰的类）
+- **template**：声明式 HTML 模板
+- **DI**：框架自动注入服务依赖
+- Angular 在**异步事件触发时**执行变更检测，同步数据与视图
+
 ### 📊 Angular vs 其他框架
 
 | 特性 | Angular | React | Vue |
 |-----|---------|-------|-----|
 | 类型系统 | ✅ TypeScript 原生 | ❌ 需第三方库 | ⚠️ 部分支持 |
-| 学习曲线 | 🔴 陡峭 | 🟡 中等 | 🟢 平缓 |
+| 学习曲线 | 🔴 陡峭 → 中（Signals 后） | 🟡 中等 | 🟢 平缓 |
 | 企业应用 | ✅ 完美 | ✅ 良好 | ⚠️ 可行 |
 | 包大小 | 🔴 较大 | 🟡 中等 | 🟢 较小 |
 | 内置工具 | ✅ 完整 | ⚠️ 需组合 | ⚠️ 部分集成 |
+| **设计哲学** | 全栈、强约束 | 纯函数、声明式 | 渐进式、易用 |
+| **依赖管理** | DI 注入器 | Props + Context | provide/inject |
+| **变更检测** | Zone.js / Signals / Zoneless | setState → Fiber Diff | Proxy 自动追踪 |
 
 ---
 
@@ -456,14 +595,149 @@ const displayName = linkedSignal({
 });
 ```
 
-### 🎨 Angular MCP Server（AI 辅助开发）
+### 🤖 Angular in AI Era：AI 时代 Angular 的核心优势
 
-Angular 21 引入了 **Angular MCP Server**，支持 AI 工具（如 Cursor、Claude Code）直接理解 Angular 项目结构：
+> Angular 的强类型 + DI + 模板系统在 AI 辅助开发中有独特优势 — AI 生成的代码更准确、更可靠。
 
-- 自动生成组件、服务、模块
-- 智能代码补全和重构建议
-- 自动检测可优化的 Signals 使用
-- 辅助 Zoneless 迁移
+#### Angular 在 AI 时代的独特优势
+
+```
+Angular 对 AI 友好的核心原因：
+  ├─ 强制 TypeScript → AI 类型提示提升生成代码准确率 30%+
+  ├─ 强约束架构（模块/组件/服务）→ AI 生成的结构天然规范
+  ├─ 依赖注入 → AI 自动管理服务创建和注入
+  ├─ 模板与逻辑分离 → AI 可以分别生成和验证
+  └─ Angular CLI → AI 可以通过 CLI 命令快速创建脚手架
+```
+
+#### Angular MCP Server（AI 辅助开发）
+
+Angular 21 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angular 项目结构：
+
+| 能力 | 描述 | 效率提升 |
+|------|------|---------|
+| **组件生成** | AI 根据描述生成完整组件（模板 + 类 + 样式） | 5x |
+| **服务生成** | 自动创建服务 + DI 注册 | 5x |
+| **Signals 优化** | 检测可优化的 Observable → Signal 转换点 | 3x |
+| **Zoneless 迁移** | 自动将 Zone.js 代码迁移到 Zoneless | 10x |
+| **测试生成** | 分析组件依赖自动生成 TestBed 测试 | 5-10x |
+| **模板类型检查** | 检测模板中的类型错误 | 2x |
+
+```typescript
+// 使用 Angular MCP Server 的 AI 提示示例
+// 用户输入："创建一个用户列表组件，支持搜索和分页"
+// AI 通过 MCP 分析项目结构后生成：
+
+@Component({
+  selector: 'app-user-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  template: `
+    <input [(ngModel)]="searchTerm" placeholder="搜索用户..." />
+    
+    @for (user of filteredUsers(); track user.id) {
+      <div class="user-card" [routerLink]="['/users', user.id]">
+        <h3>{{ user.name }}</h3>
+        <p>{{ user.email }}</p>
+      </div>
+    }
+    
+    @if (isLoading()) {
+      <div class="spinner">加载中...</div>
+    }
+  `
+})
+export class UserListComponent {
+  private userService = inject(UserService);
+  searchTerm = signal('');
+  
+  users = httpResource(() => '/api/users');
+  filteredUsers = computed(() => {
+    const search = this.searchTerm().toLowerCase();
+    return this.users.value()?.filter(u => u.name.toLowerCase().includes(search)) ?? [];
+  });
+  isLoading = computed(() => this.users.isLoading());
+}
+```
+
+#### AI 辅助 Angular 开发对比
+
+| 场景 | 传统方式 | AI 辅助 | 效率提升 |
+|------|---------|---------|---------|
+| 创建模块 + 组件 + 路由 | 手动创建 4 个文件 | ng generate + AI 填充 | 5x |
+| 编写 Reactive Forms | 手写 FormGroup + FormControl + 验证 | 描述表单 → AI 生成 | 5-10x |
+| NgRx Store | 手写 action/reducer/selector/effect | 描述数据流 → AI 生成 | 5x |
+| HTTP Interceptor | 手写拦截器逻辑 | 描述需求 → AI 生成 | 3-5x |
+| 单元测试 | 手写 TestBed + mock | AI 分析依赖自动生成 | 5-10x |
+| Zoneless 迁移 | 逐个组件检查和修改 | MCP 自动识别和重构 | 10x |
+
+#### Angular + AI 应用实践
+
+```typescript
+// AI Chat 组件 — Angular Signals + 流式响应
+@Component({
+  selector: 'app-ai-chat',
+  template: `
+    <div class="chat-container">
+      @for (msg of messages(); track msg.id) {
+        <div class="message" [class.assistant]="msg.role === 'assistant'">
+          {{ msg.content }}
+        </div>
+      }
+      @if (isStreaming()) {
+        <div class="typing">AI 正在输入...</div>
+      }
+    </div>
+    
+    <input [(ngModel)]="inputText" (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()" [disabled]="isStreaming()">发送</button>
+  `
+})
+export class AIChatComponent {
+  private http = inject(HttpClient);
+  messages = signal<Message[]>([]);
+  isStreaming = signal(false);
+  inputText = signal('');
+
+  async sendMessage() {
+    this.isStreaming.set(true);
+    const text = this.inputText();
+    
+    this.messages.update(msgs => [...msgs, { role: 'user', content: text, id: crypto.randomUUID() }]);
+    this.messages.update(msgs => [...msgs, { role: 'assistant', content: '', id: crypto.randomUUID() }]);
+    
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message: text }),
+    });
+    
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      this.messages.update(msgs => {
+        const last = msgs[msgs.length - 1];
+        last.content += decoder.decode(value);
+        return [...msgs];
+      });
+    }
+    this.isStreaming.set(false);
+  }
+}
+```
+
+#### 总结：Angular in AI Era
+
+```
+Angular 在 AI 时代的不可替代性：
+  ├─ TypeScript 原生 → AI 生成代码类型安全
+  ├─ 强约束架构 → AI 输出天然规范可维护
+  ├─ 依赖注入 → AI 自动管理服务依赖关系
+  ├─ Angular MCP Server → 首款框架级 AI 辅助工具
+  └─ 企业级定位 → Angular + AI 是企业级应用的未来标准
+```
 
 ### 2026 年 Angular 生态工具链
 
@@ -2153,7 +2427,7 @@ mindmap
       Injectable
       Provider
       Injector
-      inject() 函数
+      inject函数
     Signals 响应式
       signal
       computed
@@ -2229,117 +2503,397 @@ flowchart TB
 
 ---
 
-## 核心概念面试题
+## ⚡ 高频面试题精选（2026 版）
 
-### Q1：Angular 中的依赖注入（DI）是什么？工作原理如何？
+### Q1：Angular 的变更检测机制是什么？Zone.js 和 Signals 有什么区别？
 
-**标准答案：**
-
-依赖注入是 Angular 的核心特性，它允许组件或服务声明它们需要的依赖项，而不是自己创建它们。
+**Angular 变更检测的演进三阶段：**
 
 ```
-工作流程：
-1. 组件/服务声明依赖 → 2. Injector 查询 Provider → 3. 创建实例 → 4. 注入使用
+阶段一：Zone.js（Angular 2-17）
+  └─ 拦截所有异步操作（setTimeout/Promise/DOM 事件）
+  └─ → 触发全量变更检测（从根组件遍历整棵树）
+  └─ → 优点：开发者完全无感
+  └─ → 缺点：过度检测，每个异步操作都检查
+
+阶段二：OnPush（Angular 5+）
+  └─ 仅在 @Input 改变 / 组件内事件 / Signal 变化时检测
+  └─ → 性能大幅提升
+
+阶段三：Signals + Zoneless（Angular 17+，21 默认）
+  └─ 精确依赖追踪，Signal 变化仅更新相关组件
+  └─ 完全取消 Zone.js，不再拦截异步操作
+  └─ → 性能最好，调试最清晰
 ```
 
-**代码示例：**
+| 特性 | Zone.js | OnPush | Zoneless + Signals |
+|------|---------|--------|-------------------|
+| **检测范围** | 全量组件树 | 仅单组件 | 精确到依赖 |
+| **Bundle** | +40KB | 0KB | 0KB |
+| **异步拦截** | ✅ 自动 | ❌ | ❌ |
+| **微前端兼容** | ❌ 差 | ✅ 好 | ✅ 极好 |
+
+**面试追问：** *为什么要从 Zone.js 迁移到 Zoneless？*
+> Zone.js 无法精确知道哪个组件变了，每次异步操作都触发全量检测。而且 Zone.js 在微前端和 Web Worker 中难以集成。Signals 提供了精确依赖追踪，不需要 Zone.js 的补丁。
+
+### Q2：Angular 依赖注入（DI）的核心原理是什么？
+
+**DI 的三大核心角色：**
 
 ```typescript
-// 1️⃣ 定义服务
-@Injectable({ providedIn: 'root' })
-export class UserService {
-  getUsers() { /* ... */ }
-}
+// 1. 注入器（Injector）— DI 容器
+// Angular 有层级注入器：
+//   根注入器 → 模块注入器 → 组件注入器
+//   从子到父逐层查找，直到找到 Provider
 
-// 2️⃣ 注入到组件
-@Component({...})
-export class UserListComponent {
-  // 方式 A：构造函数注入（传统）
-  constructor(private userService: UserService) {}
-  
-  // 方式 B：inject() 函数（现代）
-  private userService = inject(UserService);
-}
+// 2. 提供者（Provider）— 告诉注入器如何创建依赖
+@Injectable({ providedIn: 'root' })  // 根级（Tree-shakable）
+// 或
+@Component({
+  providers: [UserService]  // 组件级（每个组件独立实例）
+})
 
-// 3️⃣ Angular 自动处理整个过程
+// 3. 注入令牌（InjectionToken）— 不基于类的依赖
+export const API_URL = new InjectionToken<string>('API_URL')
+providers: [{ provide: API_URL, useValue: 'https://api.example.com' }]
 ```
 
-**为什么重要：**
-- ✅ 解耦：组件不依赖于具体实现
-- ✅ 易测试：可以注入 mock 对象
-- ✅ 单一职责：每个类专注于自己的功能
+**查找规则（从子到父）：**
+```
+组件注入器 → 父组件注入器 → ... → 根注入器
+（查找第一个匹配的 Provider，不会向上继续）
+```
 
----
+**三种注入方式：**
+```typescript
+// 方式 1：构造函数注入（传统）
+constructor(private userService: UserService) {}
 
-### Q2：Signals 和 Observables 的区别？何时使用哪个？
+// 方式 2：inject() 函数（Angular 14+，现代推荐）
+private userService = inject(UserService);
+private apiUrl = inject(API_URL);
 
-**对比表：**
+// 方式 3：@Optional（可选注入）
+constructor(@Optional() private logger?: LoggerService) {}
+```
 
-| 方面 | Signals | Observables |
-|------|---------|-------------|
-| 同步性 | ✅ 同步 | ❌ 异步 |
-| 当前值 | ✅ 总有值 | ⚠️ 需要订阅 |
-| 内存开销 | 低 | 较高 |
-| 学习曲线 | 低 | 陡峭 |
-| 库依赖 | ❌ 无 | ✅ RxJS |
+### Q3：Signals 和 Observables 的核心区别？
 
-**使用指南：**
+| 维度 | Signals | Observables (RxJS) |
+|------|---------|-------------------|
+| **同步/异步** | ✅ 同步（立即获取值） | ❌ 异步（subscribe 才能获得） |
+| **当前值** | ✅ `signal()` 总有值 | ❌ 需要 BehaviorSubject 或初始值 |
+| **依赖追踪** | ✅ 自动（computed 自动收集） | ❌ 需 pipe 手动组合 |
+| **内存消耗** | 低（无订阅链路） | 较高（整个 Observable 链） |
+| **学习曲线** | 🟢 低 | 🔴 陡峭（操作符繁多） |
+| **框架依赖** | 无 | RxJS 库 |
+| **取消订阅** | 无需 | 需 unsubscribe / async pipe |
+| **多播** | 天然 | share / shareReplay |
+
+**何时用哪个？**
 
 ```typescript
-// ✅ Signal：本地组件状态
-count = signal(0);
-user = signal<User | null>(null);
+// ✅ Signals：本地组件状态、UI 状态
+count = signal(0)
+user = signal<User | null>(null)
+filteredItems = computed(() => 
+  this.items().filter(i => i.name.includes(this.search()))
+)
 
-// ✅ Observable：异步操作和数据流
-users$ = this.http.get('/users');
-clicks$ = fromEvent(element, 'click');
+// ✅ Observable：异步操作、数据流
+users$ = this.http.get<User[]>('/api/users')
+clicks$ = fromEvent(element, 'click')
+formValue$ = this.form.valueChanges.pipe(debounceTime(300))
 
-// ⚠️ 两者结合
+// ✅ resource()：两者结合（Angular 19+）
 userResource = resource({
-  request: () => this.filterId(),
-  loader: ({ request }) => this.http.get(`/users/${request}`)
-});
+  request: () => this.userId(),
+  loader: ({ request }) => this.http.get(`/api/users/${request}`)
+})
 ```
 
----
+### Q4：Angular 的生命周期执行顺序？哪些在 SSR 中不执行？
 
-### Q3：如何处理内存泄漏？
+```
+组件创建
+  ├─ constructor（SSR ✅）
+  ├─ ngOnChanges（SSR ✅）— @Input 绑定变化时触发
+  ├─ ngOnInit（SSR ✅）— 组件初始化完成
+  ├─ ngDoCheck（SSR ⚠️ 不触发）
+  ├─ ngAfterContentInit（SSR ✅）
+  ├─ ngAfterContentChecked（SSR ⚠️ 不触发）
+  ├─ ngAfterViewInit（SSR ✅）
+  └─ ngAfterViewChecked（SSR ⚠️ 不触发）
 
-**常见原因和解决方案：**
+组件销毁
+  └─ ngOnDestroy（SSR ✅）— 清理资源
+```
+
+**关键注意：**
+- `ngOnChanges` 仅在 `@Input` 有值传递时触发
+- `constructor` 中不要做复杂初始化（依赖可能还没准备好）
+- `ngOnInit` 才是业务初始化的正确位置
+
+### Q5：Angular 的 `@Input` / `@Output` / `@ViewChild` 原理？
 
 ```typescript
-// ❌ 问题 1：订阅未取消
-export class BadComponent {
-  constructor(private userService: UserService) {}
-  
-  ngOnInit() {
-    // ❌ 如果不取消订阅，组件销毁时内存泄漏
-    this.userService.users$.subscribe(
-      users => console.log(users)
-    );
+@Component({ selector: 'app-child', template: `...` })
+export class ChildComponent {
+  // @Input：属性绑定（父→子）
+  // Angular 编译时在组件上注册输入属性
+  // 变更检测时对比新旧值，触发 ngOnChanges
+  @Input() title = ''
+  @Input({ required: true }) userId!: number  // Angular 16+
+
+  // @Output：事件发射（子→父）
+  // 基于 RxJS Subject，emit() 触发父组件的事件绑定
+  @Output() itemClick = new EventEmitter<number>()
+
+  // @ViewChild：获取子组件/DOM 引用
+  // 在 ngAfterViewInit 之后可用
+  @ViewChild('header') headerEl!: ElementRef
+  @ViewChild(ChildComponent) childComp!: ChildComponent
+}
+```
+
+**信号化输入输出（Angular 17+）：**
+```typescript
+@Component({})
+export class ModernComponent {
+  // signal input（只读）
+  title = input('')               // 自动推导类型
+  userId = input.required<number>()  // 必填
+
+  // signal output
+  itemClick = output<number>()       // emit 代替 EventEmitter
+
+  // model（双向绑定）
+  count = model(0)                   // => [(count)]="value"
+}
+```
+
+### Q6：Angular Router 的路由守卫有哪些？执行顺序？
+
+```typescript
+const routes: Routes = [{
+  path: 'admin',
+  canActivate: [AuthGuard],           // 进入前检查（权限）
+  canDeactivate: [UnsavedGuard],      // 离开前检查（未保存）
+  canActivateChild: [ChildGuard],     // 子路由激活前检查
+  canLoad: [LoadGuard],               // 懒加载前检查（Angular 15+ 弃用）
+  resolve: { data: UserResolver },    // 路由激活前预取数据
+  children: [/* ... */]
+}]
+
+// 典型实现
+@Injectable({ providedIn: 'root' })
+export class AuthGuard {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    const auth = inject(AuthService)
+    if (!auth.isLoggedIn()) {
+      return inject(Router).parseUrl('/login')  // 重定向
+    }
+    return true
   }
 }
+```
 
-// ✅ 解决方案 1：takeUntilDestroyed（Angular 20+ 推荐）
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+**执行顺序：**
+```
+① canDeactivate（离开当前路由）
+② canActivateChild / canActivate（进入新路由）
+③ resolve（数据预取）
+④ 组件实例化 → ngOnInit
+```
 
-export class GoodComponent {
-  private readonly destroyRef = inject(DestroyRef);
-  
-  constructor(private userService: UserService) {}
+### Q7：Angular 如何处理表单？Reactive Forms vs Template-driven？
+
+| 维度 | Reactive Forms | Template-driven Forms |
+|------|---------------|---------------------|
+| **数据模型** | 显式 `FormGroup` | 隐式（模板绑定） |
+| **可测试性** | ✅ 优秀 | ❌ 困难 |
+| **灵活性** | ✅ 高（动态增减控件） | ⚠️ 有限 |
+| **验证** | 代码中定义 | 模板指令 |
+| **复杂场景** | ✅ 推荐 | ❌ 不推荐 |
+
+```typescript
+// ✅ Reactive Forms（推荐）
+@Component({})
+export class LoginFormComponent {
+  form = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+  })
+
+  onSubmit() {
+    if (this.form.valid) {
+      this.auth.login(this.form.value)
+    }
+  }
+}
+```
+
+### Q8：Angular 中如何防止内存泄漏？最佳实践？
+
+| 方案 | 适用场景 | 代码量 |
+|------|---------|--------|
+| **`takeUntilDestroyed`**（Angular 16+） | Observable 订阅 | 少 |
+| **`async` 管道** | 模板中的 Observable | 0 |
+| **Signals/`resource()`** | 新代码首选 | 少 |
+| **`ngOnDestroy` 手动取消** | 旧代码兼容 | 多 |
+
+```typescript
+// ✅ 最佳方案：takeUntilDestroyed（Angular 20+ 推荐）
+@Component({})
+export class ModernComponent {
+  private destroyRef = inject(DestroyRef)
   
   ngOnInit() {
-    this.userService.users$
+    this.service.data$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(users => console.log(users));
+      .subscribe(data => this.data.set(data))
   }
   // 无需 ngOnDestroy
 }
 
-// ✅ 解决方案 2：async 管道（自动取消订阅）
+// ✅ 几乎 0 代码方案：async 管道
 @Component({
-  template: `<div>{{ users$ | async }}</div>`
+  template: `{{ users$ | async }}`  // 自动 subscribe/unsubscribe
 })
+export class SimpleComponent {
+  users$ = this.http.get('/api/users')
+}
+```
+
+### Q9：Angular 19+ 的 `resource()` 和 `httpResource()` 是什么？
+
+```typescript
+const userId = signal(1)
+
+// resource()：声明式数据获取
+const userResource = resource({
+  request: () => ({ id: userId() }),  // 依赖信号，变化时重新加载
+  loader: ({ request, abortSignal }) =>
+    fetch(`/api/users/${request.id}`, { signal: abortSignal }).then(r => r.json())
+})
+
+// httpResource()：HttpClient 便捷封装（Angular 20+）
+const userResource = httpResource<User>(() => `/api/users/${userId()}`)
+
+// 模板中直接使用
+@if (userResource.isLoading()) { <Spinner /> }
+@else { <div>{{ userResource.value().name }}</div> }
+```
+
+**优势：**
+- 声明式：描述"数据从哪里来"，不用手动管理 loading/error
+- 响应式：依赖 Signal 变化自动重新请求
+- 取消：`abortSignal` 自动取消过期请求
+- 少代码：替代大量 `effect + subscribe` 模式
+
+### Q10：Angular 21 Zoneless 模式下如何迁移？
+
+**迁移四步骤：**
+
+```typescript
+// 第一步：从 angular.json 移除 zone.js polyfills
+// "polyfills": ["zone.js"] → 删除
+
+// 第二步：确保组件使用 OnPush 或 Signals
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class MyComponent {
+  // 使用 Signals 替代部分 Observable
+  count = signal(0)
+}
+
+// 第三步：使用 resource()/httpResource() 替代手动 subscribe
+const data = httpResource(() => '/api/data')
+
+// 第四步：测试中移除 zone.js/testing
+// "polyfills": ["zone.js", "zone.js/testing"] → 删除
+```
+
+**不兼容场景：**
+- 依赖 Zone.js 自动检测的旧组件（改用 Signals + markForCheck）
+- `NgZone` API 的使用（`onStable`、`runOutsideAngular`）
+- 第三方库依赖 Zone.js 的自动检测
+
+### Q11：Angular 的 AOT 和 JIT 编译有什么区别？
+
+| 维度 | JIT（Just-in-Time） | AOT（Ahead-of-Time） |
+|------|-------------------|---------------------|
+| **编译时机** | 浏览器运行时 | 构建阶段 |
+| **包体积** | 大（需要编译器） | 小（无编译器） |
+| **启动速度** | 慢（先编译后运行） | 快（直接执行） |
+| **错误检测** | 运行时 | 编译时 |
+| **默认模式** | 开发 | **生产** |
+
+**AOT 的好处：**
+- 模板错误在构建时捕获，而非运行时
+- 减少 bundle 体积（无需在浏览器中编译模板）
+- 更快的首次渲染（无需等待编译）
+
+### Q12：Angular 中如何实现跨组件通信？
+
+| 方式 | 适用范围 | 方向 |
+|------|---------|------|
+| `@Input` / `@Output` | 父子组件 | 双向 |
+| `@ViewChild` / `@ContentChild` | 父访问子 | 父→子 |
+| `Service + DI` | 任意组件（推荐） | 全局 |
+| `provide/inject`（Angular 14+） | 组件树范围 | 祖先→后代 |
+| `@Output` + Event Bus | 任意组件 | 全局 |
+| NgRx / SignalStore | 全局状态 | 全局 |
+
+```typescript
+// ✅ 首选：Service + DI
+@Injectable({ providedIn: 'root' })
+export class SharedStateService {
+  private user = signal<User | null>(null)
+  readonly user$ = this.user.asReadonly()
+  
+  updateUser(user: User) { this.user.set(user) }
+}
+
+// 服务端注入，无需在构造函数做任何事情
+@Component({})
+export class AnyComponent {
+  private shared = inject(SharedStateService)
+  user = this.shared.user$
+}
+```
+
+### Q13：如何优化大型 Angular 应用的性能？
+
+```
+📦 构建优化
+  ├─ AOT 编译（默认）
+  ├─ 延迟加载（loadChildren）
+  └─ Tree Shaking
+
+⚡ 变更检测优化
+  ├─ OnPush 策略（最关键，20-30% 提升）
+  ├─ Signals 替代 Observable
+  └─ trackBy 函数
+
+🎨 渲染优化
+  ├─ 虚拟滚动（cdk-virtual-scroll）
+  ├─ 图片懒加载
+  └─ 避免模板中的方法调用
+
+📡 网络优化
+  ├─ HTTP 缓存 + 拦截器缓存
+  ├─ 请求合并（batch requests）
+  └─ 预加载关键资源
+
+🛠️ 工程化
+  ├─ Nx Monorepo 模块化
+  ├─ 代码规范 + ESLint
+  └─ Lighthouse CI 性能预算
+```
+
+---
 export class BestComponent {
   users$ = this.userService.users$;
   constructor(private userService: UserService) {}

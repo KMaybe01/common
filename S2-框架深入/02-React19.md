@@ -41,11 +41,21 @@
   - [6️⃣ React Compiler](#6️⃣-react-compiler)
   - [7️⃣ Server Components](#7️⃣-server-components)
   - [8️⃣ 2026 性能优化趋势](#8️⃣-2026-性能优化趋势)
-- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
-  - [1️⃣ 基础面试题](#1️⃣-基础面试题)
-  - [2️⃣ Hooks 面试题](#2️⃣-hooks-面试题)
-  - [3️⃣ 原理面试题](#3️⃣-原理面试题)
-  - [4️⃣ 实战面试题](#4️⃣-实战面试题)
+- [🤖 AI 时代 React](#-ai-时代-react)
+- [🎯 第五部分：高频面试题精选](#第五部分面试题汇总)
+  - [Q1 渲染流程 Trigger→Render→Commit](#q1-渲染流程)
+  - [Q2 useEffect 执行时序](#q2-useeffect-执行时序)
+  - [Q3 Actions 机制](#q3-actions-机制)
+  - [Q4 key 的作用](#q4-key-的作用)
+  - [Q5 Concurrent Mode](#q5-concurrent-mode)
+  - [Q6 use() vs useEffect](#q6-use-vs-useeffect)
+  - [Q7 合成事件](#q7-合成事件)
+  - [Q8 Hooks 条件调用限制](#q8-hooks-条件调用)
+  - [Q9 Server vs Client Component](#q9-server-vs-client-component)
+  - [Q10 React.memo vs useMemo](#q10-reactmemo-vs-usememo)
+  - [Q11 React Compiler 原理](#q11-react-compiler-原理)
+  - [Q12 Fiber 可中断渲染](#q12-fiber-可中断渲染)
+  - [Q13 事件机制对比](#q13-事件机制对比)
 
 ---
 
@@ -92,13 +102,131 @@ graph TD
 | 性能 | ✅ 优秀 | ✅ 优秀 | ✅ 优秀 |
 | 企业应用 | ✅ 完美 | ⚠️ 可行 | ✅ 完美 |
 
-### 🎨 React 设计理念
+### 🎨 React 五大设计理念深度解析
 
-1. **声明式**：为每个状态设计简洁的视图，数据变更时 React 高效更新
-2. **组件化**：可组合、可复用、可维护、可测试
-3. **虚拟 DOM**：函数式 UI 编程 + 保证性能下限
-4. **函数式编程**：给定输入 → 确定输出，无副作用
-5. **一次学习，随处编写**：Web / Native / SSR
+React 的设计哲学可以概括为 **"UI = f(state)"** — 视图是状态函数的输出。这个简洁公式背后是五大设计理念的支撑。
+
+#### ① 声明式（Declarative）
+
+> **核心思想**：描述"想要什么"，而非"怎么做"
+
+```jsx
+// ❌ 命令式（jQuery 思维）
+const div = document.createElement('div');
+div.className = 'card';
+div.textContent = 'Hello';
+parent.appendChild(div);
+
+// ✅ 声明式（React 思维）
+function Card({ text }) {
+  return <div className="card">{text}</div>;
+}
+```
+
+**为什么重要？**
+- **认知负荷降低**：开发者的精力集中在"什么状态对应什么 UI"，而非 DOM 操作的细节
+- **可预测性**：给定相同 props + state，永远渲染相同结果
+- **React 帮你做"脏活"**：Diff 对比、批量更新、DOM 操作全由框架管理
+- **本质是抽象**：声明式将"如何操作 DOM"的复杂性封装在框架层
+
+#### ② 组件化（Component-Based）
+
+> **核心思想**：UI = 组件树（compose(Component₁, Component₂, ...)）
+
+```jsx
+// 组件 = 独立单元
+function UserCard({ user }) {
+  return (
+    <Card>
+      <Avatar src={user.avatar} />
+      <Name>{user.name}</Name>
+      <Stats posts={user.postCount} />
+    </Card>
+  );
+}
+```
+
+**为什么重要？**
+- **单一职责**：每个组件只做一件事，降低复杂度
+- **可复用性**：组件像乐高积木，自由组合
+- **可测试性**：每个组件独立测试，无需渲染整个页面
+- **并行开发**：组件是天然的开发边界，团队可并行工作
+
+#### ③ 虚拟 DOM（Virtual DOM）
+
+> **核心思想**：在内存中维护 UI 的轻量级表示，批量计算差异后再操作真实 DOM
+
+```
+状态变化 → 新虚拟 DOM → Diff(旧虚拟DOM, 新虚拟DOM) → Patch(真实DOM)
+```
+
+**为什么不用直接操作 DOM？**
+- 真实 DOM 操作极慢（浏览器需要重排/重绘）
+- 每次 setState 都直接操作 DOM → 性能灾难
+- 虚拟 DOM 在 JS 层面比较 → 只更新最小差异
+
+**虚拟 DOM 的本质是"性能保底"**：React 通过虚拟 DOM 保证即使在没有手动优化的情况下，性能也不会太差。React 的设计原则是 **"默认足够快，需要极致时可手动优化"**。
+
+#### ④ 函数式编程（Functional）
+
+> **核心思想**：纯函数 + 不可变数据
+
+```jsx
+// ❌ 可变数据（违反函数式）
+function BadList({ items }) {
+  items.push('new item');  // 直接修改 props
+  return <ul>{items.map(/* ... */)}</ul>;
+}
+
+// ✅ 不可变数据
+function GoodList({ items }) {
+  return <ul>{[...items, 'new item'].map(/* ... */)}</ul>;
+}
+```
+
+**为什么重要？**
+- **可预测性**：纯函数 → 相同输入永远相同输出
+- **时间旅行调试**：不可变数据允许保存/回放状态快照
+- **并发安全**：不可变数据天然支持 React 18+ 的并发渲染
+- **易于推理**：无需追踪"谁修改了什么"
+
+#### ⑤ 一次学习，随处编写（Learn Once, Write Anywhere）
+
+```
+React DOM      → Web 应用
+React Native   → iOS / Android 原生应用
+React Three    → 3D 场景（Three.js 封装）
+React Ink      → 命令行终端 UI
+React 360      → VR 应用
+React PDF      → PDF 文档生成
+```
+
+**设计决策：** React 将"平台无关的 UI 逻辑"与"平台特定的渲染"彻底分离。`react` 包只关心组件树、状态、生命周期；渲染到哪个平台由 `react-dom`/`react-native` 等负责。这是 React 跨平台的架构基石。
+
+---
+
+### 💡 一个公式理解 React
+
+```
+UI = f(state)
+│     │
+▼     ▼
+视图  纯函数  状态
+```
+
+- **f** 是 React 组件（纯函数）
+- **state** 包括 props / state / context
+- React 在 **f 变化时** 自动重新计算 UI
+
+**与 Vue / Angular 的核心差异：**
+
+| 维度 | React | Vue | Angular |
+|------|-------|-----|---------|
+| **UI 公式** | UI = f(state) | UI = template + state | UI = class + template |
+| **更新时机** | setState → 全量重渲染 | Proxy 自动追踪 → 精确更新 | Zone.js → 全量检测 / Signals 精确 |
+| **数据流** | 单向（强制） | 双向（v-model 可选） | 双向（[(ngModel)]） |
+| **副作用** | useEffect 显式管理 | watchEffect 自动追踪 | 生命周期 + Observable |
+| **范式的本质** | **纯函数式**: 状态快照不可变 | **响应式**: 状态变化自动追踪 | **面向对象**: 类 + 装饰器 |
 
 ---
 
@@ -1243,197 +1371,389 @@ export function useTheme() {
 
 ## 1️⃣1️⃣ 状态管理完全指南
 
-### 📊 状态管理金字塔
+### 📊 状态管理全景图
 
 ```
-                    复杂全局状态
-                   /            \
-          Redux / Zustand     TanStack Query
-              (客户端)         (服务器状态)
-
-      ┌─────────────────────────────────┐
-      │   Context API                   │
-      │   主题、语言、用户信息          │
-      └─────────────────────────────────┘
-
-      ┌─────────────────────────────────┐
-      │   useState / useReducer          │
-      │   本地组件状态                   │
-      └─────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    React 状态管理生态（2026）                  │
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│  本地状态      │  跨组件共享    │  全局状态      │  服务器状态      │
+│              │              │              │                │
+│ useState     │ Context API  │ Redux        │ TanStack Query│
+│ useReducer   │ useMemo(值)  │ Zustand      │ SWR            │
+│ useRef       │              │ Jotai        │ Apollo         │
+│              │              │ MobX         │ RTK Query      │
+│              │              │ Valtio       │                │
+│              │              │ Legend State │                │
+└──────────────┴──────────────┴──────────────┴────────────────┘
 ```
 
-### 🎯 方案对比表
+### 🧭 状态管理分类与演进
 
-| 方案 | 复杂度 | 学习曲线 | 用途 |
-|------|-------|----------|------|
-| useState | 低 | 🟢 简单 | 简单本地状态 |
-| useReducer | 中 | 🟡 中等 | 复杂本地状态 |
-| Context | 中 | 🟡 中等 | 跨组件共享状态 |
-| Redux | 高 | 🔴 陡峭 | 大型应用全局状态 |
-| Zustand | 中 | 🟢 简单 | 轻量级全局状态 |
-| TanStack Query | 中 | 🟡 中等 | 服务器数据管理 |
+**四个象限分类法：**
 
-### 💡 Zustand 实例（推荐）
+| 象限 | 范围 | 典型方案 | 核心问题 |
+|------|------|---------|---------|
+| **本地** | 单个组件内 | useState / useReducer / useRef | 表单输入、UI 开关 |
+| **共享** | 组件树内 | Context API / 组合提升 | 主题、语言、用户 |
+| **全局（客户端）** | 整个应用 | Redux / Zustand / Jotai / MobX | 缓存数据、复杂交互 |
+| **全局（服务端）** | 服务端来源 | TanStack Query / SWR / Apollo | API 数据同步 |
+
+**版本演进时间线：**
+
+```
+2014: Redux 发布（Flux 理念 + 单一状态树）
+2015: MobX 发布（响应式可变状态）
+2016: Redux 成为 React 标配
+2018: React Context + useReducer（内置替代方案）
+2019: Recoil 发布（原子化先驱，Meta）
+      SWR 发布（stale-while-revalidate）
+2020: Zustand 发布（极简 API，~1KB）
+      Jotai 发布（原子化改进，Recoil 竞争者）
+      TanStack Query v3（服务器状态管理）
+2021: Valtio 发布（Proxy 响应式）
+      Redux Toolkit 成为官方推荐
+2022: Legend State 发布（高性能信号式）
+2023: Zustand v4 + Middleware
+      Jotai v2（突破性改进）
+2024-2026: React 19 + Signal 状态库融合
+           Server State + Client State 界限模糊
+           Zustand v5 / Jotai v2 稳定
+```
+
+### 🎯 主流方案快速对比
+
+| 方案 | 范式 | Bundle | Star | 学习曲线 | TS 支持 | 适用规模 |
+|------|------|--------|------|---------|---------|---------|
+| **useState** | 不可变 | 0KB（内置） | — | 🟢 极低 | ✅ | 单组件 |
+| **Context + useReducer** | 不可变 | 0KB（内置） | — | 🟢 低 | ✅ | 小功能 |
+| **Zustand** | 不可变 | ~1KB | 50k+ | 🟢 低 | ✅ 优秀 | 中/大型 |
+| **Jotai** | 原子不可变 | ~3KB | 22k+ | 🟢 低 | ✅ 优秀 | 中/大型 |
+| **Valtio** | 可变（Proxy） | ~2KB | 9k+ | 🟢 低 | ✅ 好 | 中/大型 |
+| **MobX** | 可变（Proxy） | ~16KB | 27k+ | 🟡 中 | ⚠️ 一般 | 中/大型 |
+| **Redux Toolkit** | 不可变（Immer） | ~12KB | 60k+ | 🔴 中-高 | ✅ 优秀 | 大型企业 |
+| **TanStack Query** | 不可变（缓存） | ~13KB | 45k+ | 🟡 中 | ✅ 优秀 | 任意（服务端） |
+| **Legend State** | 信号式 | ~3KB | 4k+ | 🟢 低 | ✅ 好 | 中/大型 |
+
+### 🏆 方案深度对比
+
+#### 1. Zustand — 极简全局状态（💡 推荐首选）
 
 ```typescript
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 
-interface TodoStore {
-  todos: Todo[];
-  addTodo: (text: string) => void;
-  removeTodo: (id: number) => void;
-  toggleTodo: (id: number) => void;
+interface BearStore {
+  bears: number;
+  fishes: number;
+  addBear: () => void;
+  consumeFish: (n: number) => void;
 }
 
-export const useTodoStore = create<TodoStore>()(
-  devtools(
-    persist(
-      (set) => ({
-        todos: [],
-        addTodo: (text) => set((state) => ({
-          todos: [...state.todos, { id: Date.now(), text, completed: false }]
-        })),
-        removeTodo: (id) => set((state) => ({
-          todos: state.todos.filter(t => t.id !== id)
-        })),
-        toggleTodo: (id) => set((state) => ({
-          todos: state.todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
-        }))
-      }),
-      { name: 'todo-store' }
-    ),
-    { name: 'TodoStore' }
+export const useBearStore = create<BearStore>()(
+  subscribeWithSelector(
+    devtools(
+      persist(
+        (set) => ({
+          bears: 0,
+          fishes: 10,
+          addBear: () => set((s) => ({ bears: s.bears + 1 })),
+          consumeFish: (n) => set((s) => ({ fishes: s.fishes - n })),
+        }),
+        { name: 'bear-storage' }
+      ),
+      { name: 'BearStore' }
+    )
   )
 );
+
+// 组件外读写
+const bears = useBearStore.getState().bears;
+useBearStore.getState().addBear();
+useBearStore.subscribe((s) => console.log('changed:', s.bears));
+
+// 选择器自动优化重渲染
+function BearCounter() {
+  const bears = useBearStore((s) => s.bears);
+  return <h1>{bears} bears</h1>;
+}
+
+// 组合多个选择器
+const { bears, fishes } = useBearStore((s) => ({ bears: s.bears, fishes: s.fishes }), shallow);
 ```
 
-### 🏪 Redux 工作流
+**Zustand vs Context 核心差异：**
+- Context 导致 Provider 嵌套地狱，Zustand 无 Provider
+- Context 会重渲染所有消费者，Zustand 选择器精确订阅
+- Zustand 可在组件外读写（Router/Promise 回调）
+
+#### 2. Redux Toolkit — 大型企业标准
+
+```typescript
+import { createSlice, configureStore } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
+
+// slice：action + reducer 自动生成
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => { state.value += 1; },      // Immer 可变写法
+    decrement: (state) => { state.value -= 1; },
+    incrementByAmount: (state, action) => { state.value += action.payload; },
+  },
+});
+
+// 异步 thunk
+const incrementAsync = createAsyncThunk('counter/fetchCount', async (amount: number) => {
+  const response = await fetch('/api/count');
+  return response.json() as number;
+});
+
+const store = configureStore({
+  reducer: { counter: counterSlice.reducer },
+  middleware: (gDM) => gDM().concat(logger),
+});
+
+// Hooks 封装 + TypeScript 类型
+type RootState = ReturnType<typeof store.getState>;
+type AppDispatch = typeof store.dispatch;
+export const useAppSelector = useSelector.withTypes<RootState>();
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+
+function Counter() {
+  const count = useAppSelector((s) => s.counter.value);
+  const dispatch = useAppDispatch();
+  return <button onClick={() => dispatch(increment())}>{count}</button>;
+}
+```
 
 ```mermaid
 flowchart TD
-    A["React Component"] -->|dispatch action| B["Action"]
-    B --> C["Middleware<br/>redux-thunk / redux-saga"]
-    C --> D["Reducer<br/>纯函数"]
-    D --> E["Store<br/>单一状态树"]
-    E -->|connect / mapStateToProps| A
+    A["React Component"] -->|useAppDispatch| B["dispatch(action)"]
+    B --> C["Middleware Chain"]
+    C --> D["createAsyncThunk<br/>请求/成功/失败"]
+    C --> E["reducer (Immer)"]
+    E --> F["Store<br/>configureStore"]
+    F -->|useAppSelector| A
 
     subgraph 三大原则
         P1["单一数据源"]
         P2["状态只读"]
-        P3["使用纯函数修改"]
+        P3["纯函数修改"]
     end
 ```
 
-**Redux 中间件原理：**
+**Redux 中间件洋葱模型：**
 
 ```mermaid
 flowchart LR
-    A["dispatch"] --> B["middleware 1"]
-    B --> C["middleware 2"]
-    C --> D["middleware 3"]
+    A["dispatch"] --> B["logger"]
+    B --> C["thunk"]
+    C --> D["saga"]
     D --> E["reducer"]
     E --> F["store"]
-
-    M["applyMiddleware"] --> M1["注入 {getState, dispatch}"]
-    M1 --> M2["组合中间件链"]
-    M2 --> M3["返回增强版 dispatch"]
+    style B fill:#e3f2fd
+    style C fill:#e3f2fd
+    style D fill:#e3f2fd
 ```
 
-### 🧩 Jotai / Recoil（原子化状态管理）
+#### 3. Jotai — 原子化状态
 
 ```typescript
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { atomWithStorage, splitAtom, loadable } from 'jotai/utils';
 
+// 基础原子
 const countAtom = atom(0);
+
+// 派生原子（懒计算，自动缓存）
 const doubledAtom = atom((get) => get(countAtom) * 2);
 
+// 异步原子
+const userAtom = atom(async () => {
+  const res = await fetch('/api/user');
+  return res.json();
+});
+
+// 存储原子（自动持久化）
+const themeAtom = atomWithStorage('theme', 'light');
+
+// 拆分原子（数组管理）
+const itemsAtom = atom([{ id: 1, text: 'hello' }]);
+const itemAtomsAtom = splitAtom(itemsAtom);
+
 function Counter() {
-  const [count, setCount] = useAtom(countAtom);
-  const [doubled] = useAtom(doubledAtom);
-  return <button onClick={() => setCount(c => c + 1)}>+1 (Double: {doubled})</button>;
+  const count = useAtomValue(countAtom);       // 只读
+  const setCount = useSetAtom(countAtom);       // 只写
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+
+// 异步 + loading 状态
+function User() {
+  const user = useAtomValue(loadable(userAtom));
+  if (user.state === 'loading') return <Spinner />;
+  if (user.state === 'hasError') return <Error message={user.error} />;
+  return <div>{user.data.name}</div>;
 }
 ```
 
-**Context API vs Jotai/Recoil：**
+| 维度 | Context API | Jotai | Recoil（已停更） |
+|------|-------------|-------|-----------------|
+| 渲染优化 | ❌ 所有消费者重渲染 | ✅ 仅关联原子变化 | ✅ 仅关联原子变化 |
+| 组合性 | ❌ 多层 Provider 嵌套 | ✅ 原子自由组合 | ✅ 原子自由组合 |
+| 异步支持 | ❌ 需手动管理 | ✅ loadable / 异步原子 | ✅ selector |
+| Bundle | 0KB | ~3KB | ~15KB |
+| 维护状态 | ✅ 活跃 | ✅ 活跃 | ❌ Meta 已不推荐 |
 
-| 维度 | Context API | Jotai/Recoil |
-|------|-------------|--------------|
-| 渲染优化 | 所有消费者重渲染 | 仅关联原子变化时重渲染 |
-| 组合性 | 多层 Provider 嵌套 | 原子自由组合 |
-| TypeScript | 中等 | 优秀 |
-| Bundle 大小 | 内置 | ~3KB (Jotai) |
-
-### 🔄 Zustand vs Redux vs MobX
-
-| 维度 | Zustand | Redux Toolkit | MobX |
-|------|---------|---------------|------|
-| 范式 | 不可变 | 不可变（Immer） | 可变（响应式） |
-| 模板代码 | 极少 | 中等 | 少 |
-| Bundle | ~1KB | ~12KB | ~16KB |
-| 学习曲线 | 低 | 中 | 低 |
-| TypeScript | 优秀 | 优秀 | 一般 |
-| 最适合 | 中小型项目 | 大型复杂项目 | 响应式思维项目 |
-
-### 📡 TanStack Query (React Query)
+#### 4. MobX — 可变响应式
 
 ```typescript
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { makeAutoObservable } from 'mobx';
+import { observer } from 'mobx-react-lite';
 
-function Todos() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['todos'],
-    queryFn: () => fetch('/api/todos').then(r => r.json()),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000,
-  });
+// 可观察状态（class-based）
+class TodoStore {
+  todos: Todo[] = [];
+  filter: 'all' | 'active' | 'completed' = 'all';
 
-  if (isLoading) return <Spinner />;
-  return <TodoList todos={data} />;
+  constructor() {
+    makeAutoObservable(this);  // 自动将属性转为 observable
+  }
+
+  // action：修改状态
+  addTodo(text: string) {
+    this.todos.push({ id: Date.now(), text, completed: false });
+  }
+
+  // computed：自动衍生
+  get filteredTodos() {
+    if (this.filter === 'all') return this.todos;
+    return this.todos.filter(t => t.completed === (this.filter === 'completed'));
+  }
 }
 
-function AddTodo() {
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (newTodo) => fetch('/api/todos', { method: 'POST', body: JSON.stringify(newTodo) }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
-  });
-  return <button onClick={() => mutation.mutate({ text: 'New Todo' })}>
-    {mutation.isPending ? 'Adding...' : 'Add Todo'}
-  </button>;
-}
+const todoStore = new TodoStore();
+
+// 组件自动追踪依赖
+const TodoList = observer(({ store }: { store: TodoStore }) => (
+  <ul>
+    {store.filteredTodos.map(todo => (
+      <li key={todo.id}>{todo.text}</li>
+    ))}
+  </ul>
+));
 ```
 
-**TanStack Query vs SWR vs Apollo：**
+**MobX 与 Zustand 核心差异：**
+- MobX 可变响应式（类似 Vue reactive），Zustand 不可变（类似 React setState）
+- MobX 自动追踪依赖，Zustand 手动选择器
+- MobX 更适合 OOP 思维，Zustand 更适合函数式
 
-| 维度 | TanStack Query | SWR | Apollo Client |
-|------|----------------|-----|---------------|
-| 协议 | REST/GraphQL | REST/GraphQL | GraphQL |
-| 缓存策略 | 精细（GC/Stale） | 基础 | 规范化缓存 |
-| 重试策略 | 可配置指数退避 | 基础 | 基础 |
-| 乐观更新 | ✅ | ✅ | ✅ |
-| Bundle | ~13KB | ~5KB | ~35KB |
+#### 5. Valtio — Proxy 响应式
 
-**数据获取流程图：**
+```typescript
+import { proxy, useSnapshot } from 'valtio';
+
+// Proxy 代理对象，类似 Vue reactive
+const state = proxy({
+  count: 0,
+  user: { name: 'John', todos: [] as Todo[] },
+});
+
+// mutations
+state.count++;
+state.user.todos.push({ id: 1, text: 'hello' });
+
+// 组件订阅快照（不可变）
+function Counter() {
+  const snap = useSnapshot(state);        // 只读快照
+  return <button onClick={() => state.count++}>{snap.count}</button>;
+}
+
+// 派生状态
+const doubled = ref(0);
+subscribe(state, () => { doubled.value = state.count * 2; });
+```
+
+#### 6. Legend State — 信号式高性能
+
+```typescript
+import { observable, useObservable, batch } from '@legendapp/state';
+
+// 信号式状态（类似 Angular Signals）
+const state = observable({
+  count: 0,
+  user: { name: '' },
+});
+
+// 精确依赖追踪，无需选择器
+function Counter() {
+  const count = useObservable(state.count);
+  return <button onClick={() => state.count.set(c => c + 1)}>{count}</button>;
+}
+
+// 批量更新（合并触发）
+batch(() => {
+  state.count.set(5);
+  state.user.name.set('Jane');
+});
+```
+
+### 📊 八维对比矩阵
+
+| 维度 | useState | Zustand | Redux Toolkit | Jotai | MobX | Valtio | TanStack Query |
+|------|----------|---------|--------------|-------|------|--------|----------------|
+| **范式** | 不可变 | 不可变 | 不可变(Immer) | 不可变 | 可变 | **Proxy** | 不可变 |
+| **Bundle** | 0KB | ~1KB | ~12KB | ~3KB | ~16KB | ~2KB | ~13KB |
+| **模板代码** | 无 | 极少 | 中 | 少 | 少 | 极少 | 少 |
+| **组件外访问** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **异步支持** | ❌ | Promise | createAsyncThunk | atom(async) | flow | proxy + | ✅ 内置 |
+| **中间件** | — | persist/imber | thunk/saga | utils | — | — | 查询/变更 |
+| **DevTools** | React DevTools | Zustand DevTools | **Redux DevTools** | Jotai DevTools | MobX DevTools | — | React Query Devtools |
+| **SSR 友好** | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ |
+
+### 🎯 技术选型决策树
 
 ```mermaid
-sequenceDiagram
-    participant C as Component
-    participant Q as QueryClient
-    participant Cache as 缓存
-    participant API as API Server
+graph TD
+    A["状态管理选型"] --> B{"状态来源"}
+    B -->|"服务端 API"| C["TanStack Query / SWR / RTK Query"]
+    B -->|"客户端"| D{"应用规模"}
+    
+    D -->|"单组件"| E["useState"]
+    D -->|"少数组件"| F["Context + useReducer"]
+    D -->|"中等规模"| G{"团队偏好"}
+    D -->|"大型企业"| H["Redux Toolkit<br/>（规范 + 生态）"]
+    
+    G -->|"极简 API"| I["Zustand 💡"]
+    G -->|"原子化"| J["Jotai"]
+    G -->|"响应式/可变"| K["MobX / Valtio"]
+    
+    I --> L{"需要中间件"}
+    L -->|"持久化"| M["Zustand + persist"]
+    L -->|"DevTools"| N["Zustand + devtools"]
+    L -->|"大项目"| O["Zustand + immer"]
+```
 
-    C->>Q: useQuery(['todos'])
-    Q->>Cache: 检查缓存
+### 📊 性能基准（粗略）
 
-    alt 缓存命中且未过期
-        Cache-->>C: 返回缓存数据
-    else 缓存未命中或过期
-        Q->>API: 发送请求
-        API-->>Q: 返回数据
-        Q->>Cache: 更新缓存
-        Cache-->>C: 返回数据
-    end
+```
+# 更新 1000 个状态项 + 订阅组件重渲染（ms）
+Zustand:     ~2ms  （选择器精确订阅）
+Jotai:       ~3ms  （原子级依赖追踪）
+MobX:        ~4ms  （自动追踪）
+Valtio:      ~3ms  （Proxy + 快照对比）
+Redux:       ~8ms  （全量 selector 检查）
+Context:     ~15ms （所有消费者重渲染）
+
+# Bundle 体积（gzip）
+Zustand:     1.2KB
+Valtio:      1.8KB
+Jotai:       2.5KB
+MobX:        12KB
+RTK:         10KB
+TanStack Q:  11KB
 ```
 
 ---
@@ -2350,144 +2670,510 @@ flowchart TB
 
 ---
 
-# 第五部分：面试题汇总
+## 🤖 React in AI Era：AI 时代 React 的核心优势
 
-## 核心概念面试题
+> AI 时代并不消灭 React，反而让 React 的声明式 UI 和组件化思维变得更加重要。
 
-### Q1：React 是什么？它的核心特性有哪些？
-
-**标准答案：**
+### 为什么 AI 时代 React 更重要？
 
 ```
-1️⃣ 声明式编程：
-   描述 UI 应该是什么样子，而不是如何一步步构建它
+AI 生成代码的核心挑战：
+  ├─ 如何保证生成代码的质量？
+  ├─ 如何让生成代码可维护？
+  └─ 如何让生成代码可预测？
 
-2️⃣ 组件化：
-   将 UI 拆分成独立的、可复用的组件
-
-3️⃣ 虚拟 DOM：
-   通过比对新旧虚拟 DOM，最小化真实 DOM 操作
-
-4️⃣ 单向数据流：
-   数据从父组件流向子组件，数据更新由父组件控制
+React 的答案：
+  ├─ 声明式 UI → 描述"要什么"，LLM 更容易理解和生成
+  ├─ 纯函数组件 → 给定输入确定输出，AI 生成结果可测试
+  ├─ 组件化 → 小单元生成，组合验证
+  └─ TypeScript → AI 类型提示提升生成准确率
 ```
 
-### Q2：虚拟 DOM 是什么？它如何提高性能？
+### AI 辅助 React 开发的核心场景
 
-**工作原理：**
-1. 组件状态改变
-2. 创建新的虚拟 DOM 树
-3. 与旧虚拟 DOM 比对（Diff）
-4. 只更新有变化的真实 DOM
+| 场景 | 工具/方式 | 效率提升 |
+|------|----------|---------|
+| **组件生成** | Copilot / Cursor 根据描述生成组件 | 3-5x |
+| **测试生成** | AI 自动生成单元测试 + 边界用例 | 5-10x |
+| **样式编写** | Tailwind CSS + AI 提示 | 2-3x |
+| **代码迁移** | Class → Hooks / Vue → React | 10x+ |
+| **Bug 修复** | AI 分析错误栈 + 定位修复 | 3-5x |
+| **性能分析** | AI 识别重渲染 + 建议优化 | 2x |
+| **文档生成** | 组件 props 自动生成文档 | 5x |
 
-**性能优势：**
-- 批量更新：多个状态变化合并为一次 DOM 更新
-- 高效 Diff：只更新改变的部分（O(n) 复杂度）
-- 避免频繁回流：直接操作 DOM 是最慢的
+### React for AI：构建 AI 应用的最佳前端选择
 
-### Q3：useState 的闭包陷阱是什么？如何避免？
+```tsx
+// AI Chat Stream 组件（React 天然适合流式 UI）
+function AIChat() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
 
-```typescript
-function Counter() {
-  const [count, setCount] = useState(0);
+  async function sendMessage(text: string) {
+    setIsStreaming(true);
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message: text }),
+    });
 
-  // ❌ 闭包陷阱：setTimeout 捕获的是旧值
-  const handleClick = () => {
-    setTimeout(() => console.log(count), 1000);
-  };
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+
+    // 流式读取，React 的声明式更新完美适配
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        return last?.role === 'assistant'
+          ? [...prev.slice(0, -1), { ...last, content: last.content + chunk }]
+          : [...prev, { role: 'assistant', content: chunk }];
+      });
+    }
+    setIsStreaming(false);
+  }
+
+  return (
+    <div>
+      {messages.map((msg, i) => (
+        <MessageBubble key={i} message={msg} />
+      ))}
+      {isStreaming && <TypingIndicator />}
+    </div>
+  );
 }
 ```
 
-**解决方案：**
+### React Server Components 在 AI 时代的价值
+
+```tsx
+// Server Component：在服务器端调用 AI API，不暴露 API Key
+// app/ai-insights/page.tsx
+export default async function AIInsightsPage() {
+  const insights = await callLLMApi('分析用户行为数据，给出建议');
+  // 数据在服务器端渲染完成，直接返回 HTML
+  return <InsightsView data={insights} />;
+}
+
+// Client Component：交互式 AI 对话
+// app/ai-chat/page.tsx
+'use client';
+export default function AIChat() {
+  // 客户端处理流式响应、用户交互
+  return <ChatUI />;
+}
+```
+
+**RSC 在 AI 时代的核心价值：**
+1. **API Key 安全**：服务器端调用 AI API，不暴露密钥
+2. **减少客户端 JS**：AI 处理结果在服务端渲染，客户端只需展示
+3. **流式 SSR**：AI 生成内容可以边生成边推送
+4. **资源优化**：大模型推理在服务端，客户端零负担
+
+### 总结：React in AI Era 的不可替代性
+
+```
+React 的核心优势在 AI 时代被放大：
+  ├─ 声明式 UI → LLM 更容易理解和生成
+  ├─ 组件化 → AI 生成的小单元可组合验证
+  ├─ Server Components → 安全的 AI API 调用
+  ├─ Streaming SSR → AI 流式输出原生支持
+  ├─ 庞大的生态系统 → AI 工具链最完善
+  └─ TypeScript 深度集成 → AI 类型感知，准确率提升 30%+
+```
+
+---
+
+# 第五部分：面试题汇总
+
+## ⚡ 高频面试题精选（2026 版）
+
+### Q1：说说 React 的渲染流程（Trigger → Render → Commit）
+
+**三阶段模型：**
+
+```
+┌──────────┐    ┌───────────┐    ┌────────┐
+│  Trigger  │ → │   Render   │ → │  Commit  │
+│  触发更新  │   │  渲染阶段   │   │  提交阶段  │
+│ setState  │   │ 构建 VNode │   │ 操作 DOM │
+│  useState │   │  Diff 对比  │   │ 生命周期 │
+│  useReducer│   │ 收集 Effect│   │ 执行 Effect│
+└──────────┘   └───────────┘    └────────┘
+      ↑ 可多次           ↓ 可中断            ← 不可中断
+```
+
+**详细过程：**
+
+```
+1️⃣ Trigger（触发阶段）
+   ├─ 首次渲染：createRoot → render
+   ├─ 状态更新：setState / useReducer / useState dispatch
+   └─ 强制更新：forceUpdate / useSyncExternalStore
+
+2️⃣ Render（渲染阶段 — 可中断）
+   ├─ 深度优先遍历 Fiber 树
+   ├─ 构建 workInProgress 树
+   ├─ Diff 对比 → 标记 effectTag（Placement/Update/Deletion）
+   ├─ 收集 Hooks 链表
+   └─ 时间切片：每 5ms 让出主线程
+
+3️⃣ Commit（提交阶段 — 不可中断）
+   ├─ Pre-mutation：getSnapshotBeforeUpdate
+   ├─ Mutation：DOM 操作（插入/更新/删除），同步执行
+   ├─ Layout：useLayoutEffect 同步执行
+   ├─ Passive：useEffect 异步调度执行
+   └─ current 指针切换到 workInProgress 树
+```
+
+**面试追问：** *Render 阶段为什么可以中断？哪些生命周期在 Render 阶段会被多次调用？*
+> Fiber 架构将渲染拆分为最小工作单元（每个 Fiber 节点）。`componentWillMount`、`componentWillReceiveProps`、`componentWillUpdate` 在 Render 阶段执行，可能被多次调用，因此在 React 16+ 被标记为 UNSAFE_。
+
+### Q2：useEffect 的完整执行时序是什么？
 
 ```typescript
-// ✅ 使用函数式更新
-setCount(prev => prev + 1);
+function Lifecycle() {
+  useEffect(() => {
+    console.log('1. 浏览器绘制后异步执行');
+    return () => console.log('3. 清理（下次 effect 前/unmount 时）');
+  });
 
-// ✅ 使用 useRef 保存最新值
-const countRef = useRef(count);
-useEffect(() => { countRef.current = count; }, [count]);
-
-// ✅ 依赖数组正确包含所有依赖
-useEffect(() => {
-  window.addEventListener('click', () => console.log(count));
-  return () => window.removeEventListener('click', () => console.log(count));
-}, [count]);
+  useLayoutEffect(() => {
+    console.log('2. DOM 更新后、浏览器绘制前同步执行');
+    return () => console.log('4. 清理');
+  });
+}
 ```
 
-### Q4：如何优化 React 应用性能？
-
+**执行顺序：**
 ```
-🎯 渲染优化
-  ✅ React.memo 缓存组件
-  ✅ useCallback 缓存函数
-  ✅ useMemo 缓存计算结果
-  ✅ 稳定 key 属性
-
-📦 代码优化
-  ✅ 代码分割和延迟加载
-  ✅ Tree shaking
-  ✅ 减少依赖库数量
-
-🌐 网络优化
-  ✅ 预加载关键资源
-  ✅ 懒加载图片和组件
-  ✅ CDN 部署资源
+Render → DOM 更新 → useLayoutEffect（同步）→ 浏览器绘制 → useEffect（异步）
 ```
 
-### Q5：Hooks 和 Class 组件有什么区别？
+### Q3：React 19 Actions 是什么？解决了什么问题？
 
-| 特性 | Hooks（函数组件） | Class 组件 |
-|------|------------------|-----------|
-| 语法 | 简洁 | 复杂 |
-| 状态管理 | useState | this.state |
-| 副作用 | useEffect | 生命周期方法 |
-| 学习曲线 | 平缓 | 陡峭 |
-| 社区趋势 | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+**核心问题：** 表单提交需要手动管理 loading、error、success 状态，代码冗余：
 
-**建议：** 新项目优先 Hooks；需要 Error Boundary 或集成旧代码时用 Class。
+```typescript
+// ❌ React 18 中管理表单状态
+const [pending, setPending] = useState(false);
+const [error, setError] = useState<Error | null>(null);
+const [data, setData] = useState(null);
 
-### Q6：React Diff 算法的策略是什么？
+async function handleSubmit(formData: FormData) {
+  setPending(true);
+  setError(null);
+  try {
+    const result = await submitAPI(formData);
+    setData(result);
+  } catch (e) {
+    setError(e as Error);
+  } finally {
+    setPending(false);
+  }
+}
 
-**三大策略：**
-1. **树分层对比**：只比较同一层级节点，跨层级直接删除重建
-2. **组件对比**：同类型组件走树对比，不同类型直接替换
-3. **元素对比**：通过 key 标识列表节点，高效复用 DOM 节点
+// ✅ React 19 Actions：useActionState + useFormStatus
+const [state, formAction, pending] = useActionState(async (prev, formData) => {
+  const result = await submitAPI(formData);
+  return result;
+}, null);
+```
 
-**key 的作用：**
+**Actions 的四大能力：**
+1. **自动管理 pending**：`useFormStatus` 读取最近的 `<form>` 的 pending 状态
+2. **乐观更新**：`useOptimistic` 假设请求成功提前展示结果
+3. **渐进增强**：`<form action={formAction}>` 即使 JS 未加载也能提交
+4. **表单重置**：`formAction` 成功后自动调用 `form.reset()`
 
-> ⚠️ 使用数组 index 作为 key 会导致列表更新时出现数据错乱。
+### Q4：React 中 key 的作用和最佳实践？
 
 ```mermaid
 flowchart LR
-    subgraph 无 key
-        L1["A B C D"] --> L2["插入 F"]
-        L2 --> L3["4 次对比 + 1 次插入"]
+    subgraph 无 key / index 作为 key
+        L1["A(0) B(1) C(2)"] -->|"首位插入 X"| L2["X(0) A(1) B(2) C(3)"]
+        L2 --> L3["所有子节点全部重渲染！"]
     end
 
-    subgraph 有 key
-        R1["A B C D"] --> R2["插入 F"]
-        R2 --> R3["仅 1 次插入"]
+    subgraph 稳定唯一 key
+        R1["A:id1 B:id2 C:id3"] -->|"首位插入 X:id4"| R2["X:id4 A:id1 B:id2 C:id3"]
+        R2 --> R3["仅插入 X，复用 A/B/C"]
     end
 ```
 
-### Q7：React 组件通信有哪几种方式？
+**最佳实践：**
+```
+✅ 使用唯一且稳定的 ID（`item.id` / `crypto.randomUUID()`）
+❌ 不要使用数组 index（插入/删除/排序时 bug）
+❌ 不要使用随机数（每次渲染都不同，导致不必要重建）
+❌ 不要使用 Math.random()（完全破坏缓存）
+⚠️ 只有静态列表可用 index（不增删改排）
+```
 
-| 方式 | 适用场景 | 方向 |
-|------|----------|------|
-| props | 父子组件 | 父→子 |
-| 回调函数 | 父子组件 | 子→父 |
-| 共同父组件转发 | 兄弟组件 | — |
-| Context API | 跨层级 | 祖先→后代 |
-| Redux / Zustand | 任意组件 | 全局 |
+### Q5：React 18 Concurrent Mode 解决了什么问题？
 
-### Q8：useEffect 和 useLayoutEffect 的区别？
+**核心价值：** 紧急更新不被非紧急更新阻塞。
 
-| 特性 | useEffect | useLayoutEffect |
-|------|-----------|----------------|
-| 执行时机 | 浏览器绘制后（异步） | DOM 更新后绘制前（同步） |
-| 阻塞绘制 | ❌ 不阻塞 | ✅ 阻塞 |
-| 适用场景 | 数据获取、订阅 | DOM 测量、样式调整 |
+```
+用户输入（紧急）     ❌ 被数据加载（非紧急）阻塞 → 界面卡顿
+                    ✅ Concurrent: 输入优先，数据加载可中断
+```
+
+| 特性 | React 17（同步） | React 18（Concurrent） |
+|------|----------------|----------------------|
+| 渲染 | 一次更新完整执行 | 可中断/恢复 |
+| 优先级 | 无优先级 | 任务分 urgency / transition |
+| 用户输入 | 被所有更新阻塞 | **高优更新跳队优先** |
+| Suspense | 基础支持 | 流式 SSR + 选择性 hydration |
+| startTransition | ❌ | ✅ 标记非紧急更新 |
+
+### Q6：React 19 `use()` 与 useEffect 数据获取的区别？
+
+```typescript
+// 方式 1：useEffect + useState（React 18 及以前）
+function User() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch('/api/user').then(r => r.json()).then(setUser);
+  }, []);
+  if (!user) return <Spinner />;
+  return <div>{user.name}</div>;
+}
+
+// 方式 2：use() + Suspense（React 19）
+function User() {
+  const user = use(fetchUserPromise);  // 直接消费 Promise
+  return <div>{user.name}</div>;
+}
+
+// 父组件提供 Suspense 边界
+function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <User />
+    </Suspense>
+  );
+}
+```
+
+| 维度 | useEffect + useState | use() + Suspense |
+|------|---------------------|-----------------|
+| 代码量 | 多（loading/error 手动管理） | 少（Suspense 管理 loading） |
+| 错误处理 | 手动 catch 设置 error | ErrorBoundary 统一处理 |
+| 竞态条件 | 需手动处理（ignore flag） | 自动处理 |
+| 灵活性 | 高（完全控制） | 受限于 Suspense 边界 |
+
+### Q7：React 合成事件（SyntheticEvent）是什么？
+
+**为什么需要合成事件？**
+
+```
+原生事件问题：
+  ├─ 浏览器兼容性差异（e.target / e.preventDefault 命名不同）
+  ├─ 内存泄漏风险（事件未卸载）
+  └─ 无法在 Fiber 架构中优化
+
+合成事件的优势：
+  ├─ 跨浏览器统一接口
+  ├─ 事件池（React 16 前）减少 GC
+  ├─ 事件委托到 root 节点（React 17 前 document → React 17+ root）
+  └─ 与 Fiber 架构深度集成（优先级调度）
+```
+
+```typescript
+// React 16：事件委托到 document
+document.addEventListener('click', ReactEvent.listener);
+
+// React 17+：事件委托到 root 节点
+root.addEventListener('click', ReactEvent.listener);
+
+// React 19：基于 createRoot 的事件系统
+function handleClick(e: React.MouseEvent) {
+  // e 是 SyntheticEvent，但行为与原生事件一致
+  e.preventDefault();  // 跨浏览器
+  e.stopPropagation();
+}
+```
+
+### Q8：React Hooks 为什么不能放在条件/循环中？
+
+**根本原因：** Hooks 存储在 Fiber 节点的 **单向链表** 中，依赖**调用顺序**来匹配状态。
+
+```typescript
+// Hooks 在 Fiber 中的存储结构
+fiber.memoizedState = {
+  queue: { pending: null },      // useState 的更新队列
+  next: {                        // 指向下一个 Hook
+    queue: { pending: null },    // useEffect 的 effect 链表
+    next: {
+      queue: { pending: null },  // useRef
+      next: null
+    }
+  }
+}
+
+// ✅ 正确：每次渲染，Hooks 调用顺序和数量一致
+function Good() {
+  const [a] = useState(0);       // Hook #1
+  const [b] = useState(0);       // Hook #2
+  useEffect(() => {}, []);        // Hook #3
+}
+
+// ❌ 错误：条件语句导致 Hook 数量不一致
+function Bad({ flag }) {
+  const [a] = useState(0);       // Hook #1
+  if (flag) {
+    const [b] = useState(0);     // flag=false 时 Hook #2 不存在
+  }
+  useEffect(() => {}, []);       // flag=false 时变成了 Hook #2（本应是 #3）
+  // → React 无法匹配正确的状态！
+}
+```
+
+### Q9：Server Component vs Client Component 的区别？
+
+```tsx
+// 🖥️ Server Component（默认）
+// app/page.tsx
+export default async function Page() {
+  const data = await db.query('SELECT * FROM posts');
+  // 1. 在服务器端执行（可访问数据库/文件系统/AI API）
+  // 2. 不发送 JS bundle 到客户端
+  // 3. 不可用 useState/useEffect/事件处理
+  return <PostList posts={data} />;
+}
+
+// 💻 Client Component（需 'use client'）
+// app/counter.tsx
+'use client';
+export function Counter() {
+  // 1. 在客户端执行
+  // 2. 可交互（事件/状态/副作用）
+  // 3. 发送 JS bundle 到客户端
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+| 维度 | Server Component | Client Component |
+|------|-----------------|-----------------|
+| 执行位置 | **服务器** | **浏览器** |
+| 访问 DB/FS | ✅ 直接 | ❌ 只能通过 API |
+| useState/Effects | ❌ 不可用 | ✅ 可用 |
+| JS Bundle | **0KB** | 发送到客户端 |
+| 数据获取 | 直接 await | use/useEffect |
+| API Key 安全 | ✅ 安全 | ❌ 暴露风险 |
+
+### Q10：React.memo 和 useMemo 的区别？
+
+| 特性 | React.memo | useMemo |
+|------|-----------|---------|
+| **作用对象** | 组件 | 值/计算 |
+| **比较方式** | props 浅比较（默认） | 依赖数组比较 |
+| **返回值** | 新的组件 | 缓存的值 |
+| **使用场景** | 避免组件重渲染 | 避免重复计算 |
+
+```typescript
+// React.memo：缓存整个组件
+const ExpensiveComponent = React.memo(function Expensive({ data }) {
+  return <div>{/* 复杂渲染 */}</div>;
+});
+
+// useMemo：缓存计算值
+function Parent({ items }) {
+  const sorted = useMemo(
+    () => items.sort((a, b) => a.name.localeCompare(b.name)),
+    [items]
+  );
+  return <ExpensiveComponent data={sorted} />;
+}
+
+// useCallback：缓存函数（等价于无参数的 useMemo）
+const handleClick = useCallback(() => doSomething(id), [id]);
+// 等价于：const handleClick = useMemo(() => () => doSomething(id), [id]);
+```
+
+### Q11：React 19 Compiler 如何实现自动记忆化？
+
+**原理：** Compiler 在编译阶段分析函数的作用域和依赖关系，自动推断哪些值和函数需要缓存。
+
+```typescript
+// 编译前（开发者写的代码）
+function ProfilePage({ user }) {
+  const title = user.name + '\'s Profile';
+  const handleClick = () => showProfile(user.id);
+  return <div onClick={handleClick}>{title}</div>;
+}
+
+// 编译后（React Compiler 自动转换）
+function ProfilePage({ user }) {
+  const $ = _c(2);                                        // 分配缓存槽
+  let title, handleClick;
+
+  if ($[0] !== user) {                                    // 依赖变化？
+    title = user.name + '\'s Profile';
+    handleClick = _F(() => showProfile(user.id));         // 自动缓存
+    $[0] = user;
+    $[1] = [title, handleClick];                         // 更新缓存
+  } else {
+    [title, handleClick] = $[1];                          // 复用缓存
+  }
+
+  return <div onClick={handleClick}>{title}</div>;
+}
+```
+
+**关键机制：**
+- `_c(n)`：分配 n 个缓存槽位
+- `_F(fn)`：自动缓存函数引用
+- 闭包语义感知：分析哪些外部变量被捕获
+- 无手动依赖数组：Compiler 自动推导 `$[0] !== user`
+
+### Q12：React Fiber 架构如何实现可中断渲染？
+
+**核心数据结构：Fiber 链表**
+
+```typescript
+// 对比：Stack Reconciler vs Fiber Reconciler
+
+// React 15：函数调用栈（不可中断）
+function render15(element) {
+  if (typeof element.type === 'function') {
+    const children = element.type(element.props);
+    render15(children);  // 递归，必须执行完
+  }
+  // 直接操作 DOM
+  document.appendChild(element);
+}
+
+// React 16+：Fiber 链表（可中断）
+function workLoop(fiber: Fiber) {
+  while (fiber && shouldYield() === false) {  // 每次检查是否让出
+    fiber = performUnitOfWork(fiber);         // 处理一个 Fiber 节点
+    if (fiber === null) {                     // 遍历完成
+      commitRoot();                           // 提交 DOM 更新
+      break;
+    }
+  }
+  if (fiber) {
+    requestIdleCallback(() => workLoop(fiber)); // 下次空闲继续
+  }
+}
+```
+
+**调度机制：** React 通过 `requestIdleCallback` 或 `MessageChannel` 实现时间切片，每次处理一个 Fiber 节点后检查是否超时（约 5ms），超时则让出主线程。
+
+### Q13：React 事件机制与原生事件的区别？
+
+| 对比项 | 原生 DOM 事件 | React 合成事件 |
+|--------|-------------|---------------|
+| **绑定方式** | `element.addEventListener` | `onClick={handler}` |
+| **事件委托** | 分散绑定 | **统一委托到 root**（React 17+） |
+| **跨浏览器** | 需兼容性处理 | ✅ 统一接口 |
+| **阻止冒泡** | `e.stopPropagation()` | ✅ 同样支持 |
+| **性能** | 多个 listener | 内存中 1 个 listener |
+| **异步访问** | 始终可访问 | React 16 需 `e.persist()`，React 17+ 无需 |
 
 ---
 

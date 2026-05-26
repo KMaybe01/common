@@ -142,7 +142,7 @@ mindmap
 
 ---
 
-> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`03-JavaScript-WebAPI.md`](./03-JavaScript-WebAPI.md) | 框架对比 → [`S2-框架深入/07-框架对比.md`](../S2-框架深入/07-框架对比.md) | 面试题库 → [`S4-面试冲刺/11-前端面试题库.md`](../S4-面试冲刺/11-前端面试题库.md)
+> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`04-JavaScript-WebAPI.md`](./04-JavaScript-WebAPI.md) | 框架对比 → [`S2-框架深入/04-框架对比.md`](../S2-框架深入/04-框架对比.md) | 面试题库 → [`S4-面试冲刺/01-前端面试题库.md`](../S4-面试冲刺/01-前端面试题库.md)
 
 ## 📑 内容目录（Table of Contents）
 
@@ -180,9 +180,9 @@ mindmap
   - [Temporal API](#2️⃣1️⃣-temporal-apies2027-候选stage-4)
   - [using 关键字](#2️⃣2️⃣-using-关键字显式资源管理es2026-候选stage-4)
   - [Decorators](#2️⃣3️⃣-javascript-decorators装饰器stage-3)
-- [🌐 **十二、浏览器 Web API → 已移至独立文件**](./03-JavaScript-WebAPI.md)
-- [✍️ **十三、手写代码实现 → 已移至独立文件**](./03-JavaScript-WebAPI.md)
-- [💻 **十四、代码输出题 → 已移至独立文件**](./03-JavaScript-WebAPI.md)
+- [🌐 **十二、浏览器 Web API → 已移至独立文件**](./04-JavaScript-WebAPI.md)
+- [✍️ **十三、手写代码实现 → 已移至独立文件**](./04-JavaScript-WebAPI.md)
+- [💻 **十四、代码输出题 → 已移至独立文件**](./04-JavaScript-WebAPI.md)
 
 ---
 
