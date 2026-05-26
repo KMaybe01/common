@@ -1,4 +1,4 @@
-# 🚀 React 19 完整学习指南
+# 🚀 [React 19](https://react.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
 > React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通
@@ -1437,7 +1437,7 @@ export function useTheme() {
 
 ### 🏆 方案深度对比
 
-#### 1. Zustand — 极简全局状态（💡 推荐首选）
+#### 1. [Zustand](https://github.com/pmndrs/zustand) — 极简全局状态（💡 推荐首选）
 
 ```typescript
 import { create } from 'zustand';
@@ -2096,7 +2096,7 @@ test('user can complete purchase flow', async ({ page }) => {
 
 ---
 
-## 1️⃣6️⃣ Next.js（React 元框架）
+## 1️⃣6️⃣ [Next.js](https://nextjs.org)（React 元框架）
 
 ### 🏗️ App Router vs Pages Router
 
@@ -3440,6 +3440,75 @@ function useHistory<T>(initialValue: T) {
 - 🎓 [React 核心概念深入](https://react.dev/reference)
 - 💻 [CodeSandbox 在线编辑](https://codesandbox.io)
 - 🧪 [React Testing Library](https://testing-library.com)
+
+---
+
+## 🔗 官方参考链接
+
+| 技术/库 | 官网 |
+|---------|------|
+| **框架与核心** |
+| React | https://react.dev |
+| React Router | https://reactrouter.com |
+| TanStack Router | https://tanstack.com/router |
+| Expo | https://expo.dev |
+| Remix | https://remix.run |
+| Gatsby | https://www.gatsbyjs.com |
+| Astro | https://astro.build |
+| **状态管理** |
+| Redux / RTK | https://redux.js.org |
+| Zustand | https://github.com/pmndrs/zustand |
+| Jotai | https://jotai.org |
+| Recoil | https://recoiljs.org |
+| MobX | https://mobx.js.org |
+| Legend State | https://legendapp.com/open-source/state |
+| Immer | https://immerjs.github.io/immer |
+| **数据获取** |
+| TanStack Query | https://tanstack.com/query |
+| SWR | https://swr.vercel.app |
+| Apollo Client | https://www.apollographql.com |
+| Zod | https://zod.dev |
+| **UI 组件库** |
+| shadcn/ui | https://ui.shadcn.com |
+| Radix UI | https://www.radix-ui.com |
+| Ant Design | https://ant.design |
+| Tailwind CSS | https://tailwindcss.com |
+| framer-motion | https://www.framer.com/motion |
+| Three.js | https://threejs.org |
+| React Aria | https://react-spectrum.adobe.com/react-aria |
+| **表单** |
+| React Hook Form | https://react-hook-form.com |
+| Formik | https://formik.org |
+| **测试** |
+| Vitest | https://vitest.dev |
+| Jest | https://jestjs.io |
+| Playwright | https://playwright.dev |
+| Cypress | https://www.cypress.io |
+| **构建工具** |
+| Vite | https://vite.dev |
+| Turbopack | https://turbo.build/pack |
+| Webpack | https://webpack.js.org |
+| Babel | https://babeljs.io |
+| Storybook | https://storybook.js.org |
+| **SSR/Meta 框架** |
+| Next.js | https://nextjs.org |
+| Vercel AI SDK | https://sdk.vercel.ai |
+| **部署** |
+| Vercel | https://vercel.com |
+| Netlify | https://www.netlify.com |
+| Cloudflare Workers | https://workers.cloudflare.com |
+| **代码质量** |
+| ESLint | https://eslint.org |
+| Prettier | https://prettier.io |
+| Husky | https://typicode.github.io/husky |
+| **监控** |
+| Sentry | https://sentry.io |
+| **其他** |
+| TypeScript | https://www.typescriptlang.org |
+| Node.js | https://nodejs.org |
+| React Native | https://reactnative.dev |
+| Auth0 | https://auth0.com |
+| Clerk | https://clerk.com |
 
 ---
 

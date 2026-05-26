@@ -1,4 +1,4 @@
-# 🚀 Angular 20 完整学习指南
+# 🚀 [Angular 20](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
 > Angular 20 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题
@@ -1240,7 +1240,7 @@ socket$ = webSocket('ws://...');
 
 ---
 
-## 7️⃣ RxJS 在 Angular 中的应用
+## 7️⃣ [RxJS](https://rxjs.dev) 在 Angular 中的应用
 
 ### 🌊 Observable 核心概念
 
@@ -3254,10 +3254,66 @@ export class PerformanceService {
 
 ## 📚 推荐学习资源
 
-- 🌐 [官方文档](https://angular.io)
-- 📖 [Angular 风格指南](https://angular.io/guide/styleguide)
+- 🌐 [官方文档](https://angular.dev)
+- 📖 [Angular 风格指南](https://angular.dev/guide/styleguide)
 - 🎓 [Angular University](https://angular-university.io)
 - 💻 [StackBlitz 在线编辑器](https://stackblitz.com)
+
+---
+
+## 🔗 官方参考链接
+
+| 技术/库 | 官网 |
+|---------|------|
+| **框架与核心** |
+| Angular | https://angular.dev |
+| Angular CLI | https://angular.dev/cli |
+| Angular Material | https://material.angular.io |
+| Angular CDK | https://material.angular.io/cdk |
+| **状态管理** |
+| NgRx | https://ngrx.io |
+| Akita | https://opensource.salesforce.com/akita |
+| Elf | https://ngneat.github.io/elf |
+| **数据/HTTP** |
+| RxJS | https://rxjs.dev |
+| Angular HttpClient | https://angular.dev/guide/http |
+| **UI 组件库** |
+| NG-ZORRO | https://ng.ant.design |
+| PrimeNG | https://primeng.org |
+| Ionic | https://ionicframework.com |
+| **构建工具** |
+| esbuild | https://esbuild.github.io |
+| Vite | https://vite.dev |
+| Nx | https://nx.dev |
+| **测试** |
+| Jasmine | https://jasmine.github.io |
+| Jest | https://jestjs.io |
+| Playwright | https://playwright.dev |
+| Cypress | https://www.cypress.io |
+| **SSR** |
+| Angular Universal | https://angular.dev/guide/universal |
+| Analog | https://analogjs.org |
+| **表单** |
+| Formly | https://formly.dev |
+| **国际化** |
+| ngx-translate | https://github.com/ngx-translate/core |
+| **代码质量** |
+| ESLint | https://eslint.org |
+| Prettier | https://prettier.io |
+| Compodoc | https://compodoc.app |
+| **AI** |
+| Angular MCP Server | https://angular.dev/guide/mcp |
+| **部署** |
+| Docker | https://www.docker.com |
+| Firebase | https://firebase.google.com |
+| Auth0 | https://auth0.com |
+| **监控** |
+| Sentry | https://sentry.io |
+| Angular DevTools | https://angular.dev/guide/devtools |
+| **其他** |
+| TypeScript | https://www.typescriptlang.org |
+| Node.js | https://nodejs.org |
+| Zod | https://zod.dev |
 
 ---
 
