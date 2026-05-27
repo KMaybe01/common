@@ -323,25 +323,26 @@ export class ProductCardComponent {
 </div>
 ```
 
-## 3-3 @Input / @Output
+## 3-3 input / output（Signal 语法）
 
 ```mermaid
 graph LR
-    A["父组件"] -->|"@Input 数据流入"| B["子组件"]
-    B -->|"@Output 事件流出"| A
+    A["父组件"] -->|"input() 数据流入"| B["子组件"]
+    B -->|"output() 事件流出"| A
 ```
 
 ```typescript
-// 子组件
+import { Component, input, output } from '@angular/core';
+
 @Component({ ... })
 export class ProductCardComponent {
-  @Input({ required: true }) product!: Product;
-  @Input() showDiscount = false;
+  product = input.required<Product>();
+  showDiscount = input(false);
 
-  @Output() addToCart = new EventEmitter<number>();
+  addToCart = output<Product>();
 
   handleAdd() {
-    this.addToCart.emit(this.product.id);
+    this.addToCart.emit(this.product());
   }
 }
 ```
@@ -350,7 +351,7 @@ export class ProductCardComponent {
 
 ```mermaid
 graph TD
-    ctor["constructor"] --> ngOnChanges["ngOnChanges<br/>@Input 绑定值变化"]
+    ctor["constructor"] --> ngOnChanges["ngOnChanges<br/>input() 绑定值变化"]
     ngOnChanges --> ngOnInit["ngOnInit<br/>初始化逻辑"]
     ngOnInit --> ngDoCheck["ngDoCheck<br/>自定义变更检测"]
     ngDoCheck --> ngAfterContentInit["ngAfterContentInit<br/>ng-content 初始化"]
@@ -365,7 +366,7 @@ graph TD
 
 | 钩子 | 触发时机 | 用途 |
 |------|---------|------|
-| `ngOnChanges` | 每次 @Input 绑定值变化 | 响应输入变化 |
+| `ngOnChanges` | 每次 input() 绑定值变化 | 响应输入变化 |
 | `ngOnInit` | 首次 ngOnChanges 之后 | 初始化数据加载 |
 | `ngDoCheck` | 每次变更检测 | 自定义变化检测 |
 | `ngAfterContentInit` | 内容投影 ng-content 初始化后 | 内容初始化 |
@@ -403,19 +404,21 @@ graph TD
 ## 3-6 ViewChild / ViewChildren / ContentChild
 
 ```typescript
+import { Component, viewChild, viewChildren, ElementRef } from '@angular/core';
+
 @Component({ ... })
 export class ParentComponent {
-  // 获取模板中的子组件
-  @ViewChild(ChildComponent) child!: ChildComponent;
-  @ViewChild('myInput') inputEl!: ElementRef<HTMLInputElement>;
+  // 获取模板中的单个子组件或元素
+  child = viewChild.required<ChildComponent>();
+  inputEl = viewChild.required<ElementRef<HTMLInputElement>>('myInput');
 
   // 获取多个
-  @ViewChildren(ProductCardComponent) cards!: QueryList<ProductCardComponent>;
+  cards = viewChildren(ProductCardComponent);
 
   ngAfterViewInit() {
-    this.child.doSomething();
-    this.inputEl.nativeElement.focus();
-    this.cards.forEach(card => console.log(card.product));
+    this.child().doSomething();
+    this.inputEl().nativeElement.focus();
+    this.cards().forEach(card => console.log(card.product));
   }
 }
 ```
@@ -577,24 +580,24 @@ export class MyComponent {}
 ## 5-2 自定义属性指令
 
 ```typescript
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import { Directive, ElementRef, HostListener, input } from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
   standalone: true,
 })
 export class HighlightDirective {
-  @Input('appHighlight') highlightColor = 'yellow';
-  @Input() defaultColor = 'transparent';
+  highlightColor = input('yellow', { alias: 'appHighlight' });
+  defaultColor = input('transparent');
 
   constructor(private el: ElementRef) {}
 
   @HostListener('mouseenter') onMouseEnter() {
-    this.highlight(this.highlightColor);
+    this.highlight(this.highlightColor());
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.highlight(this.defaultColor);
+    this.highlight(this.defaultColor());
   }
 
   private highlight(color: string) {
@@ -610,24 +613,26 @@ export class HighlightDirective {
 ## 5-3 自定义结构型指令
 
 ```typescript
-import { Directive, TemplateRef, ViewContainerRef, Input } from '@angular/core';
+import { Directive, TemplateRef, ViewContainerRef, input, effect } from '@angular/core';
 
 @Directive({
   selector: '[appUnless]',
   standalone: true,
 })
 export class UnlessDirective {
+  appUnless = input(false);
+
   constructor(
     private templateRef: TemplateRef<any>,
     private viewContainer: ViewContainerRef
-  ) {}
-
-  @Input() set appUnless(condition: boolean) {
-    if (!condition) {
-      this.viewContainer.createEmbeddedView(this.templateRef);
-    } else {
-      this.viewContainer.clear();
-    }
+  ) {
+    effect(() => {
+      if (!this.appUnless()) {
+        this.viewContainer.createEmbeddedView(this.templateRef);
+      } else {
+        this.viewContainer.clear();
+      }
+    });
   }
 }
 ```
@@ -1807,7 +1812,7 @@ export const selectAllProducts = createSelector(
 })
 export class ProductCardComponent {
   // OnPush 下，只在以下情况触发检测：
-  // 1. @Input 引用变化
+  // 1. input() / @Input 引用变化
   // 2. 组件内事件触发
   // 3. Signals 变化
   // 4. 手动触发 markForCheck()
@@ -1817,7 +1822,7 @@ export class ProductCardComponent {
 ```mermaid
 graph TD
     A["事件触发"] --> B{"OnPush?"}
-    B -->|"是"| C{"@Input 引用变化?"}
+    B -->|"是"| C{"input()/@Input 引用变化?"}
     C -->|"是"| D["检测该组件及子组件"]
     C -->|"否"| E{"Signals 变化?"}
     E -->|"是"| D
@@ -1899,7 +1904,7 @@ graph LR
 
     subgraph Zoneless
         D["signal.set()"] --> E["精确<br/>变更检测"]
-        F["@Input 变化"] --> E
+        F["input()/@Input 变化"] --> E
         G["事件绑定"] --> E
     end
 ```
@@ -2149,7 +2154,7 @@ graph TD
     B --> C["执行变更检测"]
     C --> D["从根组件遍历"]
     D --> E{"OnPush?"}
-    E -->|"是"| F{"@Input 变化?"}
+    E -->|"是"| F{"input()/@Input 变化?"}
     F -->|"是"| G["检测子组件"]
     F -->|"否"| H["跳过"]
     E -->|"否"| G
@@ -2210,15 +2215,15 @@ constructor → ngOnChanges → ngOnInit → ngDoCheck
 → 子 ngAfterViewInit → 父 ngAfterViewInit
 ```
 
-## Q5: @Input / @Output 数据流
+## Q5: input() / output() 数据流
 
 ```mermaid
 graph LR
-    A["父组件"] -->|"数据流<br/>@Input"| B["子组件"]
-    B -->|"事件流<br/>@Output"| A
+    A["父组件"] -->|"数据流<br/>input()"| B["子组件"]
+    B -->|"事件流<br/>output()"| A
 ```
 
-**@Input 变化检测时机：** `ngOnChanges` 钩子接收 `SimpleChanges` 对象，包含当前值和前一个值。
+**input() 变化检测时机：** `ngOnChanges` 钩子接收 `SimpleChanges` 对象，包含当前值和前一个值（使用 `input()` 信号时同样触发 `ngOnChanges`）。
 
 ## Q6: 路由守卫类型
 
