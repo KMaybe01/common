@@ -174,7 +174,7 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 |---|---|---|
 | [01-Vue3学习指南.md](S2-框架深入/01-Vue3%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.md) | 📘 实践向 | 环境搭建 → Composition API → 响应式原理 → 组件系统 → Vue Router → Pinia → Hooks → TS → 性能优化 → 全栈实战 |
 | [02-Vue3.md](S2-框架深入/02-Vue3.md) | 📕 面试向 | 五大设计理念、响应式引擎源码、模板编译、Diff 算法、keep-alive、源码面试题 |
-| [03-React学习指南.md](S2-框架深入/03-React%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.md) | 📘 实践向 | React 19 初体验 → 组件化 → Tailwind → 状态管理 → TypeScript → Router → Hooks → Redux → 全栈电商实战 |
+| [03-React19学习指南.md](S2-框架深入/03-React19%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.md) | 📘 实践向 | React 19 初体验 → 组件化 → Tailwind → 状态管理 → TypeScript → Router → Hooks → Redux → 全栈电商实战 |
 | [04-React19.md](S2-框架深入/04-React19.md) | 📕 面试向 | 设计理念、JSX 编译、Fiber 架构、Hooks 链表、React Compiler、Actions、Server Components、面试题 |
 | [05-Angular20学习指南.md](S2-框架深入/05-Angular20%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.md) | 📘 实践向 | 环境搭建 → CLI → 组件 → 模板 → 指令 → DI → Signals → RxJS → 路由 → 表单 → HTTP → NgRx → 性能 → 全栈实战 |
 | [06-Angular20.md](S2-框架深入/06-Angular20.md) | 📕 面试向 | 设计理念、变更检测、DI 源码、Signals 引擎、Router 守卫、Zoneless、httpResource、面试题 |
