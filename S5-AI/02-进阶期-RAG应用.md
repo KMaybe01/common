@@ -1,7 +1,7 @@
 # 🔵 阶段二：进阶期 - RAG 应用
 
 > 📖 **本文档为《AI 前端开发体系化学习指南》的阶段拆分文档**
-> 完整指南请查看：[README.md](./README.md)
+> 完整指南请查看：[学习指南总览](./README.md#-ai-前端开发体系化学习指南)
 
 ---
 
@@ -12,6 +12,9 @@
 - [核心概念解析](#-核心概念解析)
   - [RAG 架构全景图](#21-rag-架构全景图)
   - [核心概念对照表](#22-核心概念对照表)
+  - [RAG 深入原理](#23-rag-深入原理)
+  - [Lost in the Middle 问题](#24-lost-in-the-middle-问题)
+  - [高级 RAG 范式](#25-高级rag范式)
 - [环境搭建](#️-环境搭建)
 - [核心实现](#-核心实现)
   - [文档加载与解析](#25-文档加载与解析)
@@ -76,6 +79,139 @@ graph TD
 | **相似度** | 坐标轴上的距离 | 余弦相似度 (Cosine Similarity) |
 | **分块 (Chunking)** | 把长文章切成小段落 | 固定长度、递归字符、语义分块 |
 | **上下文窗口** | LLM 的短期记忆容量 | 4K, 8K, 32K, 128K Tokens |
+
+#### 2.3 RAG 深入原理
+
+**RAG vs 微调的本质区别：**
+
+| 维度 | RAG | 微调 (Fine-tuning) |
+|:---|:---|:---|
+| **知识来源** | 外部知识库，动态更新 | 模型内部参数，静态 |
+| **更新成本** | 低——只需更新知识库重建索引 | 高——需要重新训练模型 |
+| **幻觉控制** | ✅ 引用来源，可验证 | ❌ 依赖记忆，易幻觉 |
+| **长尾知识** | ✅ 检索即可获取 | ❌ 难以记住 |
+| **适用场景** | 知识密集型问答 | 格式/风格/行为对齐 |
+
+**什么时候用RAG，什么时候用微调：**
+- 客服问答（知识更新频繁）→ **RAG**
+- 知识库查询、需引用来源 → **RAG**
+- 模型行为/回答风格定制 → **微调**
+- 两者结合最佳：微调让模型学会"回答格式"，RAG提供实时知识
+
+**Chunking（文本切块）是影响检索质量的最关键因素之一：**
+
+| 切块大小 | 优点 | 缺点 | 适用场景 |
+|:---|:---|:---|:---|
+| **小 (256 tokens)** | 精度高，噪声少 | 可能切碎语义 | QA精确匹配 |
+| **中 (512 tokens)** | 平衡 | 平衡 | **通用推荐** |
+| **大 (1024 tokens)** | 语义完整 | 含噪声 | 摘要类任务 |
+
+相邻块保留10-20%重叠，防止关键信息被切在边界上。先进的**语义切块（Semantic Chunking）**在句子边界根据语义变化动态切分。
+
+#### 2.4 Lost in the Middle 问题
+
+> LLM对长上下文中"中间位置"信息的利用率显著低于开头和结尾
+
+**现象：** 检索到的10个文档中，放在开头和结尾的文档利用率高，中间的容易被"忽略"。如果最相关的文档恰好在中间，检索质量会大幅下降。
+
+**缓解方法：**
+- **"重要放两端"**：检索结果按相关度排序，最相关放最前或最后
+- **减少Top-K**：从10降到3-5，减少中间位置
+- **重排序强调**：用Re-ranker确保高质量内容排在两端
+
+#### 2.5 高级RAG范式
+
+```mermaid
+graph TD
+    subgraph "迭代检索"
+        A1[初始查询] --> B1[首次检索] --> C1[生成初步答案] --> D1[提取实体] --> E1[二次检索] --> F1[最终答案]
+    end
+    subgraph "Self-RAG"
+        A2[查询] --> B2{LLM 判断: 需检索?}
+        B2 -->|是| C2[检索] --> D2{相关度合格?} -->|是| E2[生成+引用]
+        B2 -->|否| F2[直接生成]
+        D2 -->|否| G2[跳过该片段]
+    end
+    subgraph "Corrective RAG"
+        A3[查询] --> B3[检索] --> C3{质量评估器} -->|高分| D3[生成答案]
+        C3 -->|中分| E3[重写查询 → 重新检索]
+        C3 -->|低分| F3[放弃检索 → 直接生成]
+    end
+```
+
+| 范式 | 原理 | 适用场景 | 实现要点 |
+|:---|:---|:---|:---|
+| **迭代检索** | 先生成初步答案，提取关键实体再次检索 | 复杂事实性问答 | 实体提取依赖 NER 模型或 LLM 自身 |
+| **自适应检索 (Self-RAG)** | LLM 自行判断是否需要检索、检索什么 | 混合型问答 | 需在 Prompt 中植入反思 Token，训练专门的判断头 |
+| **Corrective RAG** | 检索后评估质量，差则重写查询重新检索 | 检索质量不稳定场景 | 需要训练/配置独立的相关度分类器（如 `bge-reranker`） |
+| **Agentic RAG** | 用 Agent 编排多步检索+工具调用+推理 | 复杂任务规划 | 引入 ReAct 循环，管理 Tool Registry |
+
+```typescript
+// Corrective RAG 核心实现
+async function correctiveRAG(query: string) {
+  const docs = await retrieve(query);
+  const relevanceScore = await evaluateRelevance(query, docs);
+
+  if (relevanceScore > 0.7) {
+    return generate(query, docs);                      // ✔ 高质量 → 直接生成
+  } else if (relevanceScore > 0.3) {
+    const rewritten = await rewriteQuery(query, docs); // 🔄 中等 → 重写查询
+    const newDocs = await retrieve(rewritten);
+    return generate(query, newDocs);
+  } else {
+    return generate(query);                             // ✗ 低质量 → 放弃检索
+  }
+}
+
+async function evaluateRelevance(query: string, docs: string[]): Promise<number> {
+  const scores = await Promise.all(docs.map(d => crossEncoder(query, d)));
+  return Math.max(...scores);
+}
+```
+
+#### 2.6 GraphRAG —— 知识图谱增强检索
+
+传统 RAG 以**文档块**为检索单元，GraphRAG 引入**知识图谱**来捕捉实体间关系，擅长多跳推理。
+
+```mermaid
+graph LR
+    A[文档] --> B[实体提取] --> C[关系构建]
+    C --> D[(知识图谱)]
+    D --> E{混合检索}
+    F[用户查询] --> E
+    E --> G[向量检索 Top-K]
+    E --> H[图遍历相关实体]
+    G --> I[融合排序]
+    H --> I
+    I --> J[LLM 生成]
+```
+
+| 特性 | 传统 RAG | GraphRAG |
+|:---|:---|:---|
+| **检索粒度** | 文本块 (Chunk) | 实体 + 关系三元组 |
+| **多跳推理** | 弱（依赖文本覆盖） | 强（沿关系路径遍历） |
+| **实现复杂度** | 低 | 高（需实体抽取 + 图存储） |
+| **适用场景** | 事实问答、文档摘要 | 复杂关系推理、报告生成 |
+
+```typescript
+// GraphRAG 检索实现
+interface Entity { name: string; type: string; embedding: number[] }
+interface Relation { source: Entity; target: Entity; label: string }
+
+class GraphRAG {
+  async retrieve(query: string): Promise<string[]> {
+    const queryEmb = await embed(query);
+    // ① 向量检索实体
+    const entities = await vectorSearch(queryEmb, { collection: 'entities', topK: 5 });
+    // ② 图遍历：从命中实体出发，沿关系扩展到 2 跳
+    const subgraph = await this.traverse(entities.map(e => e.name), 2);
+    // ③ 将子图序列化为文本上下文
+    return subgraph.map(e => `${e.name} --[${e.label}]--> ${e.target}`);
+  }
+}
+```
+
+---
 
 ### 🛠️ 环境搭建
 
@@ -526,5 +662,5 @@ class RAGEvaluator {
 
 ### 📌 导航
 
-| [⬅️ 上一阶段：入门期](./01-入门期-AI聊天室.md) | [🏠 返回主指南](./README.md) | [➡️ 下一阶段：深耕期 - 端侧推理](./03-深耕期-端侧推理.md) |
+| [⬅️ 上一阶段：入门期](./01-入门期-AI聊天室.md) | [🏠 学习指南总览](./README.md#-ai-前端开发体系化学习指南) | [➡️ 下一阶段：深耕期 - 端侧推理](./03-深耕期-端侧推理.md) |
 |:---:|:---:|:---:|

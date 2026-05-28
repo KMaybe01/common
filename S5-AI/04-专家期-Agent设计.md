@@ -1,7 +1,7 @@
 # 🔴 阶段四：专家期 - 全自动 Agent
 
 > 📖 **本文档为《AI 前端开发体系化学习指南》的阶段拆分文档**
-> 完整指南请查看：[README.md](./README.md)
+> 完整指南请查看：[学习指南总览](./README.md#-ai-前端开发体系化学习指南)
 
 ---
 
@@ -38,6 +38,28 @@
 
 ### 🧠 核心概念解析
 
+#### 4.0 Agent 基础概念
+
+**💡 什么是 Agent？**
+Agent（智能体）= **LLM（大脑）** + **工具（手脚）** + **记忆（经验）**。LLM 只能生成文本，Agent 能**感知环境 → 自主决策 → 执行动作**。
+
+| 对比维度 | LLM | Agent |
+|:---|:---|:---|
+| 能力边界 | 文本生成、知识问答 | 调用工具、执行操作、完成任务 |
+| 记忆 | 上下文窗口（有限） | 短期 + 长期记忆系统 |
+| 自主性 | 被动响应 | 主动规划、执行、反思 |
+| 工具使用 | ❌ 不能 | ✅ Function Calling / MCP |
+| 状态管理 | 无状态 | 有状态（对话/任务状态） |
+
+**Workflow vs Agent vs Tool 三者区别：**
+- **Tool**：单一功能单元（搜索、计算器），无状态、确定输入输出
+- **Agent**：LLM驱动的自主决策体，能选择工具、拆解任务、反思纠错
+- **Workflow**：预定义的确定性执行流程（数据Pipeline、审批流）
+
+> 核心区别：Workflow是"告诉系统怎么做"，Agent是"告诉系统做什么，系统自己决定怎么做"。
+
+---
+
 #### 4.1 Agent 架构模式
 
 ```mermaid
@@ -53,6 +75,17 @@ graph TD
     class Planner,Tools,Observer,Reflector agent;
 ```
 
+**六大核心组件：**
+
+| 组件 | 职责 | 技术方案 |
+|:---|:---|:---|
+| **LLM 推理引擎** | 理解、推理、决策 | GPT-4o / Claude / DeepSeek |
+| **记忆系统** | 存储和检索历史信息 | RAG + 向量数据库 + 摘要 |
+| **规划模块** | 分解任务、制定步骤 | React / Plan-and-Execute |
+| **工具调用** | 与外部世界交互 | Function Calling / MCP / API |
+| **反馈循环** | 评估结果、自我反思 | Reflection + 重试机制 |
+| **安全护栏** | 内容过滤、权限控制 | Guardrails / 输入输出审核 |
+
 #### 4.2 主流设计模式
 
 | 模式 | 原理 | 适用场景 |
@@ -60,6 +93,8 @@ graph TD
 | **React** | 思考 (Thought) → 行动 (Action) → 观察 (Observation) 循环 | 复杂多步推理、工具密集型任务 |
 | **Plan-and-Execute** | 先制定完整计划，再逐步执行 | 流程固定、可分解的长任务 |
 | **Reflexion** | 执行后自我评估，失败则修正重试 | 对准确率要求极高的场景 |
+| **Multi-Agent** | 多Agent分工协作（主管/工人、辩论模式） | 复杂协作场景 |
+| **Tree-of-Thought** | 同时探索多条推理路径 | 需要探索的问题 |
 
 ### 💻 核心实现
 
@@ -364,6 +399,106 @@ class ResilientAgent {
 }
 ```
 
+#### Agent 评估体系
+
+评估 Agent 比评估纯 LLM 复杂得多，涉及执行成功率、工具选择正确性、路径效率等多维度。
+
+| 评估维度 | 指标 | 采集方式 | 目标值 |
+|:---|:---|:---|:---:|
+| **任务完成率** | 指定任务的成功完成比例 | 人工标注 + 自动验证 | > 85% |
+| **工具选择准确率** | 正确选择工具的次数 / 总调用次数 | 对比预期工具序列 | > 90% |
+| **路径效率** | 实际步数 / 最优步数 | 基准测试集 | < 1.5x |
+| **幻觉率** | 生成的事实性错误 / 总输出 | LLM-as-Judge 评估 | < 5% |
+| **恢复率** | 从错误中自行恢复的比例 | 日志分析 | > 70% |
+| **平均执行时间** | 从收到任务到返回结果的时间 | 计时埋点 | < 30s |
+
+```typescript
+// agent-evaluator.ts — Agent 自动化评估
+interface AgentTestCase {
+  task: string;
+  expectedSteps: string[];      // 预期的工具调用序列
+  expectedTools: string[];      // 预期的工具列表
+  validateOutput: (output: string) => boolean;
+}
+
+class AgentEvaluator {
+  async evaluate(agent: Agent, testCases: AgentTestCase[]) {
+    const results = [];
+    for (const testCase of testCases) {
+      const startTime = Date.now();
+      const { output, trace } = await agent.executeWithTrace(testCase.task);
+      const elapsed = Date.now() - startTime;
+
+      results.push({
+        taskCompleted: testCase.validateOutput(output),
+        toolAccuracy: this.matchToolSequence(trace.tools, testCase.expectedTools),
+        pathEfficiency: trace.steps.length / testCase.expectedSteps.length,
+        executionTime: elapsed,
+        trace, // 保留完整轨迹用于分析
+      });
+    }
+    return this.summarize(results);
+  }
+
+  private matchToolSequence(actual: string[], expected: string[]): number {
+    const correct = actual.filter(t => expected.includes(t)).length;
+    return correct / Math.max(actual.length, expected.length);
+  }
+}
+```
+
+#### Agent 执行轨迹追踪
+
+调试 Agent 的核心难点在于理解 LLM 的推理链路。轨迹追踪记录每个 Thought-Action-Observation 循环。
+
+```typescript
+// agent-tracer.ts — Agent 推理过程全量追踪
+interface TraceStep {
+  thought: string;
+  action: string;
+  actionInput: Record<string, unknown>;
+  observation: string;
+  timestamp: number;
+  duration: number;
+}
+
+class AgentTracer {
+  private trace: TraceStep[] = [];
+  private traces: TraceStep[][] = [];
+
+  record(step: TraceStep): void {
+    this.trace.push(step);
+  }
+
+  flush(): TraceStep[] {
+    const snapshot = [...this.trace];
+    this.traces.push(snapshot);
+    this.trace = [];
+    return snapshot;
+  }
+
+  // 可视化输出 — 适合在前端调试面板展示
+  toDebugTree(): string {
+    return this.trace.map((step, i) => `
+      ┌─ Step ${i + 1} (${step.duration}ms)
+      ├─ 💭 Thought: ${step.thought}
+      ├─ 🔧 Action: ${step.action}(${JSON.stringify(step.actionInput)})
+      └─ 👁 Observation: ${step.observation.slice(0, 100)}...
+    `).join('\n');
+  }
+
+  // 导出为 OpenTelemetry Span 用于监控
+  toOtelSpans(): Span[] {
+    return this.trace.map((step, i) => ({
+      name: `agent.step.${i}`,
+      attributes: { thought: step.thought, action: step.action },
+      startTime: step.timestamp,
+      endTime: step.timestamp + step.duration,
+    }));
+  }
+}
+```
+
 ---
 
 ### 🛠️ 工具链与函数调用优化
@@ -482,6 +617,83 @@ interface StoredMemory {
 
 ---
 
+### 🎨 Agent UX 设计模式
+
+Agent 的异步、多步特性需要特殊的 UI 模式来确保用户可理解、可控。
+
+#### 流式思维展示 (Streaming Thoughts)
+
+```typescript
+// React 组件：Agent 思维过程实时展示
+function AgentThoughtStream({ trace }: { trace: AgentTrace }) {
+  return (
+    <div className="agent-thought-tree">
+      {trace.steps.map((step, i) => (
+        <div key={i} className="step-card">
+          <div className="step-header">
+            <span className="step-number">Step {i + 1}</span>
+            <span className="step-duration">{step.duration}ms</span>
+          </div>
+          <div className="thought-bubble">
+            💭 {step.thought}
+          </div>
+          {step.action && (
+            <div className="action-call">
+              🔧 调用工具: <code>{step.action}</code>
+              <pre>{JSON.stringify(step.actionInput, null, 2)}</pre>
+            </div>
+          )}
+          <div className="observation-result">
+            👁 {step.observation}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+#### 人机协同 (Human-in-the-Loop)
+
+某些高风险操作需用户确认后才能执行：
+
+```typescript
+// HITL 模式 — 工具调用前请求用户批准
+const sensitiveTools = new Set(['send_email', 'delete_data', 'execute_payment']);
+
+class HITLGuard {
+  async execute(toolName: string, args: unknown, onUserConfirm: () => Promise<boolean>): Promise<unknown> {
+    if (!sensitiveTools.has(toolName)) {
+      return this.toolRegistry.execute(toolName, args); // 低风险工具直接执行
+    }
+
+    // 高风险工具：先展示给用户
+    const approved = await onUserConfirm();
+    if (!approved) {
+      throw new HITLRejectedError(`用户拒绝了工具调用: ${toolName}`);
+    }
+    return this.toolRegistry.execute(toolName, args);
+  }
+}
+
+// 前端组件：用户确认对话框
+function ToolApprovalDialog({ tool, args, onConfirm, onReject }: Props) {
+  return (
+    <div className="hitl-dialog">
+      <h3>⚠️ Agent 请求执行敏感操作</h3>
+      <p>工具: <strong>{tool}</strong></p>
+      <pre>{JSON.stringify(args, null, 2)}</pre>
+      <div className="dialog-actions">
+        <button onClick={onReject} className="btn-danger">拒绝</button>
+        <button onClick={onConfirm} className="btn-primary">确认执行</button>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
 ### 🏆 阶段四实战项目
 
 | 项目 | 难度 | 核心考察点 | 完成标准 |
@@ -503,6 +715,6 @@ interface StoredMemory {
 
 ### 📌 导航
 
-| [⬅️ 上一阶段：深耕期](./03-深耕期-端侧推理.md) | [🏠 返回主指南](./README.md) | [➡️ 下一阶段：生产化](./05-生产化与工程化.md) |
+| [⬅️ 上一阶段：深耕期](./03-深耕期-端侧推理.md) | [🏠 学习指南总览](./README.md#-ai-前端开发体系化学习指南) | [➡️ 下一阶段：生产化](./05-生产化与工程化.md) |
 |:---:|:---:|:---:|
 
