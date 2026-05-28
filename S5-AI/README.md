@@ -1075,6 +1075,7 @@ mindmap
 | **v4.4** | 2026-05-28 | Agent 开发体系：04 新增 Agent 评估体系（6 维指标 + 自动化评估器）；04 新增 AgentTracer 轨迹追踪与 OTel 导出；10 Multi-Agent 面试题补充通信编排代码 |
 | **v4.5** | 2026-05-28 | Agent 生产化：05 新增 Agent 专项监控（循环检测/步骤延迟/用户干预率）；08 新增 Agent 成本优化（模型分层/步骤缓存/智能超时） |
 | **v4.6** | 2026-05-28 | Agent 高级实践：06 新增完整 MCP Server 开发教程（天气预报示例 + Agent 集成）；04 新增 Agent UX 设计模式（流式思维展示 + HITL）；08 新增 Agent 安全模式（4 级权限 + 沙箱实现） |
+| **v4.7** | 2026-05-28 | LLM 评估体系深度扩展：05 新增 BFCL 函数调用评估（AST 匹配 + 6 维分类）；05 新增 GAIA 准精确匹配评估器；05 新增 LLM-Judge 评估器（Pointwise/Pairwise/Reference/Rubric + Win Rate 计算）；05 新增 AIME 数学竞赛评估（Pass@K + 答案提取）|
 
 ---
 
