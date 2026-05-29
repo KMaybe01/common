@@ -3531,7 +3531,97 @@ graph TD
     globalThis --> APIs["统一API访问<br/>setTimeout, fetch, console, Math"]
 ```
 
----\n\n### 📌 导航
+---
+
+## 🔄 隐式类型转换经典题目
+
+> 💡 **要点**：`==` 运算符在类型不同时会进行隐式转换，这是 JS 中常见的坑点，也是面试高频题。
+
+### 经典题：`a == 1 && a == 2 && a == 3`
+
+```javascript
+// 解法 1: 利用 valueOf（每次比较时调用）
+const a = {
+  value: 1,
+  valueOf() { return this.value++; }
+};
+console.log(a == 1 && a == 2 && a == 3); // true
+
+// 解法 2: 利用 toString
+const b = {
+  value: 1,
+  toString() { return this.value++; }
+};
+console.log(b == 1 && b == 2 && b == 3); // true
+
+// 解法 3: Symbol.toPrimitive（优先级最高）
+const c = {
+  value: 1,
+  [Symbol.toPrimitive]() { return this.value++; }
+};
+console.log(c == 1 && c == 2 && c == 3); // true
+
+// 解法 4: 数组的 valueOf 返回自身，利用 toString
+const d = [1, 2, 3];
+d.toString = d.shift;
+console.log(d == 1 && d == 2 && d == 3); // true
+
+// 解法 5: Object.defineProperty 拦截（全局污染）
+Object.defineProperty(globalThis, 'e', {
+  get: function() {
+    let val = 1;
+    return {
+      valueOf() { return val++; }
+    };
+  }
+});
+console.log(e == 1 && e == 2 && e == 3); // true
+```
+
+### 对象属性键的隐式转换
+
+```javascript
+// 对象的键只能是 string 或 Symbol，数字键会被转为字符串
+const obj = {};
+obj[1] = 'number';
+obj['1'] = 'string';  // 覆盖上一行
+console.log(obj); // { '1': 'string' }
+
+// 对象作为键时，会调用 toString 得到 "[object Object]"
+const key1 = { id: 1 };
+const key2 = { id: 2 };
+const map = {};
+map[key1] = 'value1';
+map[key2] = 'value2';  // 覆盖上一行
+console.log(map); // { '[object Object]': 'value2' }
+
+// ✅ 解决方案：使用 Map
+const realMap = new Map();
+realMap.set(key1, 'value1');
+realMap.set(key2, 'value2');
+console.log(realMap.size); // 2
+```
+
+### `['1', '2', '3'].map(parseInt)` 返回什么？
+
+```javascript
+// parseInt 接收两个参数: (string, radix)
+// map 传入三个参数: (element, index, array)
+['1', '2', '3'].map(parseInt);
+// 实际执行:
+// parseInt('1', 0)  → radix=0 视为 10 → 1
+// parseInt('2', 1)  → radix=1 不合法 → NaN
+// parseInt('3', 2)  → 二进制不含 3 → NaN
+// 返回: [1, NaN, NaN]
+
+// ✅ 正确写法:
+['1', '2', '3'].map(num => parseInt(num));  // [1, 2, 3]
+['1', '2', '3'].map(Number);                 // [1, 2, 3]
+```
+
+---
+
+### 📌 导航
 
 | [⬅️ 上一章：CSS](./02-CSS.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：JavaScript WebAPI](./04-JavaScript-WebAPI.md) |
 |:---:|:---:|:---:|

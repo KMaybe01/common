@@ -9,38 +9,30 @@
 
 - [📦 第一部分：核心基础](#第一部分核心基础)
   - [1️⃣ 什么是 Angular？](#1️⃣-什么是-angular)
-  - [2️⃣ Angular 20 新特性](#2️⃣-angular-20-新特性详解)
-  - [2️⃣➕ Angular 21 最新进展](#2️⃣-angular-21-最新进展2025-2026)
-  - [3️⃣ 组件系统](#3️⃣-组件系统)
-  - [4️⃣ 模板语法](#4️⃣-模板语法)
-  - [5️⃣ 数据绑定](#5️⃣-数据绑定)
-  - [6️⃣ 指令系统](#6️⃣-指令系统)
-  - [7️⃣ 生命周期](#7️⃣-生命周期钩子)
+  - [2️⃣ Angular 20 新特性详解](#2️⃣-angular-20-新特性详解)
+  - [3️⃣ Angular 21 最新进展（2025-2026）](#3️⃣-angular-21-最新进展2025-2026)
+  - [4️⃣ TypeScript 与 Angular 深度融合](#4️⃣-typescript-与-angular-深度融合)
+  - [5️⃣ 组件系统深层理解](#5️⃣-组件系统深层理解)
+  - [6️⃣ Signals vs Observables](#6️⃣-signals-vs-observables)
+  - [7️⃣ 数据绑定深度剖析](#7️⃣-数据绑定深度剖析)
+  - [8️⃣ 指令与管道系统](#8️⃣-指令与管道系统)
+  - [9️⃣ RxJS 在 Angular 中的应用](#9️⃣-rxjs-在-angular-中的应用)
+  - [🔟 状态管理（NgRx/Signals Store）](#🔟-状态管理ngrxsignals-store)
 - [🚀 第二部分：高级特性](#第二部分高级特性)
-  - [1️⃣ 依赖注入 (DI)](#1️⃣-依赖注入-di)
-  - [2️⃣ Signals 响应式](#2️⃣-signals-响应式系统)
-  - [3️⃣ RxJS 集成](#3️⃣-rxjs-集成)
-  - [4️⃣ 路由系统](#4️⃣-路由系统)
-  - [5️⃣ 表单处理](#5️⃣-表单处理)
-  - [6️⃣ HTTP 客户端](#6️⃣-http-客户端)
-  - [7️⃣ 状态管理](#7️⃣-状态管理)
-  - [8️⃣ 动画系统](#8️⃣-动画系统)
+  - [1️⃣ 依赖注入 (DI)](#1️⃣-依赖注入di系统)
+  - [2️⃣ 路由系统](#2️⃣-路由系统router)
+  - [3️⃣ 表单处理](#3️⃣-表单系统深度剖析)
+  - [4️⃣ 生命周期钩子](#4️⃣-生命周期钩子完全指南)
 - [🛠️ 第三部分：工程实践](#第三部分工程实践)
-  - [1️⃣ Angular CLI](#1️⃣-angular-cli)
-  - [2️⃣ 项目结构](#2️⃣-项目结构)
-  - [3️⃣ 模块系统](#3️⃣-模块系统)
-  - [4️⃣ 测试策略](#4️⃣-测试策略)
-  - [5️⃣ 构建优化](#5️⃣-构建优化)
-  - [6️⃣ 部署方案](#6️⃣-部署方案)
+  - [1️⃣ Angular CLI 与项目结构](#1️⃣-angular-cli-与项目结构)
+  - [2️⃣ 变更检测机制](#2️⃣-变更检测机制)
+  - [3️⃣ HTTP 和数据获取](#3️⃣-http-和数据获取)
 - [⚡ 第四部分：性能优化](#第四部分性能优化)
-  - [1️⃣ OnPush 策略](#1️⃣-onpush-变更检测)
-  - [2️⃣ 懒加载](#2️⃣-懒加载)
-  - [3️⃣ TrackBy](#3️⃣-trackby-函数)
-  - [4️⃣ 虚拟滚动](#4️⃣-虚拟滚动)
-  - [5️⃣ Zoneless 模式](#5️⃣-zoneless-模式)
-  - [6️⃣ httpResource](#6️⃣-httpresource-声明式数据)
+  - [1️⃣ 性能优化全景图](#1️⃣-性能优化全景图)
+  - [2️⃣ 测试策略](#2️⃣-测试策略)
 - [🤖 Angular in AI Era](#-angular-in-ai-era)
-- [🎯 第五部分：高频面试题精选](#第五部分面试题汇总)
+- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
+  - [Angular 技术体系化总结](#angular-技术体系化总结)
   - [Q1 变更检测机制](#q1-变更检测机制)
   - [Q2 DI 依赖注入](#q2-di-依赖注入)
   - [Q3 Signals vs Observables](#q3-signals-vs-observables)
@@ -54,6 +46,16 @@
   - [Q11 AOT vs JIT](#q11-aot-vs-jit)
   - [Q12 跨组件通信](#q12-跨组件通信)
   - [Q13 性能优化](#q13-性能优化)
+  - [Q14 Standalone 组件 vs NgModule](#q14-standalone-组件-vs-ngmodule-有什么区别)
+  - [Q15 纯管道 vs 非纯管道](#q15-纯管道-vs-非纯管道的区别)
+  - [Q16 模块加载方式](#q16-angular-模块加载方式有哪些)
+  - [Q17 跨平台能力](#q17-angular-有哪些跨平台能力)
+  - [实战场景题](#实战场景题)
+  - [代码质量](#代码质量)
+  - [性能指标](#性能指标)
+  - [总结与最佳实践](#总结与最佳实践)
+- [📚 推荐学习资源](#📚-推荐学习资源)
+- [🔗 官方参考链接](#🔗-官方参考链接)
 
 ---
 
@@ -248,7 +250,7 @@ Angular 20 (2024)
 
 ---
 
-## 2️⃣➕ Angular 21 最新进展（2025-2026）
+## 3️⃣ Angular 21 最新进展（2025-2026）
 
 ### 🌟 Angular 技术发展演进时间线
 
@@ -924,7 +926,7 @@ export class DashboardComponent {
 
 ---
 
-## 3️⃣ TypeScript 与 Angular 深度融合
+## 4️⃣ TypeScript 与 Angular 深度融合
 
 ### 🏗️ 装饰器系统（Decorators）
 
@@ -1013,7 +1015,7 @@ export class ProductListComponent {
 
 ---
 
-## 4️⃣ 组件系统深层理解
+## 5️⃣ 组件系统深层理解
 
 ### 🧩 组件解剖
 
@@ -1105,6 +1107,51 @@ export class TodoListComponent {
 }
 ```
 
+### 🧩 内容投影（Content Projection）
+
+```html
+<!-- 父组件使用 -->
+<app-card>
+  <h2 header>产品卡片</h2>
+  <p body>这是卡片内容</p>
+  <button footer>确认</button>
+</app-card>
+```
+
+```html
+<!-- 子组件模板 -->
+<div class="card">
+  <div class="card-header">
+    <ng-content select="[header]"></ng-content>
+  </div>
+  <div class="card-body">
+    <ng-content select="[body]"></ng-content>
+  </div>
+  <div class="card-footer">
+    <ng-content select="[footer]"></ng-content>
+  </div>
+</div>
+```
+
+### 🧩 ViewChild / ViewChildren / ContentChild
+
+```typescript
+import { Component, viewChild, viewChildren, ElementRef } from '@angular/core';
+
+@Component({ ... })
+export class ParentComponent {
+  child = viewChild.required<ChildComponent>();
+  inputEl = viewChild.required<ElementRef<HTMLInputElement>>('myInput');
+  cards = viewChildren(ProductCardComponent);
+
+  ngAfterViewInit() {
+    this.child().doSomething();
+    this.inputEl().nativeElement.focus();
+    this.cards().forEach(card => console.log(card.product));
+  }
+}
+```
+
 ### 📋 模板语法完整参考
 
 | 语法 | 用途 | 示例 |
@@ -1119,7 +1166,7 @@ export class TodoListComponent {
 
 ---
 
-## 5️⃣ Signals vs Observables
+## 6️⃣ Signals vs Observables
 
 ### 🤔 何时使用哪一个？
 
@@ -1161,7 +1208,7 @@ socket$ = webSocket('ws://...');
 
 ---
 
-## 6️⃣ 数据绑定深度剖析
+## 7️⃣ 数据绑定深度剖析
 
 ### 🔄 数据流向可视化
 
@@ -1211,6 +1258,22 @@ socket$ = webSocket('ws://...');
 />
 ```
 
+### 🌟 模板高级语法
+
+```html
+<!-- 安全导航操作符 ?.：避免空指针异常 -->
+<p>{{ user?.name }}</p>
+<p>{{ product?.category?.name }}</p>
+
+<!-- 管道链：多个管道组合使用 -->
+<p>{{ today | date:'yyyy-MM-dd' | uppercase }}</p>
+<p>{{ price | currency:'CNY' | slice:0:5 }}</p>
+
+<!-- 属性绑定 vs HTML 属性 -->
+<input [value]="name" />          <!-- DOM 属性绑定 -->
+<input attr.value="{{ name }}" /> <!-- HTML 属性绑定 -->
+```
+
 ### ⚙️ 高级绑定技巧
 
 ```html
@@ -1240,7 +1303,144 @@ socket$ = webSocket('ws://...');
 
 ---
 
-## 7️⃣ [RxJS](https://rxjs.dev) 在 Angular 中的应用
+## 8️⃣ 指令与管道系统
+
+### 📍 内置属性指令
+
+```html
+<!-- ngClass：动态 CSS 类 -->
+<div [ngClass]="{
+  'active': isActive,
+  'disabled': isDisabled,
+  'highlight': isHighlighted
+}">动态类</div>
+
+<!-- ngStyle：动态样式 -->
+<div [ngStyle]="{
+  'background-color': bgColor,
+  'font-size': fontSize + 'px',
+  'color': textColor
+}">动态样式</div>
+
+<!-- ngModel：双向绑定 -->
+<input [(ngModel)]="searchQuery" />
+```
+
+### 📍 自定义属性指令
+
+```typescript
+import { Directive, ElementRef, HostListener, input } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true,
+})
+export class HighlightDirective {
+  highlightColor = input('yellow', { alias: 'appHighlight' });
+  defaultColor = input('transparent');
+
+  constructor(private el: ElementRef) {}
+
+  @HostListener('mouseenter') onMouseEnter() {
+    this.highlight(this.highlightColor());
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.highlight(this.defaultColor());
+  }
+
+  private highlight(color: string) {
+    this.el.nativeElement.style.backgroundColor = color;
+  }
+}
+```
+
+```html
+<p [appHighlight]="'yellow'" defaultColor="transparent">鼠标悬停高亮</p>
+```
+
+### 📍 自定义结构型指令
+
+```typescript
+import { Directive, TemplateRef, ViewContainerRef, input, effect } from '@angular/core';
+
+@Directive({
+  selector: '[appUnless]',
+  standalone: true,
+})
+export class UnlessDirective {
+  appUnless = input(false);
+
+  constructor(
+    private templateRef: TemplateRef<any>,
+    private viewContainer: ViewContainerRef
+  ) {
+    effect(() => {
+      if (!this.appUnless()) {
+        this.viewContainer.createEmbeddedView(this.templateRef);
+      } else {
+        this.viewContainer.clear();
+      }
+    });
+  }
+}
+```
+
+```html
+<div *appUnless="isLoading">内容显示</div>
+```
+
+### 📍 管道（Pipes）
+
+#### 内置管道
+
+```html
+<p>{{ today | date:'yyyy-MM-dd' }}</p>
+<p>{{ price | currency:'CNY':'symbol':'1.2-2' }}</p>
+<p>{{ text | uppercase }}</p>
+<p>{{ user | json }}</p>
+<p>{{ 0.1234 | percent:'1.2-2' }}</p>
+<p>{{ longText | slice:0:50 }}...</p>
+```
+
+#### 自定义管道
+
+```typescript
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'productFilter',
+  standalone: true,
+  pure: true,
+})
+export class ProductFilterPipe implements PipeTransform {
+  transform(products: Product[], searchQuery: string): Product[] {
+    if (!searchQuery) return products;
+    return products.filter(p =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+}
+```
+
+```html
+@for (product of products | productFilter:searchQuery; track product.id) {
+  <app-product-card [product]="product" />
+}
+```
+
+#### 纯管道 vs 非纯管道
+
+| 特性 | 纯管道 (Pure) | 非纯管道 (Impure) |
+|------|--------------|------------------|
+| 触发时机 | 输入值变化 | 每次变更检测 |
+| 性能 | ✅ 高效 | ❌ 可能影响性能 |
+| 默认 | ✅ 是 | ❌ 需设置 `pure: false` |
+| 适用场景 | 过滤、排序 | 异步数据、实时计算 |
+
+---
+
+## 9️⃣ [RxJS](https://rxjs.dev) 在 Angular 中的应用
 
 ### 🌊 Observable 核心概念
 
@@ -1344,9 +1544,189 @@ export class SearchComponent {
 
 ---
 
+## 🔟 状态管理（NgRx/Signals Store）
+
+### 📊 状态管理方案对比
+
+| 方案 | 复杂度 | Bundle | 适用场景 |
+|------|--------|--------|---------|
+| **Signals + DI** | 🟢 低 | 0KB | 中小型应用 |
+| **NgRx** | 🔴 高 | ~30KB | 大型企业应用 |
+| **NgRx SignalStore** | 🟡 中 | ~10KB | 中型应用 |
+| **RxJS Service** | 🟡 中 | 0KB | 任意应用 |
+
+### 📍 Signals + DI 状态管理
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CartStore {
+  private readonly items = signal<CartItem[]>([]);
+
+  readonly totalCount = computed(() =>
+    this.items().reduce((sum, item) => sum + item.quantity, 0)
+  );
+
+  readonly totalAmount = computed(() =>
+    this.items().reduce((sum, item) => sum + item.price * item.quantity, 0)
+  );
+
+  readonly isEmpty = computed(() => this.items().length === 0);
+  readonly cartItems = this.items.asReadonly();
+
+  addItem(item: CartItem) {
+    this.items.update(current => {
+      const existing = current.find(i => i.id === item.id);
+      if (existing) {
+        return current.map(i =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      }
+      return [...current, { ...item, quantity: 1 }];
+    });
+  }
+
+  removeItem(id: number) {
+    this.items.update(current => current.filter(i => i.id !== id));
+  }
+
+  clearCart() {
+    this.items.set([]);
+  }
+}
+
+// 组件中使用
+@Component({ ... })
+export class CartComponent {
+  private cartStore = inject(CartStore);
+  readonly cartItems = this.cartStore.cartItems;
+  readonly totalAmount = this.cartStore.totalAmount;
+}
+```
+
+### 📍 NgRx SignalStore（NgRx 17+）
+
+```typescript
+import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
+import { withStorageSync } from '@ngrx/signals/storage-sync';
+
+interface CartState {
+  items: CartItem[];
+  loading: boolean;
+}
+
+const initialState: CartState = {
+  items: [],
+  loading: false,
+};
+
+export const CartStore = signalStore(
+  { providedIn: 'root' },
+  withState(initialState),
+  withStorageSync({ key: 'cart' }),
+
+  withComputed(({ items }) => ({
+    totalCount: computed(() =>
+      items().reduce((sum, item) => sum + item.quantity, 0)
+    ),
+    totalAmount: computed(() =>
+      items().reduce((sum, item) => sum + item.price * item.quantity, 0)
+    ),
+  })),
+
+  withMethods((store) => ({
+    addItem(item: CartItem) {
+      store.$update(state => ({
+        items: [...state.items, item],
+      }));
+    },
+    removeItem(id: number) {
+      store.$update(state => ({
+        items: state.items.filter(i => i.id !== id),
+      }));
+    },
+  }))
+);
+
+@Component({ ... })
+export class CartComponent {
+  readonly store = inject(CartStore);
+
+  ngOnInit() {
+    console.log(this.store.totalCount());
+  }
+}
+```
+
+### 📍 传统 NgRx（大型应用）
+
+```typescript
+// Actions
+export const loadProducts = createAction('[Product] Load Products');
+export const loadProductsSuccess = createAction(
+  '[Product] Load Products Success',
+  props<{ products: Product[] }>()
+);
+export const loadProductsFailure = createAction(
+  '[Product] Load Products Failure',
+  props<{ error: string }>()
+);
+
+// Reducer
+export interface ProductState {
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: ProductState = {
+  products: [],
+  loading: false,
+  error: null,
+};
+
+export const productReducer = createReducer(
+  initialState,
+  on(loadProducts, state => ({ ...state, loading: true })),
+  on(loadProductsSuccess, (state, { products }) => ({
+    ...state, products, loading: false,
+  })),
+  on(loadProductsFailure, (state, { error }) => ({
+    ...state, error, loading: false,
+  }))
+);
+
+// Effects
+@Injectable()
+export class ProductEffects {
+  private actions$ = inject(Actions);
+  private productService = inject(ProductService);
+
+  loadProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadProducts),
+      switchMap(() =>
+        this.productService.getProducts().pipe(
+          map(products => loadProductsSuccess({ products })),
+          catchError(error => of(loadProductsFailure({ error })))
+        )
+      )
+    )
+  );
+}
+
+// Selector
+export const selectProductState = (state: AppState) => state.products;
+export const selectAllProducts = createSelector(
+  selectProductState,
+  (state) => state.products
+);
+```
+
+---
+
 # 第二部分：高级特性
 
-## 8️⃣ 依赖注入（DI）系统
+## 1️⃣ 依赖注入（DI）系统
 
 ### 🎯 DI 核心原理
 
@@ -1464,7 +1844,7 @@ export class UppercasePipe implements PipeTransform {
 
 ---
 
-## 9️⃣ 路由系统（Router）
+## 2️⃣ 路由系统（Router）
 
 ### 📍 路由工作流程
 
@@ -1631,7 +2011,7 @@ export class UserDetailComponent {
 
 ---
 
-## 🔟 表单系统深度剖析
+## 3️⃣ 表单系统深度剖析
 
 ### 📝 表单类型选择指南
 
@@ -1782,7 +2162,7 @@ export class UserFormComponent {
 
 ---
 
-## 1️⃣1️⃣ 生命周期钩子完全指南
+## 4️⃣ 生命周期钩子完全指南
 
 ### 🔄 生命周期执行顺序图
 
@@ -1861,7 +2241,59 @@ export class BestPracticeComponent implements OnInit {
 
 # 第三部分：工程实践
 
-## 1️⃣2️⃣ 变更检测机制
+## 1️⃣ Angular CLI 与项目结构
+
+### 📦 CLI 安装
+
+```bash
+npm install -g @angular/cli
+ng version
+```
+
+### 🏗️ 创建项目
+
+```bash
+ng new my-angular-app --standalone --routing --style=scss
+cd my-angular-app
+ng serve --open
+```
+
+### 📁 项目结构
+
+```
+my-angular-app/
+├── src/
+│   ├── app/
+│   │   ├── app.component.ts     # 根组件
+│   │   ├── app.config.ts        # 应用配置
+│   │   ├── app.routes.ts        # 路由配置
+│   │   └── components/          # 组件目录
+│   ├── assets/                  # 静态资源
+│   ├── index.html               # 入口 HTML
+│   ├── main.ts                  # 应用入口
+│   └── styles.scss              # 全局样式
+├── angular.json                 # Angular 配置
+├── tsconfig.json                # TypeScript 配置
+├── package.json
+└── vite.config.ts               # Vite 构建 (Angular 17+)
+```
+
+### ⚡ CLI 常用命令
+
+```bash
+ng generate component product-list      # 生成组件
+ng generate service product             # 生成服务
+ng generate directive highlight          # 生成指令
+ng generate pipe filter                  # 生成管道
+ng generate guard auth                   # 生成守卫
+ng build --prod                          # 生产构建
+ng test                                  # 运行测试
+ng lint                                  # 代码检查
+```
+
+---
+
+## 2️⃣ 变更检测机制
 
 ### 🧠 变更检测工作原理
 
@@ -1963,7 +2395,7 @@ export class OptimizedListComponent {
 
 ---
 
-## 1️⃣3️⃣ HTTP 和数据获取
+## 3️⃣ HTTP 和数据获取
 
 ### 🌐 HttpClient 完整示例
 
@@ -2147,11 +2579,45 @@ export class UserListComponent {
 }
 ```
 
+### 🔐 JWT 认证服务（实战示例）
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private readonly tokenKey = 'auth_token';
+
+  private readonly user = signal<User | null>(null);
+  readonly currentUser = this.user.asReadonly();
+  readonly isAuthenticated = computed(() => this.user() !== null);
+
+  login(credentials: { email: string; password: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/login', credentials).pipe(
+      tap(response => {
+        localStorage.setItem(this.tokenKey, response.token);
+        this.user.set(response.user);
+      })
+    );
+  }
+
+  logout() {
+    localStorage.removeItem(this.tokenKey);
+    this.user.set(null);
+    this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+}
+```
+
 ---
 
 # 第四部分：性能优化
 
-## 1️⃣4️⃣ 性能优化全景图
+## 1️⃣ 性能优化全景图
 
 ### 📊 优化策略金字塔
 
@@ -2301,7 +2767,7 @@ export class ListComponent {
 
 ---
 
-## 1️⃣5️⃣ 测试策略
+## 2️⃣ 测试策略
 
 ### 🧪 测试金字塔
 
@@ -2894,6 +3360,48 @@ export class AnyComponent {
 ```
 
 ---
+
+### Q14：Standalone 组件 vs NgModule 有什么区别？
+
+| 维度 | Standalone | NgModule |
+|------|-----------|----------|
+| 导入方式 | 组件内 `imports` | NgModule 内 `imports` |
+| 模块文件 | ❌ 不需要 | ✅ 需要 |
+| 懒加载 | ✅ 支持 | ✅ 支持 |
+| 推荐度 | ✅ Angular 17+ 推荐 | ⚠️ 旧项目兼容 |
+| 适用场景 | 新项目 | 遗留项目 |
+
+### Q15：纯管道 vs 非纯管道的区别？
+
+- **纯管道**：只在输入值变化时重新计算（通过引用比较），性能好
+- **非纯管道**：每次变更检测都重新计算，性能较差
+
+```typescript
+@Pipe({ name: 'pure', pure: true })    // 纯管道
+@Pipe({ name: 'impure', pure: false }) // 非纯管道
+```
+
+### Q16：Angular 模块加载方式有哪些？
+
+```
+Eager（立即加载）: 在 AppModule 中直接导入 → 包含在初始 Bundle 中
+Lazy（懒加载）: loadChildren / loadComponent → 按需加载代码块
+Preload（预加载）: PreloadAllModules → 在初始加载后后台加载
+```
+
+### Q17：Angular 有哪些跨平台能力？
+
+```
+Web        → @angular/platform-browser
+Mobile     → @angular/platform-browser + Capacitor/Cordova
+Native     → NativeScript (Angular + NativeScript)
+SSR        → @angular/ssr (Angular Universal)
+Desktop    → Electron + Angular
+PWA        → @angular/service-worker
+```
+
+---
+
 export class BestComponent {
   users$ = this.userService.users$;
   constructor(private userService: UserService) {}

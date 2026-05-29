@@ -4547,6 +4547,138 @@ flowchart TD
 
 ---
 
+## 🎨 层叠上下文与 z-index
+
+> 💡 **要点**：层叠上下文是 HTML 元素的三维层级概念。`z-index` 仅在定位元素上生效，且受父级层叠上下文的限制。
+
+### 创建层叠上下文的条件
+
+| 创建方式 | CSS 属性 | 说明 |
+|---------|---------|------|
+| **根元素** | `<html>` | 默认层叠上下文 |
+| **定位 + z-index** | `position: relative/absolute/fixed + z-index` | 最常见方式 |
+| **flex 子项** | `display: flex/grid + z-index` | flex/grid 容器子项 |
+| **opacity** | `opacity < 1` | 透明度非 1 |
+| **transform** | `transform: not none` | 任何非 none 变换 |
+| **filter** | `filter: not none` | 任何滤镜 |
+| **will-change** | `will-change: transform/opacity` | 提前告知浏览器 |
+| **contain** | `contain: paint/layout` | CSS 包含 |
+
+### 层叠顺序（从下到上 7 层）
+
+```mermaid
+graph BT
+    subgraph 层叠顺序
+        L7["⑦ z-index > 0"]
+        L6["⑥ z-index: auto / 0"]
+        L5["⑤ 行内/内联元素"]
+        L4["④ 浮动元素"]
+        L3["③ 块级元素"]
+        L2["② 负 z-index"]
+        L1["① 层叠上下文背景/边框"]
+    end
+    L2 --> L3 --> L4 --> L5 --> L6 --> L7
+```
+
+```css
+/* 警示：z-index: 999 不一定比 z-index: 1 高 */
+/* 如果父级层叠上下文不同，子元素的 z-index 只在父级内比较 */
+
+.container-a { z-index: 1; }       /* 父级 A，z-index: 1 */
+.container-b { z-index: 999; }     /* 父级 B，z-index: 999 */
+  .child { z-index: 99999; }       /* 子元素在父级 B 内，仍低于父级 A */
+```
+
+---
+
+## 🎬 CSS Loading 动画实现
+
+```css
+/* 1. 旋转 Loading */
+.spinner {
+  width: 40px; height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 2. 脉冲 Loading */
+.pulse {
+  width: 40px; height: 40px;
+  background: #3498db;
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* 3. 点阵 Loading */
+.dot-loading { display: flex; gap: 8px; }
+.dot-loading span {
+  width: 12px; height: 12px;
+  background: #3498db;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+.dot-loading span:nth-child(1) { animation-delay: -0.32s; }
+.dot-loading span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+```
+
+---
+
+## 🌓 主题切换（暗黑模式）
+
+```css
+/* 1. CSS 变量方案 */
+:root,
+[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #333333;
+  --primary: #1890ff;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --text: #e0e0e0;
+  --primary: #64b5f6;
+}
+
+body { background: var(--bg); color: var(--text); }
+
+/* 2. prefers-color-scheme 系统偏好 */
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1a1a2e; --text: #e0e0e0; }
+}
+```
+
+```typescript
+// 主题切换逻辑
+function toggleTheme() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const next = theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
+// 初始化：优先 localStorage，其次系统偏好
+const saved = localStorage.getItem('theme');
+if (saved) {
+  document.documentElement.setAttribute('data-theme', saved);
+} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+```
+
+---
+
 ### 📌 导航
 
 | [⬅️ 上一章：HTML](./01-HTML.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：JavaScript 核心](./03-JavaScript-核心.md) |
