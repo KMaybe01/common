@@ -2533,6 +2533,62 @@ function List({ searchTerm }: { searchTerm: string }) {
 | useId | SSR 场景下生成唯一 ID |
 | useSyncExternalStore | 订阅外部存储，避免撕裂问题 |
 
+### 🔄 自动批处理（Automatic Batching）
+
+批处理：多个状态更新 → 合并为一次渲染 → 减少 DOM 开销、提升性能。
+
+#### React 17 及更早
+
+只在 React 合成事件（如 onClick）里自动批处理；在 setTimeout、Promise、原生事件里，每次 setState 都会触发一次渲染。
+
+#### React 18 全场景自动批处理
+
+```typescript
+// 1. 同步事件（本来就批）：React 17/18 都只渲染 1 次
+const handleClick = () => {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+};
+
+// 2. 异步场景（关键升级）：React 17 渲染 2 次，React 18 自动批，只渲染 1 次
+setTimeout(() => {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+}, 1000);
+
+// 3. Promise / fetch：React 18 同样自动批
+fetch("/api").then(() => {
+  setLoading(false);
+  setData({});
+});
+
+// 4. 原生事件监听：React 18 也会批处理
+window.addEventListener("resize", () => {
+  setW(window.innerWidth);
+  setH(window.innerHeight);
+});
+```
+
+#### 强制立即渲染（跳出批处理）
+
+```typescript
+import { flushSync } from "react-dom";
+
+setTimeout(() => {
+  flushSync(() => setCount(c => c + 1)); // 立即渲染
+  setFlag(f => !f);                       // 这次仍会批
+}, 1000);
+```
+
+#### 原理
+
+React 18 新的并发渲染架构可以跨事件循环跟踪更新。同一"事件批次"内的所有 setState 会被收集，统一计算、一次提交。不阻塞主线程，可中断、可恢复。
+
+#### 迁移要点
+
+- 必须用 `createRoot`：旧的 `ReactDOM.render` 不会开启自动批处理
+- 行为更一致：不用再记"哪里会批、哪里不会"
+- 性能默认更好：异步代码渲染次数大幅减少
 ---
 
 ## 2️⃣0️⃣ 图片和资源优化
