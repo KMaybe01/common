@@ -34,7 +34,7 @@
 - [ ] 实现工具注册系统与动态调用机制
 - [ ] 构建多步工作流与任务分解逻辑
 - [ ] 掌握反思机制 (Self-Correction) 与结果评估
-- [ ] 使用 [WebAssembly](https://webassembly.org).org) 优化复杂计算性能
+- [ ] 使用 [WebAssembly](https://webassembly.org) 优化复杂计算性能
 
 ### 🧠 核心概念解析
 
