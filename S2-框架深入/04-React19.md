@@ -1,68 +1,85 @@
 ﻿# 🚀 [React 19](https://react.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
-> React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通
-> 
-> 📌 **2026 版新增**：源码级原理、React Compiler 深度、项目实战重难点、内存泄漏排查、深度面试追问题
+> React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通、源码级原理、React Compiler 深度、项目实战重难点、内存泄漏排查、深度面试追问题
+>
 
 ---
 
 ## 📑 目录结构
 
-- [📦 第一部分：核心基础](#第一部分核心基础)
-  - [1️⃣ React 是什么？](#1️⃣-react-是什么)
-  - [2️⃣ React 版本迭代史（2013—2026）](#2️⃣-react-版本迭代史20132026)
-  - [3️⃣ React 19 新特性详解](#3️⃣-react-19-新特性详解)
-  - [4️⃣ JSX 与 Babel](#4️⃣-jsx-与-babel)
-  - [5️⃣ 组件与 Props 深度剖析](#5️⃣-组件与-props-深度剖析)
-  - [6️⃣ React 事件机制](#6️⃣-react-事件机制)
-  - [7️⃣ Hooks 系统完全指南](#7️⃣-hooks-系统完全指南)
-  - [8️⃣ 自定义 Hooks 设计模式](#8️⃣-自定义-hooks-设计模式)
-  - [9️⃣ 生命周期与 Fiber 架构](#9️⃣-生命周期与-fiber-架构)
-  - [🔟 代码复用方案对比](#🔟-代码复用方案对比)
-- [🚀 第二部分：高级特性](#第二部分高级特性)
-  - [1️⃣ Context API 深度应用](#1️⃣-context-api-深度应用)
-  - [2️⃣ 状态管理完全指南](#2️⃣-状态管理完全指南)
-  - [3️⃣ 路由完全指南](#3️⃣-路由完全指南)
-  - [4️⃣ 表单系统](#4️⃣-表单系统)
-  - [5️⃣ 组件设计模式](#5️⃣-组件设计模式)
-- [🛠️ 第三部分：工程实践](#第三部分工程实践)
-  - [1️⃣ 工程化与测试](#1️⃣-工程化与测试)
-  - [2️⃣ Next.js（React 元框架）](#2️⃣-nextjsreact-元框架)
-  - [3️⃣ 开发环境搭建与 TypeScript 集成](#3️⃣-开发环境搭建与-typescript-集成)
-  - [4️⃣ React 最佳实践](#4️⃣-react-最佳实践)
-  - [5️⃣ Tailwind CSS 原子化样式](#5️⃣-tailwind-css-原子化样式)
-  - [6️⃣ 全栈实战：认证与购物车系统](#6️⃣-全栈实战认证与购物车系统)
-- [⚡ 第四部分：性能优化](#第四部分性能优化)
-  - [1️⃣ 性能优化完全指南](#1️⃣-性能优化完全指南)
-  - [2️⃣ React 18 并发特性](#2️⃣-react-18-并发特性)
-  - [3️⃣ 图片和资源优化](#3️⃣-图片和资源优化)
-- [🔬 第五部分：源码级原理深度解析](#第五部分源码级原理深度解析)
-  - [1️⃣ Fiber 架构源码分析](#1️⃣-fiber-架构源码分析)
-  - [2️⃣ Reconciliation 算法](#2️⃣-reconciliation-算法)
-  - [3️⃣ React Compiler 源码原理](#3️⃣-react-compiler-源码原理)
-- [🆕 第六部分：React 19 新特性深度解析](#第六部分react-19-新特性深度解析)
-  - [1️⃣ React Compiler 深度解析](#1️⃣-react-compiler-深度解析)
-  - [2️⃣ Actions 机制深度解析](#2️⃣-actions-机制深度解析)
-  - [3️⃣ use() Hook 深度解析](#3️⃣-use-hook-深度解析)
-- [🏗️ 第七部分：项目实战重难点](#第七部分项目实战重难点)
-  - [1️⃣ 微前端与 React](#1️⃣-微前端与-react)
-  - [2️⃣ Monorepo 实战](#2️⃣-monorepo-实战)
-  - [3️⃣ Next.js App Router 实战](#3️⃣-nextjs-app-router-实战)
-  - [4️⃣ 性能监控与埋点](#4️⃣-性能监控与埋点)
-- [🐛 第八部分：常见 Bug 与调试技巧](#第八部分常见-bug-与调试技巧)
-  - [1️⃣ 闭包陷阱](#1️⃣-闭包陷阱)
-  - [2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
-  - [3️⃣ 调试技巧](#3️⃣-调试技巧)
-- [🔌 第九部分：生态深度解析](#第九部分生态深度解析)
-  - [1️⃣ 状态管理方案对比](#1️⃣-状态管理方案对比)
-  - [2️⃣ 数据获取方案对比](#2️⃣-数据获取方案对比)
-- [🤖 AI 时代 React](#-ai-时代-react)
-- [🎯 第十部分：面试题汇总](#第十部分面试题汇总)
-  - [Q1-Q13 基础面试题](#q1-渲染流程)
-  - [Q14-Q20 深度追问](#q14-react-fiber-与-vue-3-虚拟-dom-的区别)
-- [📚 推荐学习资源](#📚-推荐学习资源)
-- [🔗 官方参考链接](#🔗-官方参考链接)
+### 第一部分：核心基础
+
+- [📦 1️⃣ React 是什么？](#1️⃣-react-是什么)
+- [📦 2️⃣ React 版本迭代史（2013—2026）](#2️⃣-react-版本迭代史20132026)
+- [📦 3️⃣ React 19 新特性详解](#3️⃣-react-19-新特性详解)
+- [📦 4️⃣ JSX 与 Babel](#4️⃣-jsx-与-babel)
+- [📦 5️⃣ 组件与 Props 深度剖析](#5️⃣-组件与-props-深度剖析)
+- [📦 6️⃣ React 事件机制](#6️⃣-react-事件机制)
+- [📦 7️⃣ Hooks 系统完全指南](#7️⃣-hooks-系统完全指南)
+- [📦 8️⃣ 自定义 Hooks 设计模式](#8️⃣-自定义-hooks-设计模式)
+- [📦 9️⃣ 生命周期与 Fiber 架构](#9️⃣-生命周期与-fiber-架构)
+- [📦 🔟 代码复用方案对比](#🔟-代码复用方案对比)
+
+### 第二部分：高级特性
+
+- [📦 1️⃣ Context API 深度应用](#1️⃣-context-api-深度应用)
+- [📦 2️⃣ 状态管理完全指南](#2️⃣-状态管理完全指南)
+- [📦 3️⃣ 路由完全指南](#3️⃣-路由完全指南)
+- [📦 4️⃣ 表单系统](#4️⃣-表单系统)
+- [📦 5️⃣ 性能模式](#5️⃣-性能模式)
+
+### 第三部分：工程实践
+
+- [📦 1️⃣ 工程化与配置](#1️⃣-工程化与配置)
+- [📦 2️⃣ Next.js（React 元框架）](#2️⃣-nextjsreact-元框架)
+- [📦 3️⃣ 数据层与状态 TypeScript 集成](#3️⃣-数据层与状态-typescript-集成)
+- [📦 4️⃣ React 测试实践](#4️⃣-react-测试实践)
+- [📦 5️⃣ Tailwind CSS 原子化样式](#5️⃣-tailwind-css-原子化样式)
+- [📦 6️⃣ 全栈实战：认证与购物车系统](#6️⃣-全栈实战认证与购物车系统)
+
+### 第四部分：性能优化
+
+- [📦 1️⃣ 性能优化完全指南](#1️⃣-性能优化完全指南)
+- [📦 2️⃣ React 18 并发特性](#2️⃣-react-18-并发特性)
+- [📦 3️⃣ 图片与资源优化](#3️⃣-图片与资源优化)
+
+### 第五部分：源码级原理深入
+
+- [📦 1️⃣ Fiber 架构深入理解](#1️⃣-fiber-架构深入理解)
+- [📦 2️⃣ Reconciliation 算法](#2️⃣-reconciliation-算法)
+- [📦 3️⃣ React Compiler 源码原理](#3️⃣-react-compiler-源码原理)
+
+### 第六部分：React 19 新特性深入
+
+- [📦 1️⃣ React Compiler 深入](#1️⃣-react-compiler-深入)
+- [📦 2️⃣ Actions 机制深入](#2️⃣-actions-机制深入)
+- [📦 3️⃣ use() Hook 深入](#3️⃣-use-hook-深入)
+
+### 第七部分：项目实战与进阶
+
+- [📦 1️⃣ 微前端与 React](#1️⃣-微前端与-react)
+- [📦 2️⃣ Monorepo 实战](#2️⃣-monorepo-实战)
+- [📦 3️⃣ Next.js App Router 实战](#3️⃣-nextjs-app-router-实战)
+- [📦 4️⃣ 性能监控实践](#4️⃣-性能监控实践)
+
+### 第八部分：常见 Bug 与陷阱
+
+- [📦 1️⃣ 闭包陷阱](#1️⃣-闭包陷阱)
+- [📦 2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
+- [📦 3️⃣ 竞态条件](#3️⃣-竞态条件)
+
+### 第九部分：生态与对比
+
+- [📦 1️⃣ 状态管理方案对比](#1️⃣-状态管理方案对比)
+- [📦 2️⃣ 数据获取方案对比](#2️⃣-数据获取方案对比)
+
+### 第十部分：综合面试题
+
+- [🎯 Hooks 实现原理](#hooks-实现原理)
+- [🎯 实战场景题](#实战场景题)
+- [🎯 推荐学习资源](#推荐学习资源)
+- [🎯 官方参考文档](#官方参考文档)
 
 ---
 
@@ -312,16 +329,16 @@ interface Fiber {
   key: string | null    // 唯一标识
   type: any             // 函数/类/原生标签
   stateNode: any        // 对应真实 DOM
-  
+
   return: Fiber | null  // 父节点
   child: Fiber | null   // 第一个子节点
   sibling: Fiber | null // 右边兄弟节点
-  
+
   pendingProps: any     // 新 props
   memoizedProps: any    // 旧 props
   memoizedState: any    // 状态
   updateQueue: any      // 更新队列
-  
+
   lanes: Lanes          // 优先级
   alternate: Fiber | null // workInProgress 树关联
 }
@@ -2721,16 +2738,16 @@ graph TD
     A["状态管理选型"] --> B{"状态来源"}
     B -->|"服务端 API"| C["TanStack Query / SWR / RTK Query"]
     B -->|"客户端"| D{"应用规模"}
-    
+
     D -->|"单组件"| E["useState"]
     D -->|"少数组件"| F["Context + useReducer"]
     D -->|"中等规模"| G{"团队偏好"}
     D -->|"大型企业"| H["Redux Toolkit<br/>（规范 + 生态）"]
-    
+
     G -->|"极简 API"| I["Zustand 💡"]
     G -->|"原子化"| J["Jotai"]
     G -->|"响应式/可变"| K["MobX / Valtio"]
-    
+
     I --> L{"需要中间件"}
     L -->|"持久化"| M["Zustand + persist"]
     L -->|"DevTools"| N["Zustand + devtools"]
@@ -3898,26 +3915,26 @@ function CheckoutFlow() {
 ```mermaid
 flowchart TD
     A["性能问题诊断"] --> B{"问题类型?"}
-    
+
     B -->|"首屏加载慢"| C["网络层优化"]
     C --> C1["路由懒加载"]
     C --> C2["组件 React.lazy"]
     C --> C3["资源压缩/CDN"]
     C --> C4["预加载关键资源"]
-    
+
     B -->|"运行时卡顿"| D["渲染优化"]
     D --> D1{"列表渲染?"}
     D1 -->|"是"| D2["react-window 虚拟列表"]
     D1 -->|"否"| D3["React.memo 缓存组件"]
     D --> D4["useMemo 缓存计算"]
     D --> D5["useCallback 缓存函数"]
-    
+
     B -->|"频繁重渲染"| E["状态优化"]
     E --> E1["拆分状态"]
     E --> E2["提升状态位置"]
     E --> E3["使用 Context 优化"]
     E --> E4["原子化状态 Jotai"]
-    
+
     B -->|"交互响应慢"| F["并发优化"]
     F --> F1["startTransition"]
     F --> F2["useDeferredValue"]
@@ -4264,31 +4281,31 @@ flowchart TB
         A1["HTML/CSS/JS"] --> A2["TypeScript"]
         A2 --> A3["ES6+ 语法"]
     end
-    
+
     subgraph React 核心
         B1["组件化思想"] --> B2["JSX 语法"]
         B2 --> B3["Hooks 系统"]
         B3 --> B4["状态管理"]
     end
-    
+
     subgraph 并发特性
         C1["Fiber 架构"] --> C2["时间切片"]
         C2 --> C3["优先级调度"]
         C3 --> C4["Suspense"]
     end
-    
+
     subgraph 服务端渲染
         D1["Next.js"] --> D2["SSR/SSG/ISR"]
         D2 --> D3["RSC 架构"]
         D3 --> D4["流式渲染"]
     end
-    
+
     subgraph 高级主题
         E1["性能优化"] --> E2["React Compiler"]
         E2 --> E3["虚拟列表"]
         E3 --> E4["内存管理"]
     end
-    
+
     A3 --> B1
     B4 --> C1
     C4 --> D1
@@ -4408,616 +4425,6 @@ React 的核心优势在 AI 时代被放大：
   ├─ Streaming SSR → AI 流式输出原生支持
   ├─ 庞大的生态系统 → AI 工具链最完善
   └─ TypeScript 深度集成 → AI 类型感知，准确率提升 30%+
-```
-
----
-
-# 第十部分：面试题汇总
-
-## ⚡ 高频面试题精选（2026 版）
-
-### Q1：说说 React 的渲染流程（Trigger → Render → Commit）
-
-**三阶段模型：**
-
-```
-┌──────────┐    ┌───────────┐    ┌────────┐
-│  Trigger  │ → │   Render   │ → │  Commit  │
-│  触发更新  │   │  渲染阶段   │   │  提交阶段  │
-│ setState  │   │ 构建 VNode │   │ 操作 DOM │
-│  useState │   │  Diff 对比  │   │ 生命周期 │
-│  useReducer│   │ 收集 Effect│   │ 执行 Effect│
-└──────────┘   └───────────┘    └────────┘
-      ↑ 可多次           ↓ 可中断            ← 不可中断
-```
-
-**详细过程：**
-
-```
-1️⃣ Trigger（触发阶段）
-   ├─ 首次渲染：createRoot → render
-   ├─ 状态更新：setState / useReducer / useState dispatch
-   └─ 强制更新：forceUpdate / useSyncExternalStore
-
-2️⃣ Render（渲染阶段 — 可中断）
-   ├─ 深度优先遍历 Fiber 树
-   ├─ 构建 workInProgress 树
-   ├─ Diff 对比 → 标记 effectTag（Placement/Update/Deletion）
-   ├─ 收集 Hooks 链表
-   └─ 时间切片：每 5ms 让出主线程
-
-3️⃣ Commit（提交阶段 — 不可中断）
-   ├─ Pre-mutation：getSnapshotBeforeUpdate
-   ├─ Mutation：DOM 操作（插入/更新/删除），同步执行
-   ├─ Layout：useLayoutEffect 同步执行
-   ├─ Passive：useEffect 异步调度执行
-   └─ current 指针切换到 workInProgress 树
-```
-
-**面试追问：** *Render 阶段为什么可以中断？哪些生命周期在 Render 阶段会被多次调用？*
-> Fiber 架构将渲染拆分为最小工作单元（每个 Fiber 节点）。`componentWillMount`、`componentWillReceiveProps`、`componentWillUpdate` 在 Render 阶段执行，可能被多次调用，因此在 React 16+ 被标记为 UNSAFE_。
-
-### Q2：useEffect 的完整执行时序是什么？
-
-```typescript
-function Lifecycle() {
-  useEffect(() => {
-    console.log('1. 浏览器绘制后异步执行');
-    return () => console.log('3. 清理（下次 effect 前/unmount 时）');
-  });
-
-  useLayoutEffect(() => {
-    console.log('2. DOM 更新后、浏览器绘制前同步执行');
-    return () => console.log('4. 清理');
-  });
-}
-```
-
-**执行顺序：**
-```
-Render → DOM 更新 → useLayoutEffect（同步）→ 浏览器绘制 → useEffect（异步）
-```
-
-### Q3：React 19 Actions 是什么？解决了什么问题？
-
-**核心问题：** 表单提交需要手动管理 loading、error、success 状态，代码冗余：
-
-```typescript
-// ❌ React 18 中管理表单状态
-const [pending, setPending] = useState(false);
-const [error, setError] = useState<Error | null>(null);
-const [data, setData] = useState(null);
-
-async function handleSubmit(formData: FormData) {
-  setPending(true);
-  setError(null);
-  try {
-    const result = await submitAPI(formData);
-    setData(result);
-  } catch (e) {
-    setError(e as Error);
-  } finally {
-    setPending(false);
-  }
-}
-
-// ✅ React 19 Actions：useActionState + useFormStatus
-const [state, formAction, pending] = useActionState(async (prev, formData) => {
-  const result = await submitAPI(formData);
-  return result;
-}, null);
-```
-
-**Actions 的四大能力：**
-1. **自动管理 pending**：`useFormStatus` 读取最近的 `<form>` 的 pending 状态
-2. **乐观更新**：`useOptimistic` 假设请求成功提前展示结果
-3. **渐进增强**：`<form action={formAction}>` 即使 JS 未加载也能提交
-4. **表单重置**：`formAction` 成功后自动调用 `form.reset()`
-
-### Q4：React 中 key 的作用和最佳实践？
-
-```mermaid
-flowchart LR
-    subgraph 无 key / index 作为 key
-        L1["A(0) B(1) C(2)"] -->|"首位插入 X"| L2["X(0) A(1) B(2) C(3)"]
-        L2 --> L3["所有子节点全部重渲染！"]
-    end
-
-    subgraph 稳定唯一 key
-        R1["A:id1 B:id2 C:id3"] -->|"首位插入 X:id4"| R2["X:id4 A:id1 B:id2 C:id3"]
-        R2 --> R3["仅插入 X，复用 A/B/C"]
-    end
-```
-
-**最佳实践：**
-```
-✅ 使用唯一且稳定的 ID（`item.id` / `crypto.randomUUID()`）
-❌ 不要使用数组 index（插入/删除/排序时 bug）
-❌ 不要使用随机数（每次渲染都不同，导致不必要重建）
-❌ 不要使用 Math.random()（完全破坏缓存）
-⚠️ 只有静态列表可用 index（不增删改排）
-```
-
-### Q5：React 18 Concurrent Mode 解决了什么问题？
-
-**核心价值：** 紧急更新不被非紧急更新阻塞。
-
-```
-用户输入（紧急）     ❌ 被数据加载（非紧急）阻塞 → 界面卡顿
-                    ✅ Concurrent: 输入优先，数据加载可中断
-```
-
-| 特性 | React 17（同步） | React 18（Concurrent） |
-|------|----------------|----------------------|
-| 渲染 | 一次更新完整执行 | 可中断/恢复 |
-| 优先级 | 无优先级 | 任务分 urgency / transition |
-| 用户输入 | 被所有更新阻塞 | **高优更新跳队优先** |
-| Suspense | 基础支持 | 流式 SSR + 选择性 hydration |
-| startTransition | ❌ | ✅ 标记非紧急更新 |
-
-### Q6：React 19 `use()` 与 useEffect 数据获取的区别？
-
-```typescript
-// 方式 1：useEffect + useState（React 18 及以前）
-function User() {
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    fetch('/api/user').then(r => r.json()).then(setUser);
-  }, []);
-  if (!user) return <Spinner />;
-  return <div>{user.name}</div>;
-}
-
-// 方式 2：use() + Suspense（React 19）
-function User() {
-  const user = use(fetchUserPromise);  // 直接消费 Promise
-  return <div>{user.name}</div>;
-}
-
-// 父组件提供 Suspense 边界
-function App() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <User />
-    </Suspense>
-  );
-}
-```
-
-| 维度 | useEffect + useState | use() + Suspense |
-|------|---------------------|-----------------|
-| 代码量 | 多（loading/error 手动管理） | 少（Suspense 管理 loading） |
-| 错误处理 | 手动 catch 设置 error | ErrorBoundary 统一处理 |
-| 竞态条件 | 需手动处理（ignore flag） | 自动处理 |
-| 灵活性 | 高（完全控制） | 受限于 Suspense 边界 |
-
-### Q7：React 合成事件（SyntheticEvent）是什么？
-
-**为什么需要合成事件？**
-
-```
-原生事件问题：
-  ├─ 浏览器兼容性差异（e.target / e.preventDefault 命名不同）
-  ├─ 内存泄漏风险（事件未卸载）
-  └─ 无法在 Fiber 架构中优化
-
-合成事件的优势：
-  ├─ 跨浏览器统一接口
-  ├─ 事件池（React 16 前）减少 GC
-  ├─ 事件委托到 root 节点（React 17 前 document → React 17+ root）
-  └─ 与 Fiber 架构深度集成（优先级调度）
-```
-
-```typescript
-// React 16：事件委托到 document
-document.addEventListener('click', ReactEvent.listener);
-
-// React 17+：事件委托到 root 节点
-root.addEventListener('click', ReactEvent.listener);
-
-// React 19：基于 createRoot 的事件系统
-function handleClick(e: React.MouseEvent) {
-  // e 是 SyntheticEvent，但行为与原生事件一致
-  e.preventDefault();  // 跨浏览器
-  e.stopPropagation();
-}
-```
-
-### Q8：React Hooks 为什么不能放在条件/循环中？
-
-**根本原因：** Hooks 存储在 Fiber 节点的 **单向链表** 中，依赖**调用顺序**来匹配状态。
-
-```typescript
-// Hooks 在 Fiber 中的存储结构
-fiber.memoizedState = {
-  queue: { pending: null },      // useState 的更新队列
-  next: {                        // 指向下一个 Hook
-    queue: { pending: null },    // useEffect 的 effect 链表
-    next: {
-      queue: { pending: null },  // useRef
-      next: null
-    }
-  }
-}
-
-// ✅ 正确：每次渲染，Hooks 调用顺序和数量一致
-function Good() {
-  const [a] = useState(0);       // Hook #1
-  const [b] = useState(0);       // Hook #2
-  useEffect(() => {}, []);        // Hook #3
-}
-
-// ❌ 错误：条件语句导致 Hook 数量不一致
-function Bad({ flag }) {
-  const [a] = useState(0);       // Hook #1
-  if (flag) {
-    const [b] = useState(0);     // flag=false 时 Hook #2 不存在
-  }
-  useEffect(() => {}, []);       // flag=false 时变成了 Hook #2（本应是 #3）
-  // → React 无法匹配正确的状态！
-}
-```
-
-### Q9：Server Component vs Client Component 的区别？
-
-```tsx
-// 🖥️ Server Component（默认）
-// app/page.tsx
-export default async function Page() {
-  const data = await db.query('SELECT * FROM posts');
-  // 1. 在服务器端执行（可访问数据库/文件系统/AI API）
-  // 2. 不发送 JS bundle 到客户端
-  // 3. 不可用 useState/useEffect/事件处理
-  return <PostList posts={data} />;
-}
-
-// 💻 Client Component（需 'use client'）
-// app/counter.tsx
-'use client';
-export function Counter() {
-  // 1. 在客户端执行
-  // 2. 可交互（事件/状态/副作用）
-  // 3. 发送 JS bundle 到客户端
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
-```
-
-| 维度 | Server Component | Client Component |
-|------|-----------------|-----------------|
-| 执行位置 | **服务器** | **浏览器** |
-| 访问 DB/FS | ✅ 直接 | ❌ 只能通过 API |
-| useState/Effects | ❌ 不可用 | ✅ 可用 |
-| JS Bundle | **0KB** | 发送到客户端 |
-| 数据获取 | 直接 await | use/useEffect |
-| API Key 安全 | ✅ 安全 | ❌ 暴露风险 |
-
-### Q10：React.memo 和 useMemo 的区别？
-
-| 特性 | React.memo | useMemo |
-|------|-----------|---------|
-| **作用对象** | 组件 | 值/计算 |
-| **比较方式** | props 浅比较（默认） | 依赖数组比较 |
-| **返回值** | 新的组件 | 缓存的值 |
-| **使用场景** | 避免组件重渲染 | 避免重复计算 |
-
-```typescript
-// React.memo：缓存整个组件
-const ExpensiveComponent = React.memo(function Expensive({ data }) {
-  return <div>{/* 复杂渲染 */}</div>;
-});
-
-// useMemo：缓存计算值
-function Parent({ items }) {
-  const sorted = useMemo(
-    () => items.sort((a, b) => a.name.localeCompare(b.name)),
-    [items]
-  );
-  return <ExpensiveComponent data={sorted} />;
-}
-
-// useCallback：缓存函数（等价于无参数的 useMemo）
-const handleClick = useCallback(() => doSomething(id), [id]);
-// 等价于：const handleClick = useMemo(() => () => doSomething(id), [id]);
-```
-
-### Q11：React 19 Compiler 如何实现自动记忆化？
-
-**原理：** Compiler 在编译阶段分析函数的作用域和依赖关系，自动推断哪些值和函数需要缓存。
-
-```typescript
-// 编译前（开发者写的代码）
-function ProfilePage({ user }) {
-  const title = user.name + '\'s Profile';
-  const handleClick = () => showProfile(user.id);
-  return <div onClick={handleClick}>{title}</div>;
-}
-
-// 编译后（React Compiler 自动转换）
-function ProfilePage({ user }) {
-  const $ = _c(2);                                        // 分配缓存槽
-  let title, handleClick;
-
-  if ($[0] !== user) {                                    // 依赖变化？
-    title = user.name + '\'s Profile';
-    handleClick = _F(() => showProfile(user.id));         // 自动缓存
-    $[0] = user;
-    $[1] = [title, handleClick];                         // 更新缓存
-  } else {
-    [title, handleClick] = $[1];                          // 复用缓存
-  }
-
-  return <div onClick={handleClick}>{title}</div>;
-}
-```
-
-**关键机制：**
-- `_c(n)`：分配 n 个缓存槽位
-- `_F(fn)`：自动缓存函数引用
-- 闭包语义感知：分析哪些外部变量被捕获
-- 无手动依赖数组：Compiler 自动推导 `$[0] !== user`
-
-### Q12：React Fiber 架构如何实现可中断渲染？
-
-**核心数据结构：Fiber 链表**
-
-```typescript
-// 对比：Stack Reconciler vs Fiber Reconciler
-
-// React 15：函数调用栈（不可中断）
-function render15(element) {
-  if (typeof element.type === 'function') {
-    const children = element.type(element.props);
-    render15(children);  // 递归，必须执行完
-  }
-  // 直接操作 DOM
-  document.appendChild(element);
-}
-
-// React 16+：Fiber 链表（可中断）
-function workLoop(fiber: Fiber) {
-  while (fiber && shouldYield() === false) {  // 每次检查是否让出
-    fiber = performUnitOfWork(fiber);         // 处理一个 Fiber 节点
-    if (fiber === null) {                     // 遍历完成
-      commitRoot();                           // 提交 DOM 更新
-      break;
-    }
-  }
-  if (fiber) {
-    requestIdleCallback(() => workLoop(fiber)); // 下次空闲继续
-  }
-}
-```
-
-**调度机制：** React 通过 `requestIdleCallback` 或 `MessageChannel` 实现时间切片，每次处理一个 Fiber 节点后检查是否超时（约 5ms），超时则让出主线程。
-
-### Q13：React 事件机制与原生事件的区别？
-
-| 对比项 | 原生 DOM 事件 | React 合成事件 |
-|--------|-------------|---------------|
-| **绑定方式** | `element.addEventListener` | `onClick={handler}` |
-| **事件委托** | 分散绑定 | **统一委托到 root**（React 17+） |
-| **跨浏览器** | 需兼容性处理 | ✅ 统一接口 |
-| **阻止冒泡** | `e.stopPropagation()` | ✅ 同样支持 |
-| **性能** | 多个 listener | 内存中 1 个 listener |
-| **异步访问** | 始终可访问 | React 16 需 `e.persist()`，React 17+ 无需 |
-
----
-
-## Hooks 实现原理
-
-### 🧬 useState 实现原理
-
-```typescript
-// 简化版 useState 内部实现
-let stateIndex = 0;
-const stateQueue = [];
-
-function useState(initialValue) {
-  const currentIndex = stateIndex;
-
-  if (stateQueue[currentIndex] === undefined) {
-    stateQueue[currentIndex] = initialValue;
-  }
-
-  function setState(newValue) {
-    const resolvedValue = typeof newValue === 'function'
-      ? newValue(stateQueue[currentIndex])
-      : newValue;
-    stateQueue[currentIndex] = resolvedValue;
-    scheduleUpdate(); // 触发重新渲染
-  }
-
-  stateIndex++;
-  return [stateQueue[currentIndex], setState];
-}
-```
-
-**核心要点：**
-- 每个组件实例有一个 Fiber 节点，存储 hooks 链表
-- 通过 `stateIndex` 按调用顺序匹配状态
-- **不能在条件/循环中调用 Hooks**（保证调用顺序一致）
-- `setState` 触发更新调度，合并到批量更新队列
-
-### 🧬 useEffect 实现原理
-
-```typescript
-function useEffect(callback, deps) {
-  const currentIndex = effectIndex;
-  const previousDeps = effectQueue[currentIndex];
-
-  const hasChanged = !previousDeps || deps.some((dep, i) => !Object.is(dep, previousDeps[i]));
-
-  if (hasChanged) {
-    if (effectQueue[currentIndex]?.cleanup) {
-      effectQueue[currentIndex].cleanup();
-    }
-    scheduleAfterPaint(() => {
-      const cleanup = callback();
-      effectQueue[currentIndex] = { deps, cleanup };
-    });
-  }
-
-  effectIndex++;
-}
-```
-
-**核心要点：**
-- 在 commit 阶段后异步执行（LayoutEffect 则是同步）
-- 通过 `Object.is` 比较依赖项
-- 返回的 cleanup 函数在下一次 effect 执行前调用
-
-### 🧬 useRef 实现原理
-
-```typescript
-function useRef(initialValue) {
-  const currentIndex = refIndex;
-  if (refQueue[currentIndex] === undefined) {
-    refQueue[currentIndex] = { current: initialValue };
-  }
-  refIndex++;
-  return refQueue[currentIndex];
-}
-```
-
-**核心要点：**
-- 返回一个稳定的对象引用（整个生命周期不变）
-- `.current` 变化不会触发重新渲染
-- 常用于 DOM 引用、保存可变值
-
-### 🧬 useContext 实现原理
-
-```typescript
-function useContext(Context) {
-  const fiber = getCurrentFiber();
-  let provider = fiber;
-
-  while (provider) {
-    if (provider.type === Context.Provider) {
-      return provider.memoizedProps.value;
-    }
-    provider = provider.return; // 父 Fiber
-  }
-
-  return Context._defaultValue;
-}
-```
-
-**核心要点：**
-- 本质是沿着 Fiber 树向上遍历查找最近的 Context.Provider
-- Provider 的 value 变化时，所有消费该 Context 的组件会强制更新
-
----
-
-## React 生态对比
-
-### 元框架对比
-
-| 维度 | Next.js | Remix | Gatsby |
-|------|---------|-------|--------|
-| 渲染模式 | SSR/SSG/ISR/CSR | SSR + 渐进增强 | 纯 SSG |
-| 学习曲线 | 中等 | 低 | 中 |
-| 适用场景 | 通用/企业级 | SaaS/CRUD | 内容型网站 |
-
-### 状态管理对比
-
-| 维度 | Zustand | Redux Toolkit | MobX |
-|------|---------|---------------|------|
-| 范式 | 不可变 | 不可变（Immer） | 可变（响应式） |
-| 模板代码 | 极少 | 中等 | 少 |
-| Bundle | ~1KB | ~12KB | ~16KB |
-| 学习曲线 | 低 | 中 | 低 |
-
-### 数据获取对比
-
-| 维度 | TanStack Query | SWR | Apollo Client |
-|------|----------------|-----|---------------|
-| 协议 | REST/GraphQL | REST/GraphQL | GraphQL |
-| 缓存策略 | 精细（GC/Stale） | 基础 | 规范化缓存 |
-| Bundle | ~13KB | ~5KB | ~35KB |
-
----
-
-## 实战场景题
-
-### 场景 1：实现一个具有分页、搜索、排序的数据表格
-
-```typescript
-function DataTable() {
-  const [data, setData] = useState<Item[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const filtered = useMemo(() => data.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ), [data, searchTerm]);
-
-  const sorted = useMemo(() => {
-    const newData = [...filtered];
-    newData.sort((a, b) => sortBy === 'name'
-      ? a.name.localeCompare(b.name)
-      : new Date(a.date).getTime() - new Date(b.date).getTime());
-    return newData;
-  }, [filtered, sortBy]);
-
-  const paginatedData = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return sorted.slice(start, start + pageSize);
-  }, [sorted, page]);
-
-  return (
-    <div>
-      <input placeholder="搜索..." value={searchTerm}
-        onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} />
-      <table>
-        {paginatedData.map(item => <tr key={item.id}>
-          <td>{item.name}</td><td>{item.date}</td>
-        </tr>)}
-      </table>
-      <button onClick={() => setPage(Math.max(1, page - 1))}>上一页</button>
-      <span>{page}</span>
-      <button onClick={() => setPage(page + 1)}>下一页</button>
-    </div>
-  );
-}
-```
-
-### 场景 2：实现一个具有撤销/重做功能的编辑器
-
-```typescript
-function useHistory<T>(initialValue: T) {
-  const [state, setState] = useState(initialValue);
-  const [history, setHistory] = useState<T[]>([initialValue]);
-  const [historyStep, setHistoryStep] = useState(0);
-
-  const updateState = (newState: T) => {
-    const newHistory = history.slice(0, historyStep + 1);
-    newHistory.push(newState);
-    setHistory(newHistory);
-    setHistoryStep(newHistory.length - 1);
-    setState(newState);
-  };
-
-  const undo = () => {
-    if (historyStep > 0) {
-      const newStep = historyStep - 1;
-      setHistoryStep(newStep);
-      setState(history[newStep]);
-    }
-  };
-
-  const redo = () => {
-    if (historyStep < history.length - 1) {
-      const newStep = historyStep + 1;
-      setHistoryStep(newStep);
-      setState(history[newStep]);
-    }
-  };
-
-  return { state, updateState, undo, redo, canUndo: historyStep > 0, canRedo: historyStep < history.length - 1 };
-}
 ```
 
 ---
@@ -7546,9 +6953,395 @@ function UserProfile({ userId }) {
 
 ---
 
-## 🎯 面试深度追问
+# 第十部分：面试题汇总
 
-### Q18：React Fiber 与 Vue 3 虚拟 DOM 的区别？
+### Q1：说说 React 的渲染流程（Trigger → Render → Commit）
+
+**三阶段模型：**
+
+```
+┌──────────┐    ┌───────────┐    ┌────────┐
+│  Trigger  │ → │   Render   │ → │  Commit  │
+│  触发更新  │   │  渲染阶段   │   │  提交阶段  │
+│ setState  │   │ 构建 VNode │   │ 操作 DOM │
+│  useState │   │  Diff 对比  │   │ 生命周期 │
+│  useReducer│   │ 收集 Effect│   │ 执行 Effect│
+└──────────┘   └───────────┘    └────────┘
+      ↑ 可多次           ↓ 可中断            ← 不可中断
+```
+
+**详细过程：**
+
+```
+1️⃣ Trigger（触发阶段）
+   ├─ 首次渲染：createRoot → render
+   ├─ 状态更新：setState / useReducer / useState dispatch
+   └─ 强制更新：forceUpdate / useSyncExternalStore
+
+2️⃣ Render（渲染阶段 — 可中断）
+   ├─ 深度优先遍历 Fiber 树
+   ├─ 构建 workInProgress 树
+   ├─ Diff 对比 → 标记 effectTag（Placement/Update/Deletion）
+   ├─ 收集 Hooks 链表
+   └─ 时间切片：每 5ms 让出主线程
+
+3️⃣ Commit（提交阶段 — 不可中断）
+   ├─ Pre-mutation：getSnapshotBeforeUpdate
+   ├─ Mutation：DOM 操作（插入/更新/删除），同步执行
+   ├─ Layout：useLayoutEffect 同步执行
+   ├─ Passive：useEffect 异步调度执行
+   └─ current 指针切换到 workInProgress 树
+```
+
+**面试追问：** *Render 阶段为什么可以中断？哪些生命周期在 Render 阶段会被多次调用？*
+> Fiber 架构将渲染拆分为最小工作单元（每个 Fiber 节点）。`componentWillMount`、`componentWillReceiveProps`、`componentWillUpdate` 在 Render 阶段执行，可能被多次调用，因此在 React 16+ 被标记为 UNSAFE_。
+
+### Q2：useEffect 的完整执行时序是什么？
+
+```typescript
+function Lifecycle() {
+  useEffect(() => {
+    console.log('1. 浏览器绘制后异步执行');
+    return () => console.log('3. 清理（下次 effect 前/unmount 时）');
+  });
+
+  useLayoutEffect(() => {
+    console.log('2. DOM 更新后、浏览器绘制前同步执行');
+    return () => console.log('4. 清理');
+  });
+}
+```
+
+**执行顺序：**
+```
+Render → DOM 更新 → useLayoutEffect（同步）→ 浏览器绘制 → useEffect（异步）
+```
+
+### Q3：React 19 Actions 是什么？解决了什么问题？
+
+**核心问题：** 表单提交需要手动管理 loading、error、success 状态，代码冗余：
+
+```typescript
+// ❌ React 18 中管理表单状态
+const [pending, setPending] = useState(false);
+const [error, setError] = useState<Error | null>(null);
+const [data, setData] = useState(null);
+
+async function handleSubmit(formData: FormData) {
+  setPending(true);
+  setError(null);
+  try {
+    const result = await submitAPI(formData);
+    setData(result);
+  } catch (e) {
+    setError(e as Error);
+  } finally {
+    setPending(false);
+  }
+}
+
+// ✅ React 19 Actions：useActionState + useFormStatus
+const [state, formAction, pending] = useActionState(async (prev, formData) => {
+  const result = await submitAPI(formData);
+  return result;
+}, null);
+```
+
+**Actions 的四大能力：**
+1. **自动管理 pending**：`useFormStatus` 读取最近的 `<form>` 的 pending 状态
+2. **乐观更新**：`useOptimistic` 假设请求成功提前展示结果
+3. **渐进增强**：`<form action={formAction}>` 即使 JS 未加载也能提交
+4. **表单重置**：`formAction` 成功后自动调用 `form.reset()`
+
+### Q4：React 中 key 的作用和最佳实践？
+
+```mermaid
+flowchart LR
+    subgraph 无 key / index 作为 key
+        L1["A(0) B(1) C(2)"] -->|"首位插入 X"| L2["X(0) A(1) B(2) C(3)"]
+        L2 --> L3["所有子节点全部重渲染！"]
+    end
+
+    subgraph 稳定唯一 key
+        R1["A:id1 B:id2 C:id3"] -->|"首位插入 X:id4"| R2["X:id4 A:id1 B:id2 C:id3"]
+        R2 --> R3["仅插入 X，复用 A/B/C"]
+    end
+```
+
+**最佳实践：**
+```
+✅ 使用唯一且稳定的 ID（`item.id` / `crypto.randomUUID()`）
+❌ 不要使用数组 index（插入/删除/排序时 bug）
+❌ 不要使用随机数（每次渲染都不同，导致不必要重建）
+❌ 不要使用 Math.random()（完全破坏缓存）
+⚠️ 只有静态列表可用 index（不增删改排）
+```
+
+### Q5：React 18 Concurrent Mode 解决了什么问题？
+
+**核心价值：** 紧急更新不被非紧急更新阻塞。
+
+```
+用户输入（紧急）     ❌ 被数据加载（非紧急）阻塞 → 界面卡顿
+                    ✅ Concurrent: 输入优先，数据加载可中断
+```
+
+| 特性            | React 17（同步） | React 18（Concurrent）      |
+| --------------- | ---------------- | --------------------------- |
+| 渲染            | 一次更新完整执行 | 可中断/恢复                 |
+| 优先级          | 无优先级         | 任务分 urgency / transition |
+| 用户输入        | 被所有更新阻塞   | **高优更新跳队优先**        |
+| Suspense        | 基础支持         | 流式 SSR + 选择性 hydration |
+| startTransition | ❌                | ✅ 标记非紧急更新            |
+
+### Q6：React 19 `use()` 与 useEffect 数据获取的区别？
+
+```typescript
+// 方式 1：useEffect + useState（React 18 及以前）
+function User() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch('/api/user').then(r => r.json()).then(setUser);
+  }, []);
+  if (!user) return <Spinner />;
+  return <div>{user.name}</div>;
+}
+
+// 方式 2：use() + Suspense（React 19）
+function User() {
+  const user = use(fetchUserPromise);  // 直接消费 Promise
+  return <div>{user.name}</div>;
+}
+
+// 父组件提供 Suspense 边界
+function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <User />
+    </Suspense>
+  );
+}
+```
+
+| 维度     | useEffect + useState         | use() + Suspense            |
+| -------- | ---------------------------- | --------------------------- |
+| 代码量   | 多（loading/error 手动管理） | 少（Suspense 管理 loading） |
+| 错误处理 | 手动 catch 设置 error        | ErrorBoundary 统一处理      |
+| 竞态条件 | 需手动处理（ignore flag）    | 自动处理                    |
+| 灵活性   | 高（完全控制）               | 受限于 Suspense 边界        |
+
+### Q7：React 合成事件（SyntheticEvent）是什么？
+
+**为什么需要合成事件？**
+
+```
+原生事件问题：
+  ├─ 浏览器兼容性差异（e.target / e.preventDefault 命名不同）
+  ├─ 内存泄漏风险（事件未卸载）
+  └─ 无法在 Fiber 架构中优化
+
+合成事件的优势：
+  ├─ 跨浏览器统一接口
+  ├─ 事件池（React 16 前）减少 GC
+  ├─ 事件委托到 root 节点（React 17 前 document → React 17+ root）
+  └─ 与 Fiber 架构深度集成（优先级调度）
+```
+
+```typescript
+// React 16：事件委托到 document
+document.addEventListener('click', ReactEvent.listener);
+
+// React 17+：事件委托到 root 节点
+root.addEventListener('click', ReactEvent.listener);
+
+// React 19：基于 createRoot 的事件系统
+function handleClick(e: React.MouseEvent) {
+  // e 是 SyntheticEvent，但行为与原生事件一致
+  e.preventDefault();  // 跨浏览器
+  e.stopPropagation();
+}
+```
+
+### Q8：React Hooks 为什么不能放在条件/循环中？
+
+**根本原因：** Hooks 存储在 Fiber 节点的 **单向链表** 中，依赖**调用顺序**来匹配状态。
+
+```typescript
+// Hooks 在 Fiber 中的存储结构
+fiber.memoizedState = {
+  queue: { pending: null },      // useState 的更新队列
+  next: {                        // 指向下一个 Hook
+    queue: { pending: null },    // useEffect 的 effect 链表
+    next: {
+      queue: { pending: null },  // useRef
+      next: null
+    }
+  }
+}
+
+// ✅ 正确：每次渲染，Hooks 调用顺序和数量一致
+function Good() {
+  const [a] = useState(0);       // Hook #1
+  const [b] = useState(0);       // Hook #2
+  useEffect(() => {}, []);        // Hook #3
+}
+
+// ❌ 错误：条件语句导致 Hook 数量不一致
+function Bad({ flag }) {
+  const [a] = useState(0);       // Hook #1
+  if (flag) {
+    const [b] = useState(0);     // flag=false 时 Hook #2 不存在
+  }
+  useEffect(() => {}, []);       // flag=false 时变成了 Hook #2（本应是 #3）
+  // → React 无法匹配正确的状态！
+}
+```
+
+### Q9：Server Component vs Client Component 的区别？
+
+```tsx
+// 🖥️ Server Component（默认）
+// app/page.tsx
+export default async function Page() {
+  const data = await db.query('SELECT * FROM posts');
+  // 1. 在服务器端执行（可访问数据库/文件系统/AI API）
+  // 2. 不发送 JS bundle 到客户端
+  // 3. 不可用 useState/useEffect/事件处理
+  return <PostList posts={data} />;
+}
+
+// 💻 Client Component（需 'use client'）
+// app/counter.tsx
+'use client';
+export function Counter() {
+  // 1. 在客户端执行
+  // 2. 可交互（事件/状态/副作用）
+  // 3. 发送 JS bundle 到客户端
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+| 维度             | Server Component | Client Component |
+| ---------------- | ---------------- | ---------------- |
+| 执行位置         | **服务器**       | **浏览器**       |
+| 访问 DB/FS       | ✅ 直接           | ❌ 只能通过 API   |
+| useState/Effects | ❌ 不可用         | ✅ 可用           |
+| JS Bundle        | **0KB**          | 发送到客户端     |
+| 数据获取         | 直接 await       | use/useEffect    |
+| API Key 安全     | ✅ 安全           | ❌ 暴露风险       |
+
+### Q10：React.memo 和 useMemo 的区别？
+
+| 特性         | React.memo           | useMemo      |
+| ------------ | -------------------- | ------------ |
+| **作用对象** | 组件                 | 值/计算      |
+| **比较方式** | props 浅比较（默认） | 依赖数组比较 |
+| **返回值**   | 新的组件             | 缓存的值     |
+| **使用场景** | 避免组件重渲染       | 避免重复计算 |
+
+```typescript
+// React.memo：缓存整个组件
+const ExpensiveComponent = React.memo(function Expensive({ data }) {
+  return <div>{/* 复杂渲染 */}</div>;
+});
+
+// useMemo：缓存计算值
+function Parent({ items }) {
+  const sorted = useMemo(
+    () => items.sort((a, b) => a.name.localeCompare(b.name)),
+    [items]
+  );
+  return <ExpensiveComponent data={sorted} />;
+}
+
+// useCallback：缓存函数（等价于无参数的 useMemo）
+const handleClick = useCallback(() => doSomething(id), [id]);
+// 等价于：const handleClick = useMemo(() => () => doSomething(id), [id]);
+```
+
+### Q11：React 19 Compiler 如何实现自动记忆化？
+
+**原理：** Compiler 在编译阶段分析函数的作用域和依赖关系，自动推断哪些值和函数需要缓存。
+
+```typescript
+// 编译前（开发者写的代码）
+function ProfilePage({ user }) {
+  const title = user.name + '\'s Profile';
+  const handleClick = () => showProfile(user.id);
+  return <div onClick={handleClick}>{title}</div>;
+}
+
+// 编译后（React Compiler 自动转换）
+function ProfilePage({ user }) {
+  const $ = _c(2);                                        // 分配缓存槽
+  let title, handleClick;
+
+  if ($[0] !== user) {                                    // 依赖变化？
+    title = user.name + '\'s Profile';
+    handleClick = _F(() => showProfile(user.id));         // 自动缓存
+    $[0] = user;
+    $[1] = [title, handleClick];                         // 更新缓存
+  } else {
+    [title, handleClick] = $[1];                          // 复用缓存
+  }
+
+  return <div onClick={handleClick}>{title}</div>;
+}
+```
+
+**关键机制：**
+- `_c(n)`：分配 n 个缓存槽位
+- `_F(fn)`：自动缓存函数引用
+- 闭包语义感知：分析哪些外部变量被捕获
+- 无手动依赖数组：Compiler 自动推导 `$[0] !== user`
+
+### Q12：React Fiber 架构如何实现可中断渲染？
+
+**核心数据结构：Fiber 链表**
+
+```typescript
+// 对比：Stack Reconciler vs Fiber Reconciler
+
+// React 15：函数调用栈（不可中断）
+function render15(element) {
+  if (typeof element.type === 'function') {
+    const children = element.type(element.props);
+    render15(children);  // 递归，必须执行完
+  }
+  // 直接操作 DOM
+  document.appendChild(element);
+}
+
+// React 16+：Fiber 链表（可中断）
+function workLoop(fiber: Fiber) {
+  while (fiber && shouldYield() === false) {  // 每次检查是否让出
+    fiber = performUnitOfWork(fiber);         // 处理一个 Fiber 节点
+    if (fiber === null) {                     // 遍历完成
+      commitRoot();                           // 提交 DOM 更新
+      break;
+    }
+  }
+  if (fiber) {
+    requestIdleCallback(() => workLoop(fiber)); // 下次空闲继续
+  }
+}
+```
+
+**调度机制：** React 通过 `requestIdleCallback` 或 `MessageChannel` 实现时间切片，每次处理一个 Fiber 节点后检查是否超时（约 5ms），超时则让出主线程。
+
+### Q13：React 事件机制与原生事件的区别？
+
+| 对比项       | 原生 DOM 事件              | React 合成事件                            |
+| ------------ | -------------------------- | ----------------------------------------- |
+| **绑定方式** | `element.addEventListener` | `onClick={handler}`                       |
+| **事件委托** | 分散绑定                   | **统一委托到 root**（React 17+）          |
+| **跨浏览器** | 需兼容性处理               | ✅ 统一接口                                |
+| **阻止冒泡** | `e.stopPropagation()`      | ✅ 同样支持                                |
+| **性能**     | 多个 listener              | 内存中 1 个 listener                      |
+| **异步访问** | 始终可访问                 | React 16 需 `e.persist()`，React 17+ 无需 |
+
+### Q14：React Fiber 与 Vue 3 虚拟 DOM 的区别？
 
 | 维度 | React Fiber | Vue 3 Virtual DOM |
 |------|------------|-------------------|
@@ -7557,7 +7350,7 @@ function UserProfile({ userId }) {
 | **更新机制** | 双缓冲 | 一次性更新 |
 | **优化策略** | Time Slicing | Block Tree + PatchFlag |
 
-### Q19：React 19 Actions 与 Vue 3 的区别？
+### Q15：React 19 Actions 与 Vue 3 的区别？
 
 | 维度 | React Actions | Vue 3 |
 |------|--------------|-------|
@@ -7566,7 +7359,7 @@ function UserProfile({ userId }) {
 | **错误处理** | 原生支持 | 需要 try/catch |
 | **乐观更新** | useOptimistic | 需要手动实现 |
 
-### Q20：React Server Components 与 SSR 的区别？
+### Q16：React Server Components 与 SSR 的区别？
 
 | 维度 | RSC | SSR |
 |------|-----|-----|
@@ -7574,6 +7367,196 @@ function UserProfile({ userId }) {
 | **输出** | 可序列化的组件 | HTML 字符串 |
 | **客户端 JS** | 不包含服务端组件 | 包含所有组件 |
 | **交互性** | 无（纯数据） | 有（Hydration） |
+
+---
+
+## Hooks 实现原理
+
+### 🧬 useState 实现原理
+
+```typescript
+// 简化版 useState 内部实现
+let stateIndex = 0;
+const stateQueue = [];
+
+function useState(initialValue) {
+  const currentIndex = stateIndex;
+
+  if (stateQueue[currentIndex] === undefined) {
+    stateQueue[currentIndex] = initialValue;
+  }
+
+  function setState(newValue) {
+    const resolvedValue = typeof newValue === 'function'
+      ? newValue(stateQueue[currentIndex])
+      : newValue;
+    stateQueue[currentIndex] = resolvedValue;
+    scheduleUpdate(); // 触发重新渲染
+  }
+
+  stateIndex++;
+  return [stateQueue[currentIndex], setState];
+}
+```
+
+**核心要点：**
+- 每个组件实例有一个 Fiber 节点，存储 hooks 链表
+- 通过 `stateIndex` 按调用顺序匹配状态
+- **不能在条件/循环中调用 Hooks**（保证调用顺序一致）
+- `setState` 触发更新调度，合并到批量更新队列
+
+### 🧬 useEffect 实现原理
+
+```typescript
+function useEffect(callback, deps) {
+  const currentIndex = effectIndex;
+  const previousDeps = effectQueue[currentIndex];
+
+  const hasChanged = !previousDeps || deps.some((dep, i) => !Object.is(dep, previousDeps[i]));
+
+  if (hasChanged) {
+    if (effectQueue[currentIndex]?.cleanup) {
+      effectQueue[currentIndex].cleanup();
+    }
+    scheduleAfterPaint(() => {
+      const cleanup = callback();
+      effectQueue[currentIndex] = { deps, cleanup };
+    });
+  }
+
+  effectIndex++;
+}
+```
+
+**核心要点：**
+- 在 commit 阶段后异步执行（LayoutEffect 则是同步）
+- 通过 `Object.is` 比较依赖项
+- 返回的 cleanup 函数在下一次 effect 执行前调用
+
+### 🧬 useRef 实现原理
+
+```typescript
+function useRef(initialValue) {
+  const currentIndex = refIndex;
+  if (refQueue[currentIndex] === undefined) {
+    refQueue[currentIndex] = { current: initialValue };
+  }
+  refIndex++;
+  return refQueue[currentIndex];
+}
+```
+
+**核心要点：**
+- 返回一个稳定的对象引用（整个生命周期不变）
+- `.current` 变化不会触发重新渲染
+- 常用于 DOM 引用、保存可变值
+
+### 🧬 useContext 实现原理
+
+```typescript
+function useContext(Context) {
+  const fiber = getCurrentFiber();
+  let provider = fiber;
+
+  while (provider) {
+    if (provider.type === Context.Provider) {
+      return provider.memoizedProps.value;
+    }
+    provider = provider.return; // 父 Fiber
+  }
+
+  return Context._defaultValue;
+}
+```
+
+**核心要点：**
+- 本质是沿着 Fiber 树向上遍历查找最近的 Context.Provider
+- Provider 的 value 变化时，所有消费该 Context 的组件会强制更新
+
+---
+
+## 实战场景题
+
+### 场景 1：实现一个具有分页、搜索、排序的数据表格
+
+```typescript
+function DataTable() {
+  const [data, setData] = useState<Item[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  const filtered = useMemo(() => data.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [data, searchTerm]);
+
+  const sorted = useMemo(() => {
+    const newData = [...filtered];
+    newData.sort((a, b) => sortBy === 'name'
+      ? a.name.localeCompare(b.name)
+      : new Date(a.date).getTime() - new Date(b.date).getTime());
+    return newData;
+  }, [filtered, sortBy]);
+
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, page]);
+
+  return (
+    <div>
+      <input placeholder="搜索..." value={searchTerm}
+        onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} />
+      <table>
+        {paginatedData.map(item => <tr key={item.id}>
+          <td>{item.name}</td><td>{item.date}</td>
+        </tr>)}
+      </table>
+      <button onClick={() => setPage(Math.max(1, page - 1))}>上一页</button>
+      <span>{page}</span>
+      <button onClick={() => setPage(page + 1)}>下一页</button>
+    </div>
+  );
+}
+```
+
+### 场景 2：实现一个具有撤销/重做功能的编辑器
+
+```typescript
+function useHistory<T>(initialValue: T) {
+  const [state, setState] = useState(initialValue);
+  const [history, setHistory] = useState<T[]>([initialValue]);
+  const [historyStep, setHistoryStep] = useState(0);
+
+  const updateState = (newState: T) => {
+    const newHistory = history.slice(0, historyStep + 1);
+    newHistory.push(newState);
+    setHistory(newHistory);
+    setHistoryStep(newHistory.length - 1);
+    setState(newState);
+  };
+
+  const undo = () => {
+    if (historyStep > 0) {
+      const newStep = historyStep - 1;
+      setHistoryStep(newStep);
+      setState(history[newStep]);
+    }
+  };
+
+  const redo = () => {
+    if (historyStep < history.length - 1) {
+      const newStep = historyStep + 1;
+      setHistoryStep(newStep);
+      setState(history[newStep]);
+    }
+  };
+
+  return { state, updateState, undo, redo, canUndo: historyStep > 0, canRedo: historyStep < history.length - 1 };
+}
+```
+
 
 ---
 
