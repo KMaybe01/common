@@ -1437,7 +1437,7 @@ flowchart TD
     U8 --> D1
 ```
 
-#### 废弃的生命周期（React 16+）
+#### 废弃的三个生命周期（React 16.3+）
 
 ```mermaid
 flowchart LR
@@ -1450,11 +1450,349 @@ flowchart LR
     W3 -.->|替代| R3["getSnapshotBeforeUpdate + componentDidUpdate"]
 ```
 
-**废弃原因（Fiber 架构导致）：**
-- Fiber 让渲染过程可中断，`render` 之前的生命周期可能被执行多次
-- `componentWillMount`：功能可被 constructor 和 componentDidMount 替代
-- `componentWillReceiveProps`：容易破坏单一数据源
-- `componentWillUpdate`：回调可能被多次调用，无法可靠获取 DOM 信息
+**核心废弃原因（Fiber 架构导致）：**
+
+React 15 的 Stack Reconciler 采用递归同步渲染，一旦开始就不能中断。而 Fiber 架构将渲染过程改造为**可中断的异步任务**，这意味着 `render` 阶段可能被打断后重新执行。这直接导致了三个 `will` 生命周期在一次更新中可能被**多次调用**，产生严重的副作用问题：
+
+```
+Stack Reconciler (React 15):
+  开始渲染 → 同步执行 → 完成
+  生命周期只调用一次 ✅
+
+Fiber Reconciler (React 16+):
+  开始渲染 → 执行一部分 → 浏览器需要控制权 → 暂停
+  → 恢复渲染 → 重新执行 render 前的生命周期
+  → 生命周期可能被调用多次 ❌
+```
+
+**逐个分析：**
+
+| 废弃方法 | 问题 | 替代方案 |
+|---------|------|---------|
+| `componentWillMount` | 在 render 前执行，可能因中断被调用多次；SSR 中不触发 | `constructor` 或 `componentDidMount` |
+| `componentWillReceiveProps` | 每次 props 变化前调用，容易用 `this.state` 存派生值，破坏单一数据源；可被多次调用 | `static getDerivedStateFromProps` 或 `getDerivedStateFromProps` |
+| `componentWillUpdate` | render 前调用，无法可靠读取 DOM；可能被多次调用 | `getSnapshotBeforeUpdate` + `componentDidUpdate` |
+
+##### 1. componentWillMount → constructor / componentDidMount
+
+```javascript
+// ❌ 废弃写法
+class UserProfile extends React.Component {
+  componentWillMount() {
+    // 危险：Fiber 中可能被多次调用
+    this.fetchData(this.props.userId);  // 重复请求
+    this.state = { data: null };         // 可能被覆盖
+  }
+
+  fetchData(userId) {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(data => this.setState({ data }));
+  }
+
+  render() {
+    return <div>{this.state.data?.name || 'Loading...'}</div>;
+  }
+}
+
+// ✅ 替代方案 1：异步操作放 componentDidMount
+class UserProfile extends React.Component {
+  state = { data: null };
+
+  componentDidMount() {
+    this.fetchData(this.props.userId);  // 只调用一次
+  }
+
+  fetchData(userId) {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(data => this.setState({ data }));
+  }
+
+  render() {
+    return <div>{this.state.data?.name || 'Loading...'}</div>;
+  }
+}
+
+// ✅ 替代方案 2：同步初始化放 constructor
+class UserProfile extends React.Component {
+  constructor(props) {
+    super(props);
+    // 同步初始化 state
+    this.state = {
+      data: null,
+      derivedValue: computeExpensiveValue(props.someProp)
+    };
+  }
+  // ...
+}
+```
+
+**对比：**
+
+| 场景 | componentWillMount | constructor | componentDidMount |
+|------|-------------------|-------------|-------------------|
+| 初始化 state | ✅ 可以（但 constructor 更早） | ✅ 最佳 | ❌ 已渲染 |
+| 异步请求 | ⚠️ 重复调用 | ❌ 不合适 | ✅ 只执行一次 |
+| DOM 操作 | ❌ DOM 不存在 | ❌ DOM 不存在 | ✅ DOM 已挂载 |
+| 事件监听 | ❌ 组件未挂载 | ❌ 组件未挂载 | ✅ 可以绑定 |
+
+##### 2. componentWillReceiveProps → getDerivedStateFromProps / 直接计算
+
+```javascript
+// ❌ 废弃写法：破坏单一数据源
+class EmailInput extends React.Component {
+  state = {
+    email: this.props.email  // 用 state 存派生数据
+  };
+
+  componentWillReceiveProps(nextProps) {
+    // 每次 props 变化都会调用
+    if (nextProps.email !== this.props.email) {
+      this.setState({
+        email: nextProps.email  // 派生 state，来源不唯一
+      });
+    }
+  }
+
+  render() {
+    return <input value={this.state.email} />;
+  }
+}
+// 问题：email 有 props 和 state 两个来源，读哪个？
+
+// ✅ 方案 1：getDerivedStateFromProps（有派生需求时）
+class EmailInput extends React.Component {
+  state = { email: '' };
+
+  static getDerivedStateFromProps(props, state) {
+    // 返回要更新 state 的对象，返回 null 表示不更新
+    if (props.email !== state.prevEmail) {
+      return {
+        email: props.email,
+        prevEmail: props.email  // 记住上一次的 props
+      };
+    }
+    return null;
+  }
+
+  render() {
+    return <input value={this.state.email} />;
+  }
+}
+
+// ✅ 方案 2：完全受控组件（推荐）
+function EmailInput({ email, onChange }) {
+  return <input value={email} onChange={e => onChange(e.target.value)} />;
+}
+
+// ✅ 方案 3：非受控组件 + key 重置
+function EmailInput({ email, onChange }) {
+  const [localValue, setLocalValue] = useState(email);
+  // key 变化时重新创建组件
+  return <input key={email} defaultValue={email}
+    onChange={e => setLocalValue(e.target.value)} />;
+}
+```
+
+**componentWillReceiveProps vs getDerivedStateFromProps 对比：**
+
+| 特性 | componentWillReceiveProps | getDerivedStateFromProps |
+|------|--------------------------|------------------------|
+| 调用时机 | 接收新 props 后、render 前 | 接收新 props 后、render 前 |
+| 返回值 | 无 | 返回要更新 state 的对象或 null |
+| 访问 this | ✅ 可以访问当前 props/state | ❌ 静态方法，无法访问 this |
+| 副作用 | ✅ 可以（但可能导致重复调用） | ❌ 纯函数，禁止副作用 |
+| 多次调用 | ✅ Fiber 中可能多次 | ✅ 多次调用但纯函数无影响 |
+| 推荐度 | ⚠️ 废弃 | ⭐ 有派生需求时使用 |
+
+> ⚠️ **重要**：`getDerivedStateFromProps` 应极少使用。大多数场景下，**完全受控组件**（props 作为唯一数据源）才是正确答案。
+
+##### 3. componentWillUpdate → getSnapshotBeforeUpdate + componentDidUpdate
+
+```javascript
+// ❌ 废弃写法：无法可靠获取 DOM
+class ChatList extends React.Component {
+  state = { messages: [] };
+
+  componentWillUpdate() {
+    // 危险：Fiber 中可能被多次调用
+    // 且此时 DOM 还未更新，但无法获取可靠的滚动位置
+    this.scrollHeight = this.list.scrollHeight;  // 可能不准确
+  }
+
+  render() {
+    return (
+      <div ref={el => this.list = el}>
+        {this.state.messages.map(msg => <div key={msg.id}>{msg.text}</div>)}
+      </div>
+    );
+  }
+
+  componentDidUpdate() {
+    // 如果新消息到来，恢复滚动位置
+    if (this.shouldScroll) {
+      this.list.scrollTop = this.scrollHeight;
+    }
+  }
+}
+
+// ✅ 正确写法：getSnapshotBeforeUpdate
+class ChatList extends React.Component {
+  state = { messages: [] };
+
+  // 在 React 更新 DOM 之前同步调用
+  // 返回值会传给 componentDidUpdate 的第三个参数
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    const list = this.listRef.current;
+    if (prevProps.messages.length < this.props.messages.length) {
+      // 新消息到来，记录当前滚动信息
+      return {
+        scrollHeight: list.scrollHeight,
+        scrollTop: list.scrollTop,
+        clientHeight: list.clientHeight
+      };
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // snapshot 就是 getSnapshotBeforeUpdate 返回的值
+    if (snapshot) {
+      const list = this.listRef.current;
+      // 如果之前在底部，新消息后自动滚到底部
+      const isAtBottom =
+        snapshot.scrollTop + snapshot.clientHeight >= snapshot.scrollHeight - 50;
+      if (isAtBottom) {
+        list.scrollTop = list.scrollHeight;
+      }
+    }
+  }
+
+  render() {
+    return (
+      <div ref={this.listRef}>
+        {this.props.messages.map(msg => <div key={msg.id}>{msg.text}</div>)}
+      </div>
+    );
+  }
+}
+```
+
+**componentWillUpdate vs getSnapshotBeforeUpdate 对比：**
+
+| 特性 | componentWillUpdate | getSnapshotBeforeUpdate |
+|------|---------------------|------------------------|
+| 调用时机 | render 前（DOM 更新前） | render 后、DOM 更新前（Pre-commit 阶段） |
+| 读取 DOM | ⚠️ 可读但不可靠（可能被多次调用） | ✅ 可靠（只调用一次） |
+| 返回值 | 无 | 返回值传给 componentDidUpdate |
+| 适用场景 | 几乎没有安全场景 | DOM 测量/快照 |
+| 推荐度 | ⚠️ 废弃 | ⭐ 唯一的 DOM 快照方案 |
+
+#### 新旧生命周期完整对比
+
+```mermaid
+flowchart TD
+    subgraph "Class 生命周期 (React 16+)"
+        C1["constructor"]
+        C2["static getDerivedStateFromProps<br/>(替代 componentWillReceiveProps)"]
+        C3["shouldComponentUpdate"]
+        C4["render"]
+        C5["getSnapshotBeforeUpdate<br/>(替代 componentWillUpdate)"]
+        C6["componentDidMount / DidUpdate"]
+        C7["componentWillUnmount"]
+        C8["componentDidCatch / getDerivedStateFromError"]
+    end
+
+    subgraph Hooks 等价实现
+        H1["useState 初始化<br/>(替代 constructor 中的 state 初始化)"]
+        H2["useEffect + 依赖项<br/>(自动跟踪 props 变化)"]
+        H3["React.memo + useMemo<br/>(替代 shouldComponentUpdate)"]
+        H4["函数体本身<br/>(替代 render)"]
+        H5["useEffect 清理函数<br/>(替代 componentWillUnmount)"]
+        H6["useRef<br/>(替代 getSnapshotBeforeUpdate 中的 DOM 测量)"]
+    end
+
+    C1 -.-> H1
+    C2 -.-> H2
+    C3 -.-> H3
+    C4 -.-> H4
+    C5 -.-> H6
+    C6 -.-> H2
+    C7 -.-> H5
+```
+
+#### Hooks 替换 Class 生命周期完整示例
+
+```javascript
+// ========== Class 组件写法 ==========
+class TimerWithLifecycle extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { seconds: 0, message: '' };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.resetOnPropChange !== state.prevProp) {
+      return { seconds: 0, prevProp: props.resetOnPropChange };
+    }
+    return null;
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.setState(prev => ({ seconds: prev.seconds + 1 }));
+    }, 1000);
+
+    document.title = `Timer: ${this.state.seconds}s`;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.seconds !== this.state.seconds) {
+      document.title = `Timer: ${this.state.seconds}s`;
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  getSnapshotBeforeUpdate() {
+    return window.scrollY;  // DOM 快照
+  }
+
+  render() {
+    return <div>Seconds: {this.state.seconds}</div>;
+  }
+}
+
+// ========== Hooks 写法 ==========
+function TimerWithHooks({ resetOnPropChange }) {
+  const [seconds, setSeconds] = useState(0);
+
+  // 等价 getDerivedStateFromProps
+  const prevPropRef = useRef(resetOnPropChange);
+  useEffect(() => {
+    if (resetOnPropChange !== prevPropRef.current) {
+      setSeconds(0);
+      prevPropRef.current = resetOnPropChange;
+    }
+  }, [resetOnPropChange]);
+
+  // 等价 componentDidMount + componentDidUpdate + componentWillUnmount
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+
+    document.title = `Timer: ${seconds}s`;
+
+    return () => clearInterval(interval);  // 等价 componentWillUnmount
+  }, [seconds]);
+
+  return <div>Seconds: {seconds}</div>;
+}
+```
 
 ### 🏗️ Fiber 架构
 
