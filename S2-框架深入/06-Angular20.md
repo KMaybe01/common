@@ -1,7 +1,9 @@
 ﻿# 🚀 [Angular 20](https://angular.dev) 完整学习指南
 
-> 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
+> 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > Angular 20 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题
+> 
+> 📌 **2026 版新增**：源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
 
 ---
 
@@ -30,30 +32,29 @@
 - [⚡ 第四部分：性能优化](#第四部分性能优化)
   - [1️⃣ 性能优化全景图](#1️⃣-性能优化全景图)
   - [2️⃣ 测试策略](#2️⃣-测试策略)
+- [🔬 第五部分：源码级原理深度解析](#第五部分源码级原理深度解析)
+  - [1️⃣ 变更检测源码原理](#1️⃣-变更检测源码原理)
+  - [2️⃣ 依赖注入源码分析](#2️⃣-依赖注入源码分析)
+  - [3️⃣ 模板编译原理](#3️⃣-模板编译原理)
+  - [4️⃣ Signals 源码实现](#4️⃣-signals-源码实现)
+- [🆕 第六部分：Angular 20/21 新特性深度解析](#第六部分angular-2021-新特性深度解析)
+  - [1️⃣ Zoneless 模式深度解析](#1️⃣-zoneless-模式深度解析)
+  - [2️⃣ linkedSignal 原理](#2️⃣-linkedsignal-原理)
+- [🏗️ 第七部分：项目实战重难点](#第七部分项目实战重难点)
+  - [1️⃣ 微前端与 Angular](#1️⃣-微前端与-angular)
+  - [2️⃣ Nx Monorepo 实战](#2️⃣-nx-monorepo-实战)
+  - [3️⃣ SSR 服务端渲染实战](#3️⃣-ssr-服务端渲染实战)
+  - [4️⃣ 性能监控与埋点](#4️⃣-性能监控与埋点)
+- [🐛 第八部分：常见 Bug 与调试技巧](#第八部分常见-bug-与调试技巧)
+  - [1️⃣ 变更检测问题](#1️⃣-变更检测问题)
+  - [2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
+- [🔌 第九部分：生态深度解析](#第九部分生态深度解析)
+  - [1️⃣ Angular CLI 进阶](#1️⃣-angular-cli-进阶)
+  - [2️⃣ NgRx 深度使用](#2️⃣-ngrx-深度使用)
 - [🤖 Angular in AI Era](#-angular-in-ai-era)
-- [🎯 第五部分：面试题汇总](#第五部分面试题汇总)
-  - [Angular 技术体系化总结](#angular-技术体系化总结)
-  - [Q1 变更检测机制](#q1-变更检测机制)
-  - [Q2 DI 依赖注入](#q2-di-依赖注入)
-  - [Q3 Signals vs Observables](#q3-signals-vs-observables)
-  - [Q4 生命周期](#q4-生命周期)
-  - [Q5 @Input/@Output](#q5-inputoutput)
-  - [Q6 路由守卫](#q6-路由守卫)
-  - [Q7 表单处理](#q7-表单处理)
-  - [Q8 内存泄漏](#q8-内存泄漏)
-  - [Q9 resource()/httpResource()](#q9-resourcehttpresource)
-  - [Q10 Zoneless 迁移](#q10-zoneless-迁移)
-  - [Q11 AOT vs JIT](#q11-aot-vs-jit)
-  - [Q12 跨组件通信](#q12-跨组件通信)
-  - [Q13 性能优化](#q13-性能优化)
-  - [Q14 Standalone 组件 vs NgModule](#q14-standalone-组件-vs-ngmodule-有什么区别)
-  - [Q15 纯管道 vs 非纯管道](#q15-纯管道-vs-非纯管道的区别)
-  - [Q16 模块加载方式](#q16-angular-模块加载方式有哪些)
-  - [Q17 跨平台能力](#q17-angular-有哪些跨平台能力)
-  - [实战场景题](#实战场景题)
-  - [代码质量](#代码质量)
-  - [性能指标](#性能指标)
-  - [总结与最佳实践](#总结与最佳实践)
+- [🎯 第十部分：面试题汇总](#第十部分面试题汇总)
+  - [Q1-Q17 基础面试题](#q1-变更检测机制)
+  - [Q18-Q20 深度追问](#q18-angular-变更检测与-react-的区别)
 - [📚 推荐学习资源](#📚-推荐学习资源)
 - [🔗 官方参考链接](#🔗-官方参考链接)
 
@@ -595,210 +596,6 @@ const displayName = linkedSignal({
   source: name,
   computation: (newName) => newName.toUpperCase()
 });
-```
-
-### 🤖 Angular in AI Era：AI 时代 Angular 的核心优势
-
-> Angular 的强类型 + DI + 模板系统在 AI 辅助开发中有独特优势 — AI 生成的代码更准确、更可靠。
-
-#### Angular 在 AI 时代的独特优势
-
-```
-Angular 对 AI 友好的核心原因：
-  ├─ 强制 TypeScript → AI 类型提示提升生成代码准确率 30%+
-  ├─ 强约束架构（模块/组件/服务）→ AI 生成的结构天然规范
-  ├─ 依赖注入 → AI 自动管理服务创建和注入
-  ├─ 模板与逻辑分离 → AI 可以分别生成和验证
-  └─ Angular CLI → AI 可以通过 CLI 命令快速创建脚手架
-```
-
-#### Angular MCP Server（AI 辅助开发）
-
-Angular 21 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angular 项目结构：
-
-| 能力 | 描述 | 效率提升 |
-|------|------|---------|
-| **组件生成** | AI 根据描述生成完整组件（模板 + 类 + 样式） | 5x |
-| **服务生成** | 自动创建服务 + DI 注册 | 5x |
-| **Signals 优化** | 检测可优化的 Observable → Signal 转换点 | 3x |
-| **Zoneless 迁移** | 自动将 Zone.js 代码迁移到 Zoneless | 10x |
-| **测试生成** | 分析组件依赖自动生成 TestBed 测试 | 5-10x |
-| **模板类型检查** | 检测模板中的类型错误 | 2x |
-
-```typescript
-// 使用 Angular MCP Server 的 AI 提示示例
-// 用户输入："创建一个用户列表组件，支持搜索和分页"
-// AI 通过 MCP 分析项目结构后生成：
-
-@Component({
-  selector: 'app-user-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  template: `
-    <input [(ngModel)]="searchTerm" placeholder="搜索用户..." />
-    
-    @for (user of filteredUsers(); track user.id) {
-      <div class="user-card" [routerLink]="['/users', user.id]">
-        <h3>{{ user.name }}</h3>
-        <p>{{ user.email }}</p>
-      </div>
-    }
-    
-    @if (isLoading()) {
-      <div class="spinner">加载中...</div>
-    }
-  `
-})
-export class UserListComponent {
-  private userService = inject(UserService);
-  searchTerm = signal('');
-  
-  users = httpResource(() => '/api/users');
-  filteredUsers = computed(() => {
-    const search = this.searchTerm().toLowerCase();
-    return this.users.value()?.filter(u => u.name.toLowerCase().includes(search)) ?? [];
-  });
-  isLoading = computed(() => this.users.isLoading());
-}
-```
-
-#### AI 辅助 Angular 开发对比
-
-| 场景 | 传统方式 | AI 辅助 | 效率提升 |
-|------|---------|---------|---------|
-| 创建模块 + 组件 + 路由 | 手动创建 4 个文件 | ng generate + AI 填充 | 5x |
-| 编写 Reactive Forms | 手写 FormGroup + FormControl + 验证 | 描述表单 → AI 生成 | 5-10x |
-| NgRx Store | 手写 action/reducer/selector/effect | 描述数据流 → AI 生成 | 5x |
-| HTTP Interceptor | 手写拦截器逻辑 | 描述需求 → AI 生成 | 3-5x |
-| 单元测试 | 手写 TestBed + mock | AI 分析依赖自动生成 | 5-10x |
-| Zoneless 迁移 | 逐个组件检查和修改 | MCP 自动识别和重构 | 10x |
-
-#### Angular + AI 应用实践
-
-```typescript
-// AI Chat 组件 — Angular Signals + 流式响应
-@Component({
-  selector: 'app-ai-chat',
-  template: `
-    <div class="chat-container">
-      @for (msg of messages(); track msg.id) {
-        <div class="message" [class.assistant]="msg.role === 'assistant'">
-          {{ msg.content }}
-        </div>
-      }
-      @if (isStreaming()) {
-        <div class="typing">AI 正在输入...</div>
-      }
-    </div>
-    
-    <input [(ngModel)]="inputText" (keyup.enter)="sendMessage()" />
-    <button (click)="sendMessage()" [disabled]="isStreaming()">发送</button>
-  `
-})
-export class AIChatComponent {
-  private http = inject(HttpClient);
-  messages = signal<Message[]>([]);
-  isStreaming = signal(false);
-  inputText = signal('');
-
-  async sendMessage() {
-    this.isStreaming.set(true);
-    const text = this.inputText();
-    
-    this.messages.update(msgs => [...msgs, { role: 'user', content: text, id: crypto.randomUUID() }]);
-    this.messages.update(msgs => [...msgs, { role: 'assistant', content: '', id: crypto.randomUUID() }]);
-    
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: text }),
-    });
-    
-    const reader = response.body!.getReader();
-    const decoder = new TextDecoder();
-    
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      this.messages.update(msgs => {
-        const last = msgs[msgs.length - 1];
-        last.content += decoder.decode(value);
-        return [...msgs];
-      });
-    }
-    this.isStreaming.set(false);
-  }
-}
-```
-
-#### 总结：Angular in AI Era
-
-```
-Angular 在 AI 时代的不可替代性：
-  ├─ TypeScript 原生 → AI 生成代码类型安全
-  ├─ 强约束架构 → AI 输出天然规范可维护
-  ├─ 依赖注入 → AI 自动管理服务依赖关系
-  ├─ Angular MCP Server → 首款框架级 AI 辅助工具
-  └─ 企业级定位 → Angular + AI 是企业级应用的未来标准
-```
-
-### 2026 年 Angular 生态工具链
-
-| 工具 | 最新版本 | 关键变化 |
-|------|----------|----------|
-| Angular | 21 | Zoneless 默认，Signals 成熟 |
-| Angular CLI | 21 | Vite 集成，更快构建 |
-| NgRx | 18+ | SignalStore 改进 |
-| Angular Material | 21 | M3 设计系统 |
-| Nx | 20+ | 更好的模块联邦 |
-| Angular Universal | 废弃 | SSR 内置支持 |
-
-### Angular 生态全景图
-
-```mermaid
-mindmap
-  root((Angular 生态))
-    核心框架
-      Angular 21
-      TypeScript
-      RxJS
-    状态管理
-      NgRx
-      SignalStore
-      Akita
-      Elf
-    UI 组件库
-      Angular Material
-      NG-ZORRO
-      PrimeNG
-      ngx-bootstrap
-    表单处理
-      响应式表单
-      模板驱动表单
-      Signal Forms
-    路由系统
-      Angular Router
-      延迟加载
-      路由守卫
-      路由解析器
-    HTTP 客户端
-      HttpClient
-      httpResource
-      拦截器
-    测试工具
-      Jasmine
-      Karma
-      Jest
-      Cypress
-    开发工具
-      Angular CLI
-      Angular DevTools
-      Nx Workspace
-      Compodoc
-    渲染模式
-      CSR 客户端渲染
-      SSR 服务端渲染
-      SSG 静态生成
-      Zoneless 模式
 ```
 
 ---
@@ -2873,7 +2670,1217 @@ describe('用户列表组件', () => {
 
 ---
 
-# 第五部分：面试题汇总
+# 第五部分：源码级原理深度解析
+
+> 🎯 **面试星级**：★★★★★ | 本章深入 Angular 源码，适合中高级面试
+
+## 1️⃣ 变更检测源码原理
+
+### 🔄 Zone.js 工作原理
+
+```typescript
+// packages/core/src/zone/ng_zone.ts
+// Zone.js 通过 monkey-patching 拦截所有异步操作
+
+// 1. 拦截原生 API
+const original setTimeout = window.setTimeout;
+window.setTimeout = function(fn, delay) {
+  // 进入 Zone 上下文
+  const zone = Zone.current;
+  return originalsetTimeout.call(window, function() {
+    // 离开 Zone 上下文，触发变更检测
+    zone.runOutsideAngular(() => {
+      fn();
+    });
+    // 检测变化
+    this.appRef.tick();
+  }, delay);
+};
+
+// 2. 拦截的 API 列表
+// - setTimeout / setInterval
+// - Promise
+// - addEventListener / removeEventListener
+// - XMLHttpRequest
+// - Web Workers
+// - requestAnimationFrame
+```
+
+### 📍 变更检测执行流程
+
+```typescript
+// packages/core/src/application/ref.ts
+export class ApplicationRef {
+  // 1. 触发变更检测
+  tick(): void {
+    // 遍历所有视图
+    this._views.forEach(view => {
+      view.detectChanges();
+    });
+  }
+
+  // 2. 组件级变更检测
+  detectChanges(): void {
+    const cdr = this._cdRef;
+    if (cdr) {
+      // 根据 ChangeDetectionStrategy 执行检测
+      cdr.detectChanges();
+    }
+  }
+}
+
+// packages/core/src/render3/instructions/detect_changes.ts
+export function detectChangesInEmbeddedViews(lView: LView) {
+  // 遍历嵌入式视图
+  for (let i = 0; i < viewContainerRef.length; i++) {
+    const embeddedView = viewContainerRef.get(i);
+    // 检查视图是否需要更新
+    if (embeddedView.shouldCheck) {
+      embeddedView.detectChanges();
+    }
+  }
+}
+
+export function detectChangesInComponent(hostView: LView) {
+  const component = hostView[HOST_COMPONENT];
+  const changeDetectionMode = component.changeDetection;
+
+  if (changeDetectionMode === ChangeDetectionStrategy.OnPush) {
+    // OnPush：只在输入变化时检测
+    if (hostView.flags & LViewFlags.Dirty) {
+      component.detectChanges();
+    }
+  } else {
+    // Default：每次都检测
+    component.detectChanges();
+  }
+}
+```
+
+### 📍 OnPush 优化原理
+
+```typescript
+// packages/core/src/render3/component.ts
+export function markViewDirty(lView: LView, flags: number) {
+  // 1. 标记视图为脏
+  lView.flags |= LViewFlags.Dirty;
+
+  // 2. 向上遍历父组件，标记为需要检测
+  let parent = lView[PARENT];
+  while (parent) {
+    // 检查父组件是否为 OnPush
+    if (parent.flags & LViewFlags.OnPush) {
+      // 只有在输入变化时才标记
+      if (flags & MarkDirtyFlags.InputChanged) {
+        parent.flags |= LViewFlags.Dirty;
+      } else {
+        break; // 非输入变化，不继续向上标记
+      }
+    } else {
+      parent.flags |= LViewFlags.Dirty;
+    }
+    parent = parent[PARENT];
+  }
+
+  // 3. 触发变更检测
+  scheduleTick(rootContext);
+}
+```
+
+---
+
+## 2️⃣ 依赖注入源码分析
+
+### 🔄 DI 核心实现
+
+```typescript
+// packages/core/src/di/injector.ts
+export class NodeInjector {
+  private _records: Map<InjectableType<any>, Record>;
+
+  constructor(private _lView: LView) {
+    this._records = new Map();
+  }
+
+  // 1. 获取依赖
+  get<T>(
+    token: ProviderToken<T>,
+    notFoundValue?: T,
+    flags?: InjectFlags
+  ): T {
+    // 2. 查找记录
+    const record = this._records.get(token);
+
+    if (record) {
+      // 3. 从记录中获取实例
+      return this._getFromRecord(record, token);
+    }
+
+    // 4. 创建新实例
+    return this._createInstance(token, notFoundValue);
+  }
+
+  // 5. 创建实例
+  private _createInstance<T>(
+    token: ProviderToken<T>,
+    notFoundValue?: T
+  ): T {
+    const provider = this._resolveProvider(token);
+
+    if (provider === undefined) {
+      return notFoundValue as T;
+    }
+
+    // 6. 根据 Provider 类型创建实例
+    if (provider.useExisting) {
+      return this.get(provider.useExisting);
+    } else if (provider.useFactory) {
+      const deps = provider.deps?.map(dep => this.get(dep)) || [];
+      return provider.useFactory(...deps);
+    } else if (provider.useValue) {
+      return provider.useValue;
+    } else if (provider useClass) {
+      const deps = this._resolveDeps(provider.deps || []);
+      return new provider.useClass(...deps);
+    }
+
+    return notFoundValue as T;
+  }
+}
+```
+
+### 📍 Injector 层级机制
+
+```typescript
+// packages/core/src/render3/instructions/shared.ts
+export function createLView(
+  parentLView: LView | null,
+  tView: TView,
+  context: any,
+  flags: LViewFlags
+): LView {
+  // 1. 创建 LView
+  const lView = new LView(parentLView, tView, context, flags);
+
+  // 2. 设置 Injector 层级
+  if (parentLView) {
+    // 子组件的 Injector 继承自父组件
+    lView injector = parentLView.injector.createChildInjector(lView);
+  } else {
+    // 根组件使用 RootInjector
+    lView injector = new RootInjector();
+  }
+
+  return lView;
+}
+
+// 3. 注入器查找顺序
+// LView → Component → Module → Root
+function findInjector(lView: LView, token: any): any {
+  let injector = lView.injector;
+
+  while (injector) {
+    const instance = injector.get(token, null);
+    if (instance !== null) {
+      return instance;
+    }
+    injector = injector.parent;
+  }
+
+  throw new Error(`No provider for ${token}`);
+}
+```
+
+### 📍 providedIn: 'root' 原理
+
+```typescript
+// packages/core/src/di/r3_injector.ts
+export function makeRootProviders(
+  providers: (Provider | EnvironmentProviders)[]
+): StaticProvider[] {
+  return providers.map(provider => {
+    if (isInjectable(provider)) {
+      // providedIn: 'root' 的服务
+      return {
+        provide: provider,
+        useClass: provider,
+        deps: getConstructorDeps(provider),
+        providedIn: 'root'
+      };
+    }
+    return provider;
+  });
+}
+
+// Tree-shaking 原理
+// 1. 标记 providedIn: 'root' 的服务
+// 2. 如果服务未被引用，编译器会移除
+// 3. 减少打包体积
+```
+
+---
+
+## 3️⃣ 模板编译原理
+
+### 🔄 AOT 编译流程
+
+```typescript
+// packages/compiler/src/template_parser/template_parser.ts
+export class TemplateParser {
+  // 1. 解析模板
+  parse(template: string, templateUrl: string): ParsedTemplate {
+    // 2. 词法分析
+    const tokens = this.tokenize(template);
+
+    // 3. 语法分析
+    const ast = this.parseTokens(tokens);
+
+    // 4. 生成 AST
+    return this.transformToAST(ast);
+  }
+
+  // 5. 生成渲染函数
+  generate(ast: ParsedTemplate): ComponentDef {
+    return {
+      type: NodeType.Element,
+      tag: ast.tagName,
+      attrs: ast.attributes,
+      children: ast.children.map(child => this.generate(child)),
+      bindings: ast.bindings
+    };
+  }
+}
+```
+
+### 📍 指令编译原理
+
+```typescript
+// packages/compiler/src/render3/view/compiler.ts
+export function compileDirective(
+  directive: DirectiveMetadata,
+  bindingParser: BindingParser
+): ComponentDef {
+  // 1. 解析指令元数据
+  const selector = directive.selector;
+  const inputs = directive.inputs;
+  const outputs = directive.outputs;
+
+  // 2. 生成指令定义
+  return {
+    type: 'directive',
+    selector,
+    inputs: this.compileInputs(inputs),
+    outputs: this.compileOutputs(outputs),
+    hostBindings: this.compileHostBindings(directive.host),
+    exportAs: directive.exportAs
+  };
+}
+
+// 3. 生成模板代码
+function compileTemplate(
+  template: ParsedTemplate,
+  directive: DirectiveMetadata
+): string {
+  // 将模板转换为渲染函数代码
+  return `
+    function render(ctx, cm) {
+      if (cm) {
+        // 创建 DOM 节点
+        $r3$.ɵɵelementStart(0, 'div');
+        $r3$.ɵɵtext(1);
+        $r3$.ɵɵelementEnd();
+      }
+      // 更新绑定值
+      $r3$.ɵɵtextBinding(1, $r3$.ɵɵbind(ctx.value));
+    }
+  `;
+}
+```
+
+---
+
+## 4️⃣ Signals 源码实现
+
+### 🔄 Signal 核心实现
+
+```typescript
+// packages/core/src/signals/src/signal.ts
+export function signal<T>(
+  initialValue: T,
+  options?: CreateSignalOptions<T>
+): WritableSignal<T> {
+  // 1. 创建 Signal 节点
+  const node: SignalNode<T> = {
+    value: initialValue,
+    equal: options?.equal ?? defaultEquals,
+    producers: new Set(),
+    consumers: new Set()
+  };
+
+  // 2. 返回 Signal 函数
+  function read(): T {
+    // 收集依赖
+    if (activeEffect) {
+      node.producers.add(activeEffect);
+      activeEffect.consumers.add(node);
+    }
+    return node.value;
+  }
+
+  // 3. 返回 Writable Signal
+  function write(newValue: T): void {
+    // 检查值是否变化
+    if (!node.equal(node.value, newValue)) {
+      node.value = newValue;
+      // 通知所有依赖
+      notifyEffect(node.producers);
+    }
+  }
+
+  return Object.assign(read, {
+    set: write,
+    update: (fn: (value: T) => T) => write(fn(node.value)),
+    asReadonly: () => read
+  });
+}
+```
+
+### 📍 computed 源码实现
+
+```typescript
+// packages/core/src/signals/src/computed.ts
+export function computed<T>(
+  computation: () => T,
+  options?: CreateSignalOptions<T>
+): Signal<T> {
+  let cachedValue: T | undefined;
+  let dirty = true;
+
+  // 1. 创建 Computed 节点
+  const node: ComputedNode<T> = {
+    value: undefined,
+    dirty: true,
+    producers: new Set(),
+    consumers: new Set()
+  };
+
+  // 2. 读取函数
+  function read(): T {
+    // 收集依赖
+    if (activeEffect) {
+      node.producers.add(activeEffect);
+      activeEffect.consumers.add(node);
+    }
+
+    // 检查是否需要重新计算
+    if (node.dirty) {
+      cachedValue = computation();
+      node.dirty = false;
+    }
+
+    return cachedValue;
+  }
+
+  // 3. 脏检查
+  function checkDirty(): boolean {
+    if (node.dirty) return true;
+
+    // 检查依赖是否变化
+    for (const producer of node.producers) {
+      if (producer.dirty) {
+        node.dirty = true;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // 4. 更新函数
+  function update(): void {
+    if (checkDirty()) {
+      cachedValue = computation();
+      node.dirty = false;
+      // 通知下游
+      notifyEffect(node.producers);
+    }
+  }
+
+  return Object.assign(read, {
+    [SIGNAL]: node,
+    update
+  });
+}
+```
+
+### 📍 effect 源码实现
+
+```typescript
+// packages/core/src/signals/src/effect.ts
+export function effect(
+  effectFn: () => void,
+  options?: EffectOptions
+): EffectRef {
+  // 1. 创建 Effect 节点
+  const node: EffectNode = {
+    fn: effectFn,
+    deps: new Set(),
+    dirty: true,
+    active: true
+  };
+
+  // 2. 执行函数
+  function run(): void {
+    if (!node.active) return;
+
+    // 设置当前 effect
+    const previousEffect = activeEffect;
+    activeEffect = node;
+
+    try {
+      // 清理之前的依赖
+      cleanupDeps(node);
+
+      // 执行 effect 函数
+      node.fn();
+
+      // 收集新依赖
+      node.deps.forEach(dep => dep.producers.add(node));
+    } finally {
+      activeEffect = previousEffect;
+    }
+  }
+
+  // 3. 调度执行
+  function schedule(): void {
+    if (node.dirty) return;
+    node.dirty = true;
+    // 加入更新队列
+    effectQueue.add(node);
+  }
+
+  // 4. 清理依赖
+  function cleanupDeps(node: EffectNode): void {
+    node.deps.forEach(dep => dep.producers.delete(node));
+    node.deps.clear();
+  }
+
+  // 5. 返回 EffectRef
+  return {
+    destroy: () => {
+      node.active = false;
+      cleanupDeps(node);
+    }
+  };
+}
+```
+
+---
+
+# 第六部分：Angular 20/21 新特性深度解析
+
+## 1️⃣ Zoneless 模式深度解析
+
+### 🔄 工作原理
+
+```typescript
+// packages/core/src/change_detection/scheduling/zoneless_scheduling.ts
+export class ZonelessSchedulingService {
+  private notificationQueue: Set<NotificationNode> = new Set();
+
+  // 1. 调度变更检测
+  scheduleChangeDetection(): void {
+    // 使用 MessageChannel 实现微任务调度
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => {
+      this.processNotifications();
+    };
+    channel.port2.postMessage(undefined);
+  }
+
+  // 2. 处理通知
+  private processNotifications(): void {
+    this.notificationQueue.forEach(node => {
+      // 只更新需要更新的组件
+      node.detectChanges();
+    });
+    this.notificationQueue.clear();
+  }
+
+  // 3. 注册通知
+  registerNotification(node: NotificationNode): void {
+    this.notificationQueue.add(node);
+    this.scheduleChangeDetection();
+  }
+}
+```
+
+### 📍 Zoneless 组件实现
+
+```typescript
+// packages/core/src/render3/component.ts
+export function createComponent<T>(
+  component: Type<T>,
+  options: CreateComponentOptions
+): ComponentRef<T> {
+  // 1. 检查是否使用 Zoneless
+  const isZoneless = options.environmentInjector.get(ZONELESS_ENABLED);
+
+  if (isZoneless) {
+    // 2. Zoneless 模式：使用 Signals 驱动更新
+    return this.createComponentWithSignals(component, options);
+  } else {
+    // 3. 传统模式：使用 Zone.js
+    return this.createComponentWithZone(component, options);
+  }
+}
+
+// 4. Signals 驱动的更新
+private createComponentWithSignals<T>(
+  component: Type<T>,
+  options: CreateComponentOptions
+): ComponentRef<T> {
+  const ref = this.createRenderer(component, options);
+
+  // 监听 Signal 变化
+  effect(() => {
+    ref.detectChanges();
+  });
+
+  return ref;
+}
+```
+
+## 2️⃣ linkedSignal 原理
+
+```typescript
+// packages/core/src/signals/src/linked_signal.ts
+export function linkedSignal<S, T>(
+  options: LinkedSignalOptions<S, T>
+): WritableSignal<T> {
+  const { source, computation } = options;
+
+  // 1. 创建 Linked Signal
+  let cachedValue: T;
+  let previousSource: S;
+
+  // 2. 读取函数
+  function read(): T {
+    const currentSource = source();
+
+    // 检查源是否变化
+    if (currentSource !== previousSource) {
+      // 重新计算
+      cachedValue = computation(currentSource);
+      previousSource = currentSource;
+    }
+
+    return cachedValue;
+  }
+
+  // 3. 写入函数
+  function write(newValue: T): void {
+    cachedValue = newValue;
+    // 通知下游
+    notifyEffect();
+  }
+
+  return Object.assign(read, {
+    set: write,
+    update: (fn: (value: T) => T) => write(fn(cachedValue))
+  });
+}
+```
+
+---
+
+# 第七部分：项目实战重难点
+
+## 1️⃣ 微前端与 Angular
+
+### 🔄 Module Federation 集成
+
+```typescript
+// 微前端主应用配置
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'host',
+      remotes: {
+        remote1: 'remote1@http://localhost:4201/remoteEntry.js',
+        remote2: 'remote2@http://localhost:4202/remoteEntry.js'
+      },
+      shared: {
+        '@angular/core': { singleton: true, eager: true },
+        '@angular/common': { singleton: true, eager: true },
+        '@angular/router': { singleton: true, eager: true }
+      }
+    })
+  ]
+};
+
+// 子应用配置
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'remote1',
+      filename: 'remoteEntry.js',
+      exposes: {
+        './Module': './src/app/remote1/remote1.module.ts'
+      },
+      shared: {
+        '@angular/core': { singleton: true, eager: true },
+        '@angular/common': { singleton: true, eager: true }
+      }
+    })
+  ]
+};
+```
+
+### 📍 动态路由加载
+
+```typescript
+// app.routes.ts
+const routes: Routes = [
+  {
+    path: 'remote1',
+    loadChildren: () => loadRemoteModule('remote1', './Module')
+      .then(m => m.Remote1Module)
+  },
+  {
+    path: 'remote2',
+    loadChildren: () => loadRemoteModule('remote2', './Module')
+      .then(m => m.Remote2Module)
+  }
+];
+
+// 远程模块加载
+export function loadRemoteModule(
+  remoteName: string,
+  moduleName: string
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    // 动态加载脚本
+    const script = document.createElement('script');
+    script.src = `http://localhost:4201/remoteEntry.js`;
+    script.onload = () => {
+      const container = window[remoteName];
+      container.init(__webpack_share_scopes__.default);
+      container.get(moduleName).then((factory) => {
+        resolve(factory());
+      });
+    };
+    document.head.appendChild(script);
+  });
+}
+```
+
+## 2️⃣ Nx Monorepo 实战
+
+### 📁 项目结构
+
+```
+my-workspace/
+├── apps/
+│   ├── web-app/           # Web 应用
+│   ├── mobile-app/        # 移动应用
+│   └── api-server/        # API 服务
+│
+├── libs/
+│   ├── core/              # 核心库
+│   │   ├── data-access/   # 数据访问层
+│   │   ├── feature/       # 功能特性
+│   │   └── ui/            # UI 组件库
+│   │
+│   ├── shared/            # 共享库
+│   │   ├── utils/         # 工具函数
+│   │   ├── models/        # 数据模型
+│   │   └── validators/    # 验证器
+│   │
+│   └── feature/           # 业务模块
+│       ├── auth/          # 认证模块
+│       ├── dashboard/     # 仪表盘
+│       └── products/      # 产品管理
+│
+├── nx.json                # Nx 配置
+├── workspace.json         # 工作区配置
+└── tsconfig.base.json     # 基础 TS 配置
+```
+
+### 📍 库生成命令
+
+```bash
+# 创建 Angular 库
+nx generate @angular/core:library my-lib
+
+# 创建 feature 库
+nx generate @angular/core:library feature-auth \
+  --directory=libs/feature/auth \
+  --standalone
+
+# 创建 data-access 库
+nx generate @angular/core:library data-access \
+  --directory=libs/core/data-access \
+  --standalone
+```
+
+## 3️⃣ SSR 服务端渲染实战
+
+### 🔄 Angular Universal 配置
+
+```typescript
+// server.ts
+import { AngularNodeAppEngine, createNodeRequestHandler } from '@angular/ssr/node';
+import express from 'express';
+
+const app = express();
+const angularEngine = new AngularNodeAppEngine();
+
+// 1. 静态资源
+app.use(express.static('dist/browser'));
+
+// 2. API 路由（可选）
+app.use('/api', apiRouter);
+
+// 3. Angular SSR
+app.get('*', (req, res, next) => {
+  angularEngine
+    .handle(req)
+    .then(response => {
+      if (response) {
+        response.pipe(res);
+      } else {
+        next();
+      }
+    })
+    .catch(next);
+});
+
+// 4. 启动服务器
+app.listen(4000, () => {
+  console.log('Server running on http://localhost:4000');
+});
+```
+
+### 📍 Hydration 实现
+
+```typescript
+// packages/core/src/hydration/angularHydration.ts
+export function hydrate(
+  rootComponent: Type<any>,
+  options: HydrationOptions
+): Promise<ApplicationRef> {
+  // 1. 获取服务端渲染的 HTML
+  const html = document.documentElement.outerHTML;
+
+  // 2. 解析服务端生成的注释节点
+  const hydrationData = parseHydrationData(html);
+
+  // 3. 创建应用实例
+  const app = createApplication(rootComponent);
+
+  // 4. 执行 hydration
+  await app.bootstrap((hostEl) => {
+    // 对比服务端和客户端的组件树
+    const mismatch = detectHydrationMismatch(hostEl, hydrationData);
+
+    if (mismatch) {
+      // 发现不匹配，降级为完整渲染
+      console.warn('Hydration mismatch, falling back to full render');
+      return false;
+    }
+
+    // 补充事件监听器
+    attachEventListeners(hostEl, hydrationData);
+    return true;
+  });
+
+  return app;
+}
+```
+
+## 4️⃣ 性能监控与埋点
+
+```typescript
+// performance.service.ts
+import { Injectable } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
+export class PerformanceService {
+  // 1. 首屏加载时间
+  measureFirstPaint(): Promise<number> {
+    return new Promise(resolve => {
+      window.addEventListener('load', () => {
+        const perfEntries = performance.getEntriesByType('paint');
+        const firstPaint = perfEntries.find(e => e.name === 'first-paint');
+        resolve(firstPaint?.startTime || 0);
+      });
+    });
+  }
+
+  // 2. 路由切换性能
+  measureRouteChange(route: string): () => number {
+    const startTime = performance.now();
+    return () => {
+      const duration = performance.now() - startTime;
+      console.log(`Route ${route}: ${duration.toFixed(2)}ms`);
+      return duration;
+    };
+  }
+
+  // 3. 组件渲染性能
+  measureComponentRender(componentName: string): () => number {
+    const startTime = performance.now();
+    return () => {
+      const duration = performance.now() - startTime;
+      console.log(`Component ${componentName}: ${duration.toFixed(2)}ms`);
+      return duration;
+    };
+  }
+
+  // 4. 内存使用监控
+  monitorMemory(): void {
+    setInterval(() => {
+      if (performance.memory) {
+        const used = performance.memory.usedJSHeapSize / 1024 / 1024;
+        console.log(`Memory: ${used.toFixed(2)}MB`);
+      }
+    }, 10000);
+  }
+}
+```
+
+---
+
+# 第八部分：常见 Bug 与调试技巧
+
+## 1️⃣ 变更检测问题
+
+### 📍 问题场景
+
+```typescript
+// ❌ 问题 1：OnPush 组件不更新
+@Component({
+  selector: 'app-child',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<p>{{ data }}</p>`
+})
+export class ChildComponent {
+  @Input() data!: string;
+}
+
+// 父组件修改数据但不更新子组件
+@Component({
+  template: `<app-child [data]="data"></app-child>`
+})
+export class ParentComponent {
+  data = 'initial';
+
+  updateData() {
+    this.data = 'updated';  // ❌ 引用不变，不触发更新
+  }
+}
+
+// ✅ 解决方案 1：使用新引用
+updateData() {
+  this.data = 'updated';  // 如果是对象，创建新对象
+}
+
+// ✅ 解决方案 2：使用 Signal
+@Component({
+  template: `<p>{{ data() }}</p>`
+})
+export class ChildComponent {
+  data = signal('initial');
+}
+
+// ✅ 解决方案 3：使用 markForCheck
+constructor(private cdr: ChangeDetectorRef) {}
+
+updateData() {
+  this.data = 'updated';
+  this.cdr.markForCheck();  // 手动触发检测
+}
+```
+
+### 📍 问题排查清单
+
+```
+变更检测问题排查：
+
+1. OnPush 组件不更新？
+   → 检查输入引用是否变化
+   → 检查是否使用 Signal
+   → 检查是否调用 markForCheck
+
+2. 变更检测循环？
+   → 检查是否有同步异步操作
+   → 检查是否在变更检测中触发更新
+   → 检查是否使用 untracked
+
+3. 性能问题？
+   → 使用 OnPush 策略
+   → 使用 Signals 替代 Observables
+   → 避免模板中的函数调用
+```
+
+## 2️⃣ 内存泄漏排查
+
+### 📍 常见泄漏场景
+
+```typescript
+// ❌ 泄漏场景 1：未取消订阅
+export class MyComponent implements OnInit, OnDestroy {
+  private subscriptions = new Subscription();
+
+  ngOnInit() {
+    this.subscriptions.add(
+      this.dataService.getData().subscribe(data => {
+        this.data = data;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();  // ✅ 正确清理
+  }
+}
+
+// ✅ 更好的方案：使用 async 管道
+@Component({
+  template: `<div>{{ data$ | async }}</div>`
+})
+export class MyComponent {
+  data$ = this.dataService.getData();
+  constructor(private dataService: DataService) {}
+}
+
+// ❌ 泄漏场景 2：未清理事件监听
+ngOnInit() {
+  window.addEventListener('resize', this.handleResize);
+}
+
+ngOnDestroy() {
+  window.removeEventListener('resize', this.handleResize);  // ✅
+}
+
+// ✅ 更好的方案：使用 Renderer2
+constructor(private renderer: Renderer2) {}
+
+ngOnInit() {
+  this.renderer.listen('window', 'resize', this.handleResize);
+}
+
+ngOnDestroy() {
+  // Renderer2 自动清理
+}
+```
+
+### 📍 内存泄漏检测
+
+```typescript
+// 使用 Chrome DevTools Memory 面板
+// 1. 堆快照对比：查找 Detached 节点
+// 2. 分配时间线：观察内存增长趋势
+
+// 自动检测
+export class MemoryLeakDetector {
+  private initialMemory: number;
+
+  constructor() {
+    this.initialMemory = performance.memory?.usedJSHeapSize || 0;
+  }
+
+  check(): void {
+    const currentMemory = performance.memory?.usedJSHeapSize || 0;
+    const leak = currentMemory - this.initialMemory;
+
+    if (leak > 10 * 1024 * 1024) {  // 超过 10MB
+      console.warn(`Possible memory leak: ${(leak / 1024 / 1024).toFixed(2)}MB`);
+    }
+  }
+}
+```
+
+---
+
+
+# 第九部分：生态深度解析
+
+## 1️⃣ Angular CLI 进阶
+
+### 📊 项目生成与配置
+
+```bash
+# 创建新项目
+ng new my-app --routing --style=scss --ssr
+
+# 生成组件
+ng generate component components/header --standalone
+ng generate component components/sidebar --standalone --module=shared
+
+# 生成服务
+ng generate service services/auth --provided-in=root
+
+# 生成指令
+ng generate directive directives/highlight
+
+# 生成管道
+ng generate pipe pipes/capitalize
+
+# 生成环境
+ng generate environments
+```
+
+### 📍 自定义 schematic
+
+```typescript
+// collection.json
+{
+  "schematics": {
+    "component": {
+      "factory": "./src/component/factory",
+      "schema": "./src/component/schema.json",
+      "description": "Generate a component"
+    }
+  }
+}
+
+// src/component/factory.ts
+export function component(options: ComponentOptions): Rule {
+  return (host: Tree, context: SchematicContext) => {
+    // 1. 生成文件
+    const templateSource = apply(url('./files'), [
+      template({
+        ...options,
+        ...strings
+      ]),
+      move(options.path)
+    ]);
+
+    // 2. 更新模块
+    const moduleUpdate = (host: Tree) => {
+      const modulePath = `${options.path}/${options.module}.ts`;
+      const moduleContent = host.read(modulePath)?.toString();
+
+      if (moduleContent) {
+        const updatedContent = addImportToModule(
+          moduleContent,
+          options.name,
+          options.module
+        );
+        host.overwrite(modulePath, updatedContent);
+      }
+    };
+
+    return chain([
+      mergeWith(templateSource),
+      moduleUpdate
+    ]);
+  };
+}
+```
+
+## 2️⃣ NgRx 深度使用
+
+### 🔄 状态管理架构
+
+```typescript
+// store/auth/auth.actions.ts
+export const login = createAction(
+  '[Auth] Login',
+  props<{ email: string; password: string }>()
+);
+
+export const loginSuccess = createAction(
+  '[Auth] Login Success',
+  props<{ user: User; token: string }>()
+);
+
+export const loginFailure = createAction(
+  '[Auth] Login Failure',
+  props<{ error: string }>()
+);
+
+// store/auth/auth.reducer.ts
+const authReducer = createReducer(
+  initialState,
+  on(login, state => ({ ...state, loading: true })),
+  on(loginSuccess, (state, { user, token }) => ({
+    ...state,
+    user,
+    token,
+    loading: false,
+    error: null
+  })),
+  on(loginFailure, (state, { error }) => ({
+    ...state,
+    error,
+    loading: false
+  }))
+);
+
+// store/auth/auth.effects.ts
+@Injectable()
+export class AuthEffects {
+  login$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(login),
+      switchMap(({ email, password }) =>
+        this.authService.login(email, password).pipe(
+          map(user => loginSuccess({ user, token: user.token })),
+          catchError(error => of(loginFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService
+  ) {}
+}
+```
+
+### 📍 Signals Store（新方案）
+
+```typescript
+// store/counter.store.ts
+import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
+
+export const CounterStore = signalStore(
+  { providedIn: 'root' },
+  withState({ count: 0 }),
+  withMethods((store) => ({
+    increment() {
+      patchState(store, { count: store.count() + 1 });
+    },
+    decrement() {
+      patchState(store, { count: store.count() - 1 });
+    },
+    reset() {
+      patchState(store, { count: 0 });
+    }
+  }))
+);
+
+// 使用
+@Component({
+  template: `
+    <p>{{ store.count() }}</p>
+    <button (click)="store.increment()">+</button>
+    <button (click)="store.decrement()">-</button>
+  `
+})
+export class CounterComponent {
+  readonly store = inject(CounterStore);
+}
+```
+
+---
+
+# 第十部分：面试题汇总
 
 ---
 
@@ -3400,100 +4407,260 @@ Desktop    → Electron + Angular
 PWA        → @angular/service-worker
 ```
 
----
+### Q18：Angular 变更检测与 React 的区别？
 
-export class BestComponent {
-  users$ = this.userService.users$;
-  constructor(private userService: UserService) {}
-}
-
-// ✅ 解决方案 3：Signals（不需要取消订阅）
-export class ModernComponent {
-  users = resource({
-    loader: () => this.userService.getUsers()
-  });
-}
-```
-
----
-
-### Q4：什么是 OnPush 变更检测策略？何时应该使用？
-
-**工作原理：**
-
-```
-Default 策略：任何变化 → 检查整个树 ❌ 性能差
-
-OnPush 策略：只在以下情况检查该组件：
-  1️⃣ @Input 引用改变
-  2️⃣ 事件在组件内触发
-  3️⃣ Signal 值变化
-  4️⃣ async 管道发出新值
-```
-
-**实战示例：**
+| 维度 | Angular | React |
+|------|---------|-------|
+| **检测方式** | Zone.js 自动 | 手动 setState |
+| **检测粒度** | 组件级 | 组件级 |
+| **优化策略** | OnPush + Signals | memo + useMemo |
+| **调度机制** | Zone.js 调度 | Fiber 调度器 |
 
 ```typescript
+// Angular：Zone.js 自动检测
 @Component({
-  selector: 'app-optimized',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<p>{{ data }}</p>`
+})
+export class MyComponent {
+  data = 'initial';
+  update() {
+    this.data = 'updated';  // Zone.js 自动触发检测
+  }
+}
+
+// React：手动触发
+function MyComponent() {
+  const [data, setData] = useState('initial');
+  const update = () => setData('updated');  // 手动触发
+}
+```
+
+### Q19：Angular DI 与 React Context 的区别？
+
+| 维度 | Angular DI | React Context |
+|------|-----------|---------------|
+| **层级** | 多级注入器 | 单一 Provider |
+| **性能** | 精确更新 | 全量更新 |
+| **类型安全** | 强类型 | 较弱 |
+| **Tree-shaking** | 支持 | 不支持 |
+
+### Q20：Angular Signals 与 Vue 3 Signals 的区别？
+
+| 维度 | Angular Signals | Vue 3 Signals |
+|------|----------------|---------------|
+| **实现方式** | Signal 函数 | Proxy |
+| **依赖追踪** | 手动 read() | 自动 getter |
+| **更新粒度** | Signal 级 | 组件级 |
+| **生态整合** | RxJS 深度整合 | 独立生态 |
+
+
+## 总结与最佳实践
+
+### 🎯 Angular 开发黄金法则
+
+### 🤖 Angular in AI Era：AI 时代 Angular 的核心优势
+
+> Angular 的强类型 + DI + 模板系统在 AI 辅助开发中有独特优势 — AI 生成的代码更准确、更可靠。
+
+#### Angular 在 AI 时代的独特优势
+
+```
+Angular 对 AI 友好的核心原因：
+  ├─ 强制 TypeScript → AI 类型提示提升生成代码准确率 30%+
+  ├─ 强约束架构（模块/组件/服务）→ AI 生成的结构天然规范
+  ├─ 依赖注入 → AI 自动管理服务创建和注入
+  ├─ 模板与逻辑分离 → AI 可以分别生成和验证
+  └─ Angular CLI → AI 可以通过 CLI 命令快速创建脚手架
+```
+
+#### Angular MCP Server（AI 辅助开发）
+
+Angular 21 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angular 项目结构：
+
+| 能力 | 描述 | 效率提升 |
+|------|------|---------|
+| **组件生成** | AI 根据描述生成完整组件（模板 + 类 + 样式） | 5x |
+| **服务生成** | 自动创建服务 + DI 注册 | 5x |
+| **Signals 优化** | 检测可优化的 Observable → Signal 转换点 | 3x |
+| **Zoneless 迁移** | 自动将 Zone.js 代码迁移到 Zoneless | 10x |
+| **测试生成** | 分析组件依赖自动生成 TestBed 测试 | 5-10x |
+| **模板类型检查** | 检测模板中的类型错误 | 2x |
+
+```typescript
+// 使用 Angular MCP Server 的 AI 提示示例
+// 用户输入："创建一个用户列表组件，支持搜索和分页"
+// AI 通过 MCP 分析项目结构后生成：
+
+@Component({
+  selector: 'app-user-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
-    <p>{{ user().name }}</p>
-    <button (click)="update()">更新</button>
+    <input [(ngModel)]="searchTerm" placeholder="搜索用户..." />
+    
+    @for (user of filteredUsers(); track user.id) {
+      <div class="user-card" [routerLink]="['/users', user.id]">
+        <h3>{{ user.name }}</h3>
+        <p>{{ user.email }}</p>
+      </div>
+    }
+    
+    @if (isLoading()) {
+      <div class="spinner">加载中...</div>
+    }
   `
 })
-export class OptimizedComponent {
-  // ✅ 使用 Signal 实现细粒度响应
-  user = signal({ name: 'John' });
+export class UserListComponent {
+  private userService = inject(UserService);
+  searchTerm = signal('');
   
-  update() {
-    // ✅ Signal 变化会自动触发检测
-    this.user.set({ name: 'Jane' });
+  users = httpResource(() => '/api/users');
+  filteredUsers = computed(() => {
+    const search = this.searchTerm().toLowerCase();
+    return this.users.value()?.filter(u => u.name.toLowerCase().includes(search)) ?? [];
+  });
+  isLoading = computed(() => this.users.isLoading());
+}
+```
+
+#### AI 辅助 Angular 开发对比
+
+| 场景 | 传统方式 | AI 辅助 | 效率提升 |
+|------|---------|---------|---------|
+| 创建模块 + 组件 + 路由 | 手动创建 4 个文件 | ng generate + AI 填充 | 5x |
+| 编写 Reactive Forms | 手写 FormGroup + FormControl + 验证 | 描述表单 → AI 生成 | 5-10x |
+| NgRx Store | 手写 action/reducer/selector/effect | 描述数据流 → AI 生成 | 5x |
+| HTTP Interceptor | 手写拦截器逻辑 | 描述需求 → AI 生成 | 3-5x |
+| 单元测试 | 手写 TestBed + mock | AI 分析依赖自动生成 | 5-10x |
+| Zoneless 迁移 | 逐个组件检查和修改 | MCP 自动识别和重构 | 10x |
+
+#### Angular + AI 应用实践
+
+```typescript
+// AI Chat 组件 — Angular Signals + 流式响应
+@Component({
+  selector: 'app-ai-chat',
+  template: `
+    <div class="chat-container">
+      @for (msg of messages(); track msg.id) {
+        <div class="message" [class.assistant]="msg.role === 'assistant'">
+          {{ msg.content }}
+        </div>
+      }
+      @if (isStreaming()) {
+        <div class="typing">AI 正在输入...</div>
+      }
+    </div>
+    
+    <input [(ngModel)]="inputText" (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()" [disabled]="isStreaming()">发送</button>
+  `
+})
+export class AIChatComponent {
+  private http = inject(HttpClient);
+  messages = signal<Message[]>([]);
+  isStreaming = signal(false);
+  inputText = signal('');
+
+  async sendMessage() {
+    this.isStreaming.set(true);
+    const text = this.inputText();
+    
+    this.messages.update(msgs => [...msgs, { role: 'user', content: text, id: crypto.randomUUID() }]);
+    this.messages.update(msgs => [...msgs, { role: 'assistant', content: '', id: crypto.randomUUID() }]);
+    
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message: text }),
+    });
+    
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      this.messages.update(msgs => {
+        const last = msgs[msgs.length - 1];
+        last.content += decoder.decode(value);
+        return [...msgs];
+      });
+    }
+    this.isStreaming.set(false);
   }
 }
 ```
 
-**性能对比：**
+#### 总结：Angular in AI Era
 
 ```
-Default 策略：
-  1000 个组件 × 100 次检测 = 100,000 次检查 🐌
-
-OnPush 策略：
-  实际影响的组件 × 100 次检测 = 1,000 次检查 ⚡
+Angular 在 AI 时代的不可替代性：
+  ├─ TypeScript 原生 → AI 生成代码类型安全
+  ├─ 强约束架构 → AI 输出天然规范可维护
+  ├─ 依赖注入 → AI 自动管理服务依赖关系
+  ├─ Angular MCP Server → 首款框架级 AI 辅助工具
+  └─ 企业级定位 → Angular + AI 是企业级应用的未来标准
 ```
 
----
+### 2026 年 Angular 生态工具链
 
-### Q5：如何优化大型 Angular 应用？
+| 工具 | 最新版本 | 关键变化 |
+|------|----------|----------|
+| Angular | 21 | Zoneless 默认，Signals 成熟 |
+| Angular CLI | 21 | Vite 集成，更快构建 |
+| NgRx | 18+ | SignalStore 改进 |
+| Angular Material | 21 | M3 设计系统 |
+| Nx | 20+ | 更好的模块联邦 |
+| Angular Universal | 废弃 | SSR 内置支持 |
 
-**优化清单：**
+### Angular 生态全景图
 
+```mermaid
+mindmap
+  root((Angular 生态))
+    核心框架
+      Angular 21
+      TypeScript
+      RxJS
+    状态管理
+      NgRx
+      SignalStore
+      Akita
+      Elf
+    UI 组件库
+      Angular Material
+      NG-ZORRO
+      PrimeNG
+      ngx-bootstrap
+    表单处理
+      响应式表单
+      模板驱动表单
+      Signal Forms
+    路由系统
+      Angular Router
+      延迟加载
+      路由守卫
+      路由解析器
+    HTTP 客户端
+      HttpClient
+      httpResource
+      拦截器
+    测试工具
+      Jasmine
+      Karma
+      Jest
+      Cypress
+    开发工具
+      Angular CLI
+      Angular DevTools
+      Nx Workspace
+      Compodoc
+    渲染模式
+      CSR 客户端渲染
+      SSR 服务端渲染
+      SSG 静态生成
+      Zoneless 模式
 ```
-📦 包体积优化
-  ✅ 延迟加载模块
-  ✅ Tree Shaking
-  ✅ AOT 编译
-  ✅ 代码分割
-
-⚡ 运行时优化
-  ✅ OnPush 策略
-  ✅ trackBy
-  ✅ 虚拟滚动
-  ✅ 防抖/节流
-
-🔍 变更检测优化
-  ✅ Signals 替代 Observable
-  ✅ 细粒度检测
-  ✅ 避免模板中的函数调用
-
-📡 网络优化
-  ✅ HTTP 缓存
-  ✅ 请求合并
-  ✅ CDN 部署
-```
-
----
 
 ## 实战场景题
 
@@ -3758,8 +4925,6 @@ export class PerformanceService {
    → 保持代码一致性
 ```
 
-
-
 ## 📚 推荐学习资源
 
 - 🌐 [官方文档](https://angular.dev)
@@ -3833,4 +4998,3 @@ export class PerformanceService {
 
 | [⬅️ 上一章：React 19](./02-React19.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：框架对比](./04-框架对比.md) |
 |:---:|:---:|:---:|
-

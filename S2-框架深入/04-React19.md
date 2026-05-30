@@ -1,7 +1,9 @@
 ﻿# 🚀 [React 19](https://react.dev) 完整学习指南
 
-> 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
+> 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通
+> 
+> 📌 **2026 版新增**：源码级原理、React Compiler 深度、项目实战重难点、内存泄漏排查、深度面试追问题
 
 ---
 
@@ -35,29 +37,30 @@
   - [1️⃣ 性能优化完全指南](#1️⃣-性能优化完全指南)
   - [2️⃣ React 18 并发特性](#2️⃣-react-18-并发特性)
   - [3️⃣ 图片和资源优化](#3️⃣-图片和资源优化)
-- [React 技术体系化总结](#react-技术体系化总结)
+- [🔬 第五部分：源码级原理深度解析](#第五部分源码级原理深度解析)
+  - [1️⃣ Fiber 架构源码分析](#1️⃣-fiber-架构源码分析)
+  - [2️⃣ Reconciliation 算法](#2️⃣-reconciliation-算法)
+  - [3️⃣ React Compiler 源码原理](#3️⃣-react-compiler-源码原理)
+- [🆕 第六部分：React 19 新特性深度解析](#第六部分react-19-新特性深度解析)
+  - [1️⃣ React Compiler 深度解析](#1️⃣-react-compiler-深度解析)
+  - [2️⃣ Actions 机制深度解析](#2️⃣-actions-机制深度解析)
+  - [3️⃣ use() Hook 深度解析](#3️⃣-use-hook-深度解析)
+- [🏗️ 第七部分：项目实战重难点](#第七部分项目实战重难点)
+  - [1️⃣ 微前端与 React](#1️⃣-微前端与-react)
+  - [2️⃣ Monorepo 实战](#2️⃣-monorepo-实战)
+  - [3️⃣ Next.js App Router 实战](#3️⃣-nextjs-app-router-实战)
+  - [4️⃣ 性能监控与埋点](#4️⃣-性能监控与埋点)
+- [🐛 第八部分：常见 Bug 与调试技巧](#第八部分常见-bug-与调试技巧)
+  - [1️⃣ 闭包陷阱](#1️⃣-闭包陷阱)
+  - [2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
+  - [3️⃣ 调试技巧](#3️⃣-调试技巧)
+- [🔌 第九部分：生态深度解析](#第九部分生态深度解析)
+  - [1️⃣ 状态管理方案对比](#1️⃣-状态管理方案对比)
+  - [2️⃣ 数据获取方案对比](#2️⃣-数据获取方案对比)
 - [🤖 AI 时代 React](#-ai-时代-react)
-- [🎯 第五部分：高频面试题精选](#第五部分面试题汇总)
-  - [Q1 渲染流程 Trigger→Render→Commit](#q1-渲染流程)
-  - [Q2 useEffect 执行时序](#q2-useeffect-执行时序)
-  - [Q3 Actions 机制](#q3-actions-机制)
-  - [Q4 key 的作用](#q4-key-的作用)
-  - [Q5 Concurrent Mode](#q5-concurrent-mode)
-  - [Q6 use() vs useEffect](#q6-use-vs-useeffect)
-  - [Q7 合成事件](#q7-合成事件)
-  - [Q8 Hooks 条件调用限制](#q8-hooks-条件调用)
-  - [Q9 Server vs Client Component](#q9-server-vs-client-component)
-  - [Q10 React.memo vs useMemo](#q10-reactmemo-vs-usememo)
-  - [Q11 React Compiler 原理](#q11-react-compiler-原理)
-  - [Q12 Fiber 可中断渲染](#q12-fiber-可中断渲染)
-  - [Q13 事件机制对比](#q13-事件机制对比)
-- [Hooks 实现原理](#hooks-实现原理)
-- [React 生态对比](#react-生态对比)
-- [实战场景题](#实战场景题)
-- [最佳实践总结](#最佳实践总结)
-- [🛡️ ErrorBoundary 错误边界详解](#🛡️-errorboundary-错误边界详解)
-- [🔄 useEffect 生命周期与执行顺序](#🔄-useeffect-生命周期与执行顺序)
-- [📦 React 不可变数据](#📦-react-不可变数据)
+- [🎯 第十部分：面试题汇总](#第十部分面试题汇总)
+  - [Q1-Q13 基础面试题](#q1-渲染流程)
+  - [Q14-Q20 深度追问](#q14-react-fiber-与-vue-3-虚拟-dom-的区别)
 - [📚 推荐学习资源](#📚-推荐学习资源)
 - [🔗 官方参考链接](#🔗-官方参考链接)
 
@@ -798,7 +801,74 @@ flowchart LR
 
 > ⚠️ **易错点**：直接在现有对象上修改属性然后 `setState` 不会触发 PureComponent 重新渲染。务必使用展开运算符或 Object.assign 创建新对象。
 
-### 🔟 受控组件 vs 非受控组件
+### 🧩有状态/无状态、受控/非受控组件
+
+> 这两组概念是 React 组件分类的核心维度，面试高频考点。
+
+#### 一、有状态组件 & 无状态组件
+
+**状态（state）**：组件内部**私有数据**，数据变化驱动视图更新。
+
+```mermaid
+flowchart LR
+    subgraph 有状态组件 Stateful
+        A1["拥有内部 state"] --> A2["可维护、修改自身数据"]
+        A2 --> A3["需要交互/数据变化"]
+    end
+
+    subgraph 无状态组件 Stateless
+        B1["没有自身 state"] --> B2["只接收 props 渲染 UI"]
+        B2 --> B3["纯展示、逻辑简单"]
+    end
+
+    A3 -.->|实现方式| A4["类组件<br/>函数组件 + Hooks"]
+    B3 -.->|实现方式| B4["函数组件"]
+```
+
+**无状态组件（Stateless）**
+
+- 特点：**没有自身 state**，只接收 `props` 渲染 UI，纯展示
+- 实现方式：**函数组件**（主流）
+- 适用：纯展示、逻辑简单、仅接收父组件数据
+
+```jsx
+// 无状态函数组件
+function Hello(props) {
+  return <div>{props.name}</div>;
+}
+```
+
+**有状态组件（Stateful）**
+
+- 特点：**拥有内部 state**，可维护、修改自身数据
+- 实现方式：
+  1. 类组件（`class Component`）
+  2. 函数组件 + **Hooks**（`useState`/`useReducer`，现在主流）
+- 适用：需要交互、数据变化、表单、计数器等
+
+```jsx
+// 函数组件 + Hooks（有状态）
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+| 维度 | 无状态组件 | 有状态组件 |
+|------|-----------|-----------|
+| 内部 state | ❌ 无 | ✅ 有 |
+| 数据来源 | 仅 props | props + state |
+| 实现方式 | 函数组件 | 类组件 / 函数组件 + Hooks |
+| 可变数据 | ❌ 不可修改 | ✅ 可通过 setState/useState 修改 |
+| 适用场景 | 展示、列表、文案 | 表单、计数器、交互逻辑 |
+| 测试难度 | 🟢 简单 | 🟡 中等 |
+| 性能 | 🟢 更快（无需跟踪状态） | 🟡 略慢（需要状态管理） |
+
+#### 二、受控组件 & 非受控组件
+
+> **专针对表单元素**：`input` / `textarea` / `select` 等表单标签，依据**数据来源**划分。
 
 ```mermaid
 flowchart LR
@@ -815,12 +885,98 @@ flowchart LR
     end
 ```
 
+**受控组件（Controlled）**
+
+- 核心：**表单值由 React state 完全控制**，视图 ↔ state 双向绑定
+- 规则：
+  1. `value` 绑定组件 state
+  2. 通过 `onChange` 事件更新 state
+- 特点：数据统一托管在 React，**完全可控**，推荐业务使用
+
+```jsx
+import { useState } from 'react';
+
+function InputDemo() {
+  const [val, setVal] = useState('');
+  return (
+    <input
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+    />
+  );
+}
+```
+
+**非受控组件（Uncontrolled）**
+
+- 核心：**表单值由 DOM 原生控制**，React 不托管 state
+- 规则：
+  1. 使用 `defaultValue` 设置默认值
+  2. 通过 **ref** 直接获取 DOM 取值
+- 特点：简单粗暴，适合**一次性取值**（文件上传、简单搜索）
+
+```jsx
+import { useRef } from 'react';
+
+function InputDemo() {
+  const inputRef = useRef(null);
+  const getVal = () => {
+    console.log(inputRef.current.value); // 直接读DOM
+  };
+  return (
+    <>
+      <input ref={inputRef} defaultValue="默认值" />
+      <button onClick={getVal}>获取值</button>
+    </>
+  );
+}
+```
+
 | 维度 | 受控组件 | 非受控组件 |
 |------|---------|-----------|
 | 数据源 | React state | DOM 自身 |
 | 值获取 | state 变量 | ref 读取 |
 | 表单验证 | ✅ 容易 | ❌ 困难 |
-| 适用场景 | 复杂表单 | 简单一次性表单 |
+| 实时校验 | ✅ onChange 即时校验 | ❌ 需手动触发 |
+| 动态控制 | ✅ 随意修改 value | ❌ 不方便 |
+| 适用场景 | 复杂表单、需要验证 | 文件上传、简单一次性输入 |
+
+#### 三、两组概念对比总结
+
+```mermaid
+flowchart TD
+    subgraph 组件分类维度
+        D1["按是否拥有内部 state"]
+        D2["按表单数据由谁管理"]
+    end
+
+    D1 --> C1["有状态组件<br/>Stateful"]
+    D1 --> C2["无状态组件<br/>Stateless"]
+    D2 --> C3["受控组件<br/>Controlled"]
+    D2 --> C4["非受控组件<br/>Uncontrolled"]
+
+    C1 -.->|适用范围| R1["所有组件"]
+    C2 -.->|适用范围| R1
+    C3 -.->|适用范围| R2["仅表单元素"]
+    C4 -.->|适用范围| R2
+```
+
+**快速记忆：**
+- 无状态 = 纯展示，靠 props
+- 有状态 = 内部存数据，靠 state/Hooks
+- 受控表单 = state 管值，onChange 更新（推荐）
+- 非受控表单 = DOM 管值，ref 取值
+
+#### 四、使用场景建议
+
+| 场景 | 推荐方案 | 原因 |
+|------|---------|------|
+| 大部分表单、复杂交互 | ✅ **受控组件** | 数据可控，支持验证、格式化 |
+| 纯展示、列表、文案 | ✅ **无状态函数组件** | 简单高效，无需状态管理 |
+| 文件上传 | ✅ **非受控组件** | 文件输入框是只读的，只能用 ref |
+| 简单搜索框（无需实时校验） | ✅ **非受控组件** | 一次性取值，更简单 |
+| 需要动态禁用/修改表单 | ✅ **受控组件** | value 由 state 控制，随心所欲 |
+| 首次渲染后不再关心的值 | ✅ **非受控组件** | 无需维护 state |
 
 ---
 
@@ -4256,7 +4412,7 @@ React 的核心优势在 AI 时代被放大：
 
 ---
 
-# 第五部分：面试题汇总
+# 第十部分：面试题汇总
 
 ## ⚡ 高频面试题精选（2026 版）
 
@@ -5104,6 +5260,2320 @@ setState(produce(draft => {
 4. **可预测性**：纯函数保证相同输入 → 相同输出
 
 
+
+---
+
+## 🔬 React 面试重难点深度解析
+
+> 以下内容针对技术面试中的高频难点，涵盖底层原理、易错陷阱和高频追问点。
+
+---
+
+## 📌 Portals（createPortal）深度解析
+
+### 基本概念
+
+`createPortal` 允许你将组件渲染到**父组件 DOM 树之外**的 DOM 节点中，但组件的**React 树层级关系不变**（事件冒泡、Context 仍按 React 树传递）。
+
+```jsx
+import { createPortal } from 'react-dom';
+
+function Modal({ children, onClose }) {
+  return createPortal(
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        {children}
+        <button onClick={onClose}>关闭</button>
+      </div>
+    </div>,
+    document.body  // 挂载到 body 上
+  );
+}
+```
+
+### 典型使用场景
+
+```jsx
+// 场景 1：Modal 弹窗（脱离父容器 overflow:hidden 的限制）
+function App() {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ overflow: 'hidden' }}>
+      <button onClick={() => setShow(true)}>打开弹窗</button>
+      {show && (
+        <Modal onClose={() => setShow(false)}>
+          <p>弹窗内容</p>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// 场景 2：Tooltip / Dropdown（避免被父容器裁剪）
+function Tooltip({ children, text }) {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  return (
+    <>
+      <span
+        onMouseEnter={(e) => setPosition({ top: e.clientY + 10, left: e.clientX })}
+        onMouseLeave={() => setPosition({ top: 0, left: 0 })}
+      >
+        {children}
+      </span>
+      {position.top !== 0 && createPortal(
+        <div style={{ position: 'fixed', top: position.top, left: position.left }}>
+          {text}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+// 场景 3：Loading 覆盖层（全局遮罩）
+function LoadingOverlay() {
+  return createPortal(
+    <div className="loading-mask">
+      <Spinner />
+    </div>,
+    document.getElementById('loading-root')
+  );
+}
+```
+
+### ⚠️ 事件冒泡穿透问题（面试高频追问）
+
+```jsx
+function Parent() {
+  const handleClick = () => console.log('Parent clicked');
+
+  return (
+    <div onClick={handleClick}>
+      <button>按钮</button>
+      {createPortal(
+        <button onClick={() => console.log('Portal clicked')}>Portal 按钮</button>,
+        document.body
+      )}
+    </div>
+  );
+}
+// 点击 Portal 按钮 → 控制台输出：
+// "Portal clicked" ✅
+// "Parent clicked" ✅ 事件沿 React 树冒泡到 Parent
+```
+
+**关键规则：**
+
+| 行为 | 说明 |
+|------|------|
+| 事件冒泡 | Portal 内的事件**沿 React 树冒泡**，不是 DOM 树 |
+| Context 传递 | Portal 组件**可以访问**父组件的 Context |
+| DOM 层级 | Portal 挂载到指定 DOM 节点，脱离父组件 DOM 树 |
+| 阻止冒泡 | `e.stopPropagation()` 只阻止 React 树冒泡，不阻止 DOM 树冒泡 |
+
+```jsx
+// 阻止冒泡的正确方式
+function Modal({ onClose }) {
+  return createPortal(
+    <div
+      className="modal-overlay"
+      onClick={(e) => {
+        e.stopPropagation();  // 阻止 React 树冒泡到父组件
+        onClose();
+      }}
+    >
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        内容
+      </div>
+    </div>,
+    document.body
+  );
+}
+```
+
+### createPortal vs ReactDOM.render
+
+| 维度 | createPortal | ReactDOM.render（已废弃） |
+|------|-------------|------------------------|
+| React 树关系 | 保持父子关系 | 创建新的 React 树 |
+| 事件冒泡 | 沿 React 树冒泡 | 独立事件系统 |
+| Context | 共享父组件 Context | 独立 Context 树 |
+| 卸载 | 随父组件卸载 | 需手动卸载 |
+
+---
+
+## 🏗️ Fiber 架构深度解析
+
+### Lane 优先级模型
+
+React 18 引入 **Lane** 模型替代之前的 `ExpirationTime`，提供更精细的优先级控制。
+
+```typescript
+// 简化的 Lane 定义（源码 lanes.js）
+type Lane = number;
+type Lanes = number;
+
+// 优先级从高到低
+const SyncLane           = 0b0000000000000000000000000000001;  // 同步（紧急更新）
+const InputContinuousLane = 0b0000000000000000000000000000100; // 连续输入（拖拽）
+const DefaultLane        = 0b0000000000000000000000000010000;  // 默认（普通更新）
+const TransitionLane1    = 0b0000000000000000000000001000000;  // 过渡（startTransition）
+const IdleLane           = 0b0100000000000000000000000000000;  // 空闲
+```
+
+**Lane 的位运算优势：**
+```typescript
+// 1. 快速判断是否包含某个 Lane
+const includes = (lanes: Lanes, lane: Lane) => (lanes & lane) !== 0;
+
+// 2. 快速合并 Lane
+const mergeLanes = (a: Lanes, b: Lanes) => a | b;
+
+// 3. 快速移除 Lane
+const removeLane = (lanes: Lanes, lane: Lane) => lanes & ~lane;
+```
+
+**不同更新来源对应的 Lane：**
+
+| 更新来源 | Lane | 优先级 |
+|---------|------|--------|
+| `flushSync` / `ReactDOM.flushSync` | SyncLane | 最高 |
+| 用户输入（click/keydown） | InputContinuousLane | 高 |
+| `useState` 普通更新 | DefaultLane | 中 |
+| `startTransition` | TransitionLane | 低 |
+| `requestIdleCallback` 回调 | IdleLane | 最低 |
+
+### Scheduler 调度器原理
+
+React 的 Scheduler 是一个**独立于 React 的通用任务调度库**，核心机制是 **MessageChannel + 时间切片**。
+
+```typescript
+// Scheduler 核心逻辑（简化）
+let scheduledHostCallback = null;
+let channel = new MessageChannel();
+let port = channel.port2;
+
+channel.port1.onmessage = performWorkUntilDeadline;
+
+function performWorkUntilDeadline() {
+  if (scheduledHostCallback) {
+    const hasMoreWork = scheduledHostCallback();
+    if (hasMoreWork) {
+      port.postMessage(null);  // 有更多工作，继续调度
+    }
+  }
+}
+
+// 时间切片：每个切片最多 5ms
+function requestHostCallback(callback) {
+  scheduledHostCallback = callback;
+  port.postMessage(null);  // 在下一个宏任务中执行
+}
+
+// shouldYieldToHost：判断是否需要让出主线程
+function shouldYieldToHost() {
+  const timeElapsed = performance.now() - startTime;
+  return timeElapsed > 5;  // 超过 5ms 就让出
+}
+```
+
+**为什么用 MessageChannel 而不是 requestIdleCallback？**
+- `requestIdleCallback` 在高频事件中可能被浏览器节流
+- `requestIdleCallback` 的回调时机不可控（浏览器空闲时才调用）
+- `MessageChannel` 保证在宏任务中执行，时机更可预测
+
+### 双缓冲机制（Double Buffering）
+
+```mermaid
+flowchart TD
+    subgraph 双缓冲树
+        A["current 树<br/>(屏幕上显示的 UI)"] -->|Render 阶段| B["workInProgress 树<br/>(内存中构建的新树)"]
+        B -->|Commit 阶段| C["替换 current 指针"]
+        C --> A
+    end
+
+    subgraph Fiber 节点结构
+        D["stateNode"] --> E["type / tag"]
+        E --> F["child / sibling / return"]
+        F --> G["memoizedState / memoizedProps"]
+        G --> H["effectTag / lanes"]
+        H --> I["alternate (双向关联)"]
+    end
+
+    A -.->|alternate| B
+```
+
+**双缓冲的作用：**
+- `current` 树：当前屏幕显示的 UI，**始终完整可读**
+- `workInProgress` 树：在内存中构建，构建过程中可以**安全中断**
+- Commit 阶段一次性替换：`current = workInProgress`，用户无感知
+
+### Fiber 节点关键字段
+
+```typescript
+interface Fiber {
+  // 身份信息
+  tag: WorkTag;           // 函数组件/类组件/HostComponent 等
+  key: string | null;     // 用于 diff 的 key
+  type: any;              // 函数/类/原生标签名
+  stateNode: any;         // 对应的真实 DOM 节点
+
+  // 树结构
+  return: Fiber | null;   // 父 Fiber
+  child: Fiber | null;    // 第一个子 Fiber
+  sibling: Fiber | null;  // 右边兄弟 Fiber
+
+  // 状态
+  memoizedProps: any;     // 上次渲染的 props
+  memoizedState: any;     // 上次渲染的 state（Hook 链表头）
+  pendingProps: any;      // 新 props
+  updateQueue: any;       // 更新队列
+
+  // 副作用
+  effectTag: EffectTag;   // Placement / Update / Deletion
+  firstEffect: Fiber | null;  // 第一个有副作用的子 Fiber
+  lastEffect: Fiber | null;   // 最后一个有副作用的子 Fiber
+
+  // 调度
+  lanes: Lanes;           // 优先级
+  childLanes: Lanes;      // 子树的优先级
+
+  // 双缓冲
+  alternate: Fiber | null; // 对应的 current/workInProgress 节点
+}
+```
+
+### ⚠️ 面试高频追问
+
+**Q: Fiber 为什么选择链表而不是树？**
+> 链表可以随时暂停/恢复遍历（只需保存当前节点指针），而递归树需要栈帧，无法中断。
+
+**Q: SyncLane 和 DefaultLane 的区别？**
+> SyncLane 用于 `flushSync` 和事件处理，是同步不可中断的；DefaultLane 用于普通 `setState`，可以被高优先级任务打断。
+
+**Q: 为什么 Scheduler 用 5ms 作为时间切片？**
+> 5ms 是经验值，既能让 React 有足够时间处理工作单元，又不会阻塞浏览器的 16ms 帧预算（60fps）。
+
+---
+
+## 🔍 Virtual DOM Diff 算法详解
+
+### 三个核心假设
+
+React 的 diff 算法基于三个大胆假设，将 O(n³) 复杂度降低到 O(n)：
+
+| 假设 | 含义 | 复杂度影响 |
+|------|------|-----------|
+| **不同类型的元素产生不同的树** | 如果根节点类型不同，直接销毁重建，不比较子树 | 从 O(n³) → O(n²) |
+| **通过 key 标识哪些元素在不同渲染中保持稳定** | 相同 key 的元素可以复用 | 从 O(n²) → O(n) |
+| **同层比较，不跨层级移动** | 只比较同一层级的节点，不跨层级移动 | O(n) |
+
+### 单节点 Diff（新子节点只有一个）
+
+```typescript
+// 简化逻辑
+function reconcileSingleElement(returnFiber, currentFiber, element) {
+  const key = element.key;
+
+  // 1. current 存在且 key 相同
+  if (currentFiber !== null) {
+    if (currentFiber.key === key) {
+      // 2. type 相同 → 复用节点，更新 props
+      if (currentFiber.type === element.type) {
+        const existing = createFiberFromElement(element);
+        existing.return = returnFiber;
+        return existing;  // 复用
+      }
+      // 3. type 不同 → 删除旧节点，创建新节点
+      deleteRemainingChildren(returnFiber, currentFiber);
+      return createFiberFromElement(element);
+    }
+    // key 不同 → 删除旧节点
+    deleteRemainingChildren(returnFiber, currentFiber);
+  }
+
+  // 4. 创建新 Fiber
+  return createFiberFromElement(element);
+}
+```
+
+### 多节点 Diff（新子节点有多个）
+
+多节点 diff 分为三步处理：
+
+```mermaid
+flowchart TD
+    A["新子节点列表"] --> B{"遍历新节点"}
+    B --> C{"新旧 key 相同?"}
+    C -->|是| D{"type 相同?"}
+    D -->|是| E["更新 props<br/>复用节点"]
+    D -->|否| F["标记删除旧节点<br/>创建新节点"]
+    C -->|否| G["标记删除"]
+    B --> H{"旧节点还有剩余?"}
+    H -->|是| I["删除所有剩余旧节点"]
+    H -->|否| J["完成"]
+```
+
+**具体的多节点 diff 规则：**
+
+```
+情况 1: 新节点按顺序遍历
+  新: [A, B, C]
+  旧: [A, B, C]
+  → 逐个比较，全部复用
+
+情况 2: 有新节点插入
+  新: [A, B, C, D]
+  旧: [A, B, C]
+  → 前三个复用，D 标记为 Placement
+
+情况 3: 有旧节点删除
+  新: [A, C]
+  旧: [A, B, C]
+  → A 复用，B 标记为 Deletion，C 复用
+
+情况 4: 节点移动（key 相同但位置不同）
+  新: [A, C, B]
+  旧: [A, B, C]
+  → A 复用，C 移动到 B 前面，B 移动到 C 后面
+  → 通过 key 快速定位可复用节点
+```
+
+### effectTag 的作用
+
+```typescript
+// effectTag 标记了需要在 Commit 阶段执行的操作
+const Placement = 0b000000000010;   // 新增节点
+const Update = 0b000000000100;       // 更新节点
+const Deletion = 0b000000001000;     // 删除节点
+const ChildDeletion = 0b000001000000; // 删除子节点
+```
+
+### ⚠️ key 的正确使用（面试必问）
+
+```jsx
+// ❌ 错误：用 index 作为 key
+{items.map((item, index) => <Item key={index} {...item} />)}
+// 问题：列表重排时 index 变化，导致所有节点重新创建
+
+// ✅ 正确：用唯一 ID 作为 key
+{items.map(item => <Item key={item.id} {...item} />)}
+
+// ❌ 错误：用随机数作为 key
+{items.map(item => <Item key={Math.random()} {...item} />)}
+// 问题：每次渲染 key 都变，所有节点重新创建
+```
+
+---
+
+## ⏳ Suspense 深入原理
+
+### 工作机制
+
+Suspense 的核心原理是：**子组件在 "等待" 时抛出一个 Promise**，React 捕获这个 Promise 并显示 fallback。
+
+```jsx
+// Suspense 的工作流程（简化）
+// 1. React 渲染子组件
+// 2. 子组件触发异步操作（数据加载/代码分割）
+// 3. 组件 throw 一个 Promise（不是 return）
+// 4. React 捕获 Promise，暂停渲染
+// 5. 显示 Suspense 的 fallback
+// 6. Promise resolve 后，React 重新渲染子组件
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <LazyComponent />  {/* 代码分割，加载时 throw Promise */}
+    </Suspense>
+  );
+}
+```
+
+### Suspense 的三种使用场景
+
+```jsx
+// 场景 1：代码分割（React.lazy）
+const LazyDashboard = React.lazy(() => import('./Dashboard'));
+
+function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <LazyDashboard />
+    </Suspense>
+  );
+}
+
+// 场景 2：数据获取（配合框架如 Next.js / Relay）
+async function fetchUser(id) {
+  const res = await fetch(`/api/users/${id}`);
+  return res.json();
+}
+
+// 在支持 Suspense 的数据获取库中
+function UserProfile({ id }) {
+  const user = use(fetchUser(id));  // React 19 的 use() Hook
+  return <div>{user.name}</div>;
+}
+
+// 场景 3：图片加载（配合 lazy loading）
+function LazyImage({ src }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <img
+      src={src}
+      onLoad={() => setLoaded(true)}
+      style={{ opacity: loaded ? 1 : 0 }}
+    />
+  );
+}
+```
+
+### 多个 Suspense 嵌套
+
+```jsx
+function App() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Header />
+      <Suspense fallback={<SidebarSkeleton />}>
+        <Sidebar />
+      </Suspense>
+      <Suspense fallback={<ContentSkeleton />}>
+        <Content />
+      </Suspense>
+    </Suspense>
+  );
+}
+// 规则：内层 Suspense 优先处理
+// 如果 Content 加载慢，只显示 ContentSkeleton
+// 如果 Sidebar 也加载慢，显示 SidebarSkeleton
+// 如果 Header 加载慢，显示整个 PageSkeleton
+```
+
+### Suspense + ErrorBoundary 配合
+
+```jsx
+function App() {
+  return (
+    <ErrorBoundary fallback={<ErrorPage />}>
+      <Suspense fallback={<Loading />}>
+        <AsyncComponent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+// ErrorBoundary 捕获错误，Suspense 捕获 Promise
+// 两者配合处理异步组件的所有状态
+```
+
+### ⚠️ Suspense 的关键规则
+
+| 规则 | 说明 |
+|------|------|
+| fallback 必须是有效 React 元素 | 不能是 `null`，需要用 `<Loading />` 而不是 `Loading` |
+| Suspense 不是数据获取 Hook | 它是 UI 组件，用于声明等待状态的 UI |
+| 缓存策略由框架实现 | React 本身不提供数据缓存，需配合 Next.js/Relay 等 |
+| SSR 中的行为 | 服务端只渲染已加载的内容，未加载的留空 |
+
+---
+
+## 🌐 SSR 原理深度解析
+
+### 服务端渲染 vs 客户端渲染
+
+```mermaid
+flowchart LR
+    subgraph CSR 客户端渲染
+        A1["服务器返回空 HTML"] --> A2["浏览器下载 JS"]
+        A2 --> A3["JS 执行，渲染 DOM"]
+        A3 --> A4["页面可见"]
+    end
+
+    subgraph SSR 服务端渲染
+        B1["服务器执行 React"] --> B2["生成完整 HTML"]
+        B2 --> B3["浏览器直接显示"]
+        B3 --> B4["下载 JS，水合"]
+        B4 --> B5["页面可交互"]
+    end
+```
+
+### React SSR 核心 API
+
+```jsx
+// 1. renderToString（同步，React 18 推荐用 renderToPipeableStream）
+import { renderToString } from 'react-dom/server';
+
+const html = renderToString(<App />);
+// 返回完整的 HTML 字符串
+
+// 2. renderToNodeStream（流式，React 18 已废弃，推荐 renderToPipeableStream）
+import { renderToNodeStream } from 'react-dom/server';
+
+const stream = renderToNodeStream(<App />);
+stream.pipe(res);  // 流式发送到客户端
+
+// 3. renderToPipeableStream（React 18 新增，推荐）
+import { renderToPipeableStream } from 'react-dom/server';
+
+const { pipe, abort } = renderToPipeableStream(<App />, {
+  onShellReady() {
+    // Shell 准备好，可以开始流式发送
+    res.statusCode = 200;
+    pipe(res);
+  },
+  onShellError(error) {
+    // Shell 渲染出错
+    res.statusCode = 500;
+    res.send('<h1>Something went wrong</h1>');
+  },
+  onError(error) {
+    console.error(error);
+  }
+});
+
+// 4. renderToReadableStream（Web Streams API）
+import { renderToReadableStream } from 'react-dom/server';
+
+const stream = await renderToReadableStream(<App />, {
+  onError(error) {
+    console.error(error);
+  }
+});
+```
+
+### Hydration（水合）过程
+
+```mermaid
+flowchart TD
+    A["服务器返回 HTML"] --> B["浏览器显示 HTML<br/>(可读但不可交互)"]
+    B --> C["下载并执行 React JS"]
+    C --> D["React 在客户端渲染组件树"]
+    D --> E{"客户端渲染结果<br/>与服务器 HTML 匹配?"}
+    E -->|匹配| F["复用服务器 HTML<br/>(不重新渲染)"]
+    E -->|不匹配| G["Hydration Mismatch 警告<br/>重新渲染客户端版本"]
+    F --> H["绑定事件监听器"]
+    G --> H
+    H --> I["页面可交互 ✅"]
+```
+
+**Hydration Mismatch 常见原因：**
+
+| 原因 | 示例 | 解决方案 |
+|------|------|---------|
+| 日期/时间 | `new Date().toLocaleString()` | `useEffect` 中设置，或 `suppressHydrationWarning` |
+| 随机数 | `Math.random()` | 用 state 存储随机值 |
+| 浏览器 API | `window.innerWidth` | 用 `useEffect` 或条件渲染 |
+| localStorage | `localStorage.getItem('key')` | 用 `useEffect` 或 cookies |
+
+```jsx
+// 解决日期 mismatch
+function CurrentTime() {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    setTime(new Date().toLocaleString());
+  }, []);
+  return <span>{time || '...'}</span>;  // 服务器渲染 '...'，客户端渲染实际时间
+}
+
+// suppressHydrationWarning（谨慎使用）
+<span suppressHydrationWarning>
+  {new Date().toLocaleString()}
+</span>
+```
+
+### 流式 SSR（Streaming SSR）
+
+```jsx
+// React 18 的 Streaming SSR
+import { renderToPipeableStream } from 'react-dom/server';
+
+app.get('/', (req, res) => {
+  const { pipe, abort } = renderToPipeableStream(<App />, {
+    // Shell 先发送（快速显示页面骨架）
+    onShellReady() {
+      res.statusCode = 200;
+      pipe(res);
+    },
+    // 所有内容加载完成后发送
+    onAllReady() {
+      // 可选：等所有 Suspense 内容加载完再发送
+    },
+    onError(error) {
+      console.error(error);
+    }
+  });
+
+  // 超时自动中止
+  setTimeout(abort, 10000);
+});
+```
+
+**Streaming SSR 的优势：**
+- 首屏加载更快（Shell 先发送）
+- Suspense 边界内的内容可以逐步加载
+- 不需要等待所有数据加载完才发送 HTML
+
+### 选择性 Hydration（Selective Hydration）
+
+```jsx
+// React 18 + Suspense 实现选择性水合
+// 1. 服务器标记 Suspense 边界
+// 2. 客户端优先水合用户交互的区域
+// 3. 其他区域可以延迟水合
+
+function App() {
+  return (
+    <Layout>
+      <Header />  {/* 优先水合 */}
+      <Suspense fallback={<ContentSkeleton />}>
+        <Content />  {/* 可以延迟水合 */}
+      </Suspense>
+      <Suspense fallback={<SidebarSkeleton />}>
+        <Sidebar />  {/* 可以延迟水合 */}
+      </Suspense>
+    </Layout>
+  );
+}
+// 用户点击 Content 时，React 优先水合 Content
+```
+
+---
+
+## ⚡ React.memo 深入原理与滥用陷阱
+
+### 浅比较实现原理
+
+```typescript
+// React.memo 内部使用 shallowEqual 进行比较
+function shallowEqual(objA: any, objB: any): boolean {
+  if (Object.is(objA, objB)) return true;
+
+  if (typeof objA !== 'object' || objA === null ||
+      typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) return false;
+
+  for (const key of keysA) {
+    if (!Object.prototype.hasOwnProperty.call(objB, key) ||
+        !Object.is(objA[key], objB[key])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+### React.memo 不生效的常见陷阱
+
+```jsx
+// ❌ 陷阱 1：内联对象作为 props
+function Parent() {
+  return (
+    <MemoizedChild style={{ color: 'red' }} />
+    // 每次渲染都创建新对象 → shallowEqual 返回 false → 重新渲染
+  );
+}
+
+// ✅ 修复：用 useMemo 缓存对象
+function Parent() {
+  const style = useMemo(() => ({ color: 'red' }), []);
+  return <MemoizedChild style={style} />;
+}
+
+// ❌ 陷阱 2：内联函数作为 props
+function Parent() {
+  const handleClick = () => console.log('clicked');
+  // 每次渲染都创建新函数
+  return <MemoizedChild onClick={handleClick} />;
+}
+
+// ✅ 修复：用 useCallback 缓存函数
+function Parent() {
+  const handleClick = useCallback(() => console.log('clicked'), []);
+  return <MemoizedChild onClick={handleClick} />;
+}
+
+// ❌ 陷阱 3：Context 变化穿透
+const ThemeContext = createContext('light');
+
+function Parent() {
+  const [theme, setTheme] = useState('light');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <MemoizedChild />  {/* 即使 memo 了，Context 变化仍会触发重渲染 */}
+    </ThemeContext.Provider>
+  );
+}
+
+// ✅ 修复：拆分 Context，避免不必要的更新
+const ThemeUpdateContext = createContext(() => {});
+
+function Parent() {
+  const [theme, setTheme] = useState('light');
+  return (
+    <ThemeUpdateContext.Provider value={setTheme}>
+      <ThemeContext.Provider value={theme}>
+        <MemoizedChild />  {/* 现在只有 theme 变化时才重渲染 */}
+      </ThemeContext.Provider>
+    </ThemeUpdateContext.Provider>
+  );
+}
+```
+
+### React.memo vs useMemo vs useCallback
+
+| API | 用途 | 返回值 | 使用场景 |
+|-----|------|--------|---------|
+| `React.memo` | 缓存**组件** | 包裹后的组件 | 避免父组件更新导致子组件重渲染 |
+| `useMemo` | 缓存**计算结果** | 缓存的值 | 昂贵计算、避免每次渲染重新创建对象 |
+| `useCallback` | 缓存**函数** | 缓存的函数 | 作为 props 传递的回调函数 |
+
+```jsx
+// 三者配合使用的完整示例
+const MemoizedList = React.memo(function List({ items, onItemClick }) {
+  // React.memo 避免父组件更新时重渲染
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id} onClick={() => onItemClick(item.id)}>
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  );
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [filter, setFilter] = useState('');
+
+  // useMemo 缓存过滤后的列表（避免每次渲染重新计算）
+  const filteredItems = useMemo(
+    () => items.filter(item => item.name.includes(filter)),
+    [items, filter]
+  );
+
+  // useCallback 缓存回调函数（避免子组件重渲染）
+  const handleItemClick = useCallback((id) => {
+    console.log('Clicked:', id);
+  }, []);
+
+  return (
+    <div>
+      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>
+      <MemoizedList items={filteredItems} onItemClick={handleItemClick} />
+    </div>
+  );
+}
+```
+
+### ⚠️ 什么时候不需要 React.memo
+
+| 场景 | 原因 |
+|------|------|
+| 子组件很简单 | 重渲染成本低，memo 的比较成本反而更高 |
+| props 总是变化 | memo 总是失败，没有缓存效果 |
+| 使用了内联对象/函数 | 不修复引用问题，memo 无效 |
+| React 19 + Compiler | Compiler 自动处理 memo，无需手动添加 |
+
+---
+
+## 🔗 forwardRef 与 useImperativeHandle
+
+### forwardRef 基本用法
+
+```jsx
+// ❌ 问题：函数组件默认不接收 ref
+function TextInput() {
+  return <input />;
+}
+
+// ✅ 解决：用 forwardRef 包裹
+const TextInput = forwardRef(function TextInput(props, ref) {
+  return <input ref={ref} />;
+});
+
+// 使用
+function Parent() {
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();  // 直接操作子组件 DOM
+  }, []);
+  return <TextInput ref={inputRef} />;
+}
+```
+
+### useImperativeHandle 暴露组件方法
+
+```jsx
+// 问题：直接暴露整个 DOM 元素太危险
+// 解决：用 useImperativeHandle 只暴露需要的方法
+
+const FancyInput = forwardRef(function FancyInput(props, ref) {
+  const inputRef = useRef(null);
+  const [value, setValue] = useState('');
+
+  // 只暴露特定方法，而不是整个 input DOM
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+    clear: () => {
+      setValue('');
+      inputRef.current?.value = '';
+    },
+    getValue: () => value,
+  }), [value]);
+
+  return (
+    <input
+      ref={inputRef}
+      value={value}
+      onChange={e => setValue(e.target.value)}
+    />
+  );
+});
+
+// 使用
+function Parent() {
+  const fancyRef = useRef(null);
+
+  return (
+    <>
+      <FancyInput ref={fancyRef} />
+      <button onClick={() => fancyRef.current?.focus()}>聚焦</button>
+      <button onClick={() => fancyRef.current?.clear()}>清空</button>
+      <button onClick={() => console.log(fancyRef.current?.getValue())}>获取值</button>
+    </>
+  );
+}
+```
+
+### React 19 的 ref 变化
+
+```jsx
+// React 18：需要 forwardRef
+const MyInput = forwardRef((props, ref) => {
+  return <input ref={ref} />;
+});
+
+// React 19：ref 直接作为 prop
+function MyInput({ ref, ...props }) {
+  return <input ref={ref} />;
+}
+// 不再需要 forwardRef 包裹！
+
+// React 19 的 ref cleanup
+function MyInput({ ref }) {
+  useEffect(() => {
+    return () => {
+      // 组件卸载时的清理逻辑
+      console.log('Cleaning up ref');
+    };
+  }, []);
+
+  return <input ref={ref} />;
+}
+```
+
+### 面试高频问题
+
+**Q: 什么时候用 forwardRef？**
+> 需要父组件直接访问子组件 DOM 或暴露子组件方法时。React 19 不再需要。
+
+**Q: useImperativeHandle 的第二个参数为什么需要依赖数组？**
+> 确保暴露的方法在依赖变化时更新。如果省略，闭包中可能捕获过期的值。
+
+**Q: 能否用 useRef 代替 forwardRef？**
+> 不能。ref 不能作为 prop 传递给函数组件（React 18），必须用 forwardRef。React 19 解决了这个问题。
+
+---
+
+## 📦 useSyncExternalStore 原理与使用
+
+### 解决什么问题（Tearing 问题）
+
+```jsx
+// 问题：并发模式下，外部状态可能导致 Tearing（UI 不一致）
+// 旧方案：多个组件分别 subscribe 外部状态
+// 问题：组件 A 读取的是新值，组件 B 读取的是旧值
+
+// useSyncExternalStore 确保所有组件在同一时间点读取相同值
+import { useSyncExternalStore } from 'react';
+```
+
+### 基本用法
+
+```jsx
+// 自定义一个外部 store
+function createStore(initialState) {
+  let state = initialState;
+  const listeners = new Set();
+
+  return {
+    getState: () => state,
+    setState: (newState) => {
+      state = typeof newState === 'function' ? newState(state) : newState;
+      listeners.forEach(listener => listener());
+    },
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+}
+
+// 使用 useSyncExternalStore 订阅
+function useStore(store) {
+  const state = useSyncExternalStore(
+    store.subscribe,     // 订阅函数
+    store.getState,      // 获取当前值
+    // 可选：服务端渲染时的初始值
+    () => store.getState()
+  );
+  return state;
+}
+
+// 使用
+const store = createStore({ count: 0 });
+
+function Counter() {
+  const { count } = useStore(store);
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => store.setState(s => ({ ...s, count: s.count + 1 }))}>
+        +1
+      </button>
+    </div>
+  );
+}
+```
+
+### React 19 的 useOptimistic + useActionState
+
+```jsx
+// useOptimistic：乐观更新
+function TodoList({ todos }) {
+  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
+    todos,
+    (currentTodos, newTodo) => [...currentTodos, { ...newTodo, sending: true }]
+  );
+
+  const handleAdd = async (text) => {
+    const newTodo = { id: Date.now(), text };
+    addOptimisticTodo(newTodo);  // 立即显示
+    await saveTodo(newTodo);      // 等待服务器响应
+  };
+
+  return (
+    <ul>
+      {optimisticTodos.map(todo => (
+        <li key={todo.id} style={{ opacity: todo.sending ? 0.5 : 1 }}>
+          {todo.text}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### 与 Redux/MobX 的关系
+
+```jsx
+// Redux 使用 useSyncExternalStore（React 18+）
+// redux/src/hooks/useSelector.ts
+import { useSyncExternalStore } from 'react';
+
+export function useSelector(selector) {
+  return useSyncExternalStore(
+    store.subscribe,
+    () => selector(store.getState())
+  );
+}
+
+// MobX 使用 useSyncExternalStore 兼容 React 18
+// @mobx-react-lite 使用 useSyncExternalStore 包装 observer 组件
+```
+
+### 面试高频问题
+
+**Q: useSyncExternalStore 解决什么问题？**
+> 解决并发模式下的 Tearing 问题，确保所有组件在同一时间点读取外部状态的相同值。
+
+**Q: getSnapshot 函数为什么必须返回稳定引用？**
+> 如果每次调用返回新对象，会导致无限循环（每次渲染都触发重新渲染）。
+
+**Q: subscribe 函数什么时候调用？**
+> 组件挂载时调用，返回的清理函数在组件卸载时调用。
+
+---
+
+## 🔧 React 事件机制深入
+
+### 事件委托完整链路
+
+```mermaid
+flowchart TD
+    A["用户点击 button"] --> B["原生 click 事件触发"]
+    B --> C["事件冒泡传播"]
+    C --> D["到达 root DOM 容器<br/>(React 17+ 从 document 迁移到 root)"]
+    D --> E["React 统一事件监听器"]
+    E --> F["遍历 Fiber 树查找事件处理函数"]
+    F --> G{"找到对应的<br/>事件处理函数?"}
+    G -->|是| H["创建 SyntheticEvent"]
+    H --> I["调用 onClick 处理函数"]
+    I --> J["事件池回收<br/>(React 17+ 已废弃事件池)"]
+    G -->|否| K["忽略"]
+```
+
+### React 17+ 事件系统变化
+
+| 变化 | React 16 | React 17+ |
+|------|---------|-----------|
+| 事件绑定位置 | `document` | 根 DOM 容器 |
+| 事件池 | 复用 SyntheticEvent（性能优化） | 废弃事件池（更安全） |
+| 与原生事件交互 | 在 document 上拦截 | 在 root 上拦截 |
+| 多版本 React 共存 | 困难（共享 document） | 可行（各自 root） |
+
+### e.stopPropagation() vs 原生 stopPropagation
+
+```jsx
+function App() {
+  return (
+    <div onClick={() => console.log('React: App')}>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();  // 阻止 React 树冒泡
+          console.log('React: Button clicked');
+        }}
+      >
+        点击
+      </button>
+    </div>
+  );
+}
+
+// 同时绑定原生事件
+document.querySelector('button').addEventListener('click', () => {
+  console.log('Native: Button clicked');  // ✅ 仍然执行
+});
+
+// 点击按钮输出：
+// "Native: Button clicked" ✅ 原生事件不受 React stopPropagation 影响
+// "React: Button clicked" ✅ React 事件处理函数执行
+// React 的 stopPropagation 不会阻止原生事件冒泡！
+```
+
+### 如何正确阻止原生事件
+
+```jsx
+// 方案 1：使用原生事件的 stopPropagation
+function App() {
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    const handleNativeClick = (e) => {
+      e.stopPropagation();  // 阻止原生事件冒泡
+      console.log('Native: stopped');
+    };
+    button.addEventListener('click', handleNativeClick);
+    return () => button.removeEventListener('click', handleNativeClick);
+  }, []);
+
+  return <button ref={buttonRef}>按钮</button>;
+}
+
+// 方案 2：使用 e.nativeEvent.stopImmediatePropagation
+function App() {
+  return (
+    <button onClick={(e) => {
+      e.nativeEvent.stopImmediatePropagation();  // 阻止所有后续事件
+      console.log('Stopped all');
+    }}>
+      点击
+    </button>
+  );
+}
+```
+
+### 事件执行顺序
+
+```jsx
+function App() {
+  return (
+    <div
+      onClickCapture={() => console.log('1. React Capture')}
+      onClick={() => console.log('4. React Bubble')}
+    >
+      <button
+        onClickCapture={() => console.log('2. React Capture')}
+        onClick={() => console.log('3. React Bubble')}
+      >
+        点击
+      </button>
+    </div>
+  );
+}
+
+// 同时有原生事件：
+// div.addEventListener('click', () => console.log('5. Native Bubble'), false);
+// div.addEventListener('click', () => console.log('6. Native Capture'), true);
+
+// 点击按钮输出顺序：
+// 1. React Capture (外层 div)
+// 2. React Capture (button)
+// 6. Native Capture (外层 div) ← 原生捕获在 React 捕获之后！
+// 3. React Bubble (button)
+// 4. React Bubble (外层 div)
+// 5. Native Bubble (外层 div) ← 原生冒泡在 React 冒泡之后！
+```
+
+### 面试高频问题
+
+**Q: React 事件和原生事件的执行顺序？**
+> 捕获阶段：React Capture → Native Capture；冒泡阶段：React Bubble → Native Bubble。
+
+**Q: 为什么 React 要把事件委托到 root 而不是 document？**
+> 为微前端和多版本 React 共存提供更好的隔离性，避免不同版本 React 的事件系统冲突。
+
+**Q: React 17+ 为什么废弃事件池？**
+> 事件池是为了性能优化（复用 SyntheticEvent 对象），但带来了异步访问事件属性的复杂性。现代浏览器性能足够，不需要这个优化。
+
+---
+
+# 第五部分：源码级原理深度解析
+
+> 🎯 **面试星级**：★★★★★ | 本章深入 React 源码，适合中高级面试
+
+## 1️⃣ Fiber 架构源码分析
+
+### 🔄 Fiber 节点结构
+
+```typescript
+// packages/react-reconciler/src/ReactFiber.ts
+interface Fiber {
+  // 1. 节点类型
+  tag: WorkTag;           // 组件类型（FunctionComponent、ClassComponent 等）
+  type: any;              // 组件函数/类
+  key: string | null;     // key 属性
+
+  // 2. 树结构
+  return: Fiber | null;   // 父节点
+  child: Fiber | null;    // 第一个子节点
+  sibling: Fiber | null;  // 下一个兄弟节点
+  index: number;          // 子节点索引
+
+  // 3. 状态
+  pendingProps: any;       // 新 props
+  memoizedProps: any;      // 上次渲染的 props
+  memoizedState: any;      // 上次渲染的 state
+  updateQueue: UpdateQueue | null;  // 更新队列
+
+  // 4. 副作用
+  flags: Flags;           // 副作用标记（Placement、Update、Deletion）
+  subtreeFlags: Flags;    // 子树的副作用标记
+  deletions: Fiber[] | null;  // 需要删除的子节点
+
+  // 5. 调度优先级
+  lanes: Lanes;           // 优先级 lanes
+  childLanes: Lanes;      // 子节点优先级
+
+  // 6. 替换（双缓冲）
+  alternate: Fiber | null;  // 替换 fiber（workInProgress ↔ current）
+}
+```
+
+### 📍 Fiber 双缓冲机制
+
+```typescript
+// packages/react-reconciler/src/ReactFiber.ts
+// 双缓冲：同时维护两棵 Fiber 树
+// current: 屏幕上显示的树
+// workInProgress: 正在内存中构建的树
+
+function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
+  let workInProgress = current.alternate;
+
+  if (workInProgress === null) {
+    // 首次渲染，创建新的 fiber
+    workInProgress = createFiber(current.tag, pendingProps, current.key);
+    workInProgress.type = current.type;
+    workInProgress.stateNode = current.stateNode;
+    workInProgress.alternate = current;
+    current.alternate = workInProgress;
+  } else {
+    // 复用 alternate
+    workInProgress.pendingProps = pendingProps;
+    workInProgress.flags = NoFlags;
+    workInProgress.subtreeFlags = NoFlags;
+    workInProgress.deletions = null;
+  }
+
+  // 复制状态
+  workInProgress.memoizedProps = current.memoizedProps;
+  workInProgress.memoizedState = current.memoizedState;
+  workInProgress.updateQueue = current.updateQueue;
+  workInProgress.lanes = current.lanes;
+
+  return workInProgress;
+}
+
+// 提交阶段：交换 current 和 workInProgress
+function commitRoot(root: FiberRoot) {
+  // 1. 执行所有副作用
+  commitMutationEffects(root, finishedWork);
+
+  // 2. 切换 current 指针
+  root.current = finishedWork;
+
+  // 3. 触发 useEffect
+  commitPassiveMountEffects(root);
+}
+```
+
+### 📍 Fiber 调度器（Scheduler）
+
+```typescript
+// packages/scheduler/src/forks/Scheduler.js
+// 基于 MessageChannel 的微任务调度
+
+let scheduleCallback = function(callback) {
+  const channel = new MessageChannel();
+  const port = channel.port2;
+
+  channel.port1.onmessage = function() {
+    callback();
+  };
+
+  port.postMessage(null);
+};
+
+// 优先级管理
+const ImmediatePriority = 1;    // 立即执行
+const UserBlockingPriority = 2; // 用户阻塞（如点击）
+const NormalPriority = 3;       // 普通（如数据更新）
+const LowPriority = 4;          // 低优先级（如分析）
+const IdlePriority = 5;         // 空闲时执行
+
+// 调度流程
+function scheduleRootUpdate(root, update, lane) {
+  // 1. 创建更新对象
+  const update = createUpdate(lane);
+
+  // 2. 加入更新队列
+  enqueueUpdate(root.current, update);
+
+  // 3. 调度渲染
+  scheduleConcurrentWork(root, lane);
+}
+
+// 可中断渲染
+function performConcurrentWorkOnRoot(root, lanes) {
+  // 1. 检查是否有更高优先级的任务
+  if (hasHigherPriorityWork(root)) {
+    // 中断当前渲染
+    return performConcurrentWorkOnRoot.bind(null, root, lanes);
+  }
+
+  // 2. 渲染组件
+  renderRootSync(root, lanes);
+
+  // 3. 提交更新
+  commitRoot(root);
+}
+```
+
+---
+
+## 2️⃣ Reconciliation 算法
+
+### 🔄 Diff 算法实现
+
+```typescript
+// packages/react-reconciler/src/ReactChildFiber.ts
+function reconcileChildren(current, workInProgress, nextChildren) {
+  if (current === null) {
+    // 首次渲染：创建新的 fiber
+    workInProgress.child = mountChildFibers(
+      workInProgress,
+      null,
+      nextChildren
+    );
+  } else {
+    // 更新：reconcile
+    workInProgress.child = reconcileChildFibers(
+      workInProgress,
+      current.child,
+      nextChildren
+    );
+  }
+}
+
+// 单节点 reconcile
+function reconcileSingleElement(returnFiber, currentFirstChild, element) {
+  const key = element.key;
+  let child = currentFirstChild;
+
+  while (child !== null) {
+    if (child.key === key) {
+      // key 相同，检查 type
+      if (child.type === element.type) {
+        // type 相同，复用 fiber
+        deleteRemainingChildren(returnFiber, child.sibling);
+        const existing = useFiber(child, element.props);
+        existing.return = returnFiber;
+        return existing;
+      } else {
+        // type 不同，删除所有子节点
+        deleteRemainingChildren(returnFiber, child);
+        break;
+      }
+    } else {
+      // key 不同，删除当前节点
+      deleteChild(returnFiber, child);
+    }
+    child = child.sibling;
+  }
+
+  // 创建新的 fiber
+  const created = createFiberFromElement(element);
+  created.return = returnFiber;
+  return created;
+}
+
+// 多节点 reconcile（双端比较）
+function reconcileChildrenArray(returnFiber, currentFirstChild, newChildren) {
+  let resultingFirstChild = null;
+  let previousNewFiber = null;
+  let oldFiber = currentFirstChild;
+  let lastPlacedIndex = 0;
+  let newIdx = 0;
+  let nextOldFiber = null;
+
+  // 1. 遍历新旧节点，从头部开始比较
+  for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
+    if (oldFiber.index > newIdx) {
+      nextOldFiber = oldFiber;
+      oldFiber = null;
+    } else {
+      nextOldFiber = oldFiber.sibling;
+    }
+
+    // 尝试复用
+    const newFiber = updateSlot(returnFiber, oldFiber, newChildren[newIdx]);
+
+    if (newFiber === null) {
+      // key 不同，跳出循环
+      if (oldFiber === null) {
+        oldFiber = nextOldFiber;
+      }
+      break;
+    }
+
+    // 标记位置
+    lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+
+    // 连接 fiber 链表
+    if (previousNewFiber === null) {
+      resultingFirstChild = newFiber;
+    } else {
+      previousNewFiber.sibling = newFiber;
+    }
+    previousNewFiber = newFiber;
+    oldFiber = nextOldFiber;
+  }
+
+  // 2. 处理剩余节点
+  if (oldFiber === null) {
+    // 新节点还有剩余，全部插入
+    for (; newIdx < newChildren.length; newIdx++) {
+      const newFiber = createChild(returnFiber, newChildren[newIdx]);
+      if (newFiber === null) continue;
+
+      lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+
+      if (previousNewFiber === null) {
+        resultingFirstChild = newFiber;
+      } else {
+        previousNewFiber.sibling = newFiber;
+      }
+      previousNewFiber = newFiber;
+    }
+  } else {
+    // 旧节点还有剩余，全部删除
+    const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
+    for (; newIdx < newChildren.length; newIdx++) {
+      const newFiber = updateFromMap(
+        existingChildren,
+        returnFiber,
+        newIdx,
+        newChildren[newIdx]
+      );
+      if (newFiber !== null) {
+        if (newFiber.alternate !== null) {
+          // 复用了旧节点，从 map 中删除
+          existingChildren.delete(
+            newFiber.key === null ? newIdx : newFiber.key
+          );
+        }
+        // 判断是否需要移动
+        lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+        if (previousNewFiber === null) {
+          resultingFirstChild = newFiber;
+        } else {
+          previousNewFiber.sibling = newFiber;
+        }
+        previousNewFiber = newFiber;
+      }
+    }
+
+    // 删除剩余的旧节点
+    existingChildren.forEach(child => deleteChild(returnFiber, child));
+  }
+
+  return resultingFirstChild;
+}
+```
+
+### 📍 Key 的作用原理
+
+```typescript
+// 为什么需要 key？
+// 1. 身份识别：帮助 Diff 算法识别哪些节点是同一个
+// 2. 状态保持：确保组件状态在列表重排时保持一致
+// 3. 性能优化：避免不必要的重新创建
+
+// 使用 index 作为 key 的问题
+// 旧列表：[A(0), B(1), C(2)]
+// 新列表：[B(0), A(1), C(2)]  // B 和 A 交换了位置
+
+// 使用 index 作为 key 时：
+// Diff 结果：
+//   index 0: A → B（更新）
+//   index 1: B → A（更新）
+//   index 2: C → C（不变）
+// 结果：3 次更新
+
+// 使用唯一 key 时：
+// Diff 结果：
+//   key="a": A → A（移动到位置 1）
+//   key="b": B → B（移动到位置 0）
+//   key="c": C → C（不变）
+// 结果：2 次移动，0 次更新
+```
+
+---
+
+## 3️⃣ React Compiler 源码原理
+
+### 🔄 编译流程
+
+```typescript
+// packages/babel-plugin-react-compiler/src/index.ts
+// React Compiler 的编译流程
+
+function compileFunctionAST(ast) {
+  // 1. 分析组件
+  const analysis = analyzeComponent(ast);
+
+  // 2. 确定依赖
+  const dependencies = analyzeDependencies(analysis);
+
+  // 3. 生成缓存代码
+  const optimized = generateMemoCode(analysis, dependencies);
+
+  return optimized;
+}
+
+// 示例：
+// 原始代码
+function Counter({ initialCount }) {
+  const [count, setCount] = useState(initialCount);
+  const double = count * 2;
+  return <div>{double}</div>;
+}
+
+// 编译后
+function Counter({ initialCount }) {
+  const $ = useMemo(() => [initialCount], [initialCount]);
+  const [count, setCount] = useState($[0]);
+  const double = useMemo(() => count * 2, [count]);
+  return <div>{double}</div>;
+}
+```
+
+### 📍 依赖分析算法
+
+```typescript
+// packages/babel-plugin-react-compiler/src/DependencyAnalysis.ts
+function analyzeDependencies(analysis) {
+  const dependencies = new Map();
+
+  // 1. 遍历所有 reactive 表达式
+  for (const expr of analysis.reactiveExpressions) {
+    // 2. 分析表达式依赖
+    const deps = analyzeExpression(expr);
+
+    // 3. 确定依赖项
+    dependencies.set(expr, deps);
+  }
+
+  return dependencies;
+}
+
+// 依赖类型
+enum DependencyType {
+  State = 'state',         // useState
+  Ref = 'ref',             // useRef
+  Context = 'context',     // useContext
+  Props = 'props',         // props
+  Memo = 'memo',           // useMemo
+  Callback = 'callback'    // useCallback
+}
+
+// 依赖分析结果
+interface Dependency {
+  type: DependencyType;
+  source: string;          // 依赖来源
+  path: string[];          // 访问路径
+  isStable: boolean;       // 是否稳定
+}
+```
+
+---
+
+# 第六部分：React 19 新特性深度解析
+
+## 1️⃣ React Compiler 深度解析
+
+### 🔄 工作原理
+
+```typescript
+// React Compiler 的核心思想：
+// 1. 静态分析组件
+// 2. 自动推断依赖
+// 3. 自动添加 memo/useMemo/useCallback
+
+// 编译器会做的事情：
+// - 自动缓存计算结果
+// - 自动优化 re-render
+// - 自动跳过不必要的更新
+
+// 示例：
+function ProductList({ products, onSelect }) {
+  // 编译器自动分析：
+  // - products 依赖
+  // - onSelect 依赖
+  // - 生成 useMemo/useCallback
+
+  const sorted = products.sort((a, b) => a.price - b.price);
+  const handleClick = (id) => onSelect(id);
+
+  return (
+    <ul>
+      {sorted.map(p => (
+        <li key={p.id} onClick={() => handleClick(p.id)}>
+          {p.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// 编译后（简化）：
+function ProductList({ products, onSelect }) {
+  const sorted = useMemo(() => products.sort((a, b) => a.price - b.price), [products]);
+  const handleClick = useCallback((id) => onSelect(id), [onSelect]);
+
+  return (
+    <ul>
+      {sorted.map(p => (
+        <li key={p.id} onClick={() => handleClick(p.id)}>
+          {p.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### 📍 编译器配置
+
+```json
+// .babelrc 或 babel.config.js
+{
+  "presets": [
+    ["react-compiler", {
+      "sources": (filename) => {
+        return filename.endsWith('.tsx') || filename.endsWith('.jsx');
+      },
+      "compilationMode": "annotation",
+      "panicThreshold": "CRITICAL_ERRORS"
+    }]
+  ]
+}
+```
+
+## 2️⃣ Actions 机制深度解析
+
+```typescript
+// Actions 的核心思想：
+// 1. 自动管理 pending 状态
+// 2. 自动处理错误
+// 3. 自动批量更新
+
+// 使用 useActionState
+function Form() {
+  const [state, formAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      // 异步操作
+      const result = await submitForm(formData);
+      return result;
+    },
+    { success: false, message: '' }
+  );
+
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '提交中...' : '提交'}
+      </button>
+      {state.message && <p>{state.message}</p>}
+    </form>
+  );
+}
+
+// useOptimistic 乐观更新
+function TodoList({ todos, addTodo }) {
+  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
+    todos,
+    (state, newTodo) => [...state, { ...newTodo, pending: true }]
+  );
+
+  async function handleSubmit(formData) {
+    const text = formData.get('text');
+    addOptimisticTodo({ id: Date.now(), text, done: false });
+    await addTodo(text);
+  }
+
+  return (
+    <form action={handleSubmit}>
+      <input name="text" />
+      <button type="submit">添加</button>
+      <ul>
+        {optimisticTodos.map(todo => (
+          <li key={todo.id} style={{ opacity: todo.pending ? 0.5 : 1 }}>
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    </form>
+  );
+}
+```
+
+## 3️⃣ use() Hook 深度解析
+
+```typescript
+// use() 的核心能力：
+// 1. 在渲染时读取 Promise
+// 2. 在渲染时读取 Context
+// 3. 条件调用（打破 Hooks 规则）
+
+// 读取 Promise
+function UserProfile({ userPromise }) {
+  const user = use(userPromise);  // 暂挂组件直到 Promise resolve
+
+  return <div>{user.name}</div>;
+}
+
+// 读取 Context
+function Theme() {
+  const theme = use(ThemeContext);  // 类似 useContext
+  return <div style={{ color: theme.color }}>Hello</div>;
+}
+
+// 条件调用
+function ConditionalComponent({ showData }) {
+  const [data, setData] = useState(null);
+
+  if (showData) {
+    const result = use(fetchData());  // 条件调用
+    return <div>{result}</div>;
+  }
+
+  return <div>No data</div>;
+}
+
+// 与 Suspense 配合
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UserProfile userPromise={fetchUser()} />
+    </Suspense>
+  );
+}
+```
+
+---
+
+# 第七部分：项目实战重难点
+
+## 1️⃣ 微前端与 React
+
+### 🔄 Module Federation 集成
+
+```typescript
+// 主应用配置
+// webpack.config.js
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'host',
+      remotes: {
+        remote1: 'remote1@http://localhost:3001/remoteEntry.js',
+        remote2: 'remote2@http://localhost:3002/remoteEntry.js'
+      },
+      shared: {
+        react: { singleton: true, eager: true },
+        'react-dom': { singleton: true, eager: true }
+      }
+    })
+  ]
+};
+
+// 子应用配置
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'remote1',
+      filename: 'remoteEntry.js',
+      exposes: {
+        './App': './src/App'
+      },
+      shared: {
+        react: { singleton: true, eager: true },
+        'react-dom': { singleton: true, eager: true }
+      }
+    })
+  ]
+};
+```
+
+### 📍 动态组件加载
+
+```typescript
+// 动态加载远程组件
+const RemoteApp = React.lazy(() => import('remote1/App'));
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <RemoteApp />
+    </Suspense>
+  );
+}
+
+// 带错误边界
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>组件加载失败</div>;
+    }
+    return this.props.children;
+  }
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Loading />}>
+        <RemoteApp />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+## 2️⃣ Monorepo 实战
+
+### 📁 Turborepo 项目结构
+
+```
+my-monorepo/
+├── apps/
+│   ├── web/              # Web 应用
+│   ├── mobile/           # 移动应用
+│   └── admin/            # 管理后台
+│
+├── packages/
+│   ├── ui/               # UI 组件库
+│   │   ├── src/
+│   │   │   ├── Button/
+│   │   │   ├── Card/
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── utils/            # 工具函数
+│   │   ├── src/
+│   │   └── package.json
+│   │
+│   ├── config/           # 共享配置
+│   │   ├── eslint/
+│   │   ├── typescript/
+│   │   └── package.json
+│   │
+│   └── tsconfig/         # TS 配置
+│
+├── turbo.json            # Turborepo 配置
+├── package.json
+└── pnpm-workspace.yaml
+```
+
+### 📍 Turborepo 配置
+
+```json
+// turbo.json
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    }
+  }
+}
+```
+
+## 3️⃣ Next.js App Router 实战
+
+### 📁 App Router 结构
+
+```
+app/
+├── layout.tsx            # 根布局
+├── page.tsx              # 首页
+├── loading.tsx           # 加载状态
+├── error.tsx             # 错误处理
+│
+├── dashboard/
+│   ├── layout.tsx        # 仪表盘布局
+│   ├── page.tsx          # 仪表盘首页
+│   └── settings/
+│       └── page.tsx      # 设置页面
+│
+├── blog/
+│   ├── [slug]/
+│   │   └── page.tsx      # 动态路由
+│   └── page.tsx          # 博客列表
+│
+└── api/
+    └── users/
+        └── route.ts      # API 路由
+```
+
+### 📍 Server Components 与 Client Components
+
+```typescript
+// app/dashboard/page.tsx - Server Component
+async function DashboardPage() {
+  // 服务端数据获取
+  const data = await fetch('https://api.example.com/dashboard');
+  const dashboard = await data.json();
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <Stats data={dashboard.stats} />
+      <ClientComponent initialData={dashboard} />
+    </div>
+  );
+}
+
+// app/dashboard/ClientComponent.tsx - Client Component
+'use client';
+
+import { useState, useTransition } from 'react';
+
+function ClientComponent({ initialData }) {
+  const [data, setData] = useState(initialData);
+  const [isPending, startTransition] = useTransition();
+
+  const refresh = () => {
+    startTransition(async () => {
+      const res = await fetch('/api/dashboard');
+      const newData = await res.json();
+      setData(newData);
+    });
+  };
+
+  return (
+    <div>
+      <p>{data.lastUpdated}</p>
+      <button onClick={refresh} disabled={isPending}>
+        {isPending ? '刷新中...' : '刷新'}
+      </button>
+    </div>
+  );
+}
+```
+
+## 4️⃣ 性能监控与埋点
+
+```typescript
+// utils/performance.ts
+export function setupPerformanceMonitor() {
+  // 1. 首屏加载时间
+  window.addEventListener('load', () => {
+    const perfEntries = performance.getEntriesByType('navigation');
+    if (perfEntries.length > 0) {
+      const nav = perfEntries[0] as PerformanceNavigationTiming;
+      console.log('首屏加载时间:', nav.loadEventEnd - nav.startTime);
+    }
+  });
+
+  // 2. 组件渲染性能
+  if (typeof window !== 'undefined' && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    const originalCommit = hook.onCommitFiberRoot;
+
+    hook.onCommitFiberRoot = (id, root, priorityLevel) => {
+      const startTime = performance.now();
+      originalCommit(id, root, priorityLevel);
+      const duration = performance.now() - startTime;
+
+      if (duration > 16) {  // 超过一帧的时间
+        console.warn(`Slow render: ${duration.toFixed(2)}ms`);
+      }
+    };
+  }
+
+  // 3. Web Vitals
+  import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP }) => {
+    onCLS(console.log);
+    onFID(console.log);
+    onFCP(console.log);
+    onLCP(console.log);
+  });
+}
+```
+
+---
+
+# 第八部分：常见 Bug 与调试技巧
+
+## 1️⃣ 闭包陷阱
+
+### 📍 问题场景
+
+```typescript
+// ❌ 问题：闭包捕获旧值
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log(count);  // ❌ 始终输出 0
+      setCount(count + 1); // ❌ 始终设置为 1
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return <div>{count}</div>;
+}
+
+// ✅ 解决方案 1：使用函数式更新
+setCount(prev => prev + 1);
+
+// ✅ 解决方案 2：使用 useRef
+const countRef = useRef(0);
+useEffect(() => {
+  countRef.current = count;
+}, [count]);
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log(countRef.current);  // ✅ 总是最新值
+    setCount(countRef.current + 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []);
+
+// ✅ 解决方案 3：使用 useEffect 的依赖
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log(count);  // ✅ 依赖变化时重新创建
+    setCount(count + 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [count]);  // 依赖变化时重新执行
+```
+
+## 2️⃣ 内存泄漏排查
+
+### 📍 常见泄漏场景
+
+```typescript
+// ❌ 泄漏场景 1：未清理的订阅
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const subscription = api.subscribe(userId, setUser);
+    // ❌ 组件卸载后仍在监听
+  }, [userId]);
+
+  return <div>{user?.name}</div>;
+}
+
+// ✅ 正确：清理订阅
+useEffect(() => {
+  const subscription = api.subscribe(userId, setUser);
+  return () => subscription.unsubscribe();  // ✅ 清理
+}, [userId]);
+
+// ❌ 泄漏场景 2：未清理的事件监听
+function WindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const handleResize = () => setSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+    window.addEventListener('resize', handleResize);
+    // ❌ 组件卸载后仍在监听
+  }, []);
+
+  return <div>{size.width} x {size.height}</div>;
+}
+
+// ✅ 正确：清理事件监听
+useEffect(() => {
+  const handleResize = () => setSize({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);  // ✅
+}, []);
+```
+
+### 📍 内存泄漏检测
+
+```typescript
+// 使用 Chrome DevTools Memory 面板
+// 1. 堆快照对比：查找 Detached 节点
+// 2. 分配时间线：观察内存增长趋势
+
+// 自动检测
+export function detectMemoryLeaks() {
+  if (performance.memory) {
+    const used = performance.memory.usedJSHeapSize / 1024 / 1024;
+    console.log(`内存使用: ${used.toFixed(2)}MB`);
+
+    if (used > 100) {  // 超过 100MB
+      console.warn('可能存在内存泄漏');
+    }
+  }
+}
+```
+
+## 3️⃣ 调试技巧
+
+```typescript
+// 1. React DevTools Profiler
+// - 记录渲染性能
+// - 分析组件更新原因
+// - 查看组件渲染次数
+
+// 2. 自定义 Hook 调试
+function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  useEffect(() => {
+    console.log('[useCounter] count:', count);
+  }, [count]);
+
+  return { count, increment: () => setCount(c => c + 1) };
+}
+
+// 3. 组件渲染追踪
+function TrackedComponent({ data }) {
+  const renderCount = useRef(0);
+  renderCount.current++;
+
+  useEffect(() => {
+    console.log(`[TrackedComponent] rendered ${renderCount.current} times`);
+  });
+
+  return <div>{data}</div>;
+}
+```
+
+---
+
+# 第九部分：生态深度解析
+
+## 1️⃣ 状态管理方案对比
+
+### 📊 Zustand vs Jotai vs Redux Toolkit
+
+```typescript
+// Zustand - 简单状态管理
+import { create } from 'zustand';
+
+const useStore = create((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 }))
+}));
+
+// Jotai - 原子化状态
+import { atom, useAtom } from 'jotai';
+
+const countAtom = atom(0);
+const doubledAtom = atom((get) => get(countAtom) * 2);
+
+function Counter() {
+  const [count, setCount] = useAtom(countAtom);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+
+// Redux Toolkit - 企业级状态管理
+import { createSlice, configureStore } from '@reduxjs/toolkit';
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => { state.value += 1; },
+    decrement: (state) => { state.value -= 1; }
+  }
+});
+
+const store = configureStore({
+  reducer: { counter: counterSlice.reducer }
+});
+```
+
+| 方案 | 适用场景 | Bundle Size | 学习曲线 |
+|------|---------|-------------|----------|
+| Zustand | 中小型应用 | ~1KB | 简单 |
+| Jotai | 原子化状态 | ~2KB | 简单 |
+| Redux Toolkit | 大型企业应用 | ~10KB | 中等 |
+| React Context | 简单全局状态 | 0 | 简单 |
+
+## 2️⃣ 数据获取方案对比
+
+### 📊 TanStack Query vs SWR
+
+```typescript
+// TanStack Query
+import { useQuery, useMutation } from '@tanstack/react-query';
+
+function UserProfile({ userId }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    staleTime: 5 * 60 * 1000,  // 5 分钟
+    cacheTime: 10 * 60 * 1000  // 10 分钟
+  });
+
+  const updateUser = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+    }
+  });
+
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
+
+  return <div>{data.name}</div>;
+}
+
+// SWR
+import useSWR from 'swr';
+
+const fetcher = (url) => fetch(url).then(r => r.json());
+
+function UserProfile({ userId }) {
+  const { data, error, isLoading } = useSWR(`/api/users/${userId}`, fetcher, {
+    revalidateOnFocus: true,
+    dedupingInterval: 5000
+  });
+
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
+
+  return <div>{data.name}</div>;
+}
+```
+
+| 方案 | 特点 | 适用场景 |
+|------|------|---------|
+| TanStack Query | 功能强大、缓存精细 | 复杂数据获取 |
+| SWR | 简单轻量、自动重验证 | 简单数据获取 |
+
+---
+
+## 🎯 面试深度追问
+
+### Q18：React Fiber 与 Vue 3 虚拟 DOM 的区别？
+
+| 维度 | React Fiber | Vue 3 Virtual DOM |
+|------|------------|-------------------|
+| **数据结构** | 链表（Fiber Tree） | 树（VNode Tree） |
+| **调度方式** | 可中断、优先级调度 | 同步更新 |
+| **更新机制** | 双缓冲 | 一次性更新 |
+| **优化策略** | Time Slicing | Block Tree + PatchFlag |
+
+### Q19：React 19 Actions 与 Vue 3 的区别？
+
+| 维度 | React Actions | Vue 3 |
+|------|--------------|-------|
+| **异步处理** | 原生支持 | 需要手动管理 |
+| **状态管理** | 自动 pending | 需要 ref |
+| **错误处理** | 原生支持 | 需要 try/catch |
+| **乐观更新** | useOptimistic | 需要手动实现 |
+
+### Q20：React Server Components 与 SSR 的区别？
+
+| 维度 | RSC | SSR |
+|------|-----|-----|
+| **执行环境** | 服务端 | 服务端 |
+| **输出** | 可序列化的组件 | HTML 字符串 |
+| **客户端 JS** | 不包含服务端组件 | 包含所有组件 |
+| **交互性** | 无（纯数据） | 有（Hydration） |
 
 ---
 
