@@ -196,7 +196,7 @@ timeline
 
 | 特性 | React 18 | React 19 |
 |------|---------|----------|
-| 并发模式 | 可选启用 | 默认启用 |
+| 并发模式 | 可选启用 | opt-in（通过 useTransition/useDeferredValue） |
 | Actions | ❌ | ✅ 统一表单处理 |
 | use() | ❌ | ✅ 异步数据获取 |
 | useOptimistic | ❌ | ✅ 乐观更新 |

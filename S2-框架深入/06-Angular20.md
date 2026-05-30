@@ -316,11 +316,11 @@ timeline
 | **Angular 12** | 2021 | 严格模式默认、移除 IE11 | 告别旧兼容 |
 | **Angular 14** | 2022 | 独立组件预览、类型化表单 | 迈向 standalone 架构 |
 | **Angular 15** | 2022 | **Standalone API 稳定** | 可创建无 NgModule 应用 |
-| **Angular 17** | 2024 | Signals、`@if/@for` 控制流 | 响应式范式革命 |
+| **Angular 17** | 2023 | Signals、`@if/@for` 控制流 | 响应式范式革命 |
 | **Angular 18** | 2024 | **Zoneless 实验性** | 可选的精确变更检测 |
 | **Angular 19** | 2025 | `linkedSignal`、`resource()` | 声明式数据获取 |
 | **Angular 20** | 2025 | `httpResource`、Signal Forms | 响应式全面化 |
-| **Angular 21** | 2026 | **Zoneless 默认**、esbuild 原生 | 全面现代化 |
+| **Angular 21** | 2026 | **Zoneless 默认（预期）**、esbuild 原生 | 全面现代化 |
 
 ### ⚡ Angular 关键转折点：AngularJS → Angular 2 → Ivy → Zoneless
 

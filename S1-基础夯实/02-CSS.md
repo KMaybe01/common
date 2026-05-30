@@ -4259,7 +4259,7 @@ flowchart TD
 
 ### 9️⃣ @starting-style 和 transition-behavior
 
-> 💡 **要点：** @starting-style 解决元素首次出现时无法做动画的问题；transition-behavior:allow-discrete 使 display:none↔block 可过渡
+> 💡 **要点：** @starting-style 解决元素首次出现时无法做动画的问题；transition-behavior:allow-discrete 使 display:none ↔ block 可过渡
 
 两个让 CSS 过渡更加完善的特性：处理元素**首次渲染**和 `display` 切换的动画。
 

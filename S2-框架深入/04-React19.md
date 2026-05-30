@@ -264,7 +264,7 @@ timeline
     title React 版本演进（2013—2026）
     2013 : React 0.3 开源
          : 虚拟 DOM 新范式
-    2015 : React 15
+    2016 : React 15
          : React Native 跨平台
     2017 : React 16 Fiber
          : 架构重写（核心转折）
@@ -420,7 +420,7 @@ export function LoginForm() {
 
 `use()` 是 React 19 新增的 Hook，可用于：
 1. 读取 Promise（需配合 Suspense 使用）
-2. 读取 Context（替代 `useContext`）
+2. 读取 Context（与 `useContext` 类似，但可在条件语句中调用）
 
 ```typescript
 import { use, Suspense } from 'react';
@@ -433,7 +433,7 @@ function DataComponent() {
 
 // 方式 2：读取 Context（React 19 新用法）
 function ThemedButton() {
-  const theme = use(ThemeContext); // 替代 useContext(ThemeContext)
+  const theme = use(ThemeContext); // 也可用 useContext(ThemeContext)
   return <button style={{ color: theme }}>按钮</button>;
 }
 ```
@@ -444,7 +444,7 @@ function ThemedButton() {
 
 | 特性 | React 18 (2022) | React 19 (2025) | React 20 (预测) |
 |------|-----------------|-----------------|----------------------|
-| 并发模式 | 可选启用 | 默认启用 | 默认启用 |
+| 并发模式 | 可选启用 | opt-in（通过 useTransition/useDeferredValue） | opt-in |
 | startTransition | ✅ | ✅ 增强 | ✅ 自动 |
 | use() | ❌ | ✅ | ✅ 增强 |
 | useOptimistic | ❌ | ✅ | ✅ 自动 |
