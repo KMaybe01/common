@@ -1,14 +1,84 @@
-# LI-OAM 网元运维与数据管理系统 
+# LI-OAM 网元运维与数据管理系统 - 项目技术分析报告
 
 ---
 
-## 一、项目概述
+## 项目概述
 
-### 1.1 项目背景
+### 一、项目背景
 
 LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面向 **5G核心网元** 的运维与数据管理系统，服务于电信运营商的网元管理团队。系统覆盖网元全生命周期的运维场景，从网元注册接入、状态监控、配置下发，到日志采集解密、备份恢复、审计溯源，构建了一套完整的网元数据治理体系。
 
-### 1.2 系统架构
+### 二、核心定位
+
+| 属性 | 说明 |
+|------|------|
+| **项目名称** | LI-OAM (Lawful Intercept Operation, Administration & Maintenance) |
+| **产品定位** | 5G核心网元运维与数据管理平台 |
+| **目标用户** | 电信运营商网元管理团队、运维工程师 |
+| **部署环境** | Docker容器化 → K8s/OpenShift集群（内网部署） |
+| **访问方式** | 浏览器访问，HTTPS加密 |
+
+### 三、核心功能模块
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         LI-OAM 网元运维与数据管理系统                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐     │
+│  │   网元管理模块   │  │  日志管理模块   │  │  审计日志模块   │     │
+│  │  NF注册/编辑    │  │  日志查看解密   │  │  40+事件类型    │     │
+│  │  NE状态监控     │  │  Web Worker解密 │  │  HKDF+AES加密   │     │
+│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘     │
+│           │                    │                    │               │
+│           ▼                    ▼                    ▼               │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                     5G核心网 (SMF/UPF)                       │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │   AMF    │  │   UDM    │  │   PCF    │  │   SMF    │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+#### 模块1：网元管理模块
+
+| 功能 | 说明 |
+|------|------|
+| **NF注册/编辑/删除** | 网元全生命周期管理 |
+| **NE状态监控** | 实时监控网元状态 |
+| **Provision配置** | 网元配置下发 |
+| **30秒轮询** | 自动刷新 + 手动刷新合并 |
+
+#### 模块2：日志管理模块
+
+| 功能 | 说明 |
+|------|------|
+| **NF日志查看** | 实时查看网元日志 |
+| **前端/后端双解密** | 灵活的解密模式选择 |
+| **Web Worker并行解密** | 多核CPU并行处理 |
+| **流式输出** | 大文件流式渲染，避免UI冻结 |
+
+#### 模块3：审计日志模块
+
+| 功能 | 说明 |
+|------|------|
+| **40+事件类型** | 全量操作审计 |
+| **加密存储** | HKDF + AES-256-GCM加密 |
+| **tar.gz压缩** | 轮转压缩存储 |
+| **保留期管理** | 自动清理过期日志 |
+
+#### 模块4：用户与权限模块
+
+| 功能 | 说明 |
+|------|------|
+| **用户CRUD** | 用户增删改查 |
+| **NF权限分配** | 细粒度权限控制 |
+| **密码策略** | 安全密码管理 |
+| **JTI单点登录** | 防止多设备登录 |
+
+### 四、技术架构
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -39,69 +109,202 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 └─────────┘  └───────────┘  └─────────┘  └───────────┘
 ```
 
-### 1.3 技术栈全景
+#### 4.1 技术栈全景
 
-| 层级 | 技术选型 | 版本 | 说明 |
-|------|---------|------|------|
-| **前端框架** | Angular | 20.3.17 | Zoneless + Standalone + Signals |
-| **UI组件库** | PrimeNG | 20.3.0 | 企业级UI组件 |
-| **样式方案** | Tailwind CSS | 4.1.11 | 工具类优先 + SCSS布局 |
-| **响应式编程** | RxJS | 7.8.0 | 异步数据流处理 |
-| **代码编辑器** | Ace Editor | 1.43.3 | YAML/JSON编辑 |
-| **加密库** | node-forge | 1.3.1 | RSA/AES加解密 |
-| **压缩库** | fflate | 0.8.2 | ZIP/TAR.GZ解压 |
-| **日期处理** | date-fns | 4.1.0 | 日期格式化/计算 |
-| **后端框架** | Go + Gin | 1.25.6 | 高性能HTTP服务 |
-| **数据库** | — | — | 文件存储 + S3 |
-| **监控** | Prometheus | — | 指标采集与暴露 |
-| **部署** | Docker + K8s | — | Helm Chart编排 |
-| **CI/CD** | GitLab CI | — | 持续集成与部署 |
-| **代码质量** | ESLint + Prettier + Husky | — | 静态检查 + 格式化 |
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                           技术栈全景                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                      前端技术栈                               │   │
+│  │  Angular 20.3.17 + PrimeNG 20.3.0 + Tailwind CSS 4.1.11     │   │
+│  │  RxJS 7.8.0 + Ace Editor 1.43.3                             │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                              │                                      │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                      后端技术栈                               │   │
+│  │  Go 1.25.6 + Gin框架 + 文件存储 + S3                        │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                              │                                      │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                      安全与加密                               │   │
+│  │  node-forge 1.3.1 (RSA/AES) + fflate 0.8.2 (ZIP/TAR.GZ)   │   │
+│  │  HKDF密钥派生 + AES-256-GCM认证加密                          │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                              │                                      │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                      部署与运维                               │   │
+│  │  Docker + K8s + Helm Chart + GitLab CI + Prometheus         │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-### 1.4 功能模块矩阵
+#### 4.2 分层架构设计
 
-| 模块 | 功能 | 用户角色 | 技术亮点 |
-|------|------|---------|---------|
-| **网元管理** | NF注册/编辑/删除、NE状态、Provision配置 | 全部用户 | 30秒轮询 + 手动刷新合并 |
-| **日志管理** | NF日志查看、前端/后端双解密模式 | 全部用户 | Web Worker并行解密 + 流式输出 |
-| **连接监控** | NF连接状态、多接口聚合展示 | 全部用户 | merge + scan多接口并行 |
-| **指标监控** | NF指标采集、SMF/UPF差异化展示 | 全部用户 | scan累积排序 |
-| **审计日志** | 40+事件类型、加密存储、详情查看 | 管理员 | HKDF + AES-256-GCM |
-| **用户管理** | 用户CRUD、NF权限分配、密码策略 | 管理员 | JTI单点登录 + 自动锁定 |
-| **备份管理** | NF/审计/用户备份、S3存储、告警 | 全部用户/管理员 | tar.gz压缩 + 保留期管理 |
-| **系统设置** | Token过期、私钥存储、审计配置 | 管理员 | 声明式配置表单 |
-| **主题系统** | 16色主色调、8表面色、暗黑模式 | 全部用户 | View Transitions API |
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        表现层 (Presentation)                         │
+│  Angular 20 Standalone + PrimeNG + Tailwind CSS                     │
+│  Zoneless + Signals + @if/@for 原生控制流                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                        状态层 (State)                                 │
+│  signal() / computed() / effect()  ─── 组件级响应式                  │
+│  BehaviorSubject / Subject         ─── 跨组件数据流                  │
+│  @StorageDecorator() CACHE         ─── 持久化门面                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                        服务层 (Service)                              │
+│  API Services (9个)    ─── 领域API封装                               │
+│  Core Services (7个)   ─── 认证/轮询/主题/加载/流式/面包屑            │
+│  Mock System           ─── 开发环境数据模拟                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                        拦截层 (Interceptor Chain)                    │
+│  jwtInterceptor → authInterceptor → loadingInterceptor → mock       │
+│  Token注入         全局错误处理      Loading状态追踪    Mock数据       │
+├─────────────────────────────────────────────────────────────────────┤
+│                        路由层 (Router)                               │
+│  jwtGuard (认证) + adminGuard (权限) + 懒加载 + 错误降级              │
+├─────────────────────────────────────────────────────────────────────┤
+│                        构建层 (Build)                                │
+│  esbuild + TypeScript 5.9 strict + ESLint 500行限制 + Husky         │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-### 1.5 业务痛点与解决方案
+### 五、项目规模
 
-| 业务痛点 | 解决方案 | 技术挑战 |
-|---------|---------|---------|
-| 网元状态分散，运维效率低 | 统一管理平台 + 实时监控 | 多接口聚合、轮询策略 |
-| 日志加密存储，合规要求高 | HKDF + AES-256-GCM 加密体系 | 异步写入性能、密钥管理 |
-| 敏感操作需审计溯源 | 40+事件类型全量审计 | 异步channel、轮转压缩 |
-| 多用户权限隔离 | RBAC + JTI单点登录 | 前后端双重权限校验 |
-| 大文件解密性能瓶颈 | Web Worker并行解密 | 有序合并、流式渲染 |
+| 维度 | 数量 | 说明 |
+|------|------|------|
+| **前端组件数** | 40+ | 独立组件 |
+| **API Service** | 9个 | 领域服务 |
+| **HTTP拦截器** | 4层 | 拦截器链 |
+| **路由页面** | 13个 | 懒加载页面 |
+| **表单控件** | 9种 | 自定义控件 |
+| **自定义验证器** | 5个 | 跨字段验证器 |
+| **工具函数** | 7个 | 公共工具 |
+| **审计事件类型** | 40+种 | 全量审计 |
+| **Prometheus指标** | 9个 | 监控指标 |
+| **TypeScript严格模式** | 全量开启 | 类型安全 |
 
-### 1.6 项目规模
+### 六、核心数据结构
 
-| 指标 | 数据 |
-|------|------|
-| **前端组件数** | 40+ 独立组件 |
-| **API Service** | 9 个领域服务 |
-| **HTTP拦截器** | 4 层拦截器链 |
-| **路由页面** | 13 个懒加载页面 |
-| **表单控件** | 9 种自定义控件 |
-| **自定义验证器** | 5 个跨字段验证器 |
-| **工具函数** | 7 个公共工具 |
-| **审计事件类型** | 40+ 种 |
-| **Prometheus指标** | 9 个监控指标 |
-| **TypeScript严格模式** | 全量开启 |
+#### NF（Network Function）结构
+
+```typescript
+interface NetworkFunction {
+  id: string;              // 唯一标识
+  name: string;            // NF名称
+  kind: string;            // NF类型 (smf/upf/amf/udm/pcf)
+  baseUrl: string;         // 服务地址
+  namespace: string;       // K8s命名空间
+  status: string;          // 状态 (online/offline/error)
+  lastSeen: Date;          // 最后活跃时间
+  metadata: {              // 元数据
+    version: string;       // NF版本
+    capabilities: string[];// 能力列表
+  };
+}
+```
+
+#### 审计日志结构
+
+```typescript
+interface AuditLog {
+  id: string;              // 唯一标识
+  timestamp: number;       // 时间戳
+  eventType: string;       // 事件类型 (40+种)
+  userId: string;          // 操作用户
+  action: string;          // 操作动作
+  resource: string;        // 操作资源
+  details: object;         // 详细信息
+  ip: string;              // 客户端IP
+  encrypted: boolean;      // 是否加密存储
+}
+```
+
+#### 用户权限结构
+
+```typescript
+interface UserInfo {
+  username: string;        // 用户名
+  role: 'admin' | 'user'; // 角色
+  nfPermissions: string[]; // NF权限列表
+  lastLogin: Date;         // 最后登录时间
+  failedAttempts: number;  // 登录失败次数
+  lockedUntil?: Date;      // 锁定截止时间
+}
+```
+
+### 七、技术亮点速览
+
+| 亮点 | 技术价值 | 难度 |
+|------|----------|------|
+| **Web Worker并行解密** | 多核CPU并行处理大日志文件，避免UI冻结 | ⭐⭐⭐ |
+| **自研表单系统** | 注册表+工厂模式，声明式表单定义 | ⭐⭐⭐ |
+| **HKDF+AES-256-GCM加密** | 审计日志安全存储，符合合规要求 | ⭐⭐⭐ |
+| **Zoneless Angular 20** | 无Zone.js，Signal精确更新，性能最优 | ⭐⭐ |
+| **K8s Leader Election** | 双副本高可用，5秒故障转移 | ⭐⭐ |
+| **拦截器链设计** | 职责链模式，横切关注点分离 | ⭐ |
+| **装饰器缓存** | 透明代理localStorage，零样板代码 | ⭐ |
+
+### 八、部署架构
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         部署架构                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐         │
+│  │   浏览器    │ ───► │  Istio Ingress│ ───► │  前端容器   │         │
+│  │  (HTTPS)    │      │  (路由转发)  │      │  (静态资源) │         │
+│  └─────────────┘      └─────────────┘      └─────────────┘         │
+│                                               │                     │
+│                                               ▼                     │
+│                                        ┌─────────────┐              │
+│                                        │   后端API   │              │
+│                                        │  (Go+Gin)   │              │
+│                                        └─────────────┘              │
+│                                               │                     │
+│                                               ▼                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                    K8s/OpenShift集群                         │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │   AMF    │  │   UDM    │  │   PCF    │  │   SMF    │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                    外部服务                                  │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │   │
+│  │  │ AWS S3   │  │Prometheus│  │  Istio   │                  │   │
+│  │  │ 外部存储  │  │ 监控采集  │  │ Service  │                  │   │
+│  │  └──────────┘  └──────────┘  └──────────┘                  │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 九、CI/CD流程
+
+```
+代码提交 → GitLab CI触发 → 代码检查(ESLint/TypeScript) → 构建打包 → Docker镜像构建 → 推送镜像仓库 → 部署到K8s
+```
+
+### 十、面试价值总结
+
+本项目具有以下面试讲述价值：
+
+1. **架构设计能力**：拦截器链设计、自研表单系统、混合状态管理策略
+2. **安全架构能力**：HKDF+AES-256-GCM加密、JTI单点登录、防暴力破解
+3. **性能优化能力**：Web Worker并行解密、Zoneless变更检测、流式渲染
+4. **工程化能力**：CI/CD、多环境配置、代码质量保障
+5. **问题解决能力**：Leader Election高可用、配置热更新、Blob错误处理
 
 ---
 
-## 二、技术架构全景
+## 一、项目架构全景
 
-### 2.1 分层架构
+### 1.1 分层架构设计
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -131,7 +334,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 数据流架构
+### 1.2 数据流架构
 
 ```
 用户操作
@@ -154,9 +357,9 @@ Component (signal)
 
 ---
 
-## 三、核心设计模式与架构决策
+## 二、核心设计模式与架构决策
 
-### 3.1 拦截器链 — 职责链模式
+### 2.1 拦截器链 — 职责链模式
 
 **设计决策**：将横切关注点（认证、错误处理、加载状态）分离到独立的函数式拦截器中，按顺序链式执行。
 
@@ -195,7 +398,7 @@ if (err.status == 0 && err.statusText == 'Unknown Error' && req.url.endsWith('al
 
 **思考深度**：为什么Blob错误要特殊处理？因为文件下载接口的响应类型是blob，Angular HttpClient在收到5xx时仍然将错误包装为Blob，而不是JSON。这个边界case在常规项目中很少遇到，体现了对HTTP协议的深入理解。
 
-### 3.2 状态管理 — 混合响应式策略
+### 2.2 状态管理 — 混合响应式策略
 
 **设计决策**：不引入NgRx等重型状态管理库，采用Signals + RxJS混合方案。
 
@@ -251,7 +454,7 @@ getRegexp(url: string) {
 
 **思考深度**：LoadingService支持 `"POST /api/v1/logs"` 格式的匹配，这比简单的URL匹配更精确——同一个URL的GET和POST可以有不同的loading状态。这种设计在表单提交场景下特别有用：列表加载中和提交中可以区分显示。
 
-### 3.3 Web Worker并行解密 — 分治+有序合并
+### 2.3 Web Worker并行解密 — 分治+有序合并
 
 **设计决策**：大日志文件（数百MB）的RSA解密是CPU密集型操作，单线程会阻塞UI。采用Worker Pool分治 + 有序合并 + 流式输出的三阶段策略。
 
@@ -334,7 +537,7 @@ function looksValid(text: string): boolean {
 2. **为什么首段要小**：用户打开日志时，快速看到前2000行比等待全部解密完成体验更好。
 3. **为什么需要格式校验**：私钥不匹配时RSA解密不会报错，而是输出乱码。通过格式校验可以自动切换到正确的私钥。
 
-### 3.4 自研表单系统 — 注册表+工厂模式
+### 2.4 自研表单系统 — 注册表+工厂模式
 
 **设计决策**：系统中有大量表单（NF配置、用户管理、系统设置），需要统一的声明式定义方式，避免重复的模板代码。
 
@@ -410,7 +613,7 @@ export const equalTo = (fb: FormBase): ValidatorFn => {
 2. **为什么延迟订阅**：表单初始化时，验证器会被调用一次。如果此时就订阅valueChanges，会导致循环触发。延迟到首次验证后订阅，确保只订阅一次。
 3. **为什么不用Formly等第三方库**：本项目的表单控件类型有限（9种），且需要深度定制（如PrivateKey控件的多PEM支持）。自研方案更轻量，且与PrimeNG组件深度集成。
 
-### 3.5 装饰器缓存 — 透明代理模式
+### 2.5 装饰器缓存 — 透明代理模式
 
 ```typescript
 // @StorageDecorator() — 重写static属性的getter/setter
@@ -445,7 +648,7 @@ const jwt = CACHE.jwt;     // 自动 JSON.parse(localStorage.getItem('jwt'))
 2. **为什么parse参数默认true**：localStorage只能存字符串，JSON.parse/stringify是必须的。对于已经是字符串的值（如jwt），设置parse=false避免双重序列化。
 3. **为什么需要CACHE门面**：避免项目中散落的`localStorage.getItem('xxx')`调用，统一管理存储key和序列化逻辑。
 
-### 3.6 StreamingService — Fetch API的Observable封装
+### 2.6 StreamingService — Fetch API的Observable封装
 
 ```typescript
 fetchStream(url: string, method: 'GET' | 'POST', body?: object): Observable<string> {
@@ -479,9 +682,9 @@ fetchStream(url: string, method: 'GET' | 'POST', body?: object): Observable<stri
 
 ---
 
-## 四、安全架构深度分析
+## 三、安全架构深度分析
 
-### 4.1 认证体系 — JWT + JTI单点登录
+### 3.1 认证体系 — JWT + JTI单点登录
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -510,7 +713,7 @@ fetchStream(url: string, method: 'GET' | 'POST', body?: object): Observable<stri
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 4.2 审计日志加密 — HKDF + AES-256-GCM
+### 3.2 审计日志加密 — HKDF + AES-256-GCM
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -563,7 +766,7 @@ fetchStream(url: string, method: 'GET' | 'POST', body?: object): Observable<stri
 - CBC需要额外的MAC验证，且存在padding oracle攻击风险
 - GCM支持并行加密，性能更优
 
-### 4.3 防暴力破解 — 三层防护
+### 3.3 防暴力破解 — 三层防护
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -586,9 +789,9 @@ fetchStream(url: string, method: 'GET' | 'POST', body?: object): Observable<stri
 
 ---
 
-## 五、性能工程
+## 四、性能工程
 
-### 5.1 Zoneless变更检测
+### 4.1 Zoneless变更检测
 
 ```typescript
 // app.config.ts
@@ -600,7 +803,7 @@ provideZonelessChangeDetection(),  // 完全移除Zone.js
 - **更精确的变更检测**：Signal值变化只触发依赖它的组件更新，而不是整个组件树
 - **更快的初始渲染**：不需要Zone.js的polyfill和初始化
 
-### 5.2 ESLint强制性能规则
+### 4.2 ESLint强制性能规则
 
 ```javascript
 // eslint.config.js
@@ -610,7 +813,7 @@ provideZonelessChangeDetection(),  // 完全移除Zone.js
 complexity: ["error", 20],                             // 圈复杂度<=20
 ```
 
-### 5.3 构建预算
+### 4.3 构建预算
 
 ```json
 // angular.json
@@ -620,7 +823,7 @@ complexity: ["error", 20],                             // 圈复杂度<=20
 ]
 ```
 
-### 5.4 数据轮询优化
+### 4.4 数据轮询优化
 
 | 策略 | 实现 | 效果 |
 |------|------|------|
@@ -630,7 +833,7 @@ complexity: ["error", 20],                             // 圈复杂度<=20
 | **takeUntilDestroyed** | 组件销毁自动取消 | 避免内存泄漏 |
 | **selectedUpdate** | 刷新时保持选中状态 | 用户体验不中断 |
 
-### 5.5 Web Worker性能
+### 4.5 Web Worker性能
 
 | 优化点 | 实现 | 效果 |
 |--------|------|------|
@@ -641,9 +844,9 @@ complexity: ["error", 20],                             // 圈复杂度<=20
 
 ---
 
-## 六、可维护性设计
+## 五、可维护性设计
 
-### 6.1 代码组织原则
+### 5.1 代码组织原则
 
 ```
 frontend/src/app/
@@ -665,7 +868,7 @@ frontend/src/app/
 - **share不依赖core**：共享组件只依赖core，不依赖具体页面
 - **pages依赖core和share**：页面是最高层，可以依赖所有下层
 
-### 6.2 API层统一模式
+### 5.2 API层统一模式
 
 ```typescript
 // 所有API Service遵循相同模式
@@ -689,7 +892,7 @@ export class XxxApi {
 - 避免 `Cannot read property 'xxx' of undefined` 错误
 - 所有页面的数据获取逻辑一致，降低认知负担
 
-### 6.3 自定义验证器的可组合性
+### 5.3 自定义验证器的可组合性
 
 ```typescript
 // 验证器是纯函数，可以自由组合
@@ -707,7 +910,7 @@ fbs = [
 
 ---
 
-## 七、面试深度问题
+## 六、面试高频问题（深度版）
 
 ### Q1: 为什么选择Zoneless而不是传统Zone.js？
 
@@ -798,7 +1001,7 @@ fbs = [
 
 ---
 
-## 八、技术体系总结
+## 十、技术体系总结
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -844,7 +1047,7 @@ fbs = [
 
 ---
 
-## 九、面试话术模板
+## 十一、面试话术模板
 
 ### 开场（1分钟）
 
@@ -853,21 +1056,21 @@ fbs = [
 ### 技术深度（2-3分钟）
 
 > "项目有几个比较有技术深度的点：
-> 
+>
 > 第一是**Web Worker并行解密**。NF日志是RSA加密的，单个文件可能有几百MB。我设计了Worker Pool方案，根据CPU核心数动态创建2-3个Worker并行解密，通过有序合并保证输出顺序，大文件采用流式输出避免UI冻结。
-> 
+>
 > 第二是**自研表单系统**。系统中有大量表单，我用注册表模式设计了一个声明式表单框架，支持9种控件类型，通过FormBase抽象类和NgComponentOutlet动态渲染，新增控件只需要继承并注册。
-> 
+>
 > 第三是**审计日志加密存储**。使用HKDF派生AES-256密钥，每行独立加密后存储，支持异步channel写入和tar.gz轮转压缩。"
 
 ### 架构思维（1-2分钟）
 
 > "在架构设计上，我遵循几个原则：
-> 
+>
 > 一是**职责分离**：拦截器链将认证、错误处理、Loading追踪分离到独立的函数式拦截器中。
-> 
+>
 > 二是**可扩展性**：表单系统用注册表模式，环境配置通过environment注入Mock拦截器，都是为了让系统更容易扩展。
-> 
+>
 > 三是**代码质量**：ESLint配置了500行文件限制和圈复杂度20，TypeScript开启strict模式，确保代码可维护。"
 
 ### 反思与改进（1分钟）
@@ -876,414 +1079,7 @@ fbs = [
 
 ---
 
-## 十、Go后端架构深度分析
-
-### 10.1 后端模块架构
-
-```
-backend/
-├── cmd/main.go                    # 入口：中间件注册 + 路由挂载
-├── pkg/
-│   ├── router.go                  # 全局路由注册
-│   ├── auth/                      # 认证模块
-│   │   ├── auth_handler.go        # 登录/登出/刷新Token
-│   │   ├── auth_middleware.go      # JWT鉴权中间件
-│   │   ├── rbac_middleware.go      # RBAC角色中间件
-│   │   └── dependencies.go        # 审计日志接口（解耦依赖）
-│   ├── db/                        # 数据持久化
-│   │   ├── oam_data.go            # OAM数据模型
-│   │   ├── oam_data_handler.go    # 加密读写/初始化/恢复
-│   │   ├── nf_data_handler.go     # NF CRUD + JWT管理
-│   │   ├── user_data_handler.go   # User CRUD + 锁定/解锁
-│   │   └── whitelist_data_handler.go # JTI白名单/登录失败追踪
-│   ├── auditlog/                  # 审计日志模块
-│   │   ├── mgr.go                 # 异步写入/轮转/清理管理器
-│   │   ├── middleware.go          # 请求拦截 + 响应捕获
-│   │   ├── handler.go             # 读取/解密/恢复
-│   │   ├── event_types.go         # 40+审计事件类型定义
-│   │   └── model.go               # AuditLog数据模型
-│   ├── nf/                        # 网元管理模块
-│   │   ├── nfmgmt/
-│   │   │   ├── nf_list_handler.go # NF CRUD + Echo状态检测
-│   │   │   ├── log_handler.go     # NF日志解密（RSA + Flate）
-│   │   │   ├── backup_handler.go  # NF备份/恢复
-│   │   │   └── ...
-│   │   └── util/
-│   │       ├── nf_jwt.go          # NF JWT生成（RS256）
-│   │       ├── nf_tls.go          # mTLS客户端配置
-│   │       └── secure_http_client.go # NF安全HTTP代理
-│   ├── externalstorage/           # S3外部存储模块
-│   │   ├── mgr.go                 # 周期性备份管理器
-│   │   ├── backup.go              # 备份压缩/恢复/解压
-│   │   ├── s3_operation.go        # S3上传/下载/删除
-│   │   └── alarm.go               # 备份告警
-│   ├── localha/                   # 高可用模块
-│   │   ├── handler.go             # K8s Leader Election
-│   │   └── k8s_operation.go       # K8s权限检查
-│   ├── metrics/                   # 监控模块
-│   │   ├── mgr.go                 # Prometheus HTTP Server
-│   │   └── stats.go               # 9个指标定义
-│   ├── sysconfig/                 # 系统配置模块
-│   │   ├── yaml_config_handler.go # YAML配置 + 动态回调
-│   │   └── page_config_handler.go # 前端可配置参数
-│   └── util/
-│       ├── aes_gcm_util.go        # AES-256-GCM加解密
-│       └── gin_util.go            # 统一响应格式
-└── init-data/
-    └── oam-data.json              # 加密的初始OAM数据
-```
-
-### 10.2 中间件链设计
-
-```go
-// main.go — 中间件执行顺序
-gin.Default()
-  → gin.CustomRecovery()              // 1. Panic恢复（最外层）
-  → auditlog.LogMiddleware()          // 2. 全局审计拦截
-  → auditlog.ResponseCaptureMiddleware() // 3. 响应捕获
-  → static.Serve()                   // 4. 静态文件服务
-  → pkg.RegisterRouters()            // 5. 路由注册（含各模块中间件）
-```
-
-**路由级中间件**：
-
-```
-/api/v1/auth/*        → 无鉴权（登录/刷新）
-/api/v1/*             → AuthMiddleware() → RBACMiddleware()
-/api/v1/network-functions/* → AuthMiddleware() → RBACMiddleware()
-/api/v1/users/*       → AuthMiddleware() → RBACMiddleware(Admin)
-/api/v1/audit/*       → AuthMiddleware() → RBACMiddleware(Admin)
-```
-
-### 10.3 数据持久化 — 加密JSON文件
-
-**设计决策**：不使用关系型数据库，而是将所有数据存储在加密的JSON文件中。
-
-```go
-// oam_data_handler.go — 加密写入
-func SaveOAMData(data *OAMData) error {
-    jsonData, _ := json.Marshal(data)
-    encrypted, _ := aesgcm.Encrypt(jsonData, encryptionKey)
-    return os.WriteFile(oamDataPath, encrypted, 0600)
-}
-
-// oam_data_handler.go — 解密读取
-func LoadOAMData() (*OAMData, error) {
-    encrypted, _ := os.ReadFile(oamDataPath)
-    decrypted, _ := aesgcm.Decrypt(encrypted, encryptionKey)
-    var data OAMData
-    json.Unmarshal(decrypted, &data)
-    return &data, nil
-}
-```
-
-**为什么选择文件而不是数据库**：
-- 部署环境是K8s + PVC，NFS存储已经是持久化的
-- 数据量有限（网元数、用户数不会太多）
-- 避免引入数据库依赖，降低运维复杂度
-- 加密存储满足安全合规要求
-
-### 10.4 NF安全通信 — mTLS + RS256
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    NF通信安全架构                              │
-│                                                             │
-│  LI-OAM Backend                                             │
-│  │                                                          │
-│  ├─→ nf_jwt.go: 生成RS256 JWT（NF专用令牌）                 │
-│  │   使用RSA私钥签名，NF用公钥验证                           │
-│  │                                                          │
-│  ├─→ nf_tls.go: mTLS客户端配置                              │
-│  │   加载CA证书 + 客户端证书 + 客户端密钥                    │
-│  │                                                          │
-│  ├─→ secure_http_client.go:                                │
-│  │   验证NF URL必须是HTTPS                                  │
-│  │   配置mTLS + 自定义CA + Hostname验证                     │
-│  │                                                          │
-│  └─→ HTTP/2代理转发请求到NF                                 │
-│                                                             │
-│  5G NF (SMF/UPF)                                            │
-│  │                                                          │
-│  └─→ 验证RS256 JWT + mTLS双向认证                           │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 10.5 高可用 — K8s Leader Election
-
-```go
-// localha/handler.go — Leader Election
-func StartLeaderElection(ctx context.Context, k8sClient kubernetes.Interface, ...) {
-    leaderElection := &leaderelection.LeaderElectionConfig{
-        Lock:          &resourcelock.LeaseLock{...},
-        LeaseDuration: 5 * time.Second,   // 续约期限
-        RetryPeriod:   2 * time.Second,   // 重试间隔
-        Callbacks: leaderelection.LeaderCallbacks{
-            OnStartedLeading: func(ctx context.Context) {
-                // 成为Master，启动所有服务
-                startAllServices(ctx)
-            },
-            OnStoppedLeading: func() {
-                // 失去Master身份，停止服务
-                stopAllServices()
-            },
-        },
-    }
-    go leaderElection.Run(ctx)
-}
-```
-
-**双副本部署**：
-- 2个Pod通过K8s Lease资源进行Leader Election
-- Master Pod运行所有服务，Slave Pod待命
-- Master故障时，Slave在5秒内接管
-- Service的selector包含 `election-identifier: "unknown"`，确保流量只路由到Master
-
-### 10.6 配置管理 — 两层架构
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    两层配置架构                               │
-│                                                             │
-│  第1层: YAML配置 (ConfigMap分发)                             │
-│  ├── sys-config.json: S3/NF/HA配置                          │
-│  ├── 通过环境变量 NAMESPACE 加载                             │
-│  ├── fsnotify监听文件变更 → 动态重建S3客户端                 │
-│  └── 适用于: 基础设施配置，不需要前端修改                     │
-│                                                             │
-│  第2层: Page配置 (PVC持久化)                                 │
-│  ├── maxFileSizeMB / maxFileDuration / maxFileAgeToDelete    │
-│  ├── tokenExpiredTimeHours / storePrivateKey                │
-│  ├── 通过前端系统设置页面修改                                │
-│  ├── 通过API读写，后端落盘到PVC                              │
-│  └── 适用于: 业务配置，需要管理员动态调整                     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 10.7 配置热更新 — fsnotify
-
-```go
-// s3_operation.go — 监听AWS凭证/CA证书变更
-watcher, _ := fsnotify.NewWatcher()
-watcher.Add(awsCredentialsPath)
-watcher.Add(caCertPath)
-
-go func() {
-    for event := range watcher.Events {
-        if event.Op&fsnotify.Write == fsnotify.Write {
-            // 文件变更 → 重建S3客户端
-            rebuildS3Client()
-        }
-    }
-}()
-```
-
----
-
-## 十一、部署架构深度分析
-
-### 11.1 Docker多阶段构建
-
-```dockerfile
-# 阶段1: 前端构建
-FROM node:24-alpine AS frontend
-COPY frontend .
-RUN npm install && npm run build
-RUN mv dist/li-oam/browser dist/axyom
-
-# 阶段2: 后端构建
-FROM golang:1.26 AS backend
-COPY backend/ .
-RUN CGO_ENABLED=0 go build -o backend
-
-# 阶段3: 生产镜像
-FROM alpine:3.23 AS prod
-COPY --from=frontend /deploy/frontend/dist/axyom /var/www/axyom
-COPY --from=backend /app/backend /backend
-COPY nentry.sh /
-ENTRYPOINT ["/nentry.sh"]
-```
-
-**构建优化**：
-- 前端和后端并行构建（Docker BuildKit自动并行）
-- 最终镜像基于Alpine，体积小（约50MB）
-- 静态文件由Go后端直接serve，不需要Nginx
-- CGO_ENABLED=0 静态编译，无动态链接依赖
-
-### 11.2 Kubernetes部署架构
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    K8s集群部署架构                               │
-│                                                                 │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  Namespace: oam                                         │   │
-│  │                                                         │   │
-│  │  ┌───────────────────────┐  ┌───────────────────────┐  │   │
-│  │  │  Deployment           │  │  Service              │  │   │
-│  │  │  axyom-li-oam         │  │  web-access-oam-backend│  │   │
-│  │  │  replicas: 2          │→│  port: 80 → 8080       │  │   │
-│  │  │  ┌──────┐ ┌──────┐   │  └───────────────────────┘  │   │
-│  │  │  │Pod 0 │ │Pod 1 │   │                              │   │
-│  │  │  │Master│ │Slave │   │  ┌───────────────────────┐  │   │
-│  │  │  └──────┘ └──────┘   │  │  Route (OpenShift)    │  │   │
-│  │  └───────────────────────┘  │  TLS: passthrough     │  │   │
-│  │                             │  → web-access-oam     │  │   │
-│  │  ┌───────────────────────┐  └───────────────────────┘  │   │
-│  │  │  PVC                 │                               │   │
-│  │  │  lioam-pvc (5Gi)     │  ┌───────────────────────┐  │   │
-│  │  │  NFS storage class   │  │  Metrics Service      │  │   │
-│  │  │  ReadWriteMany       │  │  port: 80 → 8081      │  │   │
-│  │  └───────────────────────┘  └───────────────────────┘  │   │
-│  │                                                         │   │
-│  │  ┌───────────────────────┐  ┌───────────────────────┐  │   │
-│  │  │  ServiceAccount       │  │  Role + RoleBinding   │  │   │
-│  │  │  axyom-li-oam         │  │  leases/pods/services │  │   │
-│  │  │  + imagePullSecrets   │  │  get/update/patch     │  │   │
-│  │  └───────────────────────┘  └───────────────────────┘  │   │
-│  │                                                         │   │
-│  │  ┌───────────────────────┐  ┌───────────────────────┐  │   │
-│  │  │  ConfigMap            │  │  Secrets (3个)        │  │   │
-│  │  │  sys-config.json      │  │  frontend-tls         │  │   │
-│  │  │                       │  │  s3-tls               │  │   │
-│  │  │                       │  │  nf-tls               │  │   │
-│  │  │                       │  │  aws-keys             │  │   │
-│  │  └───────────────────────┘  └───────────────────────┘  │   │
-│  │                                                         │   │
-│  │  ┌───────────────────────┐                              │   │
-│  │  │  Istio ServiceAccount │                              │   │
-│  │  │  axyom-lioam-nf       │  NF通信的ServiceAccount     │   │
-│  │  │  axyom-lioam-s3       │  S3通信的ServiceAccount     │   │
-│  │  │  axyom-lioam-frontend │  前端的ServiceAccount       │   │
-│  │  └───────────────────────┘                              │   │
-│  └─────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 11.3 安全架构 — Istio mTLS
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    三套TLS证书体系                            │
-│                                                             │
-│  1. Frontend TLS (Istio签发)                                │
-│     ├── 用途: 前端HTTPS访问                                  │
-│     ├── 证书: cert-chain.pem + key.pem                      │
-│     ├── CA: root-cert.pem                                   │
-│     └── Route: passthrough termination                      │
-│                                                             │
-│  2. S3 TLS (Istio签发)                                      │
-│     ├── 用途: 后端与S3存储通信                               │
-│     ├── CA: root-cert.pem (挂载到/etc/secrets/s3)           │
-│     └── 支持自定义CA + DualStack                             │
-│                                                             │
-│  3. NF TLS (Istio签发)                                      │
-│     ├── 用途: 后端与5G网元通信                               │
-│     ├── 客户端证书: client.crt + client.key                  │
-│     ├── CA: root-cert.pem                                   │
-│     └── mTLS双向认证                                        │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 11.4 Helm Chart价值
-
-| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| `replicas` | 2 | 双副本高可用 |
-| `persistence.size` | 5Gi | NFS持久化存储 |
-| `sysConfig.s3Storage.endpoint` | minio地址 | S3兼容存储 |
-| `sysConfig.nfConfig.httpTimeoutSec` | 30 | NF请求超时 |
-| `secret.frontendTls.enabled` | true | 前端TLS |
-| `secret.nfTls.enabled` | true | NF mTLS |
-| `serviceMonitor.enabled` | false | Prometheus监控 |
-| `route.enabled` | true | OpenShift Route |
-| `istioServiceAccounts.create` | true | Istio SA |
-| `ipDualStack.enabled` | false | IPv4/IPv6双栈 |
-
----
-
-## 十二、CI/CD与工程化
-
-### 12.1 GitLab CI流水线
-
-```yaml
-# .gitlab-ci.yml
-include:
-  - project: devops/gitlab-ci
-    file: templates/AutoDevOps.gitlab-ci.yml
-
-# Helm Chart打包（手动触发）
-li-oam-chart:
-  stage: release
-  script:
-    - helm package $LI_OAM_CHART_DIR
-    - jf rt u ... helm-local/li-oam/li-oam-${VERSION}.tgz
-  when: manual          # 手动触发
-  only: [master, main]  # 仅主分支
-  allow_failure: true   # 允许失败
-  retry:
-    max: 2
-    when: runner_system_failure
-```
-
-**流水线阶段**：
-
-```
-Code Push → Build → Test → Scan → Package → Release (manual)
-                                    │
-                                    ├─→ Docker Build (多阶段)
-                                    ├─→ Helm Package
-                                    └─→ JFrog Artifactory上传
-```
-
-### 12.2 前端工程化
-
-| 工具 | 配置 | 作用 |
-|------|------|------|
-| **ESLint** | `max-lines: 500`, `complexity: 20` | 代码质量门禁 |
-| **Prettier** | 统一格式化 | 代码风格一致 |
-| **Husky** | pre-commit hook | 提交前自动lint |
-| **lint-staged** | `src/**/*.{html,ts}` | 只检查暂存文件 |
-| **TypeScript** | `strict: true` | 类型安全 |
-| **Angular ESLint** | `prefer-signals: error` | 强制使用Signals |
-| **模板规则** | `prefer-control-flow: error` | 强制@if/@for |
-| **属性顺序** | `attributes-order: error` | 模板属性排序 |
-
-### 12.3 Mock系统架构
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    开发环境Mock系统                           │
-│                                                             │
-│  environment.development.ts                                 │
-│  └─→ interceptor: [mockInterceptor]                         │
-│                                                             │
-│  mock.interceptor.ts                                        │
-│  ├── 匹配规则: URL + Method                                 │
-│  ├── 延迟: 3000ms (模拟网络延迟)                             │
-│  ├── 错误率: 可配置 (模拟502等错误)                          │
-│  └── 返回: 预设的JSON数据                                   │
-│                                                             │
-│  mock/data/                                                 │
-│  ├── _audit.ts        审计日志mock数据                       │
-│  ├── _backup.ts       备份mock数据                           │
-│  ├── _config.ts       配置mock数据                           │
-│  ├── _connect-status.ts 连接状态mock数据                     │
-│  ├── _metric.ts       指标mock数据                           │
-│  ├── _network-function.ts NF mock数据                       │
-│  ├── _users.ts        用户mock数据                           │
-│  └── li.db.ts         统一mock规则注册                       │
-│                                                             │
-│  特点:                                                       │
-│  ├── 生产环境零开销 (environment.ts interceptor: [])         │
-│  ├── 开发环境独立运行，不依赖后端                             │
-│  └── 支持延迟和随机错误，模拟真实网络环境                     │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 十三、架构决策记录 (ADR)
+## 附录：架构决策记录 (ADR)
 
 ### ADR-001: 选择Zoneless Angular 20
 
@@ -1365,11 +1161,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 
 **后果**: 前端更新需要重新构建整个镜像，但CI/CD自动化后影响不大。
 
----
-
-## 十四、扩展面试问题
-
-### Q9: 为什么选择加密JSON文件而不是数据库？
+### Q1: 为什么选择加密JSON文件而不是数据库？
 
 **考察点**：技术选型权衡
 
@@ -1380,7 +1172,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **安全合规**：AES-256-GCM加密存储，满足审计要求
 > 5. **trade-off**：不支持高并发写入，但运维场景写入频率低
 
-### Q10: K8s Leader Election的工作原理？
+### Q2: K8s Leader Election的工作原理？
 
 **考察点**：分布式系统理解
 
@@ -1391,7 +1183,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **故障转移**：Master Pod消失后，Slave在5秒内检测到lease过期并接管
 > 5. **流量切换**：Service selector包含election-identifier，确保只路由到Master
 
-### Q11: mTLS在项目中的应用场景？
+### Q3: mTLS在项目中的应用场景？
 
 **考察点**：网络安全理解
 
@@ -1402,7 +1194,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **证书轮转**：Istio自动轮转证书，无需人工干预
 > 5. **Passthrough Route**：OpenShift Route使用passthrough，TLS在Pod内终结
 
-### Q12: 如何保证审计日志的不可篡改性？
+### Q4: 如何保证审计日志的不可篡改性？
 
 **考察点**：安全架构思维
 
@@ -1413,7 +1205,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **保留期管理**：过期日志自动清理，避免长期存储的安全风险
 > 5. **S3外部备份**：备份文件存储在S3，具有版本控制和访问日志
 
-### Q13: Docker多阶段构建的优势？
+### Q5: Docker多阶段构建的优势？
 
 **考察点**：DevOps实践
 
@@ -1424,7 +1216,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **缓存优化**：每个阶段独立缓存，npm install和go mod download可以复用
 > 5. **CGO_ENABLED=0**：静态编译，无动态链接依赖，Alpine镜像即可运行
 
-### Q14: fsnotify配置热更新的实现？
+### Q6: fsnotify配置热更新的实现？
 
 **考察点**：运维自动化
 
@@ -1435,7 +1227,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 4. **使用场景**：Istio自动轮转证书时，后端自动感知并更新
 > 5. **容错**：重建失败时保持旧客户端，不影响现有服务
 
-### Q15: 项目中有哪些设计模式？如何选择？
+### Q7: 项目中有哪些设计模式？如何选择？
 
 **考察点**：设计模式理解
 
@@ -1449,7 +1241,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 7. **适配器**（auditlog/adapter.go）：解耦审计日志依赖
 > 8. **选择原则**：简单问题用简单模式，不过度设计
 
-### Q16: 如果NF数量扩展到1000个，系统需要哪些优化？
+### Q8: 如果NF数量扩展到1000个，系统需要哪些优化？
 
 **考察点**：可扩展性思维
 
@@ -1461,7 +1253,7 @@ Code Push → Build → Test → Scan → Package → Release (manual)
 > 5. **审计日志**：1000个NF的操作审计量会大幅增加，需要考虑日志分片
 > 6. **数据存储**：加密JSON文件可能成为瓶颈，需要考虑分片或引入数据库
 
-### Q17: 如何监控系统的健康状态？
+### Q9: 如何监控系统的健康状态？
 
 **考察点**：可观测性思维
 
