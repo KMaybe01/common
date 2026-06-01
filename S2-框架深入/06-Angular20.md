@@ -6,61 +6,6 @@
 
 ---
 
-## 📑 目录结构
-
-### 第一部分：核心基础
-
-- [📦 1️⃣ 什么是 Angular？](#1️⃣-什么是-angular)
-- [📦 2️⃣ Angular 20 新特性详解](#2️⃣-angular-20-新特性详解)
-- [📦 3️⃣ Angular 21 最新进展（2025-2026）](#3️⃣-angular-21-最新进展2025-2026)
-- [📦 4️⃣ TypeScript 与 Angular 深度融合](#4️⃣-typescript-与-angular-深度融合)
-- [📦 5️⃣ 组件系统深层理解](#5️⃣-组件系统深层理解)
-- [📦 6️⃣ Signals vs Observables](#6️⃣-signals-vs-observables)
-- [📦 7️⃣ 数据绑定深度剖析](#7️⃣-数据绑定深度剖析)
-- [📦 8️⃣ 指令与管道系统](#8️⃣-指令与管道系统)
-- [📦 9️⃣ RxJS 在 Angular 中的应用](#9️⃣-rxjs-在-angular-中的应用)
-- [📦 🔟 状态管理（NgRx/Signals Store）](#🔟-状态管理ngrxsignals-store)
-
-### 第二部分：高级特性
-
-- [📦 1️⃣ 依赖注入（DI）系统](#1️⃣-依赖注入di系统)
-- [📦 2️⃣ 路由系统（Router）](#2️⃣-路由系统router)
-- [📦 3️⃣ 表单系统深度剖析](#3️⃣-表单系统深度剖析)
-- [📦 4️⃣ 生命周期钩子完全指南](#4️⃣-生命周期钩子完全指南)
-
-### 第三部分：工程实践
-
-- [📦 1️⃣ Angular CLI 与项目结构](#1️⃣-angular-cli-与项目结构)
-- [📦 2️⃣ 变更检测机制](#2️⃣-变更检测机制)
-
-### 第四部分：源码级原理
-
-- [📦 1️⃣ Ivy 渲染引擎](#1️⃣-ivy-渲染引擎)
-- [📦 2️⃣ Injector 层级机制](#2️⃣-injector-层级机制)
-- [📦 3️⃣ 模板编译原理](#3️⃣-模板编译原理)
-- [📦 4️⃣ Signals 源码实现](#4️⃣-signals-源码实现)
-
-### 第五部分：面试题深度解析
-
-- [📦 1️⃣-2️⃣ 基础概念与组件](#1️⃣-为什么选择-angular)
-- [📦 3️⃣-5️⃣ 依赖注入与路由](#3️⃣-angular-的依赖注入系统)
-- [📦 6️⃣-8️⃣ 响应式与表单](#6️⃣-observable-和-signal-的区别)
-- [📦 9️⃣-🔟 数据获取与迁移](#9️⃣-如何在-angular-中获取数据)
-- [📦 1️⃣1️⃣-1️⃣3️⃣ 编译与通信](#11️⃣-angular-的-aot-和-jit-编译有什么区别)
-- [📦 1️⃣4️⃣-1️⃣7️⃣ 性能与跨平台](#14️⃣-standalone-组件-vs-ngmodule-有什么区别)
-- [📦 1️⃣8️⃣-2️⃣0️⃣ 框架对比](#18️⃣-angular-变更检测与-react-的区别)
-
-### 第六部分：常见 Bug 与调试技巧
-
-- [📦 1️⃣ 变更检测问题](#1️⃣-变更检测问题)
-- [📦 2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
-
-### 第七部分：生态深度解析
-
-- [📦 1️⃣ Angular CLI 进阶](#1️⃣-angular-cli-进阶)
-
----
-
 # 第一部分：核心基础
 
 ## 1️⃣ 什么是 Angular？
@@ -517,6 +462,7 @@ function computed<T>(fn: () => T): Signal<T> {
   const node: Node = {
     value: undefined,
     version: 0,
+    dirty: true,
     sources: null,
     subscribers: null,
     computationFn: fn as () => unknown,
@@ -524,12 +470,13 @@ function computed<T>(fn: () => T): Signal<T> {
   }
   
   function get(): T {
-    // 懒计算：只在被读取时才计算结果
-    if (activeSubscriber && node.version === 0) {
+    // 懒计算：依赖变化时重新计算
+    if (activeSubscriber && node.dirty) {
       const prev = activeSubscriber
       activeSubscriber = node
       node.value = fn()
       node.version++
+      node.dirty = false
       activeSubscriber = prev
     }
     return node.value as T
@@ -1168,6 +1115,7 @@ import { Directive, TemplateRef, ViewContainerRef, input, effect } from '@angula
 })
 export class UnlessDirective {
   appUnless = input(false);
+  private hasView = false;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -1175,9 +1123,15 @@ export class UnlessDirective {
   ) {
     effect(() => {
       if (!this.appUnless()) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
+        if (!this.hasView) {
+          this.viewContainer.createEmbeddedView(this.templateRef);
+          this.hasView = true;
+        }
       } else {
-        this.viewContainer.clear();
+        if (this.hasView) {
+          this.viewContainer.clear();
+          this.hasView = false;
+        }
       }
     });
   }
@@ -1318,14 +1272,22 @@ source$.pipe(
 export class SearchComponent {
   private userService = inject(UserService);
 
-  searchTerm = signal('');
+  rawTerm = signal('');
+  debouncedTerm = signal('');
+
+  constructor() {
+    effect((onCleanup) => {
+      const value = this.rawTerm();
+      const id = setTimeout(() => this.debouncedTerm.set(value), 300);
+      onCleanup(() => clearTimeout(id));
+    });
+  }
 
   results = resource({
-    request: () => this.searchTerm(),
+    request: () => this.debouncedTerm(),
     loader: ({ request: term }) => {
       if (!term) return of([] as User[]);
       return this.userService.search(term).pipe(
-        debounceTime(300),
         catchError(error => {
           console.error('搜索失败', error);
           return of([] as User[]);
@@ -1335,7 +1297,7 @@ export class SearchComponent {
   });
 
   onSearch(term: string) {
-    this.searchTerm.set(term);
+    this.rawTerm.set(term);
   }
 }
 ```
@@ -1724,7 +1686,7 @@ export const routes: Routes = [
     path: 'analytics',
     loadChildren: () => 
       import('./analytics/analytics.module').then(m => m.AnalyticsModule),
-    canLoad: [authGuard]
+    canLoad: [authGuard],  // ⚠️ Deprecated in Angular 15+, use canMatch instead
   },
   
   // 6️⃣ 通配符路由（必须放在最后）
@@ -2072,8 +2034,7 @@ my-angular-app/
 │   └── styles.scss              # 全局样式
 ├── angular.json                 # Angular 配置
 ├── tsconfig.json                # TypeScript 配置
-├── package.json
-└── vite.config.ts               # Vite 构建 (Angular 17+)
+└── package.json
 ```
 
 ### ⚡ CLI 常用命令
@@ -2684,7 +2645,7 @@ describe('用户列表组件', () => {
 // Zone.js 通过 monkey-patching 拦截所有异步操作
 
 // 1. 拦截原生 API
-const original setTimeout = window.setTimeout;
+const originalSetTimeout = window.setTimeout;
 window.setTimeout = function(fn, delay) {
   // 进入 Zone 上下文
   const zone = Zone.current;
@@ -2840,7 +2801,7 @@ export class NodeInjector {
       return provider.useFactory(...deps);
     } else if (provider.useValue) {
       return provider.useValue;
-    } else if (provider useClass) {
+    } else if (provider.useClass) {
       const deps = this._resolveDeps(provider.deps || []);
       return new provider.useClass(...deps);
     }
@@ -2866,10 +2827,10 @@ export function createLView(
   // 2. 设置 Injector 层级
   if (parentLView) {
     // 子组件的 Injector 继承自父组件
-    lView injector = parentLView.injector.createChildInjector(lView);
+    lView.injector = parentLView.injector.createChildInjector(lView);
   } else {
     // 根组件使用 RootInjector
-    lView injector = new RootInjector();
+    lView.injector = new RootInjector();
   }
 
   return lView;
@@ -3034,7 +2995,7 @@ export function signal<T>(
     if (!node.equal(node.value, newValue)) {
       node.value = newValue;
       // 通知所有依赖
-      notifyEffect(node.producers);
+      notifyEffect(node.consumers);
     }
   }
 
@@ -3103,7 +3064,7 @@ export function computed<T>(
       cachedValue = computation();
       node.dirty = false;
       // 通知下游
-      notifyEffect(node.producers);
+      notifyEffect(node.consumers);
     }
   }
 
@@ -3146,7 +3107,7 @@ export function effect(
       node.fn();
 
       // 收集新依赖
-      node.deps.forEach(dep => dep.producers.add(node));
+      node.deps.forEach(dep => dep.consumers.add(node));
     } finally {
       activeEffect = previousEffect;
     }
@@ -3263,7 +3224,7 @@ export function linkedSignal<S, T>(
 
   // 1. 创建 Linked Signal
   let cachedValue: T;
-  let previousSource: S;
+  let previousSource: S | undefined = undefined;
 
   // 2. 读取函数
   function read(): T {
@@ -3756,7 +3717,7 @@ export function component(options: ComponentOptions): Rule {
       template({
         ...options,
         ...strings
-      ]),
+      }),
       move(options.path)
     ]);
 

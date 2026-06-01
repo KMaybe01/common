@@ -2,84 +2,93 @@
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通、源码级原理、React Compiler 深度、项目实战重难点、内存泄漏排查、深度面试追问题
->
 
----
+### 🎯 React 核心概念关系图
 
-## 📑 目录结构
+```mermaid
+mindmap
+  root((React 核心))
+    组件系统
+      函数组件
+      JSX 语法
+      Props / State
+      组合模式
+    Hooks 系统
+      useState
+      useEffect
+      useContext
+      useReducer
+      useRef
+      自定义 Hooks
+    并发特性
+      startTransition
+      useDeferredValue
+      Suspense
+      ["use()"]
+    服务端组件
+      RSC 架构
+      'use client'
+      流式 SSR
+      选择性水合
+    状态管理
+      Context API
+      Zustand
+      Redux Toolkit
+      Jotai/Recoil
+    数据获取
+      TanStack Query
+      SWR
+      React Query
+    路由系统
+      React Router
+      Next.js App Router
+      动态路由
+      嵌套路由
+    工程化
+      Vite / Webpack
+      TypeScript
+      测试策略
+      React Compiler
+```
 
-### 第一部分：核心基础
+### 📈 React 技术栈完整知识体系
 
-- [📦 1️⃣ React 是什么？](#1️⃣-react-是什么)
-- [📦 2️⃣ React 版本迭代史（2013—2026）](#2️⃣-react-版本迭代史20132026)
-- [📦 3️⃣ React 19 新特性详解](#3️⃣-react-19-新特性详解)
-- [📦 4️⃣ JSX 与 Babel](#4️⃣-jsx-与-babel)
-- [📦 5️⃣ 组件与 Props 深度剖析](#5️⃣-组件与-props-深度剖析)
-- [📦 6️⃣ React 事件机制](#6️⃣-react-事件机制)
-- [📦 7️⃣ Hooks 系统完全指南](#7️⃣-hooks-系统完全指南)
-- [📦 8️⃣ 自定义 Hooks 设计模式](#8️⃣-自定义-hooks-设计模式)
-- [📦 9️⃣ 生命周期与 Fiber 架构](#9️⃣-生命周期与-fiber-架构)
-- [📦 🔟 代码复用方案对比](#🔟-代码复用方案对比)
+```mermaid
+flowchart TB
+    subgraph 基础层
+        A1["HTML/CSS/JS"] --> A2["TypeScript"]
+        A2 --> A3["ES6+ 语法"]
+    end
 
-### 第二部分：高级特性
+    subgraph React 核心
+        B1["组件化思想"] --> B2["JSX 语法"]
+        B2 --> B3["Hooks 系统"]
+        B3 --> B4["状态管理"]
+    end
 
-- [📦 1️⃣ Context API 深度应用](#1️⃣-context-api-深度应用)
-- [📦 2️⃣ 状态管理完全指南](#2️⃣-状态管理完全指南)
-- [📦 3️⃣ 路由完全指南](#3️⃣-路由完全指南)
-- [📦 4️⃣ 表单系统](#4️⃣-表单系统)
-- [📦 5️⃣ 性能模式](#5️⃣-性能模式)
+    subgraph 并发特性
+        C1["Fiber 架构"] --> C2["时间切片"]
+        C2 --> C3["优先级调度"]
+        C3 --> C4["Suspense"]
+    end
 
-### 第三部分：工程实践
+    subgraph 服务端渲染
+        D1["Next.js"] --> D2["SSR/SSG/ISR"]
+        D2 --> D3["RSC 架构"]
+        D3 --> D4["流式渲染"]
+    end
 
-- [📦 1️⃣ 工程化与配置](#1️⃣-工程化与配置)
-- [📦 2️⃣ Next.js（React 元框架）](#2️⃣-nextjsreact-元框架)
-- [📦 3️⃣ 数据层与状态 TypeScript 集成](#3️⃣-数据层与状态-typescript-集成)
-- [📦 4️⃣ React 测试实践](#4️⃣-react-测试实践)
-- [📦 5️⃣ Tailwind CSS 原子化样式](#5️⃣-tailwind-css-原子化样式)
-- [📦 6️⃣ 全栈实战：认证与购物车系统](#6️⃣-全栈实战认证与购物车系统)
+    subgraph 高级主题
+        E1["性能优化"] --> E2["React Compiler"]
+        E2 --> E3["虚拟列表"]
+        E3 --> E4["内存管理"]
+    end
 
-### 第四部分：性能优化
-
-- [📦 1️⃣ 性能优化完全指南](#1️⃣-性能优化完全指南)
-- [📦 2️⃣ React 18 并发特性](#2️⃣-react-18-并发特性)
-- [📦 3️⃣ 图片与资源优化](#3️⃣-图片与资源优化)
-
-### 第五部分：源码级原理深入
-
-- [📦 1️⃣ Fiber 架构深入理解](#1️⃣-fiber-架构深入理解)
-- [📦 2️⃣ Reconciliation 算法](#2️⃣-reconciliation-算法)
-- [📦 3️⃣ React Compiler 源码原理](#3️⃣-react-compiler-源码原理)
-
-### 第六部分：React 19 新特性深入
-
-- [📦 1️⃣ React Compiler 深入](#1️⃣-react-compiler-深入)
-- [📦 2️⃣ Actions 机制深入](#2️⃣-actions-机制深入)
-- [📦 3️⃣ use() Hook 深入](#3️⃣-use-hook-深入)
-
-### 第七部分：项目实战与进阶
-
-- [📦 1️⃣ 微前端与 React](#1️⃣-微前端与-react)
-- [📦 2️⃣ Monorepo 实战](#2️⃣-monorepo-实战)
-- [📦 3️⃣ Next.js App Router 实战](#3️⃣-nextjs-app-router-实战)
-- [📦 4️⃣ 性能监控实践](#4️⃣-性能监控实践)
-
-### 第八部分：常见 Bug 与陷阱
-
-- [📦 1️⃣ 闭包陷阱](#1️⃣-闭包陷阱)
-- [📦 2️⃣ 内存泄漏排查](#2️⃣-内存泄漏排查)
-- [📦 3️⃣ 竞态条件](#3️⃣-竞态条件)
-
-### 第九部分：生态与对比
-
-- [📦 1️⃣ 状态管理方案对比](#1️⃣-状态管理方案对比)
-- [📦 2️⃣ 数据获取方案对比](#2️⃣-数据获取方案对比)
-
-### 第十部分：综合面试题
-
-- [🎯 Hooks 实现原理](#hooks-实现原理)
-- [🎯 实战场景题](#实战场景题)
-- [🎯 推荐学习资源](#推荐学习资源)
-- [🎯 官方参考文档](#官方参考文档)
+    A3 --> B1
+    B4 --> C1
+    C4 --> D1
+    D4 --> E1
+```
 
 ---
 
@@ -363,13 +372,15 @@ React 19 (2025)
 └─ Web Components 增强
 ```
 
-### 🔧 React Compiler (Forget)详解
+### 🔧 React Compiler 详解
 
 #### 问题背景
 
 手动优化 React 性能很复杂：
 
 ```typescript
+import { memo, useCallback, useMemo } from 'react';
+
 // ❌ 需要手动记忆化
 const MyComponent = memo((props) => {
   const handleClick = useCallback(() => {}, []);
@@ -460,19 +471,17 @@ function ThemedButton() {
 
 > ⚠️ **注意**：`use()` 可以在条件语句中调用（与 Hooks 规则不同），但 Promise 必须在 Suspense 边界内使用。
 
-### ⏱️ React 18 vs 19 vs 20（预期）关键变化
+### ⏱️ React 18 vs 19 关键变化
 
-| 特性 | React 18 (2022) | React 19 (2025) | React 20 (预测) |
-|------|-----------------|-----------------|----------------------|
-| 并发模式 | 可选启用 | opt-in（通过 useTransition/useDeferredValue） | opt-in |
-| startTransition | ✅ | ✅ 增强 | ✅ 自动 |
-| use() | ❌ | ✅ | ✅ 增强 |
-| useOptimistic | ❌ | ✅ | ✅ 自动 |
-| Server Components | 实验性 | ✅ 稳定 | ✅ 默认推荐 |
-| ref 传参 | forwardRef | 直接传 ref | 直接传 ref |
-| Compiler | 实验性 | ✅ 自动 memo | ✅ 默认 |
-
-> ⚠️ **注意**：React 20/21 的特性基于官方 RFC 和社区预测，实际发布可能有所调整。
+| 特性 | React 18 (2022) | React 19 (2025) |
+|------|-----------------|-----------------|
+| 并发模式 | useTransition/useDeferredValue opt-in | 同 React 18，并发特性保持兼容 |
+| startTransition | ✅ | ✅ 增强 |
+| use() | ❌ | ✅ |
+| useOptimistic | ❌ | ✅ |
+| Server Components | 实验性 | ✅ 稳定 |
+| ref 传参 | forwardRef | 直接传 ref |
+| Compiler | 实验性 | ✅ 自动 memo |
 
 ---
 
@@ -598,18 +607,17 @@ flowchart TB
     S4 --> C1
 ```
 
-#### View Transitions API 集成
+#### View Transitions API 集成（实验性）
+
+> ⚠️ View Transitions API 在 React 19 中仍处于实验阶段，尚未正式发布。
 
 ```jsx
-// React 19+ 支持 View Transitions
-import { ViewTransition } from 'react'
+// React 实验性支持 View Transitions
+// import { ViewTransition } from 'react'  // 尚未稳定
 
 function PageTransition({ children }) {
-  return (
-    <ViewTransition>
-      {children}
-    </ViewTransition>
-  )
+  // 可用原生 document.startViewTransition 实现
+  return <div>{children}</div>
 }
 ```
 
@@ -617,7 +625,7 @@ function PageTransition({ children }) {
 
 | 工具 | 最新版本 | 关键变化 |
 |------|----------|----------|
-| React | 19/20 | Compiler 推荐启用，RSC 稳定 |
+| React | 19 | Compiler 推荐启用，RSC 稳定 |
 | Next.js | 15+ | App Router 默认，Turbopack |
 | React Router | 7+ | 统一客户端/服务端路由 |
 | Redux | 5+ | RTK 简化，更好的 TS |
@@ -771,7 +779,7 @@ function Card({ title, children, onClick, disabled = false }: CardProps) {
 | 来源 | 父组件 | 组件自身 |
 | 可修改 | ❌ 只读 | ✅ 可修改 |
 | 默认值 | Component.defaultProps | useState 初值 |
-| 影响重建 | ✅ Props 变化重新渲染 | ✅ State 变化重新渲染 |
+| 影响重建 | ✅ Props 变化默认重新渲染 | ✅ State 变化默认重新渲染 |
 
 ### 🎯 Props 高级用法
 
@@ -817,6 +825,139 @@ flowchart LR
 **注意：** PureComponent 进行**浅比较**，引用类型只比较地址。如需深比较的数据变更，必须创建新对象。
 
 > ⚠️ **易错点**：直接在现有对象上修改属性然后 `setState` 不会触发 PureComponent 重新渲染。务必使用展开运算符或 Object.assign 创建新对象。
+
+### 🆚 类组件与函数组件对比
+
+> 面试高频考点：理解两种组件范式的本质差异与演进方向。
+
+#### 语法与结构对比
+
+```jsx
+// 类组件（Class Component）
+import React, { Component } from 'react';
+
+class ClassCounter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState({ count: this.state.count + 1 });
+  }
+
+  render() {
+    return (
+      <div>
+        <p>Count: {this.state.count}</p>
+        <button onClick={this.handleClick}>+1</button>
+      </div>
+    );
+  }
+}
+
+// 函数组件（Function Component）+ Hooks
+import { useState } from 'react';
+
+function FunctionCounter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+    </div>
+  );
+}
+```
+
+#### 核心差异对比表
+
+| 维度 | 类组件 | 函数组件 |
+|------|--------|----------|
+| **语法基础** | ES6 Class | 函数 |
+| **状态管理** | `this.state` + `this.setState` | `useState` / `useReducer` |
+| **生命周期** | `componentDidMount` 等方法 | `useEffect` Hook |
+| **`this` 绑定** | 需要手动绑定（构造器或箭头函数） | 无 `this` 概念 |
+| **代码量** | 较多（模板代码） | 简洁 |
+| **可读性** | 生命周期分散 | 逻辑集中 |
+| **性能** | 差异可忽略 | 差异可忽略（现代引擎中实例开销极小） |
+| **复用机制** | HOC / Render Props | 自定义 Hooks |
+| **React 19 支持** | ✅ 兼容 | ✅ **官方推荐** |
+
+#### 生命周期对照
+
+```mermaid
+flowchart TD
+    subgraph 类组件生命周期
+        C1["constructor"] --> C2["componentDidMount"]
+        C2 --> C3["componentDidUpdate"]
+        C3 --> C4["componentWillUnmount"]
+    end
+
+    subgraph 函数组件等价
+        F1["useState 初始化"] --> F2["useEffect([], ...)"]
+        F2 --> F3["useEffect([dep], ...)"]
+        F3 --> F4["useEffect 返回清理函数"]
+    end
+
+    C1 -.-> F1
+    C2 -.-> F2
+    C3 -.-> F3
+    C4 -.-> F4
+```
+
+#### 状态管理对比
+
+```jsx
+// 类组件状态管理
+class ClassComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { user: null, loading: false };
+    this.fetchUser = this.fetchUser.bind(this);
+  }
+
+  async fetchUser() {
+    this.setState({ loading: true });
+    const user = await getUser();
+    this.setState({ user, loading: false });
+  }
+
+  render() {
+    const { user, loading } = this.state;
+    return loading ? <Spinner /> : <UserCard user={user} />;
+  }
+}
+
+// 函数组件状态管理
+function FunctionComponent() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchUser = async () => {
+    setLoading(true);
+    const userData = await getUser();
+    setUser(userData);
+    setLoading(false);
+  };
+
+  return loading ? <Spinner /> : <UserCard user={user} />;
+}
+```
+
+#### 选择建议
+
+| 场景 | 推荐 | 原因 |
+|------|------|------|
+| 新项目开发 | ✅ **函数组件** | React 官方推荐，生态主流 |
+| 需要复用状态逻辑 | ✅ **函数组件** | 自定义 Hooks 更灵活 |
+| 维护旧项目 | ⚠️ 看情况 | 已有类组件无需强制重构 |
+| 需要 Error Boundaries | ✅ **函数组件** | React 19 可通过 ErrorBoundary + `use()` 统一处理异步错误 |
+| 需要 getSnapshotBeforeUpdate | ✅ **类组件** | 函数组件暂无等价 Hook |
+
+> 💡 **React 演进方向**：从 React 16.8 Hooks 发布后，函数组件已成为主流。React 19 的 Compiler、Actions 等新特性均围绕函数组件设计。类组件不会被移除，但新功能不再为其扩展。
 
 ### 🧩有状态/无状态、受控/非受控组件
 
@@ -1026,6 +1167,63 @@ flowchart TD
 
 > 💡 React 17+ 将事件代理从 document 迁移到 root DOM 容器，为微前端和多版本 React 共存提供更好的隔离性。
 
+### 🔄 React 各版本事件代理演进
+
+| 版本 | 事件代理位置 | 事件池机制 | 主要变化 |
+|------|-------------|-----------|---------|
+| **React 16** | `document` | ✅ 启用 | 所有事件代理到 document，需 `e.persist()` |
+| **React 17** | `root DOM 容器` | ❌ **移除** | 事件代理从 document 迁移到 root，不再需要 persist |
+| **React 18** | `root DOM 容器` | ❌ 已移除 | 同 React 17，保持向后兼容 |
+| **React 19** | `root DOM 容器` | ❌ 已移除 | 同 React 18 |
+
+#### 详细说明
+
+**React 16 及以前：document 事件代理**
+```jsx
+// React 16：所有事件绑定在 document 上
+<div id="root">
+  <button onClick={handleClick}>Click</button>
+</div>
+// 事件监听器绑定在 document 上
+// 事件冒泡到 document 后被 React 接管
+```
+
+**React 17+：root DOM 容器事件代理**
+```jsx
+// React 17+：事件绑定在 root 容器上
+<div id="root">
+  <button onClick={handleClick}>Click</button>
+</div>
+// 事件监听器绑定在 #root 上
+// 更好的微前端隔离性，多版本 React 可共存
+```
+
+**React 18+：移除事件池**
+```jsx
+// React 16-17：需要调用 persist() 保留事件对象
+function handleClick(e) {
+  e.persist(); // 必须调用，否则异步访问会被回收
+  setTimeout(() => {
+    console.log(e.target); // React 16-17 需要 persist
+  }, 100);
+}
+
+// React 18+：直接访问，无需 persist
+function handleClick(e) {
+  setTimeout(() => {
+    console.log(e.target); // React 18+ 直接可用
+  }, 100);
+}
+```
+
+#### 事件代理迁移影响
+
+| 影响场景 | React 16 | React 17+ | 解决方案 |
+|---------|----------|-----------|---------|
+| 微前端多版本共存 | ❌ 事件冲突 | ✅ 隔离 | 无 |
+| 第三方库依赖 document 事件 | ✅ 正常工作 | ⚠️ 可能失效 | 使用 `stopPropagation` 阻止 |
+| 事件对象异步访问 | ❌ 需要 persist | ✅ 直接访问 | 无 |
+
 ---
 
 ## 7️⃣ Hooks 系统完全指南
@@ -1103,9 +1301,7 @@ useEffect(() => {
   return () => clearInterval(timer);
 }, []);
 
-### ⚠️ 闭包冻结（Stale Closure）风险
-
-```typescript
+//⚠️ 闭包冻结（Stale Closure）风险
 function StaleClosureExample() {
   const [count, setCount] = useState(0);
 
@@ -1312,12 +1508,10 @@ function TodoApp() {
   );
 }
 
-#### 🎯 Action Creator 模式
+// 🎯 Action Creator 模式
 
-Action Creator 统一创建 action 对象，避免直接在组件中写 action 字面量。
+// Action Creator 统一创建 action 对象，避免直接在组件中写 action 字面量。
 
-```typescript
-// Action Creator
 const addItem = (product: Product): CartAction => ({
   type: 'ADD_ITEM',
   payload: product,
@@ -2138,7 +2332,6 @@ export function useTheme() {
 
 ### 🛒 实战：购物车 Context
 
-```typescript
 interface CartItem {
   id: number;
   name: string;
@@ -3316,7 +3509,7 @@ my-react-app/
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "typescript": "^5.0.0",
-    "vite": "^6.0.0"
+    "vite": "^8.0.0"
   }
 }
 ```
@@ -3989,8 +4182,9 @@ function App() {
 }
 
 // 路由级别代码分割
+const Admin = lazy(() => import('./pages/Admin'));
 const routeConfig = [
-  { path: '/admin', element: <React.lazy(() => import('./pages/Admin')) /> }
+  { path: '/admin', element: <Admin /> }
 ];
 ```
 
@@ -4221,98 +4415,6 @@ function LazyImage({ src, alt }: { src: string; alt: string }) {
 
 ---
 
----
-
-## React 技术体系化总结
-
-### 🎯 React 核心概念关系图
-
-```mermaid
-mindmap
-  root((React 核心))
-    组件系统
-      函数组件
-      JSX 语法
-      Props / State
-      组合模式
-    Hooks 系统
-      useState
-      useEffect
-      useContext
-      useReducer
-      useRef
-      自定义 Hooks
-    并发特性
-      startTransition
-      useDeferredValue
-      Suspense
-      ["use()"]
-    服务端组件
-      RSC 架构
-      'use client'
-      流式 SSR
-      选择性水合
-    状态管理
-      Context API
-      Zustand
-      Redux Toolkit
-      Jotai/Recoil
-    数据获取
-      TanStack Query
-      SWR
-      React Query
-    路由系统
-      React Router
-      Next.js App Router
-      动态路由
-      嵌套路由
-    工程化
-      Vite / Webpack
-      TypeScript
-      测试策略
-      React Compiler
-```
-
-### 📈 React 技术栈完整知识体系
-
-```mermaid
-flowchart TB
-    subgraph 基础层
-        A1["HTML/CSS/JS"] --> A2["TypeScript"]
-        A2 --> A3["ES6+ 语法"]
-    end
-
-    subgraph React 核心
-        B1["组件化思想"] --> B2["JSX 语法"]
-        B2 --> B3["Hooks 系统"]
-        B3 --> B4["状态管理"]
-    end
-
-    subgraph 并发特性
-        C1["Fiber 架构"] --> C2["时间切片"]
-        C2 --> C3["优先级调度"]
-        C3 --> C4["Suspense"]
-    end
-
-    subgraph 服务端渲染
-        D1["Next.js"] --> D2["SSR/SSG/ISR"]
-        D2 --> D3["RSC 架构"]
-        D3 --> D4["流式渲染"]
-    end
-
-    subgraph 高级主题
-        E1["性能优化"] --> E2["React Compiler"]
-        E2 --> E3["虚拟列表"]
-        E3 --> E4["内存管理"]
-    end
-
-    A3 --> B1
-    B4 --> C1
-    C4 --> D1
-    D4 --> E1
-```
-
----
 
 ## 🤖 React in AI Era：AI 时代 React 的核心优势
 
@@ -4962,7 +5064,147 @@ interface Fiber {
 > 5ms 是经验值，既能让 React 有足够时间处理工作单元，又不会阻塞浏览器的 16ms 帧预算（60fps）。
 
 ---
+> 🎯 **面试星级**：★★★★★ | 本章深入 React 源码，适合中高级面试
 
+## 🏗️ Fiber 架构源码分析
+
+### 🔄 Fiber 节点结构
+
+```typescript
+// packages/react-reconciler/src/ReactFiber.ts
+interface Fiber {
+  // 1. 节点类型
+  tag: WorkTag;           // 组件类型（FunctionComponent、ClassComponent 等）
+  type: any;              // 组件函数/类
+  key: string | null;     // key 属性
+
+  // 2. 树结构
+  return: Fiber | null;   // 父节点
+  child: Fiber | null;    // 第一个子节点
+  sibling: Fiber | null;  // 下一个兄弟节点
+  index: number;          // 子节点索引
+
+  // 3. 状态
+  pendingProps: any;       // 新 props
+  memoizedProps: any;      // 上次渲染的 props
+  memoizedState: any;      // 上次渲染的 state
+  updateQueue: UpdateQueue | null;  // 更新队列
+
+  // 4. 副作用
+  flags: Flags;           // 副作用标记（Placement、Update、Deletion）
+  subtreeFlags: Flags;    // 子树的副作用标记
+  deletions: Fiber[] | null;  // 需要删除的子节点
+
+  // 5. 调度优先级
+  lanes: Lanes;           // 优先级 lanes
+  childLanes: Lanes;      // 子节点优先级
+
+  // 6. 替换（双缓冲）
+  alternate: Fiber | null;  // 替换 fiber（workInProgress ↔ current）
+}
+```
+
+### 📍 Fiber 双缓冲机制
+
+```typescript
+// packages/react-reconciler/src/ReactFiber.ts
+// 双缓冲：同时维护两棵 Fiber 树
+// current: 屏幕上显示的树
+// workInProgress: 正在内存中构建的树
+
+function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
+  let workInProgress = current.alternate;
+
+  if (workInProgress === null) {
+    // 首次渲染，创建新的 fiber
+    workInProgress = createFiber(current.tag, pendingProps, current.key);
+    workInProgress.type = current.type;
+    workInProgress.stateNode = current.stateNode;
+    workInProgress.alternate = current;
+    current.alternate = workInProgress;
+  } else {
+    // 复用 alternate
+    workInProgress.pendingProps = pendingProps;
+    workInProgress.flags = NoFlags;
+    workInProgress.subtreeFlags = NoFlags;
+    workInProgress.deletions = null;
+  }
+
+  // 复制状态
+  workInProgress.memoizedProps = current.memoizedProps;
+  workInProgress.memoizedState = current.memoizedState;
+  workInProgress.updateQueue = current.updateQueue;
+  workInProgress.lanes = current.lanes;
+
+  return workInProgress;
+}
+
+// 提交阶段：交换 current 和 workInProgress
+function commitRoot(root: FiberRoot) {
+  // 1. 执行所有副作用
+  commitMutationEffects(root, finishedWork);
+
+  // 2. 切换 current 指针
+  root.current = finishedWork;
+
+  // 3. 触发 useEffect
+  commitPassiveMountEffects(root);
+}
+```
+
+### 📍 Fiber 调度器（Scheduler）
+
+```typescript
+// packages/scheduler/src/forks/Scheduler.js
+// 基于 MessageChannel 的微任务调度
+
+let scheduleCallback = function(callback) {
+  const channel = new MessageChannel();
+  const port = channel.port2;
+
+  channel.port1.onmessage = function() {
+    callback();
+  };
+
+  port.postMessage(null);
+};
+
+// 优先级管理
+const ImmediatePriority = 1;    // 立即执行
+const UserBlockingPriority = 2; // 用户阻塞（如点击）
+const NormalPriority = 3;       // 普通（如数据更新）
+const LowPriority = 4;          // 低优先级（如分析）
+const IdlePriority = 5;         // 空闲时执行
+
+// 调度流程
+function scheduleRootUpdate(root, update, lane) {
+  // 1. 创建更新对象
+  const update = createUpdate(lane);
+
+  // 2. 加入更新队列
+  enqueueUpdate(root.current, update);
+
+  // 3. 调度渲染
+  scheduleConcurrentWork(root, lane);
+}
+
+// 可中断渲染
+function performConcurrentWorkOnRoot(root, lanes) {
+  // 1. 检查是否有更高优先级的任务
+  if (hasHigherPriorityWork(root)) {
+    // 中断当前渲染
+    return performConcurrentWorkOnRoot.bind(null, root, lanes);
+  }
+
+  // 2. 渲染组件
+  renderRootSync(root, lanes);
+
+  // 3. 提交更新
+  commitRoot(root);
+}
+```
+
+---
 ## 🔍 Virtual DOM Diff 算法详解
 
 ### 三个核心假设
@@ -5069,6 +5311,184 @@ const ChildDeletion = 0b000001000000; // 删除子节点
 // ❌ 错误：用随机数作为 key
 {items.map(item => <Item key={Math.random()} {...item} />)}
 // 问题：每次渲染 key 都变，所有节点重新创建
+```
+
+---
+## 🔍 Reconciliation 算法
+
+### 🔄 Diff 算法实现
+
+```typescript
+// packages/react-reconciler/src/ReactChildFiber.ts
+function reconcileChildren(current, workInProgress, nextChildren) {
+  if (current === null) {
+    // 首次渲染：创建新的 fiber
+    workInProgress.child = mountChildFibers(
+      workInProgress,
+      null,
+      nextChildren
+    );
+  } else {
+    // 更新：reconcile
+    workInProgress.child = reconcileChildFibers(
+      workInProgress,
+      current.child,
+      nextChildren
+    );
+  }
+}
+
+// 单节点 reconcile
+function reconcileSingleElement(returnFiber, currentFirstChild, element) {
+  const key = element.key;
+  let child = currentFirstChild;
+
+  while (child !== null) {
+    if (child.key === key) {
+      // key 相同，检查 type
+      if (child.type === element.type) {
+        // type 相同，复用 fiber
+        deleteRemainingChildren(returnFiber, child.sibling);
+        const existing = useFiber(child, element.props);
+        existing.return = returnFiber;
+        return existing;
+      } else {
+        // type 不同，删除所有子节点
+        deleteRemainingChildren(returnFiber, child);
+        break;
+      }
+    } else {
+      // key 不同，删除当前节点
+      deleteChild(returnFiber, child);
+    }
+    child = child.sibling;
+  }
+
+  // 创建新的 fiber
+  const created = createFiberFromElement(element);
+  created.return = returnFiber;
+  return created;
+}
+
+// 多节点 reconcile（双端比较）
+function reconcileChildrenArray(returnFiber, currentFirstChild, newChildren) {
+  let resultingFirstChild = null;
+  let previousNewFiber = null;
+  let oldFiber = currentFirstChild;
+  let lastPlacedIndex = 0;
+  let newIdx = 0;
+  let nextOldFiber = null;
+
+  // 1. 遍历新旧节点，从头部开始比较
+  for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
+    if (oldFiber.index > newIdx) {
+      nextOldFiber = oldFiber;
+      oldFiber = null;
+    } else {
+      nextOldFiber = oldFiber.sibling;
+    }
+
+    // 尝试复用
+    const newFiber = updateSlot(returnFiber, oldFiber, newChildren[newIdx]);
+
+    if (newFiber === null) {
+      // key 不同，跳出循环
+      if (oldFiber === null) {
+        oldFiber = nextOldFiber;
+      }
+      break;
+    }
+
+    // 标记位置
+    lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+
+    // 连接 fiber 链表
+    if (previousNewFiber === null) {
+      resultingFirstChild = newFiber;
+    } else {
+      previousNewFiber.sibling = newFiber;
+    }
+    previousNewFiber = newFiber;
+    oldFiber = nextOldFiber;
+  }
+
+  // 2. 处理剩余节点
+  if (oldFiber === null) {
+    // 新节点还有剩余，全部插入
+    for (; newIdx < newChildren.length; newIdx++) {
+      const newFiber = createChild(returnFiber, newChildren[newIdx]);
+      if (newFiber === null) continue;
+
+      lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+
+      if (previousNewFiber === null) {
+        resultingFirstChild = newFiber;
+      } else {
+        previousNewFiber.sibling = newFiber;
+      }
+      previousNewFiber = newFiber;
+    }
+  } else {
+    // 旧节点还有剩余，全部删除
+    const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
+    for (; newIdx < newChildren.length; newIdx++) {
+      const newFiber = updateFromMap(
+        existingChildren,
+        returnFiber,
+        newIdx,
+        newChildren[newIdx]
+      );
+      if (newFiber !== null) {
+        if (newFiber.alternate !== null) {
+          // 复用了旧节点，从 map 中删除
+          existingChildren.delete(
+            newFiber.key === null ? newIdx : newFiber.key
+          );
+        }
+        // 判断是否需要移动
+        lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+        if (previousNewFiber === null) {
+          resultingFirstChild = newFiber;
+        } else {
+          previousNewFiber.sibling = newFiber;
+        }
+        previousNewFiber = newFiber;
+      }
+    }
+
+    // 删除剩余的旧节点
+    existingChildren.forEach(child => deleteChild(returnFiber, child));
+  }
+
+  return resultingFirstChild;
+}
+```
+
+### 📍 Key 的作用原理
+
+```typescript
+// 为什么需要 key？
+// 1. 身份识别：帮助 Diff 算法识别哪些节点是同一个
+// 2. 状态保持：确保组件状态在列表重排时保持一致
+// 3. 性能优化：避免不必要的重新创建
+
+// 使用 index 作为 key 的问题
+// 旧列表：[A(0), B(1), C(2)]
+// 新列表：[B(0), A(1), C(2)]  // B 和 A 交换了位置
+
+// 使用 index 作为 key 时：
+// Diff 结果：
+//   index 0: A → B（更新）
+//   index 1: B → A（更新）
+//   index 2: C → C（不变）
+// 结果：3 次更新
+
+// 使用唯一 key 时：
+// Diff 结果：
+//   key="a": A → A（移动到位置 1）
+//   key="b": B → B（移动到位置 0）
+//   key="c": C → C（不变）
+// 结果：2 次移动，0 次更新
 ```
 
 ---
@@ -5855,330 +6275,79 @@ function App() {
 
 ---
 
-# 第五部分：源码级原理深度解析
+# 第五部分：React 19 新特性深度解析
 
-> 🎯 **面试星级**：★★★★★ | 本章深入 React 源码，适合中高级面试
+## 1️⃣ React Compiler 深度解析
 
-## 1️⃣ Fiber 架构源码分析
-
-### 🔄 Fiber 节点结构
+### 🔄 工作原理
 
 ```typescript
-// packages/react-reconciler/src/ReactFiber.ts
-interface Fiber {
-  // 1. 节点类型
-  tag: WorkTag;           // 组件类型（FunctionComponent、ClassComponent 等）
-  type: any;              // 组件函数/类
-  key: string | null;     // key 属性
+// React Compiler 的核心思想：
+// 1. 静态分析组件
+// 2. 自动推断依赖
+// 3. 自动添加 memo/useMemo/useCallback
 
-  // 2. 树结构
-  return: Fiber | null;   // 父节点
-  child: Fiber | null;    // 第一个子节点
-  sibling: Fiber | null;  // 下一个兄弟节点
-  index: number;          // 子节点索引
+// 编译器会做的事情：
+// - 自动缓存计算结果
+// - 自动优化 re-render
+// - 自动跳过不必要的更新
 
-  // 3. 状态
-  pendingProps: any;       // 新 props
-  memoizedProps: any;      // 上次渲染的 props
-  memoizedState: any;      // 上次渲染的 state
-  updateQueue: UpdateQueue | null;  // 更新队列
+// 示例：
+function ProductList({ products, onSelect }) {
+  // 编译器自动分析：
+  // - products 依赖
+  // - onSelect 依赖
+  // - 生成 useMemo/useCallback
 
-  // 4. 副作用
-  flags: Flags;           // 副作用标记（Placement、Update、Deletion）
-  subtreeFlags: Flags;    // 子树的副作用标记
-  deletions: Fiber[] | null;  // 需要删除的子节点
+  const sorted = products.sort((a, b) => a.price - b.price);
+  const handleClick = (id) => onSelect(id);
 
-  // 5. 调度优先级
-  lanes: Lanes;           // 优先级 lanes
-  childLanes: Lanes;      // 子节点优先级
+  return (
+    <ul>
+      {sorted.map(p => (
+        <li key={p.id} onClick={() => handleClick(p.id)}>
+          {p.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-  // 6. 替换（双缓冲）
-  alternate: Fiber | null;  // 替换 fiber（workInProgress ↔ current）
+// 编译后（简化）：
+function ProductList({ products, onSelect }) {
+  const sorted = useMemo(() => products.sort((a, b) => a.price - b.price), [products]);
+  const handleClick = useCallback((id) => onSelect(id), [onSelect]);
+
+  return (
+    <ul>
+      {sorted.map(p => (
+        <li key={p.id} onClick={() => handleClick(p.id)}>
+          {p.name}
+        </li>
+      ))}
+    </ul>
+  );
 }
 ```
 
-### 📍 Fiber 双缓冲机制
+### 📍 编译器配置
 
-```typescript
-// packages/react-reconciler/src/ReactFiber.ts
-// 双缓冲：同时维护两棵 Fiber 树
-// current: 屏幕上显示的树
-// workInProgress: 正在内存中构建的树
-
-function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
-  let workInProgress = current.alternate;
-
-  if (workInProgress === null) {
-    // 首次渲染，创建新的 fiber
-    workInProgress = createFiber(current.tag, pendingProps, current.key);
-    workInProgress.type = current.type;
-    workInProgress.stateNode = current.stateNode;
-    workInProgress.alternate = current;
-    current.alternate = workInProgress;
-  } else {
-    // 复用 alternate
-    workInProgress.pendingProps = pendingProps;
-    workInProgress.flags = NoFlags;
-    workInProgress.subtreeFlags = NoFlags;
-    workInProgress.deletions = null;
-  }
-
-  // 复制状态
-  workInProgress.memoizedProps = current.memoizedProps;
-  workInProgress.memoizedState = current.memoizedState;
-  workInProgress.updateQueue = current.updateQueue;
-  workInProgress.lanes = current.lanes;
-
-  return workInProgress;
-}
-
-// 提交阶段：交换 current 和 workInProgress
-function commitRoot(root: FiberRoot) {
-  // 1. 执行所有副作用
-  commitMutationEffects(root, finishedWork);
-
-  // 2. 切换 current 指针
-  root.current = finishedWork;
-
-  // 3. 触发 useEffect
-  commitPassiveMountEffects(root);
+```json
+// .babelrc 或 babel.config.js
+{
+  "presets": [
+    ["react-compiler", {
+      "sources": (filename) => {
+        return filename.endsWith('.tsx') || filename.endsWith('.jsx');
+      },
+      "compilationMode": "annotation",
+      "panicThreshold": "CRITICAL_ERRORS"
+    }]
+  ]
 }
 ```
-
-### 📍 Fiber 调度器（Scheduler）
-
-```typescript
-// packages/scheduler/src/forks/Scheduler.js
-// 基于 MessageChannel 的微任务调度
-
-let scheduleCallback = function(callback) {
-  const channel = new MessageChannel();
-  const port = channel.port2;
-
-  channel.port1.onmessage = function() {
-    callback();
-  };
-
-  port.postMessage(null);
-};
-
-// 优先级管理
-const ImmediatePriority = 1;    // 立即执行
-const UserBlockingPriority = 2; // 用户阻塞（如点击）
-const NormalPriority = 3;       // 普通（如数据更新）
-const LowPriority = 4;          // 低优先级（如分析）
-const IdlePriority = 5;         // 空闲时执行
-
-// 调度流程
-function scheduleRootUpdate(root, update, lane) {
-  // 1. 创建更新对象
-  const update = createUpdate(lane);
-
-  // 2. 加入更新队列
-  enqueueUpdate(root.current, update);
-
-  // 3. 调度渲染
-  scheduleConcurrentWork(root, lane);
-}
-
-// 可中断渲染
-function performConcurrentWorkOnRoot(root, lanes) {
-  // 1. 检查是否有更高优先级的任务
-  if (hasHigherPriorityWork(root)) {
-    // 中断当前渲染
-    return performConcurrentWorkOnRoot.bind(null, root, lanes);
-  }
-
-  // 2. 渲染组件
-  renderRootSync(root, lanes);
-
-  // 3. 提交更新
-  commitRoot(root);
-}
-```
-
----
-
-## 2️⃣ Reconciliation 算法
-
-### 🔄 Diff 算法实现
-
-```typescript
-// packages/react-reconciler/src/ReactChildFiber.ts
-function reconcileChildren(current, workInProgress, nextChildren) {
-  if (current === null) {
-    // 首次渲染：创建新的 fiber
-    workInProgress.child = mountChildFibers(
-      workInProgress,
-      null,
-      nextChildren
-    );
-  } else {
-    // 更新：reconcile
-    workInProgress.child = reconcileChildFibers(
-      workInProgress,
-      current.child,
-      nextChildren
-    );
-  }
-}
-
-// 单节点 reconcile
-function reconcileSingleElement(returnFiber, currentFirstChild, element) {
-  const key = element.key;
-  let child = currentFirstChild;
-
-  while (child !== null) {
-    if (child.key === key) {
-      // key 相同，检查 type
-      if (child.type === element.type) {
-        // type 相同，复用 fiber
-        deleteRemainingChildren(returnFiber, child.sibling);
-        const existing = useFiber(child, element.props);
-        existing.return = returnFiber;
-        return existing;
-      } else {
-        // type 不同，删除所有子节点
-        deleteRemainingChildren(returnFiber, child);
-        break;
-      }
-    } else {
-      // key 不同，删除当前节点
-      deleteChild(returnFiber, child);
-    }
-    child = child.sibling;
-  }
-
-  // 创建新的 fiber
-  const created = createFiberFromElement(element);
-  created.return = returnFiber;
-  return created;
-}
-
-// 多节点 reconcile（双端比较）
-function reconcileChildrenArray(returnFiber, currentFirstChild, newChildren) {
-  let resultingFirstChild = null;
-  let previousNewFiber = null;
-  let oldFiber = currentFirstChild;
-  let lastPlacedIndex = 0;
-  let newIdx = 0;
-  let nextOldFiber = null;
-
-  // 1. 遍历新旧节点，从头部开始比较
-  for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
-    if (oldFiber.index > newIdx) {
-      nextOldFiber = oldFiber;
-      oldFiber = null;
-    } else {
-      nextOldFiber = oldFiber.sibling;
-    }
-
-    // 尝试复用
-    const newFiber = updateSlot(returnFiber, oldFiber, newChildren[newIdx]);
-
-    if (newFiber === null) {
-      // key 不同，跳出循环
-      if (oldFiber === null) {
-        oldFiber = nextOldFiber;
-      }
-      break;
-    }
-
-    // 标记位置
-    lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-
-    // 连接 fiber 链表
-    if (previousNewFiber === null) {
-      resultingFirstChild = newFiber;
-    } else {
-      previousNewFiber.sibling = newFiber;
-    }
-    previousNewFiber = newFiber;
-    oldFiber = nextOldFiber;
-  }
-
-  // 2. 处理剩余节点
-  if (oldFiber === null) {
-    // 新节点还有剩余，全部插入
-    for (; newIdx < newChildren.length; newIdx++) {
-      const newFiber = createChild(returnFiber, newChildren[newIdx]);
-      if (newFiber === null) continue;
-
-      lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-
-      if (previousNewFiber === null) {
-        resultingFirstChild = newFiber;
-      } else {
-        previousNewFiber.sibling = newFiber;
-      }
-      previousNewFiber = newFiber;
-    }
-  } else {
-    // 旧节点还有剩余，全部删除
-    const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
-    for (; newIdx < newChildren.length; newIdx++) {
-      const newFiber = updateFromMap(
-        existingChildren,
-        returnFiber,
-        newIdx,
-        newChildren[newIdx]
-      );
-      if (newFiber !== null) {
-        if (newFiber.alternate !== null) {
-          // 复用了旧节点，从 map 中删除
-          existingChildren.delete(
-            newFiber.key === null ? newIdx : newFiber.key
-          );
-        }
-        // 判断是否需要移动
-        lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
-        if (previousNewFiber === null) {
-          resultingFirstChild = newFiber;
-        } else {
-          previousNewFiber.sibling = newFiber;
-        }
-        previousNewFiber = newFiber;
-      }
-    }
-
-    // 删除剩余的旧节点
-    existingChildren.forEach(child => deleteChild(returnFiber, child));
-  }
-
-  return resultingFirstChild;
-}
-```
-
-### 📍 Key 的作用原理
-
-```typescript
-// 为什么需要 key？
-// 1. 身份识别：帮助 Diff 算法识别哪些节点是同一个
-// 2. 状态保持：确保组件状态在列表重排时保持一致
-// 3. 性能优化：避免不必要的重新创建
-
-// 使用 index 作为 key 的问题
-// 旧列表：[A(0), B(1), C(2)]
-// 新列表：[B(0), A(1), C(2)]  // B 和 A 交换了位置
-
-// 使用 index 作为 key 时：
-// Diff 结果：
-//   index 0: A → B（更新）
-//   index 1: B → A（更新）
-//   index 2: C → C（不变）
-// 结果：3 次更新
-
-// 使用唯一 key 时：
-// Diff 结果：
-//   key="a": A → A（移动到位置 1）
-//   key="b": B → B（移动到位置 0）
-//   key="c": C → C（不变）
-// 结果：2 次移动，0 次更新
-```
-
----
-
-## 3️⃣ React Compiler 源码原理
+----
+## 🔍 React Compiler 源码原理
 
 ### 🔄 编译流程
 
@@ -6255,79 +6424,6 @@ interface Dependency {
 ```
 
 ---
-
-# 第六部分：React 19 新特性深度解析
-
-## 1️⃣ React Compiler 深度解析
-
-### 🔄 工作原理
-
-```typescript
-// React Compiler 的核心思想：
-// 1. 静态分析组件
-// 2. 自动推断依赖
-// 3. 自动添加 memo/useMemo/useCallback
-
-// 编译器会做的事情：
-// - 自动缓存计算结果
-// - 自动优化 re-render
-// - 自动跳过不必要的更新
-
-// 示例：
-function ProductList({ products, onSelect }) {
-  // 编译器自动分析：
-  // - products 依赖
-  // - onSelect 依赖
-  // - 生成 useMemo/useCallback
-
-  const sorted = products.sort((a, b) => a.price - b.price);
-  const handleClick = (id) => onSelect(id);
-
-  return (
-    <ul>
-      {sorted.map(p => (
-        <li key={p.id} onClick={() => handleClick(p.id)}>
-          {p.name}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// 编译后（简化）：
-function ProductList({ products, onSelect }) {
-  const sorted = useMemo(() => products.sort((a, b) => a.price - b.price), [products]);
-  const handleClick = useCallback((id) => onSelect(id), [onSelect]);
-
-  return (
-    <ul>
-      {sorted.map(p => (
-        <li key={p.id} onClick={() => handleClick(p.id)}>
-          {p.name}
-        </li>
-      ))}
-    </ul>
-  );
-}
-```
-
-### 📍 编译器配置
-
-```json
-// .babelrc 或 babel.config.js
-{
-  "presets": [
-    ["react-compiler", {
-      "sources": (filename) => {
-        return filename.endsWith('.tsx') || filename.endsWith('.jsx');
-      },
-      "compilationMode": "annotation",
-      "panicThreshold": "CRITICAL_ERRORS"
-    }]
-  ]
-}
-```
-
 ## 2️⃣ Actions 机制深度解析
 
 ```typescript
@@ -6430,269 +6526,9 @@ function App() {
 }
 ```
 
----
 
-# 第七部分：项目实战重难点
 
-## 1️⃣ 微前端与 React
-
-### 🔄 Module Federation 集成
-
-```typescript
-// 主应用配置
-// webpack.config.js
-module.exports = {
-  plugins: [
-    new ModuleFederationPlugin({
-      name: 'host',
-      remotes: {
-        remote1: 'remote1@http://localhost:3001/remoteEntry.js',
-        remote2: 'remote2@http://localhost:3002/remoteEntry.js'
-      },
-      shared: {
-        react: { singleton: true, eager: true },
-        'react-dom': { singleton: true, eager: true }
-      }
-    })
-  ]
-};
-
-// 子应用配置
-module.exports = {
-  plugins: [
-    new ModuleFederationPlugin({
-      name: 'remote1',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './App': './src/App'
-      },
-      shared: {
-        react: { singleton: true, eager: true },
-        'react-dom': { singleton: true, eager: true }
-      }
-    })
-  ]
-};
-```
-
-### 📍 动态组件加载
-
-```typescript
-// 动态加载远程组件
-const RemoteApp = React.lazy(() => import('remote1/App'));
-
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <RemoteApp />
-    </Suspense>
-  );
-}
-
-// 带错误边界
-class ErrorBoundary extends React.Component {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <div>组件加载失败</div>;
-    }
-    return this.props.children;
-  }
-}
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<Loading />}>
-        <RemoteApp />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
-```
-
-## 2️⃣ Monorepo 实战
-
-### 📁 Turborepo 项目结构
-
-```
-my-monorepo/
-├── apps/
-│   ├── web/              # Web 应用
-│   ├── mobile/           # 移动应用
-│   └── admin/            # 管理后台
-│
-├── packages/
-│   ├── ui/               # UI 组件库
-│   │   ├── src/
-│   │   │   ├── Button/
-│   │   │   ├── Card/
-│   │   │   └── index.ts
-│   │   └── package.json
-│   │
-│   ├── utils/            # 工具函数
-│   │   ├── src/
-│   │   └── package.json
-│   │
-│   ├── config/           # 共享配置
-│   │   ├── eslint/
-│   │   ├── typescript/
-│   │   └── package.json
-│   │
-│   └── tsconfig/         # TS 配置
-│
-├── turbo.json            # Turborepo 配置
-├── package.json
-└── pnpm-workspace.yaml
-```
-
-### 📍 Turborepo 配置
-
-```json
-// turbo.json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "test": {
-      "dependsOn": ["^build"]
-    }
-  }
-}
-```
-
-## 3️⃣ Next.js App Router 实战
-
-### 📁 App Router 结构
-
-```
-app/
-├── layout.tsx            # 根布局
-├── page.tsx              # 首页
-├── loading.tsx           # 加载状态
-├── error.tsx             # 错误处理
-│
-├── dashboard/
-│   ├── layout.tsx        # 仪表盘布局
-│   ├── page.tsx          # 仪表盘首页
-│   └── settings/
-│       └── page.tsx      # 设置页面
-│
-├── blog/
-│   ├── [slug]/
-│   │   └── page.tsx      # 动态路由
-│   └── page.tsx          # 博客列表
-│
-└── api/
-    └── users/
-        └── route.ts      # API 路由
-```
-
-### 📍 Server Components 与 Client Components
-
-```typescript
-// app/dashboard/page.tsx - Server Component
-async function DashboardPage() {
-  // 服务端数据获取
-  const data = await fetch('https://api.example.com/dashboard');
-  const dashboard = await data.json();
-
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <Stats data={dashboard.stats} />
-      <ClientComponent initialData={dashboard} />
-    </div>
-  );
-}
-
-// app/dashboard/ClientComponent.tsx - Client Component
-'use client';
-
-import { useState, useTransition } from 'react';
-
-function ClientComponent({ initialData }) {
-  const [data, setData] = useState(initialData);
-  const [isPending, startTransition] = useTransition();
-
-  const refresh = () => {
-    startTransition(async () => {
-      const res = await fetch('/api/dashboard');
-      const newData = await res.json();
-      setData(newData);
-    });
-  };
-
-  return (
-    <div>
-      <p>{data.lastUpdated}</p>
-      <button onClick={refresh} disabled={isPending}>
-        {isPending ? '刷新中...' : '刷新'}
-      </button>
-    </div>
-  );
-}
-```
-
-## 4️⃣ 性能监控与埋点
-
-```typescript
-// utils/performance.ts
-export function setupPerformanceMonitor() {
-  // 1. 首屏加载时间
-  window.addEventListener('load', () => {
-    const perfEntries = performance.getEntriesByType('navigation');
-    if (perfEntries.length > 0) {
-      const nav = perfEntries[0] as PerformanceNavigationTiming;
-      console.log('首屏加载时间:', nav.loadEventEnd - nav.startTime);
-    }
-  });
-
-  // 2. 组件渲染性能
-  if (typeof window !== 'undefined' && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-    const originalCommit = hook.onCommitFiberRoot;
-
-    hook.onCommitFiberRoot = (id, root, priorityLevel) => {
-      const startTime = performance.now();
-      originalCommit(id, root, priorityLevel);
-      const duration = performance.now() - startTime;
-
-      if (duration > 16) {  // 超过一帧的时间
-        console.warn(`Slow render: ${duration.toFixed(2)}ms`);
-      }
-    };
-  }
-
-  // 3. Web Vitals
-  import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP }) => {
-    onCLS(console.log);
-    onFID(console.log);
-    onFCP(console.log);
-    onLCP(console.log);
-  });
-}
-```
-
----
-
-# 第八部分：常见 Bug 与调试技巧
+# 第六部分：常见 Bug 与调试技巧
 
 ## 1️⃣ 闭包陷阱
 
@@ -6843,117 +6679,12 @@ function TrackedComponent({ data }) {
   });
 
   return <div>{data}</div>;
-}
+
 ```
 
 ---
 
-# 第九部分：生态深度解析
-
-## 1️⃣ 状态管理方案对比
-
-### 📊 Zustand vs Jotai vs Redux Toolkit
-
-```typescript
-// Zustand - 简单状态管理
-import { create } from 'zustand';
-
-const useStore = create((set) => ({
-  count: 0,
-  increment: () => set((state) => ({ count: state.count + 1 })),
-  decrement: () => set((state) => ({ count: state.count - 1 }))
-}));
-
-// Jotai - 原子化状态
-import { atom, useAtom } from 'jotai';
-
-const countAtom = atom(0);
-const doubledAtom = atom((get) => get(countAtom) * 2);
-
-function Counter() {
-  const [count, setCount] = useAtom(countAtom);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
-
-// Redux Toolkit - 企业级状态管理
-import { createSlice, configureStore } from '@reduxjs/toolkit';
-
-const counterSlice = createSlice({
-  name: 'counter',
-  initialState: { value: 0 },
-  reducers: {
-    increment: (state) => { state.value += 1; },
-    decrement: (state) => { state.value -= 1; }
-  }
-});
-
-const store = configureStore({
-  reducer: { counter: counterSlice.reducer }
-});
-```
-
-| 方案 | 适用场景 | Bundle Size | 学习曲线 |
-|------|---------|-------------|----------|
-| Zustand | 中小型应用 | ~1KB | 简单 |
-| Jotai | 原子化状态 | ~2KB | 简单 |
-| Redux Toolkit | 大型企业应用 | ~10KB | 中等 |
-| React Context | 简单全局状态 | 0 | 简单 |
-
-## 2️⃣ 数据获取方案对比
-
-### 📊 TanStack Query vs SWR
-
-```typescript
-// TanStack Query
-import { useQuery, useMutation } from '@tanstack/react-query';
-
-function UserProfile({ userId }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => fetchUser(userId),
-    staleTime: 5 * 60 * 1000,  // 5 分钟
-    cacheTime: 10 * 60 * 1000  // 10 分钟
-  });
-
-  const updateUser = useMutation({
-    mutationFn: updateUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', userId] });
-    }
-  });
-
-  if (isLoading) return <Loading />;
-  if (error) return <Error />;
-
-  return <div>{data.name}</div>;
-}
-
-// SWR
-import useSWR from 'swr';
-
-const fetcher = (url) => fetch(url).then(r => r.json());
-
-function UserProfile({ userId }) {
-  const { data, error, isLoading } = useSWR(`/api/users/${userId}`, fetcher, {
-    revalidateOnFocus: true,
-    dedupingInterval: 5000
-  });
-
-  if (isLoading) return <Loading />;
-  if (error) return <Error />;
-
-  return <div>{data.name}</div>;
-}
-```
-
-| 方案 | 特点 | 适用场景 |
-|------|------|---------|
-| TanStack Query | 功能强大、缓存精细 | 复杂数据获取 |
-| SWR | 简单轻量、自动重验证 | 简单数据获取 |
-
----
-
-# 第十部分：面试题汇总
+# 第七部分：面试题汇总
 
 ### Q1：说说 React 的渲染流程（Trigger → Render → Commit）
 

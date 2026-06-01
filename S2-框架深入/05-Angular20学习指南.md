@@ -203,8 +203,8 @@ timeline
 | **Angular 16** | 2023 | **Signals 发布** | 新的响应式范式 |
 | **Angular 17** | 2023 | 新控制流 `@if/@for` | 模板更简洁 |
 | **Angular 18** | 2024 | Zoneless 实验性 | 更小运行时 |
-| **Angular 19** | 2025 | **httpResource** 稳定 | 声明式数据获取 |
-| **Angular 20** | 2025 | Signals 全面化 | Zoneless 生产可用 |
+| **Angular 19** | 2024 | **httpResource** 实验性 | 声明式数据获取 |
+| **Angular 20** | 2025 | Signals 全面化 | Zoneless 开发者预览 |
 | **Angular 21** | 2026 | 全 Zoneless 默认 | 极致性能 |
 
 ---
@@ -243,7 +243,7 @@ my-angular-app/
 ├── angular.json                 # Angular 配置
 ├── tsconfig.json                # TypeScript 配置
 ├── package.json
-└── vite.config.ts               # Vite 构建 (Angular 17+)
+└── (无 Vite 配置文件，使用 esbuild)
 ```
 
 ## 2-4 angular.json 配置
@@ -255,7 +255,7 @@ my-angular-app/
     "my-app": {
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "aot": true,
             "outputPath": "dist/my-app",
@@ -277,7 +277,7 @@ ng generate service product             # 生成服务
 ng generate directive highlight          # 生成指令
 ng generate pipe filter                  # 生成管道
 ng generate guard auth                   # 生成守卫
-ng build --prod                          # 生产构建
+ng build --configuration production      # 生产构建
 ng test                                  # 运行测试
 ng lint                                  # 代码检查
 ```
@@ -520,7 +520,7 @@ export class MyComponent {}
 }
 ```
 
-### @let（Angular 18+）
+### @let（Angular 19+）
 
 ```html
 @let total = cartItems().reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -772,7 +772,6 @@ graph TD
 | 层级 | 写法 | 作用域 |
 |------|------|--------|
 | **root** | `providedIn: 'root'` | 全局单例（所有组件共享） |
-| **platform** | `providedIn: 'platform'` | 跨应用共享（微前端） |
 | **组件** | `providers: [Service]` | 每个组件实例独立 |
 | **路由** | `providers: [Service]` (在路由配置中) | 路由级别 |
 
@@ -962,7 +961,7 @@ export class StarRatingComponent {
 <app-star-rating [(value)]="productRating" />
 ```
 
-## 7-5 linkedSignal（Angular 18+）
+## 7-5 linkedSignal（Angular 19+）
 
 `linkedSignal` 创建一个信号，可以在需要时从源信号重置：
 
@@ -1135,7 +1134,7 @@ export const routes: Routes = [
   },
   {
     path: 'cart',
-    loadComponent: () => import('./cart/cart.component'),
+    loadComponent: () => import('./cart/cart.component').then(m => m.CartComponent),
     canActivate: [authGuard],
   },
   {
@@ -1253,10 +1252,10 @@ export const productLoadGuard: CanActivateFn = () => {
 const routes: Routes = [
   {
     path: 'admin',
-    loadComponent: () => import('./admin/admin.component'),
+    loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent),
     canActivate: [authGuard],
     canDeactivate: [unsavedChangesGuard],
-    canLoad: [featureToggleGuard],
+    canMatch: [featureToggleGuard],
     resolve: { products: productResolver },
   },
 ];
@@ -1881,9 +1880,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   imports: [ScrollingModule],
   template: `
     <cdk-virtual-scroll-viewport itemSize="80" class="viewport">
-      @for (item of items; track item.id) {
-        <div *cdkVirtualFor>{{ item.name }}</div>
-      }
+      <div *cdkVirtualFor="let item of items">{{ item.name }}</div>
     </cdk-virtual-scroll-viewport>
   `,
   styles: [`.viewport { height: 500px; }`],
@@ -1911,11 +1908,11 @@ graph LR
 
 ```typescript
 // app.config.ts - 启用 Zoneless
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
   ],
 };
 ```
@@ -2126,7 +2123,7 @@ ng add @angular/ssr
 
 ```typescript
 // server.ts
-import 'zone.js/dist/zone-node';
+import 'zone.js/node';
 import { ngExpressEngine } from '@angular/ssr';
 import express from 'express';
 
@@ -2232,8 +2229,8 @@ graph LR
 | `canActivate` | 是否允许进入 | 进入路由前 |
 | `canActivateChild` | 是否允许进入子路由 | 进入子路由前 |
 | `canDeactivate` | 是否允许离开 | 离开路由前 |
-| `canLoad` | 是否允许加载懒加载模块 | 加载前 |
-| `canMatch` | 是否匹配路由（Angular 14+） | 匹配时 |
+| `canLoad`（已废弃） | 是否允许加载懒加载模块 | 加载前 |
+| `canMatch` | 是否匹配路由（Angular 15+） | 匹配时 |
 
 ## Q7: Template-driven vs Reactive Forms
 
