@@ -22,7 +22,17 @@ export default withMermaid(defineConfig({
   ignoreDeadLinks: true,
 
   head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/common/logo.svg' }],
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
+    ['script', {}, `
+      (function() {
+        const saved = localStorage.getItem('vitepress-theme-appearance');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    `],
   ],
 
   markdown: {
@@ -59,6 +69,11 @@ export default withMermaid(defineConfig({
         text: 'AI 前沿',
         link: '/S5-AI/',
         activeMatch: '/S5-AI/'
+      },
+      {
+        text: 'Go 语言',
+        link: '/S6-Go/',
+        activeMatch: '/S6-Go/'
       }
     ],
 
@@ -149,6 +164,17 @@ export default withMermaid(defineConfig({
             { text: '15-前沿趋势篇', link: '/S5-AI/15-前沿趋势篇' }
           ]
         }
+      ],
+      '/S6-Go/': [
+        {
+          text: 'S6 Go 语言',
+          collapsed: true,
+          items: [
+            { text: '阶段概览', link: '/S6-Go/' },
+            { text: 'Go学习路径', link: '/S6-Go/Go学习路径' },
+            { text: 'Go常识', link: '/S6-Go/Go常识' }
+          ]
+        }
       ]
     },
 
@@ -181,11 +207,12 @@ export default withMermaid(defineConfig({
     },
 
     search: {
-      provider: 'local'
+      provider: 'local',
+      options: {
+        baseUrl: '/common/'
+      }
     }
   },
-
-
 
   vite: {
     build: {

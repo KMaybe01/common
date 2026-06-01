@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "前端知识体系"
   text: "2026前端技术全景学习路径"
-  tagline: HTML· CSS · JavaScript · Vue3 · React19 · Angular20 · 性能优化 · 工程化 · 监控埋点 · AI 前沿
+  tagline: HTML· CSS · JavaScript · Vue3 · React19 · Angular20 · 性能优化 · 工程化 · 监控埋点 · AI 前沿 · Go 语言
   image:
     src: /logo.svg
     alt: Frontend Interview Notes
@@ -38,6 +38,10 @@ features:
     title: S5 AI 前沿
     details: AI Agent · RAG · 端侧推理 · MCP/A2A 协议 · 大模型基础
     link: /S5-AI/
+  - icon: 🟦
+    title: S6 Go 语言
+    details: Go 基础 · 并发编程 · Web 开发 · 微服务架构
+    link: /S6-Go/
 ---
 
 ## 🗺️ 五阶段学习路径图
@@ -48,16 +52,19 @@ graph LR
     S2 --> S3["🟡 S3 进阶提升"]
     S3 --> S4["🔴 S4 面试冲刺"]
     S4 --> S5["🟣 S5 AI 前沿"]
+    S5 --> S6["🟦 S6 Go 语言"]
     S1 --> A["HTML5 · CSS3 · JS核心 · WebAPI · 20+手写实现"]
     S2 --> B["Vue3 · React19 · Angular20"]
     S3 --> C["浏览器原理 · 性能优化 · 工程化 · 监控埋点 · Node.js · 小程序"]
     S4 --> D["简历八股 · 深度追问"]
     S5 --> E["AI Agent · RAG · 体系化学习"]
+    S6 --> F["Go 基础 · 并发 · Web · 微服务"]
     style S1 fill:#4caf50,color:#fff
     style S2 fill:#2196f3,color:#fff
     style S3 fill:#ff9800,color:#fff
     style S4 fill:#f44336,color:#fff
     style S5 fill:#9c27b0,color:#fff
+    style S6 fill:#00bcd4,color:#fff
 ```
 
 ---
