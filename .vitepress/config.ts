@@ -187,8 +187,6 @@ export default withMermaid(defineConfig({
 
 
 
-  cleanUrls: true,
-
   vite: {
     build: {
       target: 'es2020',
