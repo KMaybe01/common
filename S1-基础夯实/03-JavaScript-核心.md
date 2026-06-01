@@ -326,7 +326,7 @@ graph LR
 | JSON序列化 | 被忽略 | 保留为 null |
 | 常见场景 | 变量声明未赋值、函数无返回值 | 主动释放引用、原型链终点 |
 
-`undefined` 在 JavaScript 中**不是保留字**，这意味着可以使用 `undefined` 作为变量名（极不推荐）。可以用 `void 0` 获取安全的 `undefined`。
+`undefined` 在 ES5+ 中全局不可写不可配置，但局部可遮蔽（`const undefined = 1` 在函数内可运行，全局抛 TypeError）。
 
 ### 5️⃣ typeof null 的结果为什么是 Object？
 
@@ -415,7 +415,7 @@ void (1 + 1)  // undefined
 void 'hello'  // undefined
 ```
 
-`void` 运算符对给定的表达式求值，然后返回 `undefined`。因为 `undefined` 可以被重写（非严格模式下），使用 `void 0` 最安全。
+`void` 运算符对给定的表达式求值，然后返回 `undefined`。因为 `undefined` 在局部作用域中可被遮蔽（ES5+ 中全局 `undefined` 不可写不可配置），使用 `void 0` 最安全。
 
 ### 9️⃣ typeof NaN 的结果是什么？
 
@@ -2376,7 +2376,7 @@ Promise.race([
 
 ### 7️⃣ 对 async/await 的理解
 
-async/await 是 **Generator + Promise** 的语法糖。
+async/await 是基于 **Promise** 的语法糖（Babel/TypeScript 转译时通过 Generator + Promise 实现）。
 
 ```javascript
 async function test() {
@@ -2532,7 +2532,8 @@ Child.prototype.sayAge = function() {
 graph TD
     subgraph 垃圾回收机制
         direction LR
-        A["标记清除<br/>Mark-and-Sweep"] --> B["引用计数<br/>Reference Counting"]
+        A["标记清除<br/>Mark-and-Sweep"]
+        B["引用计数<br/>Reference Counting（已废弃 IE6/7 时代）"]
     end
 
     subgraph 标记清除过程
