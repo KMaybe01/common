@@ -187,9 +187,12 @@ export default withMermaid(defineConfig({
 
 
 
+  cleanUrls: true,
+
   vite: {
     build: {
-      target: 'es2020'
+      target: 'es2020',
+      chunkSizeWarningLimit: 1000
     }
   }
 }))
