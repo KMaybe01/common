@@ -151,7 +151,7 @@ spec:
 ```yaml
 # Recording Rule 示例
 - record: job:smf_sm_counter:sum
-  expr: sum by(namespace, axnf)(rate(smf_*_msg_counters[5m]))
+  expr: sum by(namespace, axnf)(rate({__name__=~"smf_.*_msg_counters"}[5m]))
 ```
 
 ### 七、技术亮点速览

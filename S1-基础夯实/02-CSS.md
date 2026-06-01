@@ -343,11 +343,10 @@ flowchart TD
 | 对比项             | `<link>`                   | `@import`                    |
 | ------------------ | -------------------------- | ---------------------------- |
 | 类别               | XHTML 标签                 | CSS 规则                      |
-| 加载时机           | 页面载入时**同时**加载     | 页面完全载入**后**加载       |
-| 兼容性             | 无兼容问题                 | CSS2.1 提出，低版本不支持    |
+| 加载时机           | 页面载入时**同时**加载     | CSS 解析时同步加载（阻塞渲染） |
+| 兼容性             | 无兼容问题                 | CSS2.1 引入，IE5.5+ 支持（现代浏览器均支持） |
 | JS 控制 DOM       | 支持                       | 不支持                       |
 | 额外功能           | 可定义 RSS 等其他事物      | 只能加载 CSS                 |
-| 权重               | 使用 link 加载的样式优先级更高 | 使用 @import 加载的优先级较低 |
 
 ```css
 /* link 方式（推荐） */
@@ -1904,12 +1903,12 @@ flowchart TD
     B --> C["position: relative | absolute | fixed"]
 
     A --> D["失效场景"]
-    D --> E["父元素 position:relative 时子元素 z-index 失效"]
+    D --> E["父元素创建了层叠上下文，子元素 z-index 受限于父上下文"]
     D --> F["元素未设非 static 定位"]
     D --> G["同时设置了 float 浮动"]
     D --> H["父元素 z-index 更低，限制了层叠上下文"]
 
-    E --> E1["解决: 父元素改为 absolute 或 static"]
+    E --> E1["解决: 父元素改为 absolute 或 static，或提升父元素 z-index"]
     F --> F1["解决: 设置 position 为 relative/absolute/fixed"]
     G --> G1["解决: 去掉 float，改为 inline-block"]
 ```

@@ -347,7 +347,7 @@ const observer = new MutationObserver((mutations) => {
 
     if (mutation.type === 'childList') {
       console.log('新增节点:', mutation.addedNodes)
-      console.log('移除节点:', mutation.removeNodes)
+      console.log('移除节点:', mutation.removedNodes)
     }
 
     if (mutation.type === 'attributes') {
@@ -541,10 +541,10 @@ const requestManager = new RequestManager()
 const searchInput = document.querySelector('#search')
 
 let debounceTimer
-searchInput.addEventListener('input', (e) => {
+searchInput.addEventListener('input', (event) => {
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
-    requestManager.request(`/api/search?q=${e.target.value}`)
+    requestManager.request(`/api/search?q=${event.target.value}`)
   }, 300)
 })
 ```
@@ -702,20 +702,20 @@ channelB.onmessage = (event) => {
 // 方案1: BroadcastChannel
 const bc = new BroadcastChannel('channel')
 bc.postMessage('hello')
-bc.onmessage = (e) => console.log(e.data)
+bc.onmessage = (event) => console.log(event.data)
 // 优点: 专门用于同源跨标签页通信，API 简洁
 // 缺点: 仅支持同源
 
 // 方案2: window.postMessage
 // window.opener.postMessage('hello', '*')
-// window.addEventListener('message', (e) => console.log(e.data))
+// window.addEventListener('message', (event) => console.log(event.data))
 // 优点: 支持跨域
 // 缺点: 需要获取窗口引用，安全性需注意 origin
 
 // 方案3: localStorage
-window.addEventListener('storage', (e) => {
-  if (e.key === 'shared-data') {
-    console.log('数据变化:', e.newValue)
+window.addEventListener('storage', (event) => {
+  if (event.key === 'shared-data') {
+    console.log('数据变化:', event.newValue)
   }
 })
 localStorage.setItem('shared-data', JSON.stringify({ msg: 'hello' }))
@@ -1146,7 +1146,7 @@ flowchart LR
 
 ---
 
-## ✍️ 十三、手写代码实现
+## ✍️ 十一、手写代码实现
 
 ### 1️⃣ JavaScript基础
 
@@ -1317,7 +1317,7 @@ MyPromise.prototype.then = function(onResolved, onRejected) {
 };
 
 new MyPromise((resolve) => resolve(1)).then(v => console.log(v)); // 1
-new MyPromise((_, reject) => reject('err')).then(null, e => console.log(e)); // 'err'
+new MyPromise((_, reject) => reject('err')).then(null, event => console.log(event)); // 'err'
 ```
 
 #### 5️⃣ 手写 Promise.then
@@ -1351,21 +1351,21 @@ MyPromise.prototype.then = function(onFulfilled, onReject){
       }
       let rejected = () => {
         try{
-          const result = onReject(self.reason);
+          const result = onReject(self.value);
           return result instanceof MyPromise ? result.then(resolve, reject) : reject(result);
         }catch(err){
           reject(err)
         }
       }
-      switch(self.status){
+      switch(self.state){
         case PENDING:
-          self.onFulfilledCallbacks.push(fulfilled);
-          self.onRejectedCallbacks.push(rejected);
+          self.resolvedCallbacks.push(fulfilled);
+          self.rejectedCallbacks.push(rejected);
           break;
-        case FULFILLED:
+        case RESOLVED:
           fulfilled();
           break;
-        case REJECT:
+        case REJECTED:
           rejected();
           break;
       }
@@ -1439,7 +1439,7 @@ const fast = Promise.resolve('fast');
 Promise.race([slow, fast]).then(v => console.log(v)); // 'fast'
 
 Promise.race([Promise.reject('err'), Promise.resolve('ok')])
-  .catch(e => console.log(e)); // 'err'
+  .catch(event => console.log(event)); // 'err'
 ```
 
 #### 8️⃣ 手写防抖函数
@@ -1921,7 +1921,7 @@ function uniqueArray(array) {
   let map = {};
   let res = [];
   for(var i = 0; i < array.length; i++) {
-    if(!map.hasOwnProperty([array[i]])) {
+    if(!map.hasOwnProperty(array[i])) {
       map[array[i]] = 1;
       res.push(array[i]);
     }
@@ -2185,8 +2185,8 @@ Object.defineProperty(obj, 'text', {
     span.innerHTML = newVal
   }
 })
-input.addEventListener('keyup', function(e) {
-  obj.text = e.target.value
+input.addEventListener('keyup', function(event) {
+  obj.text = event.target.value
 })
 ```
 
@@ -2369,7 +2369,7 @@ function promiseWithResolvers() {
 
 // 使用场景：事件驱动的异步
 // const { promise, resolve } = promiseWithResolvers()
-// button.onclick = () => resolve('clicked')
+// button.addEventListener('click', () => resolve('clicked'), { once: true })
 // await promise  // 等待按钮点击
 ```
 

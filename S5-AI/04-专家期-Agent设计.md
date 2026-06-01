@@ -8,7 +8,7 @@
 > 🎯 **阶段目标**：赋予 AI 自主规划、工具使用与反思能力，构建真正的智能体。
 
 ### 💡 你将学到
-- Agent 三大核心架构：[React](https://react.dev)、Plan-and-Execute、Reflexion
+- Agent 三大核心架构：[ReAct](https://arxiv.org/abs/2210.03629)、Plan-and-Execute、Reflexion
 - 工具注册系统设计与动态调用机制
 - Thought-Action-Observation 循环的实现
 - 多步工作流与任务分解逻辑
@@ -20,7 +20,7 @@
 - 了解 AST 解析与正则表达式基础
 
 ### 📚 核心能力指标
-- [ ] 理解 Agent 核心架构 ([React](https://react.dev), Plan-and-Execute, Reflexion)
+- [ ] 理解 Agent 核心架构 ([ReAct](https://arxiv.org/abs/2210.03629), Plan-and-Execute, Reflexion)
 - [ ] 实现工具注册系统与动态调用机制
 - [ ] 构建多步工作流与任务分解逻辑
 - [ ] 掌握反思机制 (Self-Correction) 与结果评估
@@ -128,7 +128,7 @@ export const toolRegistry = new Map<string, Tool>([
 ]);
 ```
 
-#### 4.4 [React](https://react.dev) Agent 核心
+#### 4.4 [ReAct](https://arxiv.org/abs/2210.03629) Agent 核心
 
 ```typescript
 // lib/agent/react-agent.ts

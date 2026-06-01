@@ -283,9 +283,7 @@ export class TextSplitter {
 
   // 📄 按段落分块 (保持语义完整性)
   static splitByParagraphs(text: string, chunkSize = 1000): string[] {
-    const paragraphs = text.split(/
-\s*
-/);
+    const paragraphs = text.split(/\n\s*\n/);
     const chunks: string[] = [];
     let currentChunk = '';
 
@@ -532,9 +530,7 @@ export class HybridSearch {
 export class SemanticChunker {
   async split(text: string, maxChunkSize = 1000): Promise<string[]> {
     // 1. 按句子分割
-    const sentences = text.match(/[^。！？
-]+[。！？
-]/g) || [text];
+    const sentences = text.match(/[^。！？\n]+[。！？\n]/g) || [text];
     
     // 2. 对每对相邻句子计算语义相似度
     const embeddings = await this.embedder.embedBatch(sentences);

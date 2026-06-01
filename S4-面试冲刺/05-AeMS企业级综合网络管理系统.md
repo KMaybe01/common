@@ -394,7 +394,7 @@ searchAlarm(
   @PAYLOAD query: AlarmQueryDto,
   @BODY data: Filter,
 ): Observable<Page<AlarmResult>> {
-  return null as never;  // 运行时由 BaseApi 装饰器代理
+  return undefined as unknown as Observable<Page<AlarmResult>>;  // 运行时由 BaseApi 装饰器代理
 }
 ```
 
@@ -585,11 +585,11 @@ if (isCluster) {
   style.setText(new Text({ text: count.toString(), fill: '#fff' }));
 }
 
-// ═══════════════════════════════════════════════════════
-// 自定义投影 — 注册 EPSG:900913 并建立双向转换
-// ═══════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════
+  // 自定义投影 — 注册 EPSG:3857（900913 已废弃）并建立双向转换
+  // ═══════════════════════════════════════════════════════
 private registerCustomProjection() {
-  const proj = new Projection({ code: 'EPSG:900913', units: 'm' });
+  const proj = new Projection({ code: 'EPSG:3857', units: 'm' });
   addProjection(proj);
   addCoordinateTransforms(EPSG4326, proj,
     getTransform(EPSG4326, EPSG3857),
@@ -1102,6 +1102,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         case 400:
         case 500:
           // Blob错误处理: 文件下载时的JSON错误
+          // TODO: Extract Blob error parsing to a shared utility function
           if (error.error instanceof Blob) {
             const reader = new FileReader();
             reader.readAsText(error.error, 'utf-8');
@@ -1267,11 +1268,19 @@ ngOnDestroy() {
   this.subscription.unsubscribe();
 }
 
-// 新方式: 自动管理
+// 新方式: 使用显式 Subscription 管理
+private subscription = new Subscription();
+
 constructor() {
-  effect(() => {
-    this.data$.pipe(takeUntilDestroyed()).subscribe(data => this.data.set(data));
-  });
+  // 注意: takeUntilDestroyed() 在 effect 内无法正确获取销毁上下文
+  // 改用显式 Subscription 管理
+  this.subscription.add(
+    this.data$.subscribe(data => this.data.set(data))
+  );
+}
+
+ngOnDestroy() {
+  this.subscription.unsubscribe();
 }
 ```
 
@@ -1355,16 +1364,9 @@ if (isCluster) {
 
 ```typescript
 // 节点监控: 60秒自动刷新
-interval(1000)
+interval(60000)
   .pipe(takeUntilDestroyed(this.destroyRef), startWith(-1))
-  .subscribe(() => {
-    if (this.refreshInterval() >= 60) {
-      this.refresh();
-      this.refreshInterval.set(0);
-    } else {
-      this.refreshInterval.update(x => x + 1);
-    }
-  });
+  .subscribe(() => this.refresh());
 ```
 
 ### 5.5 构建级优化

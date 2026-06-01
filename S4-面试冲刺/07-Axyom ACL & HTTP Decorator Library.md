@@ -144,6 +144,8 @@
 
 ```typescript
 // 递归类型定义 —— 支持无限嵌套的权限模型
+// OR: 外层数组元素之间是 OR 关系
+// AND: 内层数组元素之间是 AND 关系
 type ACLType = string | ACLType[];
 
 // 语义：OR(AND(a, e), f) || c
@@ -294,7 +296,7 @@ function makeParam(paramName: string) {
 
 // 2. 运行时通过 index 还原参数值
 function getValidArgs(data, key, args) {
-  return args[data[key][0].index];  // 精确定位原始参数
+  return args[data[key]?.[0]?.index];  // 精确定位原始参数
 }
 ```
 
@@ -699,9 +701,9 @@ type ACLType = string | ACLType[];
 ```typescript
 function makeMethod(method: METHOD_TYPE) {
   return (url: string, options?: HttpOptions) => {
-    return <TClass extends new (...args: any[]) => BaseApi>(
-      target: TClass, ...
-    ) => { ... };
+    return function (target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) {
+      // ...
+    };
   };
 }
 ```

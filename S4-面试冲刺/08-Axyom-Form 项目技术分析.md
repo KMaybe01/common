@@ -125,7 +125,7 @@ export abstract class FormBase<T> {
   readonly display: ((form: any) => boolean) | boolean;  // 条件显示
 
   // 模板方法 - 子类可重写扩展验证
-  protected getValid(instance): ValidatorFn[] {
+  protected getValid(instance: FormBase<T>): ValidatorFn[] {
     // 通用验证逻辑
   }
 }
@@ -241,8 +241,8 @@ export abstract class FormBase<T> {
   abstract readonly controlType: string;
 
   // 模板方法
-  protected getValid(instance): ValidatorFn[] {
-    const valid = [];
+  protected getValid(instance: FormBase<T>): ValidatorFn[] {
+    const valid: ValidatorFn[] = [];
     if (instance.valid) {
       Array.isArray(instance.valid) 
         ? valid.push(...instance.valid) 
@@ -417,15 +417,16 @@ Angular 原生验证器不支持跨字段监听，需要实现联动验证。
 
 ```typescript
 // valid/equal-to.ts
-export const equalTo = (targetFb: FormBase): ValidatorFn => {
+export const equalTo = (targetFb: FormBase, destroyRef?: DestroyRef): ValidatorFn => {
   return (control: AbstractControl): ValidResult => {
     if (isEmptyInputValue(control.value)) {
       return null;
     }
     
     // 关键：订阅目标字段的变化，触发自身重新验证
+    // 注意：在独立验证器函数中需要传递 DestroyRef 参数
     targetFb.control.valueChanges
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(destroyRef))
       .subscribe(() => {
         control.updateValueAndValidity({ onlySelf: false });
       });

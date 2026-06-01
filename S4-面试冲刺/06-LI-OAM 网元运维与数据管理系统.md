@@ -124,7 +124,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 │                              │                                      │
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │                      后端技术栈                               │   │
-│  │  Go 1.25.6 + Gin框架 + 文件存储 + S3                        │   │
+│  │  Go 1.24.x + Gin框架 + 文件存储 + S3                        │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                              │                                      │
 │  ┌─────────────────────────────────────────────────────────────┐   │
@@ -162,6 +162,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 │                        拦截层 (Interceptor Chain)                    │
 │  jwtInterceptor → authInterceptor → loadingInterceptor → mock       │
 │  Token注入         全局错误处理      Loading状态追踪    Mock数据       │
+│  ↑ jwtInterceptor must run first to inject token before authInterceptor handles 401 errors │
 ├─────────────────────────────────────────────────────────────────────┤
 │                        路由层 (Router)                               │
 │  jwtGuard (认证) + adminGuard (权限) + 懒加载 + 错误降级              │
@@ -462,7 +463,7 @@ getRegexp(url: string) {
 
 ```typescript
 // 根据CPU核心数动态调整Worker数量
-const hc = (navigator as any)?.hardwareConcurrency || 4;
+const hc = navigator.hardwareConcurrency ?? 4;
 this.poolSize = Math.min(3, Math.max(2, hc - 1));  // 2-3个Worker
 
 // 首段较小，实现快速首屏渲染
@@ -597,12 +598,15 @@ form = toForm<AddNF>(this.fbs);
 // equalTo: 当目标字段变化时，触发当前字段重新验证
 export const equalTo = (fb: FormBase): ValidatorFn => {
   let subscribe = false;
+  const destroy$ = new Subject<void>();
   return (control: AbstractControl): ValidResult => {
     if (isEmptyInputValue(control.value)) return null;
     if (!subscribe) {
       subscribe = true;
-      // 延迟订阅：只在首次验证时订阅，避免内存泄漏
-      fb.control.valueChanges.subscribe(() => control.updateValueAndValidity());
+      // 延迟订阅：只在首次验证时订阅，使用 takeUntil 防止内存泄漏
+      fb.control.valueChanges
+        .pipe(takeUntil(destroy$))
+        .subscribe(() => control.updateValueAndValidity());
     }
     return fb.control.value === control.value ? null : { equalTo: '...' };
   };

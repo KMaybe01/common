@@ -142,7 +142,7 @@ mindmap
 
 ---
 
-> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`04-JavaScript-WebAPI`](./04-JavaScript-WebAPI) | 框架对比 → [`S2-框架深入/07-框架对比`](../S2-框架深入/07-框架对比)
+> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`04-JavaScript-WebAPI`](./04-JavaScript-WebAPI.md) | 框架对比 → [`S2-框架深入/07-框架对比`](../S2-框架深入/07-框架对比)
 
 
 ## 📦 一、数据类型
@@ -155,7 +155,7 @@ JavaScript 共有 **八种数据类型**，分为 **原始类型（Primitive）*
 
 **引用类型（1种）：** `Object`（包含普通对象、数组、函数、Date、RegExp、Map、Set 等）
 
-其中 `Symbol` 和 `BigInt` 是 ES6 中新增的数据类型：
+其中 `Symbol` 是 ES6 中新增的数据类型，`BigInt` 是 ES2020（ES11）中新增的数据类型：
 
 - **Symbol**：创建后独一无二且不可变的数据类型，主要解决全局变量冲突问题。每个 `Symbol()` 返回值都是唯一的，即使传入相同描述。
 - **BigInt**：可表示任意精度格式的整数，使用 `BigInt` 可以安全地存储和操作大整数，超出 `Number.MAX_SAFE_INTEGER`（2^53 - 1）范围也不会丢失精度。
@@ -694,7 +694,7 @@ Object.keys(obj).length === 0
 // 方法3: 遍历 for...in + hasOwnProperty
 function isEmpty(obj) {
   for (let key in obj) {
-    if (obj.hasOwnProperty(key)) return false
+    if (Object.prototype.hasOwnProperty.call(obj, key)) return false
   }
   return true
 }
@@ -1719,7 +1719,7 @@ target.addEventListener(type, listener, useCapture)
 {
   capture: false,    // 是否在捕获阶段触发
   once: false,       // 是否只触发一次后自动移除
-  passive: false,    // 是否从不调用 preventDefault（提升滚动性能）
+  passive: true,    // 声明不调用 preventDefault，浏览器可优化滚动性能
   signal: null       // AbortSignal，用于移除监听器
 }
 ```
@@ -2670,7 +2670,7 @@ mindmap
       内存管理
     this指向
       默认绑定: window
-      隐式绑定: obj.fn（）
+      隐式绑定: obj.fn()
       显式绑定: call/apply/bind
       new绑定
       箭头函数: 不绑定this

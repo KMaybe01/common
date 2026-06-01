@@ -136,7 +136,7 @@ export interface AxyomColumn<T = any> {
   hide?: boolean;         // 是否隐藏
   width?: number | null;  // 列宽
   render?: string;        // 自定义渲染模板key
-  compare?: ((x: T, y: T) => 1 | -1) | boolean;  // 比较函数
+  compare?: ((x: T, y: T) => number) | boolean;  // 比较函数
   format?: ((row: T) => string) | null;  // 格式化函数
 }
 ```
@@ -145,7 +145,7 @@ export interface AxyomColumn<T = any> {
 
 ```typescript
 export class AxyomPage {
-  pageIndex: number;      // 当前页码（从0开始）
+  pageIndex: number;      // 当前页码（从0开始，注意：传给后端时需 +1 转为 1-based）
   pageSize: number;       // 每页条数
   total: number;          // 总记录数
   sorts: SortItem[];      // 排序条件
@@ -241,7 +241,12 @@ this.thResizeService.columnWidths$
   .pipe(takeUntilDestroyed(this.destroyRef))
   .subscribe((columnWidth) => {
     columnWidth.forEach((width, index) => {
-      if (width) this._cols()[index].width = width + 'px';
+      // 使用不可变更新，避免直接修改 computed 信号的结果
+      if (width) {
+        this._cols.update(cols => cols.map((col, i) =>
+          i === index ? { ...col, width: width + 'px' } : col
+        ));
+      }
     });
   });
 ```
