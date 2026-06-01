@@ -142,49 +142,8 @@ mindmap
 
 ---
 
-> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`04-JavaScript-WebAPI.md`](./04-JavaScript-WebAPI.md) | 框架对比 → [`S2-框架深入/04-框架对比.md`](../S2-框架深入/04-框架对比.md) | 面试题库 → [`S4-面试冲刺/01-前端面试题库.md`](../S4-面试冲刺/01-前端面试题库.md)
+> 📌 **关联文件**：浏览器WebAPI/手写实现/代码输出 → [`04-JavaScript-WebAPI`](./04-JavaScript-WebAPI) | 框架对比 → [`S2-框架深入/07-框架对比`](../S2-框架深入/07-框架对比)
 
-## 📑 内容目录（Table of Contents）
-
-- [📦 **一、数据类型**](#一数据类型)
-- [🔧 **二、ES6**](#二es6)
-- [🧱 **三、JavaScript 基础**](#三javascript-基础)
-- [🔗 **四、原型与原型链**](#四原型与原型链)
-- [🎯 **五、执行上下文 / 作用域链 / 闭包**](#五执行上下文--作用域链--闭包)
-- [🎯 **六、this / call / apply / bind**](#六this--call--apply--bind)
-- [⏳ **七、异步编程**](#七异步编程)
-- [🏗️ **八、面向对象**](#八面向对象)
-- [🗑️ **九、垃圾回收与内存泄漏**](#九垃圾回收与内存泄漏)
-- [🔄 **十、事件循环（Event Loop）详解**](#十事件循环event-loop详解)
-- [✨ **十一、现代JavaScript新特性**](#十一现代javascript新特性)
-  - [?. 可选链](#1️⃣-可选链操作符-)
-  - [??. 空值合并](#2️⃣-空值合并操作符-)
-  - [Top-level await](#3️⃣-top-level-await)
-  - [Promise 新方法](#4️⃣-promise-新方法)
-  - [structuredClone](#5️⃣-structuredclone-深度克隆)
-  - [Set 新方法](#6️⃣-新的-set-方法)
-  - [Array/Object 新方法](#7️⃣-array-和-object-新方法)
-  - [Error Cause](#8️⃣-error-cause)
-  - [globalThis](#9️⃣-globalthis)
-  - [Atomics](#1️⃣0️⃣-atomics)
-  - [不可变数组](#1️⃣1️⃣-不可变数组方法immutable-array-methods)
-  - [RegExp v 标志](#1️⃣2️⃣-regexp-v-标志unicode-sets)
-  - [Promise.try()](#1️⃣3️⃣-promisetry)
-  - [JSON 源文本访问](#1️⃣4️⃣-jsonparse-源文本访问)
-  - [Float16Array](#1️⃣5️⃣-float16arrayes2025)
-  - [RegExp.escape()](#1️⃣6️⃣-regexpescapees2025)
-  - [Map.getOrInsert()](#1️⃣7️⃣-mapgetorinsertes2026-候选)
-  - [Math.sumPrecise()](#1️⃣8️⃣-mathsumprecisees2026-候选)
-  - [Uint8Array Base64/Hex](#1️⃣9️⃣-uint8array-的-base64--hex-方法es2026-候选)
-  - [Error.isError()](#2️⃣0️⃣-erroriserrores2026-候选)
-  - [Temporal API](#2️⃣1️⃣-temporal-apies2027-候选stage-4)
-  - [using 关键字](#2️⃣2️⃣-using-关键字显式资源管理es2026-候选stage-4)
-  - [Decorators](#2️⃣3️⃣-javascript-decorators装饰器stage-3)
-- [🌐 **十二、浏览器 Web API → 已移至独立文件**](./04-JavaScript-WebAPI.md)
-- [✍️ **十三、手写代码实现 → 已移至独立文件**](./04-JavaScript-WebAPI.md)
-- [💻 **十四、代码输出题 → 已移至独立文件**](./04-JavaScript-WebAPI.md)
-
----
 
 ## 📦 一、数据类型
 
@@ -3618,13 +3577,3 @@ console.log(realMap.size); // 2
 ['1', '2', '3'].map(num => parseInt(num));  // [1, 2, 3]
 ['1', '2', '3'].map(Number);                 // [1, 2, 3]
 ```
-
----
-
-### 📌 导航
-
-| [⬅️ 上一章：CSS](./02-CSS.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：JavaScript WebAPI](./04-JavaScript-WebAPI.md) |
-|:---:|:---:|:---:|
-
-
-

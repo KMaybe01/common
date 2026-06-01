@@ -7,16 +7,6 @@
 
 > 🎯 **阶段目标**：赋予 AI 自主规划、工具使用与反思能力，构建真正的智能体。
 
-### 📑 本章目录
-- [核心能力指标](#-核心能力指标)
-- [核心概念解析](#-核心概念解析)
-  - [Agent 架构模式](#41-agent-架构模式)
-  - [主流设计模式](#42-主流设计模式)
-- [核心实现](#-核心实现)
-  - [工具注册系统](#43-工具注册系统)
-  - [[React](https://react.dev) Agent 核心](#44-[React](https://react.dev)-agent-核心)
-- [实战项目](#-阶段四实战项目)
-
 ### 💡 你将学到
 - Agent 三大核心架构：[React](https://react.dev)、Plan-and-Execute、Reflexion
 - 工具注册系统设计与动态调用机制
@@ -146,7 +136,8 @@ export class ReActAgent {
   private maxIterations = 5;
 
   async run(task: string): Promise<string> {
-    let history = `任务: ${task}\n`;
+    let history = `任务: ${task}
+`;
 
     for (let i = 0; i < this.maxIterations; i++) {
       // 1. 调用 LLM 决定下一步行动
@@ -159,12 +150,16 @@ export class ReActAgent {
       // 3. 执行工具
       const tool = toolRegistry.get(action.name);
       if (!tool) {
-        history += `观察: 工具 ${action.name} 不存在\n`;
+        history += `观察: 工具 ${action.name} 不存在
+`;
         continue;
       }
 
       const observation = await tool.execute(action.params);
-      history += `思考: ${decision}\n行动: ${action.name}\n观察: ${observation}\n`;
+      history += `思考: ${decision}
+行动: ${action.name}
+观察: ${observation}
+`;
     }
     return '达到最大迭代次数，未能完成任务。';
   }
@@ -175,7 +170,8 @@ export class ReActAgent {
   }
 
   private parseAction(text: string): { name: string; params: any } | null {
-    // 解析 "Action: tool_name\nInput: {...}" 格式
+    // 解析 "Action: tool_name
+Input: {...}" 格式
     return null;
   }
 }
@@ -331,8 +327,11 @@ class DebateAgent {
   
   private async checkConsensus(responses: string[]): Promise<Consensus> {
     const analysis = await this.judgeModel.invoke(`
-      以下 ${responses.length} 个 AI 对同一问题的回答：\n
-      ${responses.map((r, i) => `Agent ${i}: ${r}`).join('\n')}\n
+      以下 ${responses.length} 个 AI 对同一问题的回答：
+
+      ${responses.map((r, i) => `Agent ${i}: ${r}`).join('
+')}
+
       它们是否达成一致？如果一致，总结答案；否则说明分歧点。
     `);
     return this.parseConsensus(analysis);
@@ -484,7 +483,8 @@ class AgentTracer {
       ├─ 💭 Thought: ${step.thought}
       ├─ 🔧 Action: ${step.action}(${JSON.stringify(step.actionInput)})
       └─ 👁 Observation: ${step.observation.slice(0, 100)}...
-    `).join('\n');
+    `).join('
+');
   }
 
   // 导出为 OpenTelemetry Span 用于监控
@@ -710,11 +710,3 @@ function ToolApprovalDialog({ tool, args, onConfirm, onReject }: Props) {
 |:---|:---|:---|
 | [📊 技术选型对比合集](./07-技术选型对比合集.md) | Agent 平台对比、智能体方案评估 | 常用 AI 智能体平台对比 |
 | [🛠️ 开发实战与架构指南](./08-开发实战与架构指南.md) | LangGraph 工作流编排、Prompt 进阶 | 第5章：LangGraph 工作流编排 |
-
----
-
-### 📌 导航
-
-| [⬅️ 上一阶段：深耕期](./03-深耕期-端侧推理.md) | [🏠 学习指南总览](./README.md#-ai-前端开发体系化学习指南) | [➡️ 下一阶段：生产化](./05-生产化与工程化.md) |
-|:---:|:---:|:---:|
-

@@ -1543,7 +1543,7 @@ const scrollToPath = (path: string) => {
 
 #### Q7: 异步导出的 RxJS 操作符链？
 
-**答：** exportNeList 返回 requestId → mergeMap 展平为轮询流 → expand 递归展开 → timer(2000) 2 秒间隔 → takeWhile 控制终止。downloadFile 通过 <a> 标签触发浏览器下载，零内存占用。
+**答：** exportNeList 返回 requestId → mergeMap 展平为轮询流 → expand 递归展开 → timer(2000) 2 秒间隔 → takeWhile 控制终止。downloadFile 通过 `<a>` 标签触发浏览器下载，零内存占用。
 
 #### Q8: GeoHA 双活如何判断网元归属？
 

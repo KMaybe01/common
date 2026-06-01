@@ -7367,11 +7367,3 @@ function useHistory<T>(initialValue: T) {
 | React Native | https://reactnative.dev |
 | Auth0 | https://auth0.com |
 | Clerk | https://clerk.com |
-
----
-
-### 📌 导航
-
-| [⬅️ 上一章：Vue 3](./01-Vue3.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：Angular 20](./03-Angular20.md) |
-|:---:|:---:|:---:|
-

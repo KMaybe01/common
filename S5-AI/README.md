@@ -4,30 +4,6 @@
 
 ---
 
-## 📑 目录
-
-- [🚀 AI 前端开发体系化学习指南](#-ai-前端开发体系化学习指南)
-- [📖 AI 前端开发术语表](#-ai-前端开发术语表-glossary)
-- [⚠️ 常见反模式与避坑指南](#️-常见反模式与避坑指南-anti-patterns)
-- [📅 30 天学习路线规划](#-30-天学习路线规划)
-- [📚 经典论文与深度阅读推荐](#-经典论文与深度阅读推荐)
-- [🔧 常见问题排查流程图](#-常见问题排查流程图-troubleshooting)
-- [📦 AI 开发常用工具链速查表](#-ai-开发常用工具链速查表)
-- [📦 常用高质量数据集推荐](#-常用高质量数据集推荐)
-- [🤝 开源贡献指南](#-开源贡献指南-how-to-contribute)
-- [📦 常用 AI 伦理与偏见缓解指南](#-常用-ai-伦理与偏见缓解指南-ai-ethics--bias)
-- [📦 常用 AI 前端错误边界与容灾方案](#-常用-ai-前端错误边界与容灾方案-error-boundaries--dr)
-- [📦 常用 AI 前端构建与打包优化方案](#-常用-ai-前端构建与打包优化方案-build--bundle-optimization)
-- [📦 常用 AI 前端 SEO 优化方案](#-常用-ai-前端-seo-优化方案-ai-frontend-seo)
-- [🎯 AIGC 内容质量优化指南](#-aigc-内容质量优化指南)
-- [📝 终极 FAQ](#-终极-faq-frequently-asked-questions)
-- [🎓 面试冲刺指南](#-面试冲刺指南)
-- [📎 附录：常见问题与解决方案](#-附录常见问题与解决方案)
-- [📚 学习资源推荐](#-学习资源推荐)
-- [📈 职业发展与规划](#-职业发展与规划)
-- [📝 版本记录](#-版本记录)
-
----
 
 ## 🚀 AI 前端开发体系化学习指南
 
@@ -648,7 +624,10 @@ export default function ArticleJsonLd({ title, date, author, description }) {
 export class AIContentSEO {
   // 📝 为 AI 生成内容添加唯一标识
   static addContentSignature(content: string): string {
-    return `${content}\n\n---\n*本文内容由 AI 辅助生成，经人工审核校对。*`;
+    return `${content}
+
+---
+*本文内容由 AI 辅助生成，经人工审核校对。*`;
   }
 
   // 🔗 生成语义化 URL 结构
@@ -826,7 +805,9 @@ export class AIGCContentOptimizer {
     let score = 100;
 
     // 检查段落长度
-    const paragraphs = content.split('\n\n');
+    const paragraphs = content.split('
+
+');
     const longParas = paragraphs.filter(p => p.length > 300);
     if (longParas.length > 0) {
       issues.push(`${longParas.length} 个段落过长 (>300字符)`);
@@ -861,16 +842,22 @@ export class AIGCContentOptimizer {
   // 🔧 自动优化内容结构
   static optimizeStructure(content: string): string {
     return content
-      .split('\n\n')
+      .split('
+
+')
       .map(para => {
         if (para.length > 200) {
           // 长段落拆分
           const mid = para.indexOf('，', 100);
-          if (mid > 0) return para.slice(0, mid + 1) + '\n\n' + para.slice(mid + 1);
+          if (mid > 0) return para.slice(0, mid + 1) + '
+
+' + para.slice(mid + 1);
         }
         return para;
       })
-      .join('\n\n');
+      .join('
+
+');
   }
 }
 ```
@@ -1076,11 +1063,3 @@ mindmap
 | **v4.5** | 2026-05-28 | Agent 生产化：05 新增 Agent 专项监控（循环检测/步骤延迟/用户干预率）；08 新增 Agent 成本优化（模型分层/步骤缓存/智能超时） |
 | **v4.6** | 2026-05-28 | Agent 高级实践：06 新增完整 MCP Server 开发教程（天气预报示例 + Agent 集成）；04 新增 Agent UX 设计模式（流式思维展示 + HITL）；08 新增 Agent 安全模式（4 级权限 + 沙箱实现） |
 | **v4.7** | 2026-05-28 | LLM 评估体系深度扩展：05 新增 BFCL 函数调用评估（AST 匹配 + 6 维分类）；05 新增 GAIA 准精确匹配评估器；05 新增 LLM-Judge 评估器（Pointwise/Pairwise/Reference/Rubric + Win Rate 计算）；05 新增 AIME 数学竞赛评估（Pass@K + 答案提取）|
-
----
-
-### 📌 导航
-
-| [⬅️ 开发实战与架构指南](./08-开发实战与架构指南.md) | [🏠 学习指南总览](#-ai-前端开发体系化学习指南) | [📊 技术选型对比合集](./07-技术选型对比合集.md) |
-|:---:|:---:|:---:|
-

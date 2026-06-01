@@ -6,6 +6,8 @@
 /out-tsc
 /bazel-out
 .history
+.vitepress/dist
+.vitepress/cache
 
 # Node
 /node_modules

@@ -992,13 +992,13 @@ export class ParentComponent {
 
 | 语法 | 用途 | 示例 |
 |------|------|------|
-| `{{ expression }}` | 插值 | `{{ user.name }}` |
+| `&#123;&#123; expression &#125;&#125;` | 插值 | `&#123;&#123; user.name &#125;&#125;` |
 | `[property]="value"` | 属性绑定 | `[disabled]="!form.valid"` |
 | `(event)="handler()"` | 事件绑定 | `(click)="submit()"` |
 | `[(ngModel)]="value"` | 双向绑定 | `[(ngModel)]="searchTerm"` |
 | `@if (condition)` | 条件渲染 | `@if (isAdmin) { ... }` |
 | `@for (item of list)` | 列表渲染 | `@for (item of items; track item.id)` |
-| `\| pipe` | 管道转换 | `{{ price \| currency }}` |
+| `\| pipe` | 管道转换 | `&#123;&#123; price \| currency &#125;&#125;` |
 
 ---
 
@@ -4512,10 +4512,3 @@ export class PerformanceService {
 ---
 
 **如有问题或建议，欢迎提出！** 🚀
-
----
-
-### 📌 导航
-
-| [⬅️ 上一章：React 19](./02-React19.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：框架对比](./04-框架对比.md) |
-|:---:|:---:|:---:|

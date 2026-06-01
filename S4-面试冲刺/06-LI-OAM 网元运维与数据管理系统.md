@@ -482,7 +482,8 @@ private partitionTextForPool(src: string, parts: number) {
 private handleChunk(seq: number, chunkText: string) {
   if (seq === this.expectedSeq) {
     // 顺序到达：直接输出
-    this.decryptedLog.update((log) => log + (log ? '\n' : '') + chunkText);
+    this.decryptedLog.update((log) => log + (log ? '
+' : '') + chunkText);
     this.expectedSeq++;
     this.flushIfReady();  // 检查缓冲区中是否有后续seq
   } else {

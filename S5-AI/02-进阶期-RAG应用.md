@@ -7,22 +7,6 @@
 
 > 🎯 **阶段目标**：打破 LLM 知识截止限制，构建基于私有数据的智能问答系统。
 
-### 📑 本章目录
-- [核心能力指标](#-核心能力指标)
-- [核心概念解析](#-核心概念解析)
-  - [RAG 架构全景图](#21-rag-架构全景图)
-  - [核心概念对照表](#22-核心概念对照表)
-  - [RAG 深入原理](#23-rag-深入原理)
-  - [Lost in the Middle 问题](#24-lost-in-the-middle-问题)
-  - [高级 RAG 范式](#25-高级rag范式)
-- [环境搭建](#️-环境搭建)
-- [核心实现](#-核心实现)
-  - [文档加载与解析](#25-文档加载与解析)
-  - [智能分块策略](#26-智能分块策略)
-  - [向量化与存储](#27-向量化与存储)
-  - [RAG 链构建](#28-rag-链构建)
-- [实战项目](#-阶段二实战项目)
-
 ### 💡 你将学到
 - RAG（检索增强生成）的完整架构与工作原理
 - 文本分块（Chunking）策略与 Embedding 向量化技术
@@ -233,7 +217,7 @@ npm install pdf-parse mammoth cheerio
 
 #### 2.4 环境变量配置
 
-```env
+```bash
 # .env.local
 OPENAI_API_KEY=sk-your-openai-key
 PINECONE_API_KEY=pc-your-pinecone-key
@@ -299,7 +283,9 @@ export class TextSplitter {
 
   // 📄 按段落分块 (保持语义完整性)
   static splitByParagraphs(text: string, chunkSize = 1000): string[] {
-    const paragraphs = text.split(/\n\s*\n/);
+    const paragraphs = text.split(/
+\s*
+/);
     const chunks: string[] = [];
     let currentChunk = '';
 
@@ -308,7 +294,9 @@ export class TextSplitter {
         chunks.push(currentChunk.trim());
         currentChunk = para;
       } else {
-        currentChunk = currentChunk ? currentChunk + '\n\n' + para : para;
+        currentChunk = currentChunk ? currentChunk + '
+
+' + para : para;
       }
     }
     if (currentChunk) chunks.push(currentChunk.trim());
@@ -404,7 +392,11 @@ export class RAGChain {
     const retriever = RunnablePassthrough.fromConfig<{ question: string }>(
       async (input) => {
         const results = await this.vectorStore.search(input.question, 5);
-        return results.map(r => r.content).join('\n\n---\n\n');
+        return results.map(r => r.content).join('
+
+---
+
+');
       }
     );
 
@@ -540,7 +532,9 @@ export class HybridSearch {
 export class SemanticChunker {
   async split(text: string, maxChunkSize = 1000): Promise<string[]> {
     // 1. 按句子分割
-    const sentences = text.match(/[^。！？\n]+[。！？\n]/g) || [text];
+    const sentences = text.match(/[^。！？
+]+[。！？
+]/g) || [text];
     
     // 2. 对每对相邻句子计算语义相似度
     const embeddings = await this.embedder.embedBatch(sentences);
@@ -592,10 +586,14 @@ export class QueryRewriter {
 
   async rewrite(original: string, strategy: 'decompose' | 'hyde' | 'expand' | 'stepback'): Promise<string[]> {
     const prompts: Record<string, string> = {
-      decompose: `将以下问题分解为 2-3 个更具体的子问题：\n${original}`,
-      hyde: `假设你已经知道了答案，请生成一段包含详细信息的假设回答：\n${original}`,
-      expand: `扩展以下查询，补充同义词和相关术语：\n${original}`,
-      stepback: `为了回答这个问题，我们需要先知道什么更一般的信息？\n${original}`,
+      decompose: `将以下问题分解为 2-3 个更具体的子问题：
+${original}`,
+      hyde: `假设你已经知道了答案，请生成一段包含详细信息的假设回答：
+${original}`,
+      expand: `扩展以下查询，补充同义词和相关术语：
+${original}`,
+      stepback: `为了回答这个问题，我们需要先知道什么更一般的信息？
+${original}`,
     };
 
     const response = await this.llm.invoke(prompts[strategy]);
@@ -657,10 +655,3 @@ class RAGEvaluator {
 | 🟢 **个人知识库** | ⭐⭐ | 文档解析、分块、向量化 | 支持 PDF/TXT 上传与检索 |
 | 🔵 **智能问答系统** | ⭐⭐⭐ | RAG 链、引用来源、流式输出 | 回答准确，附带参考链接 |
 | 🟣 **高级检索** | ⭐⭐⭐⭐ | 混合检索、重排序、查询扩展 | 检索准确率 (Hit Rate) > 80% |
-
----
-
-### 📌 导航
-
-| [⬅️ 上一阶段：入门期](./01-入门期-AI聊天室.md) | [🏠 学习指南总览](./README.md#-ai-前端开发体系化学习指南) | [➡️ 下一阶段：深耕期 - 端侧推理](./03-深耕期-端侧推理.md) |
-|:---:|:---:|:---:|

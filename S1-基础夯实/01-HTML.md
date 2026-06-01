@@ -5,44 +5,6 @@
 
 ---
 
-## 📑 目录
-
-- [⚡ 1. src 和 href 的区别](#1-src-和-href-的区别)
-- [🏷️ 2. 对 HTML 语义化的理解](#2-对-html-语义化的理解)
-- [📄 3. DOCTYPE（文档类型）的作用](#3-doctype文档类型的作用)
-- [⚙️ 4. script 标签中 defer 和 async 的区别](#4-script-标签中-defer-和-async-的区别)
-- [🏷️ 5. 常用的 meta 标签](#5-常用的-meta-标签)
-- [🚀 6. HTML5 有哪些更新](#6-html5-有哪些更新)
-- [🖼️ 7. img 的 srcset 属性的作用](#7-img-的-srcset-属性的作用)
-- [📦 8. 行内元素、块级元素、空元素](#8-行内元素块级元素空元素)
-- [🔧 9. 对 Web Worker 的理解](#9-对-web-worker-的理解)
-- [📥 10. HTML5 离线存储](#10-html5-离线存储application-cache)
-- [🔄 11. 离线存储资源的管理与加载](#11-离线存储资源的管理与加载)
-- [✨ 12. title vs h1, b vs strong, i vs em](#12-title-vs-h1-b-vs-strong-i-vs-em)
-- [🖥️ 13. iframe 的优缺点](#13-iframe-的优缺点)
-- [🏷️ 14. label 的作用和使用](#14-label-的作用和使用)
-- [🎨 15. Canvas 和 SVG 的区别](#15-canvas-和-svg-的区别)
-- [📑 16. head 标签的作用](#16-head-标签的作用)
-- [📄 17. 文档声明（Doctype）](#17-文档声明doctype与严格混杂模式)
-- [🔤 18. 浏览器乱码的原因与解决](#18-浏览器乱码的原因与解决)
-- [📈 19. 渐进增强和优雅降级](#19-渐进增强和优雅降级)
-- [🖱️ 20. HTML5 Drag & Drop API](#20-html5-drag--drop-api)
-- [🧩 21. Web Components](#21-web-components)
-- [⚡ 22. 资源提示（Resource Hints）](#22-资源提示resource-hints)
-- [🎬 23. View Transitions API](#23-view-transitions-api)
-- [📦 24. Import Map](#24-import-map)
-- [🔗 25. WebSocket](#25-websocket)
-- [📹 26. WebRTC 简介](#26-webrtc-简介)
-- [🔒 27. 安全和隐私相关新特性](#27-安全和隐私相关新特性)
-- [🫧 28. Popover API](#28-popover-api)
-- [🪟 29. Dialog 元素](#29-dialog-元素)
-- [♿ 30. 可访问性 ARIA](#30-可访问性-aria)
-- [📋 31. HTML 表单高级特性](#31-html-表单高级特性)
-- [⚙️ 32. Service Worker 与 PWA](#32-service-worker-与-pwa)
-- [🔍 33. HTML 解析机制](#33-html-解析机制)
-
-
----
 
 ## 📈 HTML 版本演进史
 
@@ -925,7 +887,7 @@ flowchart TD
 
 #### 2. 编写 manifest 文件
 
-```appcache
+```txt
 CACHE MANIFEST
 # 版本号 v0.11
 
@@ -3532,11 +3494,3 @@ paintMetrics.forEach((metric) => {
 ```
 
 > 💡 **总结**：HTML 解析是浏览器性能的关键环节，理解解析机制有助于优化首屏加载速度、避免不必要的文档写入和 DOM 操作。
-
----\n\n### 📌 导航
-
-| [🏠 返回主指南](../README.md) | [➡️ 下一章：CSS](./02-CSS.md) |
-|:---:|:---:|
-
-
-

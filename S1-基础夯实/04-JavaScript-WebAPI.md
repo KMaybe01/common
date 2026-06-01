@@ -88,29 +88,6 @@ mindmap
 
 ---
 
-## 📑 内容目录
-
-- [🌐 浏览器 Web API](#-浏览器-web-api)
-  - [IntersectionObserver](#1️⃣-intersectionobserver)
-  - [MutationObserver](#2️⃣-mutationobserver)
-  - [ResizeObserver](#3️⃣-resizeobserver)
-  - [PerformanceObserver](#4️⃣-performanceobserver)
-  - [Geolocation](#5️⃣-geolocation-api)
-  - [Notification](#6️⃣-notification-api)
-  - [Clipboard API](#7️⃣-clipboard-api)
-  - [File System Access](#8️⃣-file-system-access-api)
-  - [Web Storage](#9️⃣-web-storage)
-  - [Web Worker](#1️⃣0️⃣-web-worker)
-  - [Service Worker](#1️⃣1️⃣-service-worker)
-  - [Screen Wake Lock](#1️⃣2️⃣-screen-wake-lock-api)
-  - [BroadcastChannel](#1️⃣3️⃣-broadcastchannel)
-  - [Navigation API](#1️⃣4️⃣-navigation-api)
-  - [AbortController](#1️⃣5️⃣-abortcontroller)
-  - [fetch / XMLHttpRequest](#1️⃣6️⃣-fetch--xmlhttprequest)
-- [✍️ 手写代码实现](#✍️-手写代码实现)
-- [💻 代码输出题](#💻-代码输出题)
-
----
 
 ## 🌐 浏览器 Web API
 
@@ -3044,7 +3021,7 @@ function myStringify(data) {
     key => typeof data[key] !== 'function' && typeof data[key] !== 'symbol' && data[key] !== undefined
   )
   const pairs = keys.map(key => `"${key}":${myStringify(data[key])}`)
-  return `{${pairs.join(',')}}`
+  return `{${pairs.join(',')&#125;&#125;`
 }
 
 ### 7️⃣ Array 方法实现
@@ -5341,11 +5318,3 @@ mindmap
       structuredClone: 深度克隆
       WeakRef / FinalizationRegistry: 弱引用
 ```
-
----
-
-### 📌 导航
-
-| [⬅️ 上一章：JavaScript 核心](./03-JavaScript-核心.md) | [🏠 返回主指南](../README.md) | [🔝 返回顶部](#top) |
-|:---:|:---:|:---:|
-

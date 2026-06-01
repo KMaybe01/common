@@ -107,37 +107,6 @@ mindmap
       小字体
 ```
 
-## 📑 目录
-
-- [🎯 一、CSS 基础](#-一css-基础)
-- [📐 二、页面布局](#-二页面布局)
-- [📍 三、定位与浮动](#-三定位与浮动)
-- [🛠️ 四、场景应用](#-四场景应用)
-- [✨ 五、现代 CSS 新特性](#-五现代-css-新特性)
-  - [Container Queries](#1️⃣-css-container-queries容器查询)
-  - [:has() 选择器](#2️⃣-css-has-选择器)
-  - [@layer 层叠层](#3️⃣-css-cascade-layerslayer)
-  - [原生 Nesting](#4️⃣-css-nesting原生-css-嵌套)
-  - [@property](#5️⃣-css-自定义属性进阶property)
-  - [颜色函数](#6️⃣-新颜色函数)
-  - [滚动驱动动画](#7️⃣-css-scroll-driven-animations滚动驱动动画)
-  - [content-visibility](#8️⃣-content-visibility-和-contain)
-  - [@starting-style](#9️⃣-starting-style-和-transition-behavior)
-  - [Tailwind CSS](#1️⃣0️⃣-tailwind-css-简介)
-  - [Anchor Positioning](#1️⃣1️⃣-css-anchor-positioning锚点定位)
-  - [@scope](#1️⃣2️⃣-scopecss-样式作用域)
-  - [text-wrap](#1️⃣3️⃣-text-wrap-新值)
-  - [light-dark()](#1️⃣4️⃣-light-dark-颜色函数)
-  - [:user-valid/:user-invalid](#1️⃣5️⃣-user-valid--user-invalid-伪类)
-  - [accent-color](#1️⃣6️⃣-accent-color-表单控件主题色)
-  - [现代视口单位](#1️⃣7️⃣-现代视口单位dvh--svh--lvh)
-  - [容器查询单位](#1️⃣8️⃣-容器查询单位cqi--cqw--cqb)
-  - [Subgrid](#1️⃣9️⃣-css-subgrid)
-  - [CSS 数学函数](#2️⃣0️⃣-css-数学函数sin--cos--tan--等)
-  - [渐变插值提示](#2️⃣1️⃣-渐变插值提示interpolation-hints)
-- [🧩 六、CSS 编程题集](#-六css-编程题集)
-
----
 
 ## 🎯 一、CSS 基础
 
@@ -4676,11 +4645,3 @@ if (saved) {
   document.documentElement.setAttribute('data-theme', 'dark');
 }
 ```
-
----
-
-### 📌 导航
-
-| [⬅️ 上一章：HTML](./01-HTML.md) | [🏠 返回主指南](../README.md) | [➡️ 下一章：JavaScript 核心](./03-JavaScript-核心.md) |
-|:---:|:---:|:---:|
-
