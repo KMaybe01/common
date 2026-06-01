@@ -66,7 +66,7 @@ export default withMermaid(defineConfig({
       '/S1-基础夯实/': [
         {
           text: 'S1 基础夯实',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '阶段概览', link: '/S1-基础夯实/' },
             { text: '01-HTML', link: '/S1-基础夯实/01-HTML' },
@@ -79,7 +79,7 @@ export default withMermaid(defineConfig({
       '/S2-框架深入/': [
         {
           text: 'S2 框架深入',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '阶段概览', link: '/S2-框架深入/' },
             { text: '01-Vue3 学习指南', link: '/S2-框架深入/01-Vue3学习指南' },
@@ -95,7 +95,7 @@ export default withMermaid(defineConfig({
       '/S3-进阶提升/': [
         {
           text: 'S3 进阶提升',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '阶段概览', link: '/S3-进阶提升/' },
             { text: '01-浏览器原理', link: '/S3-进阶提升/01-浏览器原理' },
@@ -111,7 +111,7 @@ export default withMermaid(defineConfig({
       '/S4-面试冲刺/': [
         {
           text: 'S4 面试冲刺',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '阶段概览', link: '/S4-面试冲刺/' },
             { text: '01-简历', link: '/S4-面试冲刺/01-简历' },
@@ -130,7 +130,7 @@ export default withMermaid(defineConfig({
       '/S5-AI/': [
         {
           text: 'S5 AI 前沿',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '阶段概览', link: '/S5-AI/' },
             { text: '01-入门期-AI聊天室', link: '/S5-AI/01-入门期-AI聊天室' },
