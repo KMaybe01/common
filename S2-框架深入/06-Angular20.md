@@ -2,7 +2,98 @@
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > Angular 20 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
-> 
+
+---
+
+## Angular 技术体系化总结
+
+### 🎯 Angular 核心概念关系图
+
+```mermaid
+mindmap
+  root((Angular 核心))
+    组件系统
+      独立组件
+      模板语法
+      数据绑定
+      生命周期
+    依赖注入
+      Injectable
+      Provider
+      Injector
+      inject函数
+    Signals 响应式
+      signal
+      computed
+      effect
+      linkedSignal
+    指令系统
+      结构指令
+      属性指令
+      自定义指令
+      新控制流
+    路由系统
+      Angular Router
+      路由守卫
+      延迟加载
+      路由解析器
+    表单处理
+      响应式表单
+      模板驱动表单
+      表单验证
+    HTTP 客户端
+      HttpClient
+      httpResource
+      拦截器
+    状态管理
+      NgRx
+      SignalStore
+      Services
+    工程化
+      Angular CLI
+      TypeScript
+      测试策略
+      Nx Workspace
+```
+
+### 📈 Angular 技术栈完整知识体系
+
+```mermaid
+flowchart TB
+    subgraph 基础层
+        A1["HTML/CSS/JS"] --> A2["TypeScript"]
+        A2 --> A3["RxJS 响应式"]
+    end
+    
+    subgraph Angular 核心
+        B1["组件架构"] --> B2["依赖注入"]
+        B2 --> B3["模板系统"]
+        B3 --> B4["变更检测"]
+    end
+    
+    subgraph 响应式系统
+        C1["Signals"] --> C2["computed"]
+        C2 --> C3["effect"]
+        C3 --> C4["linkedSignal"]
+    end
+    
+    subgraph 企业级特性
+        D1["模块化"] --> D2["路由系统"]
+        D2 --> D3["表单处理"]
+        D3 --> D4["HTTP 客户端"]
+    end
+    
+    subgraph 高级主题
+        E1["性能优化"] --> E2["Zoneless 模式"]
+        E2 --> E3["AOT 编译"]
+        E3 --> E4["懒加载策略"]
+    end
+    
+    A3 --> B1
+    B4 --> C1
+    C4 --> D1
+    D4 --> E1
+```
 
 ---
 
@@ -3256,266 +3347,7 @@ export function linkedSignal<S, T>(
 
 ---
 
-# 第七部分：项目实战重难点
-
-## 1️⃣ 微前端与 Angular
-
-### 🔄 Module Federation 集成
-
-```typescript
-// 微前端主应用配置
-// webpack.config.js
-module.exports = {
-  plugins: [
-    new ModuleFederationPlugin({
-      name: 'host',
-      remotes: {
-        remote1: 'remote1@http://localhost:4201/remoteEntry.js',
-        remote2: 'remote2@http://localhost:4202/remoteEntry.js'
-      },
-      shared: {
-        '@angular/core': { singleton: true, eager: true },
-        '@angular/common': { singleton: true, eager: true },
-        '@angular/router': { singleton: true, eager: true }
-      }
-    })
-  ]
-};
-
-// 子应用配置
-module.exports = {
-  plugins: [
-    new ModuleFederationPlugin({
-      name: 'remote1',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './Module': './src/app/remote1/remote1.module.ts'
-      },
-      shared: {
-        '@angular/core': { singleton: true, eager: true },
-        '@angular/common': { singleton: true, eager: true }
-      }
-    })
-  ]
-};
-```
-
-### 📍 动态路由加载
-
-```typescript
-// app.routes.ts
-const routes: Routes = [
-  {
-    path: 'remote1',
-    loadChildren: () => loadRemoteModule('remote1', './Module')
-      .then(m => m.Remote1Module)
-  },
-  {
-    path: 'remote2',
-    loadChildren: () => loadRemoteModule('remote2', './Module')
-      .then(m => m.Remote2Module)
-  }
-];
-
-// 远程模块加载
-export function loadRemoteModule(
-  remoteName: string,
-  moduleName: string
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    // 动态加载脚本
-    const script = document.createElement('script');
-    script.src = `http://localhost:4201/remoteEntry.js`;
-    script.onload = () => {
-      const container = window[remoteName];
-      container.init(__webpack_share_scopes__.default);
-      container.get(moduleName).then((factory) => {
-        resolve(factory());
-      });
-    };
-    document.head.appendChild(script);
-  });
-}
-```
-
-## 2️⃣ Nx Monorepo 实战
-
-### 📁 项目结构
-
-```
-my-workspace/
-├── apps/
-│   ├── web-app/           # Web 应用
-│   ├── mobile-app/        # 移动应用
-│   └── api-server/        # API 服务
-│
-├── libs/
-│   ├── core/              # 核心库
-│   │   ├── data-access/   # 数据访问层
-│   │   ├── feature/       # 功能特性
-│   │   └── ui/            # UI 组件库
-│   │
-│   ├── shared/            # 共享库
-│   │   ├── utils/         # 工具函数
-│   │   ├── models/        # 数据模型
-│   │   └── validators/    # 验证器
-│   │
-│   └── feature/           # 业务模块
-│       ├── auth/          # 认证模块
-│       ├── dashboard/     # 仪表盘
-│       └── products/      # 产品管理
-│
-├── nx.json                # Nx 配置
-├── workspace.json         # 工作区配置
-└── tsconfig.base.json     # 基础 TS 配置
-```
-
-### 📍 库生成命令
-
-```bash
-# 创建 Angular 库
-nx generate @angular/core:library my-lib
-
-# 创建 feature 库
-nx generate @angular/core:library feature-auth \
-  --directory=libs/feature/auth \
-  --standalone
-
-# 创建 data-access 库
-nx generate @angular/core:library data-access \
-  --directory=libs/core/data-access \
-  --standalone
-```
-
-## 3️⃣ SSR 服务端渲染实战
-
-### 🔄 Angular Universal 配置
-
-```typescript
-// server.ts
-import { AngularNodeAppEngine, createNodeRequestHandler } from '@angular/ssr/node';
-import express from 'express';
-
-const app = express();
-const angularEngine = new AngularNodeAppEngine();
-
-// 1. 静态资源
-app.use(express.static('dist/browser'));
-
-// 2. API 路由（可选）
-app.use('/api', apiRouter);
-
-// 3. Angular SSR
-app.get('*', (req, res, next) => {
-  angularEngine
-    .handle(req)
-    .then(response => {
-      if (response) {
-        response.pipe(res);
-      } else {
-        next();
-      }
-    })
-    .catch(next);
-});
-
-// 4. 启动服务器
-app.listen(4000, () => {
-  console.log('Server running on http://localhost:4000');
-});
-```
-
-### 📍 Hydration 实现
-
-```typescript
-// packages/core/src/hydration/angularHydration.ts
-export function hydrate(
-  rootComponent: Type<any>,
-  options: HydrationOptions
-): Promise<ApplicationRef> {
-  // 1. 获取服务端渲染的 HTML
-  const html = document.documentElement.outerHTML;
-
-  // 2. 解析服务端生成的注释节点
-  const hydrationData = parseHydrationData(html);
-
-  // 3. 创建应用实例
-  const app = createApplication(rootComponent);
-
-  // 4. 执行 hydration
-  await app.bootstrap((hostEl) => {
-    // 对比服务端和客户端的组件树
-    const mismatch = detectHydrationMismatch(hostEl, hydrationData);
-
-    if (mismatch) {
-      // 发现不匹配，降级为完整渲染
-      console.warn('Hydration mismatch, falling back to full render');
-      return false;
-    }
-
-    // 补充事件监听器
-    attachEventListeners(hostEl, hydrationData);
-    return true;
-  });
-
-  return app;
-}
-```
-
-## 4️⃣ 性能监控与埋点
-
-```typescript
-// performance.service.ts
-import { Injectable } from '@angular/core';
-
-@Injectable({ providedIn: 'root' })
-export class PerformanceService {
-  // 1. 首屏加载时间
-  measureFirstPaint(): Promise<number> {
-    return new Promise(resolve => {
-      window.addEventListener('load', () => {
-        const perfEntries = performance.getEntriesByType('paint');
-        const firstPaint = perfEntries.find(e => e.name === 'first-paint');
-        resolve(firstPaint?.startTime || 0);
-      });
-    });
-  }
-
-  // 2. 路由切换性能
-  measureRouteChange(route: string): () => number {
-    const startTime = performance.now();
-    return () => {
-      const duration = performance.now() - startTime;
-      console.log(`Route ${route}: ${duration.toFixed(2)}ms`);
-      return duration;
-    };
-  }
-
-  // 3. 组件渲染性能
-  measureComponentRender(componentName: string): () => number {
-    const startTime = performance.now();
-    return () => {
-      const duration = performance.now() - startTime;
-      console.log(`Component ${componentName}: ${duration.toFixed(2)}ms`);
-      return duration;
-    };
-  }
-
-  // 4. 内存使用监控
-  monitorMemory(): void {
-    setInterval(() => {
-      if (performance.memory) {
-        const used = performance.memory.usedJSHeapSize / 1024 / 1024;
-        console.log(`Memory: ${used.toFixed(2)}MB`);
-      }
-    }, 10000);
-  }
-}
-```
-
----
-
-# 第八部分：常见 Bug 与调试技巧
+# 第七部分：常见 Bug 与调试技巧
 
 ## 1️⃣ 变更检测问题
 
@@ -3665,280 +3497,7 @@ export class MemoryLeakDetector {
 }
 ```
 
----
-
-
-# 第九部分：生态深度解析
-
-## 1️⃣ Angular CLI 进阶
-
-### 📊 项目生成与配置
-
-```bash
-# 创建新项目
-ng new my-app --routing --style=scss --ssr
-
-# 生成组件
-ng generate component components/header --standalone
-ng generate component components/sidebar --standalone --module=shared
-
-# 生成服务
-ng generate service services/auth --provided-in=root
-
-# 生成指令
-ng generate directive directives/highlight
-
-# 生成管道
-ng generate pipe pipes/capitalize
-
-# 生成环境
-ng generate environments
-```
-
-### 📍 自定义 schematic
-
-```typescript
-// collection.json
-{
-  "schematics": {
-    "component": {
-      "factory": "./src/component/factory",
-      "schema": "./src/component/schema.json",
-      "description": "Generate a component"
-    }
-  }
-}
-
-// src/component/factory.ts
-export function component(options: ComponentOptions): Rule {
-  return (host: Tree, context: SchematicContext) => {
-    // 1. 生成文件
-    const templateSource = apply(url('./files'), [
-      template({
-        ...options,
-        ...strings
-      }),
-      move(options.path)
-    ]);
-
-    // 2. 更新模块
-    const moduleUpdate = (host: Tree) => {
-      const modulePath = `${options.path}/${options.module}.ts`;
-      const moduleContent = host.read(modulePath)?.toString();
-
-      if (moduleContent) {
-        const updatedContent = addImportToModule(
-          moduleContent,
-          options.name,
-          options.module
-        );
-        host.overwrite(modulePath, updatedContent);
-      }
-    };
-
-    return chain([
-      mergeWith(templateSource),
-      moduleUpdate
-    ]);
-  };
-}
-```
-
-## 2️⃣ NgRx 深度使用
-
-### 🔄 状态管理架构
-
-```typescript
-// store/auth/auth.actions.ts
-export const login = createAction(
-  '[Auth] Login',
-  props<{ email: string; password: string }>()
-);
-
-export const loginSuccess = createAction(
-  '[Auth] Login Success',
-  props<{ user: User; token: string }>()
-);
-
-export const loginFailure = createAction(
-  '[Auth] Login Failure',
-  props<{ error: string }>()
-);
-
-// store/auth/auth.reducer.ts
-const authReducer = createReducer(
-  initialState,
-  on(login, state => ({ ...state, loading: true })),
-  on(loginSuccess, (state, { user, token }) => ({
-    ...state,
-    user,
-    token,
-    loading: false,
-    error: null
-  })),
-  on(loginFailure, (state, { error }) => ({
-    ...state,
-    error,
-    loading: false
-  }))
-);
-
-// store/auth/auth.effects.ts
-@Injectable()
-export class AuthEffects {
-  login$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(login),
-      switchMap(({ email, password }) =>
-        this.authService.login(email, password).pipe(
-          map(user => loginSuccess({ user, token: user.token })),
-          catchError(error => of(loginFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  constructor(
-    private actions$: Actions,
-    private authService: AuthService
-  ) {}
-}
-```
-
-### 📍 Signals Store（新方案）
-
-```typescript
-// store/counter.store.ts
-import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
-
-export const CounterStore = signalStore(
-  { providedIn: 'root' },
-  withState({ count: 0 }),
-  withMethods((store) => ({
-    increment() {
-      patchState(store, { count: store.count() + 1 });
-    },
-    decrement() {
-      patchState(store, { count: store.count() - 1 });
-    },
-    reset() {
-      patchState(store, { count: 0 });
-    }
-  }))
-);
-
-// 使用
-@Component({
-  template: `
-    <p>{{ store.count() }}</p>
-    <button (click)="store.increment()">+</button>
-    <button (click)="store.decrement()">-</button>
-  `
-})
-export class CounterComponent {
-  readonly store = inject(CounterStore);
-}
-```
-
----
-
-# 第十部分：面试题汇总
-
----
-
-## Angular 技术体系化总结
-
-### 🎯 Angular 核心概念关系图
-
-```mermaid
-mindmap
-  root((Angular 核心))
-    组件系统
-      独立组件
-      模板语法
-      数据绑定
-      生命周期
-    依赖注入
-      Injectable
-      Provider
-      Injector
-      inject函数
-    Signals 响应式
-      signal
-      computed
-      effect
-      linkedSignal
-    指令系统
-      结构指令
-      属性指令
-      自定义指令
-      新控制流
-    路由系统
-      Angular Router
-      路由守卫
-      延迟加载
-      路由解析器
-    表单处理
-      响应式表单
-      模板驱动表单
-      表单验证
-    HTTP 客户端
-      HttpClient
-      httpResource
-      拦截器
-    状态管理
-      NgRx
-      SignalStore
-      Services
-    工程化
-      Angular CLI
-      TypeScript
-      测试策略
-      Nx Workspace
-```
-
-### 📈 Angular 技术栈完整知识体系
-
-```mermaid
-flowchart TB
-    subgraph 基础层
-        A1["HTML/CSS/JS"] --> A2["TypeScript"]
-        A2 --> A3["RxJS 响应式"]
-    end
-    
-    subgraph Angular 核心
-        B1["组件架构"] --> B2["依赖注入"]
-        B2 --> B3["模板系统"]
-        B3 --> B4["变更检测"]
-    end
-    
-    subgraph 响应式系统
-        C1["Signals"] --> C2["computed"]
-        C2 --> C3["effect"]
-        C3 --> C4["linkedSignal"]
-    end
-    
-    subgraph 企业级特性
-        D1["模块化"] --> D2["路由系统"]
-        D2 --> D3["表单处理"]
-        D3 --> D4["HTTP 客户端"]
-    end
-    
-    subgraph 高级主题
-        E1["性能优化"] --> E2["Zoneless 模式"]
-        E2 --> E3["AOT 编译"]
-        E3 --> E4["懒加载策略"]
-    end
-    
-    A3 --> B1
-    B4 --> C1
-    C4 --> D1
-    D4 --> E1
-```
-
----
-
-## ⚡ 高频面试题精选（2026 版）
+# 第八部分：面试题汇总
 
 ### Q1：Angular 的变更检测机制是什么？Zone.js 和 Signals 有什么区别？
 
