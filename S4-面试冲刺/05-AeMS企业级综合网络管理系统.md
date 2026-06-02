@@ -1519,15 +1519,13 @@ const scrollToPath = (path: string) => {
 
 ## 八、面试高频问题（深度版）
 
+### 8.1 架构设计类
+
 #### Q1: 请介绍项目的整体架构设计
 
 **答：** 四层架构 — API 层 (装饰器声明式 HTTP) → Core 层 (全局服务/拦截器/守卫) → Routes 层 (业务组件) → Share 层 (14 个可复用组件)。关键决策：Angular 20 Signals 状态管理、Standalone 组件按需加载、装饰器驱动的 API 服务、LRU 路由缓存。
 
-#### Q2: 如何处理十万台设备的地图性能？
-
-**答：** 四级优化：① BBOX 视口裁剪只渲染可见区域；② 聚合点合并同 Market 设备；③ dataCache 全量缓存避免重复请求；④ moveend 懒刷新避免拖拽重绘。自定义 EPSG:900913 投影 + GeoServer WMS 底图分层渲染。
-
-#### Q3: LRU 路由缓存如何实现？
+#### Q2: LRU 路由缓存如何实现？
 
 **答：** 实现 RouteReuseStrategy 四个方法：shouldDetach 判断是否缓存、store 存储组件引用+滚动位置、retrieve 恢复并 LRU 刷新（先删后插）、ensureCacheLimit 超 6 个销毁最老。deleteOtherModuleCache 跨模块清理。
 
@@ -1538,6 +1536,8 @@ const scrollToPath = (path: string) => {
 #### Q5: 声明式 API 服务的实现原理？
 
 **答：** @axyom-ui/theme 的 BaseApi + 装饰器。@GET/@POST 定义 HTTP 方法和 URL 模板，@PATH/@QUERY/@BODY/@PAYLOAD 标记参数绑定。方法体返回 null as never，运行时 Proxy/Reflect 拦截器代理实际 HttpClient 调用。
+
+### 8.2 技术深度类
 
 #### Q6: Loading 状态如何精确追踪？
 
@@ -1559,9 +1559,11 @@ const scrollToPath = (path: string) => {
 
 **答：** ① Signals (signal/computed/effect) 状态管理；② input()/input.required() Signal Inputs；③ viewChild.required()；④ @if/@for 声明式控制流；⑤ Standalone 组件无 NgModule；⑥ 函数式守卫 CanActivateFn；⑦ 函数式拦截器 HttpInterceptorFn；⑧ takeUntilDestroyed() 内置销毁管理。
 
-#### Q11: 右键菜单体系如何设计？
+### 8.3 性能优化类
 
-**答：** 组合模式 + 观察者模式。`BaseMenuService` 提供路由导航和 `refresh$` Subject，四个子菜单服务（Maintenance/Operation/Radio/Log）各自封装业务逻辑并通过 `getMenus()` 返回菜单配置。`ActiveListMenu` 聚合所有子菜单。操作完成后通过 `refresh$.next()` 通知列表刷新。
+#### Q11: 十万台设备的地图性能如何优化？
+
+**答：** 四级优化：① BBOX 视口裁剪只渲染可见区域；② 聚合点合并同 Market 设备；③ dataCache 全量缓存避免重复请求；④ moveend 懒刷新避免拖拽重绘。自定义 EPSG:3857 投影 + GeoServer WMS 底图分层渲染。
 
 #### Q12: 参数树的懒加载和搜索定位如何实现？
 
