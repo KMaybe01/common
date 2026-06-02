@@ -494,7 +494,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        advancedChunks: {
           'ai-sdk': ['ai', '@ai-sdk/openai'],
           'markdown': ['react-markdown', 'remark-gfm'],
           'ui': ['@radix-ui/react-dialog', 'class-variance-authority'],

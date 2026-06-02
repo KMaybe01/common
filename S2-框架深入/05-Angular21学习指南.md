@@ -1,7 +1,7 @@
-# 🚀 [Angular 20](https://angular.dev) 完整学习指南
+# 🚀 [Angular 21](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：3 天
-> Angular 20+ 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与工程实践
+> Angular 21+ 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与工程实践
 
 ---
 
@@ -241,7 +241,7 @@ my-angular-app/
             "aot": true,
             "outputPath": "dist/my-app",
             "index": "src/index.html",
-            "polyfills": ["zone.js"]
+            "polyfills": ["zone.js"]   // Angular 21 默认 Zoneless 不再需要 zone.js
           }
         }
       }
@@ -260,7 +260,7 @@ ng generate pipe filter                  # 生成管道
 ng generate guard auth                   # 生成守卫
 ng build --configuration production      # 生产构建
 ng test                                  # 运行测试
-ng lint                                  # 代码检查
+eslint .                                 # 代码检查（Angular 20+ 改用原生 ESLint）
 ```
 
 ---

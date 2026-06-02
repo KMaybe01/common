@@ -4473,7 +4473,7 @@ graph TB
 
 ```dockerfile
 # 基础镜像
-FROM node:18
+FROM node:22
 ONBUILD COPY . /app
 ONBUILD RUN npm install
 

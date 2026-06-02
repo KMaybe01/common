@@ -6,7 +6,7 @@
 
 ### 一、项目背景
 
-`@axyom-ui/form` 是一个基于 Angular 20 + ng-zorro-antd 20 封装的**配置驱动型动态表单框架**。通过声明式的 TypeScript 配置类（如 `StringUnit`、`SelectUnit`）描述表单字段，自动生成对应的 ng-zorro UI 表单，彻底告别手写重复模板代码的时代。
+`@axyom-ui/form` 是一个基于 Angular 21 + ng-zorro-antd 21 封装的**配置驱动型动态表单框架**。通过声明式的 TypeScript 配置类（如 `StringUnit`、`SelectUnit`）描述表单字段，自动生成对应的 ng-zorro UI 表单，彻底告别手写重复模板代码的时代。
 
 ### 二、核心定位
 
@@ -15,7 +15,7 @@
 | **项目名称** | @axyom-ui/form |
 | **产品定位** | Angular配置驱动型动态表单框架 |
 | **目标用户** | Angular企业项目开发团队 |
-| **技术栈** | Angular 20.x + ng-zorro-antd 20.x + TypeScript 5.9 |
+| **技术栈** | Angular 21.x + ng-zorro-antd 21.x + TypeScript 5.9 |
 | **发布方式** | ng-packagr (FESM)，支持tree shaking |
 
 ### 三、核心功能模块
@@ -992,8 +992,8 @@ executeFun(fun: any) {
 │                                                                 │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  前沿技术应用                                               │  │
-│  │  Angular 20 · Signal · NgComponentOutlet · Standalone      │  │
-│  │  TypeScript 5.9 · RxJS 7 · ng-zorro-antd 20                │  │
+│  │  Angular 21 · Signal · NgComponentOutlet · Standalone      │  │
+│  │  TypeScript 5.9 · RxJS 7 · ng-zorro-antd 21                │  │
 │  └───────────────────────────────────────────────────────────┘  │
 │                                                                 │
 │  ┌───────────────────────────────────────────────────────────┐  │

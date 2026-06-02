@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "前端知识体系"
   text: "2026前端技术全景学习路径"
-  tagline: HTML· CSS · JavaScript · Vue3 · React19 · Angular20 · 性能优化 · 工程化 · 监控埋点 · AI 前沿 · Go 语言
+  tagline: HTML· CSS · JavaScript · Vue3 · React19 · Angular21 · 性能优化 · 工程化 · 监控埋点 · AI 前沿 · Go 语言
   image:
     src: /logo.svg
     alt: Frontend Interview Notes
@@ -24,7 +24,7 @@ features:
     link: /S1-基础夯实/
   - icon: 🔵
     title: S2 框架深入
-    details: Vue3 · React19 · Angular20 · 框架对比与选型
+    details: Vue3 · React19 · Angular21 · 框架对比与选型
     link: /S2-框架深入/
   - icon: 🟡
     title: S3 进阶提升
@@ -54,7 +54,7 @@ graph LR
     S4 --> S5["🟣 S5 AI 前沿"]
     S5 --> S6["🟦 S6 Go 语言"]
     S1 --> A["HTML5 · CSS3 · JS核心 · WebAPI · 20+手写实现"]
-    S2 --> B["Vue3 · React19 · Angular20"]
+    S2 --> B["Vue3 · React19 · Angular21"]
     S3 --> C["浏览器原理 · 性能优化 · 工程化 · 监控埋点 · Node.js · 小程序"]
     S4 --> D["简历八股 · 深度追问"]
     S5 --> E["AI Agent · RAG · 体系化学习"]
@@ -99,6 +99,8 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 ├─ 2022: Next.js 13 App Router、Turbopack
 ├─ 2023: React 19 预览（Actions/use()）、Angular Signals
 ├─ 2024: React Compiler（自动记忆化）、Vue 3.5、Angular 18 Zoneless
+├─ 2025: Vue 3.6 Alien Signals、Angular 19/20、React 19 正式版
+├─ 2026: Angular 21 全面 Zoneless、Vite 8、Server Components 普及
 ```
 
 ### 阶段四：AI 融合（2024—2026）

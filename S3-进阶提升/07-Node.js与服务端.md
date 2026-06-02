@@ -13,7 +13,7 @@ mindmap
   root((Node.js))
     工具链
       构建工具 Vite/Webpack
-      脚手架 create-vite/vue-cli
+      脚手架 create-vite/create-vue
       代码校验 ESLint/Prettier
     BFF 层
       API 聚合
@@ -151,7 +151,7 @@ graph TD
 
 ```javascript
 // Express RESTful API 示例
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // 资源命名：复数名词
@@ -271,8 +271,8 @@ graph TD
 
 ```javascript
 // 多进程 Cluster 模式
-const cluster = require('cluster');
-const os = require('os');
+import cluster from 'cluster';
+import os from 'os';
 
 if (cluster.isMaster) {
   const cpuCount = os.cpus().length;
@@ -407,7 +407,7 @@ class CircuitBreaker {
 
 ```javascript
 // Koa 洋葱模型中间件
-const Koa = require('koa');
+import Koa from 'koa';
 const app = new Koa();
 
 // 中间件按顺序执行，像洋葱一样层层剥开
@@ -685,14 +685,14 @@ graph LR
 
 ```javascript
 // a.js
-const b = require('./b');
+import b from './b';
 console.log('a.js: b.name =', b.name);
-module.exports = { name: 'module-a' };
+export default { name: 'module-a' };
 
 // b.js
-const a = require('./a');
+import a from './a';
 console.log('b.js: a =', a);  // 此时 a 是空对象 {}！
-module.exports = { name: 'module-b' };
+export default { name: 'module-b' };
 
 // main.js
 require('./a');

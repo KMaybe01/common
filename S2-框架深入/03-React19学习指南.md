@@ -257,7 +257,7 @@ graph TD
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "typescript": "^5.0.0",
-    "vite": "^6.0.0"
+    "vite": "^8.0.0"
   }
 }
 ```
@@ -1270,7 +1270,7 @@ graph LR
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "skipLibCheck": true

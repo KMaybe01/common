@@ -641,7 +641,7 @@ function PageTransition({ children }) {
 |------|------|-----------|
 | React 19 + Next.js | 全栈应用首选 | 最广泛使用 |
 | Angular 21 | 企业级应用 | Zoneless 默认，性能大幅提升 |
-| Vue 3.6 + Nuxt 4 | 渐进式开发 | Vapor Mode 实验性，性能接近 Solid |
+| Vue 3.6 + Nuxt 5 | 渐进式开发 | Vapor Mode 实验性，性能接近 Solid |
 | Svelte 5 | 编译时优化 | Runes 响应式，轻量级首选 |
 | Solid.js | 细粒度响应式 | 性能标杆，生态增长中 |
 | Astro 5 | 内容型网站 | Islands 架构，零 JS 默认 |
@@ -656,7 +656,7 @@ mindmap
       React DOM
       React Native
     元框架
-      Next.js 15
+      Next.js 16
       Remix
       Gatsby
     路由
@@ -807,8 +807,8 @@ function Parent() {
 }
 
 // 使用 eslint 防止 props 被非法修改
-// .eslintrc
-// { "rules": { "react/no-direct-mutation-state": "error" } }
+// eslint.config.js
+// export default [{ rules: { "react/no-direct-mutation-state": "error" } }];
 ```
 
 ### 🔄 React.Component vs React.PureComponent
@@ -3509,8 +3509,8 @@ my-react-app/
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.0.0",
-    "typescript": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.7.0",
     "vite": "^8.0.0"
   }
 }
@@ -3605,7 +3605,7 @@ const Button = styled.button<{ $primary?: boolean }>`
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "skipLibCheck": true
@@ -7068,7 +7068,7 @@ function ProductList({ products, onSelect }) {
 ### 📍 编译器配置
 
 ```json
-// .babelrc 或 babel.config.js
+// .babelrc 或 babel.config.js（推荐使用 flat config 方式）
 {
   "presets": [
     ["react-compiler", {

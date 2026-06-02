@@ -83,7 +83,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        用户层                                    │
-│              Web浏览器 (Angular 20 SPA)                          │
+│              Web浏览器 (Angular 21 SPA)                          │
 └───────────────────────────┬─────────────────────────────────────┘
                             │ HTTPS
 ┌───────────────────────────┴─────────────────────────────────────┐
@@ -118,7 +118,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 │                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │                      前端技术栈                               │   │
-│  │  Angular 20.3.17 + PrimeNG 20.3.0 + Tailwind CSS 4.1.11     │   │
+│  │  Angular 21.x + PrimeNG 20.3.0 + Tailwind CSS 4.1.11     │   │
 │  │  RxJS 7.8.0 + Ace Editor 1.43.3                             │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                              │                                      │
@@ -146,7 +146,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        表现层 (Presentation)                         │
-│  Angular 20 Standalone + PrimeNG + Tailwind CSS                     │
+│  Angular 21 Standalone + PrimeNG + Tailwind CSS                     │
 │  Zoneless + Signals + @if/@for 原生控制流                            │
 ├─────────────────────────────────────────────────────────────────────┤
 │                        状态层 (State)                                 │
@@ -243,7 +243,7 @@ interface UserInfo {
 | **Web Worker并行解密** | 多核CPU并行处理大日志文件，避免UI冻结 | ⭐⭐⭐ |
 | **自研表单系统** | 注册表+工厂模式，声明式表单定义 | ⭐⭐⭐ |
 | **HKDF+AES-256-GCM加密** | 审计日志安全存储，符合合规要求 | ⭐⭐⭐ |
-| **Zoneless Angular 20** | 无Zone.js，Signal精确更新，性能最优 | ⭐⭐ |
+| **Zoneless Angular 21** | 无Zone.js，Signal精确更新，性能最优 | ⭐⭐ |
 | **K8s Leader Election** | 双副本高可用，5秒故障转移 | ⭐⭐ |
 | **拦截器链设计** | 职责链模式，横切关注点分离 | ⭐ |
 | **装饰器缓存** | 透明代理localStorage，零样板代码 | ⭐ |
@@ -310,7 +310,7 @@ interface UserInfo {
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        展示层 (Presentation)                     │
-│  Angular 20 Standalone + PrimeNG + Tailwind CSS                 │
+│  Angular 21 Standalone + PrimeNG + Tailwind CSS                 │
 │  Zoneless + Signals + @if/@for 原生控制流                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                        状态层 (State)                             │

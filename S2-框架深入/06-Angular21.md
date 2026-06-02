@@ -1,7 +1,7 @@
-﻿# 🚀 [Angular 20](https://angular.dev) 完整学习指南
+﻿# 🚀 [Angular 21](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
-> Angular 20 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
+> Angular 21 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
 
 ---
 
@@ -277,7 +277,7 @@ UI = class + template + DI
 ### 🌟 重要特性速览
 
 ```
-Angular 20 (2024)
+Angular 20 (2025)
 ├─ Signals 生产级发布
 ├─ 新控制流语法 (@if/@for/@switch)
 ├─ 延迟加载块 (@defer)
@@ -409,7 +409,7 @@ Angular 21 (2025.11 发布)
 Angular 21 最大的变化是 **Zoneless 成为新项目的默认配置**。
 
 ```typescript
-// Angular 20 - 手动启用 Zoneless
+// Angular 20 - 手动启用 Zoneless（Angular 21 默认启用）
 import { provideZonelessChangeDetection } from '@angular/core';
 
 bootstrapApplication(AppComponent, {

@@ -10,7 +10,7 @@ graph LR
     S3 --> S4["🔴 S4 面试冲刺"]
     S4 --> S5["🟣 S5 AI 前沿"]
     S1 --> A["HTML5 · CSS3 · JS核心 · WebAPI · 20+手写实现"]
-    S2 --> B["Vue3 · React19 · Angular20"]
+    S2 --> B["Vue3 · React19 · Angular21"]
     S3 --> C["浏览器原理 · 性能优化 · 工程化 · 监控埋点 · Node.js · 小程序"]
     S4 --> D["简历八股 · 深度追问"]
     S5 --> E["AI Agent · RAG · 体系化学习"]
@@ -38,8 +38,8 @@ graph LR
 |   |-- 02-Vue3.md              面试向 📕
 |   |-- 03-React学习指南.md      实践向 📘
 |   |-- 04-React19.md           面试向 📕
-|   |-- 05-Angular20学习指南.md  实践向 📘
-|   |-- 06-Angular20.md         面试向 📕
+|   |-- 05-Angular21学习指南.md  实践向 📘
+|   |-- 06-Angular21.md         面试向 📕
 |   +-- 07-框架对比.md          横向对比 🔗
 |
 |-- 📁 S3-进阶提升/          🟡 进阶阶段（01-08）
@@ -107,6 +107,8 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 ├─ 2022: Next.js 13 App Router、Turbopack
 ├─ 2023: React 19 预览（Actions/use()）、Angular Signals
 ├─ 2024: React Compiler（自动记忆化）、Vue 3.5、Angular 18 Zoneless
+├─ 2025: Vue 3.6 Alien Signals、Angular 19/20、React 19 正式版
+├─ 2026: Angular 21 全面 Zoneless、Vite 8、Server Components 普及
 ```
 
 ### 阶段四：AI 融合（2024—2026）
