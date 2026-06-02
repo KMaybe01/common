@@ -14,8 +14,8 @@ const categoryMap = {
   'S2-框架深入/02-Vue3.md':                    { id: 'vue3',     name: 'Vue3面试',   icon: '🟢' },
   'S2-框架深入/03-React19学习指南.md':          { id: 'react-l',  name: 'React19学习',icon: '📘' },
   'S2-框架深入/04-React19.md':                 { id: 'react',    name: 'React19面试',icon: '🔵' },
-  'S2-框架深入/05-Angular20学习指南.md':       { id: 'ng-l',     name: 'Angular20学习', icon: '📙' },
-  'S2-框架深入/06-Angular20.md':               { id: 'angular',  name: 'Angular20面试', icon: '🔴' },
+  'S2-框架深入/05-Angular21学习指南.md':       { id: 'ng-l',     name: 'Angular21学习', icon: '📙' },
+  'S2-框架深入/06-Angular21.md':               { id: 'angular',  name: 'Angular21面试', icon: '🔴' },
   'S2-框架深入/07-框架对比.md':                 { id: 'compare',  name: '框架对比',   icon: '🔄' },
   'S3-进阶提升/01-浏览器原理.md':               { id: 'browser',  name: '浏览器原理', icon: '🌍' },
   'S3-进阶提升/02-性能优化.md':                 { id: 'perf',     name: '性能优化',   icon: '🚀' },
@@ -54,6 +54,10 @@ const TOPIC_H4_RE = /^#### (?:[0-9]+\.[0-9]+)\s+(.+)/   // #### 1.1 topic
 const TOPIC_PLAIN_H4_RE = /^#### (.+)/                    // #### plain topic
 const ALGO_RE = /^### (\d+)\.\s+(.+?)(?:\s+[🟢🟡🔴])?\s*$/  // ### 1. 两数之和 🟢
 
+// Frequency emoji mapping (u flag for emoji surrogate pairs)
+const FREQ_EMOJI = { '🔥': 'high', '📌': 'mid', '📖': 'low' }
+const FREQ_RE = /\*\*频率\*\*[：:]\s*([🔥📌📖])/u
+
 function clean(str) {
   return str.trim().replace(/\s+/g, ' ')
 }
@@ -78,10 +82,21 @@ function extractQA(content, regex, lines) {
   }
   if (current) questions.push(current)
 
-  return questions.map(q => ({
-    ...q,
-    answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
-  }))
+  return questions.map(q => {
+    const text = q.question + '\n' + q.answer
+    const fm = text.match(FREQ_RE)
+    let freq = ''
+    if (fm && FREQ_EMOJI[fm[1]]) {
+      freq = FREQ_EMOJI[fm[1]]
+    } else if (/（必考）|（高频）/u.test(q.question)) {
+      freq = 'high'
+    }
+    return {
+      ...q,
+      freq,
+      answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+    }
+  })
 }
 
 // Extract H2 lesson sections from 学习指南 files as separate questions
@@ -118,12 +133,17 @@ function extractH2Lessons(lines, category, idPrefix) {
 
   return questions
     .filter(q => q.answer.trim().length > 20)
-    .map(q => ({
-      id: `${idPrefix}-lesson-q${q.num}`,
-      category,
-      question: q.question,
-      answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
-    }))
+    .map(q => {
+      const text = q.question + '\n' + q.answer
+      const fm = text.match(FREQ_RE)
+      return {
+        id: `${idPrefix}-lesson-q${q.num}`,
+        category,
+        question: q.question,
+        answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+        freq: fm && FREQ_EMOJI[fm[1]] ? FREQ_EMOJI[fm[1]] : '',
+      }
+    })
 }
 
 function isHeading(line) {
@@ -188,12 +208,17 @@ function extractTopics(content, lines, category, idPrefix) {
   // Filter out very short answers (< 20 chars) - likely just headings or metadata
   return questions
     .filter(q => q.answer.trim().length > 20)
-    .map(q => ({
-      id: `${idPrefix}-q${q.num}`,
-      category,
-      question: q.question,
-      answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
-    }))
+    .map(q => {
+      const text = q.question + '\n' + q.answer
+      const fm = text.match(FREQ_RE)
+      return {
+        id: `${idPrefix}-q${q.num}`,
+        category,
+        question: q.question,
+        answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+        freq: fm && FREQ_EMOJI[fm[1]] ? FREQ_EMOJI[fm[1]] : '',
+      }
+    })
 }
 
 function parseFile(filePath, relPath) {
@@ -213,6 +238,7 @@ function parseFile(filePath, relPath) {
         category: cat.id,
         question: q.question,
         answer: q.answer,
+        freq: q.freq || '',
       })))
       break
     }

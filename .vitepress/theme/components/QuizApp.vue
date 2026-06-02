@@ -2,7 +2,12 @@
   <div class="quiz">
     <div class="quiz__header">
       <h2>📝 题库刷题</h2>
-      <p class="quiz__desc">共 {{ total }} 题，{{ filtered.length }} 条匹配</p>
+      <p class="quiz__desc">共 {{ total }} 题，{{ filtered.length }} 条匹配 <template v-if="activeFreq"> · {{ freqLabel(activeFreq) }}</template></p>
+      <div class="quiz__stats">
+        <span class="quiz__stat quiz__stat--high">🔥 {{ freqCounts.high }}</span>
+        <span class="quiz__stat quiz__stat--mid">📌 {{ freqCounts.mid }}</span>
+        <span class="quiz__stat quiz__stat--low">📖 {{ freqCounts.low }}</span>
+      </div>
     </div>
 
     <div class="quiz__layout">
@@ -26,6 +31,10 @@
           <span class="quiz__tab-icon">{{ cat.icon }}</span>
           <span class="quiz__tab-name">{{ cat.name }}</span>
           <span class="quiz__tab-count">{{ cat.count }}</span>
+          <span v-if="catFreq[cat.id]" class="quiz__tab-freq">
+            <i v-if="catFreq[cat.id].high" class="qf qf-h">🔥{{ catFreq[cat.id].high }}</i>
+            <i v-if="catFreq[cat.id].mid" class="qf qf-m">📌{{ catFreq[cat.id].mid }}</i>
+          </span>
         </button>
       </aside>
 
@@ -44,8 +53,22 @@
               @click="searchQuery = ''"
             >✕</button>
           </div>
+          <div class="quiz__freq-tabs">
+            <button class="quiz__freq-btn" :class="{ 'quiz__freq-btn--active': activeFreq === '' }" @click="activeFreq = ''">全部</button>
+            <button class="quiz__freq-btn quiz__freq-btn--high" :class="{ 'quiz__freq-btn--active': activeFreq === 'high' }" @click="activeFreq = 'high'">🔥 高频</button>
+            <button class="quiz__freq-btn quiz__freq-btn--mid" :class="{ 'quiz__freq-btn--active': activeFreq === 'mid' }" @click="activeFreq = 'mid'">📌 常考</button>
+            <button class="quiz__freq-btn quiz__freq-btn--low" :class="{ 'quiz__freq-btn--active': activeFreq === 'low' }" @click="activeFreq = 'low'">📖 了解</button>
+          </div>
+          <button
+            class="quiz__mode-btn"
+            :class="{ 'quiz__mode-btn--active': studyMode }"
+            @click="studyMode = !studyMode"
+            :title="studyMode ? '切换普通模式' : '切换学习模式（高频→常考→了解）'"
+          >{{ studyMode ? '📚' : '📖' }}</button>
           <select v-model="sortBy" class="quiz__sort">
             <option value="default">默认排序</option>
+            <option value="freq-desc">频率高→低</option>
+            <option value="freq-asc">频率低→高</option>
             <option value="question-asc">题目 A→Z</option>
             <option value="question-desc">题目 Z→A</option>
             <option value="category">按分类</option>
@@ -83,6 +106,7 @@
             >
               <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
               <span class="quiz__row-q">{{ q.question }}</span>
+              <span v-if="q.freq" class="quiz__row-freq" :class="'quiz__row-freq--' + q.freq">{{ freqLabel(q.freq) }}</span>
               <span class="quiz__row-arrow">→</span>
             </div>
           </div>
@@ -110,7 +134,10 @@
           </div>
           <div class="quiz__modal-main">
             <div class="quiz__modal-body">
-              <h3 class="quiz__modal-title">{{ detailItem.question }}</h3>
+              <h3 class="quiz__modal-title">
+                {{ detailItem.question }}
+                <span v-if="detailItem.freq" class="quiz__modal-freq" :class="'quiz__modal-freq--' + detailItem.freq">{{ freqLabel(detailItem.freq) }}</span>
+              </h3>
               <div class="quiz__modal-answer quiz__answer-body" v-html="detailRendered" />
             </div>
             <div class="quiz__modal-side">
@@ -189,6 +216,8 @@ const questions = rawData.questions
 const activeCategory = ref('')
 const searchQuery = ref('')
 const sortBy = ref('default')
+const activeFreq = ref('')
+const studyMode = ref(false)
 const page = ref(1)
 const pageSize = 20
 
@@ -204,12 +233,37 @@ function getCategoryName(id) {
   return categoryMap[id] || id
 }
 
+const freqLabelMap = { high: '🔥 高频', mid: '📌 常考', low: '📖 了解' }
+function freqLabel(f) {
+  return freqLabelMap[f] || ''
+}
+
 const total = computed(() => questions.length)
+
+const freqCounts = computed(() => {
+  const c = { high: 0, mid: 0, low: 0 }
+  questions.forEach(q => { if (c[q.freq] !== undefined) c[q.freq]++ })
+  return c
+})
+
+const catFreq = computed(() => {
+  const map = {}
+  questions.forEach(q => {
+    if (!map[q.category]) map[q.category] = { high: 0, mid: 0, low: 0 }
+    if (map[q.category][q.freq] !== undefined) map[q.category][q.freq]++
+  })
+  return map
+})
+
+const freqOrder = { high: 0, mid: 1, low: 2, '': 3 }
 
 const filtered = computed(() => {
   let list = questions
   if (activeCategory.value) {
     list = list.filter(q => q.category === activeCategory.value)
+  }
+  if (activeFreq.value) {
+    list = list.filter(q => q.freq === activeFreq.value)
   }
   if (searchQuery.value.trim()) {
     const kw = searchQuery.value.trim().toLowerCase()
@@ -218,7 +272,14 @@ const filtered = computed(() => {
       q.answer.toLowerCase().includes(kw)
     )
   }
-  if (sortBy.value === 'question-asc') {
+  if (studyMode.value && !activeFreq.value) {
+    // Study mode: sort by frequency high→mid→low
+    list = [...list].sort((a, b) => (freqOrder[a.freq] || 3) - (freqOrder[b.freq] || 3))
+  } else if (sortBy.value === 'freq-desc') {
+    list = [...list].sort((a, b) => (freqOrder[a.freq] || 3) - (freqOrder[b.freq] || 3))
+  } else if (sortBy.value === 'freq-asc') {
+    list = [...list].sort((a, b) => (freqOrder[b.freq] || 3) - (freqOrder[a.freq] || 3))
+  } else if (sortBy.value === 'question-asc') {
     list = [...list].sort((a, b) => a.question.localeCompare(b.question, 'zh'))
   } else if (sortBy.value === 'question-desc') {
     list = [...list].sort((a, b) => b.question.localeCompare(a.question, 'zh'))
@@ -227,6 +288,30 @@ const filtered = computed(() => {
   }
   return list
 })
+
+function syncStateToURL() {
+  const p = new URLSearchParams()
+  if (activeCategory.value) p.set('cat', activeCategory.value)
+  if (activeFreq.value) p.set('freq', activeFreq.value)
+  if (studyMode.value) p.set('mode', 'study')
+  if (sortBy.value !== 'default') p.set('sort', sortBy.value)
+  if (searchQuery.value.trim()) p.set('q', searchQuery.value.trim())
+  const qs = p.toString()
+  const url = qs ? '?' + qs : window.location.pathname
+  history.replaceState(null, '', url)
+}
+
+function loadStateFromURL() {
+  const p = new URLSearchParams(window.location.search)
+  if (p.has('cat')) activeCategory.value = p.get('cat')
+  if (p.has('freq')) activeFreq.value = p.get('freq')
+  if (p.has('mode')) studyMode.value = true
+  if (p.has('sort')) sortBy.value = p.get('sort')
+  if (p.has('q')) searchQuery.value = p.get('q')
+}
+
+// Sync to URL on mount
+onMounted(loadStateFromURL)
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
 
@@ -245,8 +330,9 @@ function switchCategory(id) {
   page.value = 1
 }
 
-watch([activeCategory, searchQuery, sortBy], () => {
+watch([activeCategory, activeFreq, studyMode, searchQuery, sortBy], () => {
   page.value = 1
+  syncStateToURL()
 })
 
 function openDetail(q) {
@@ -322,6 +408,38 @@ async function renderMermaidDiagrams() {
   font-size: 0.875rem;
 }
 
+.quiz__stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.quiz__stat {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.quiz__stat--high {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.08);
+}
+
+.quiz__stat--mid {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.08);
+}
+
+.quiz__stat--low {
+  color: #666;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.dark .quiz__stat--high { background: rgba(244, 67, 54, 0.15); color: #ef9a9a; }
+.dark .quiz__stat--mid { background: rgba(255, 152, 0, 0.15); color: #ffcc80; }
+.dark .quiz__stat--low { background: rgba(255, 255, 255, 0.06); color: #999; }
+
 .quiz__layout {
   display: flex;
   gap: 20px;
@@ -391,6 +509,26 @@ async function renderMermaidDiagrams() {
   flex-shrink: 0;
 }
 
+.quiz__tab-freq {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.qf {
+  font-size: 0.6rem;
+  font-style: normal;
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1.2;
+}
+
+.qf-h { color: #d32f2f; background: rgba(211, 47, 47, 0.08); }
+.qf-m { color: #e65100; background: rgba(230, 81, 0, 0.08); }
+.dark .qf-h { background: rgba(244, 67, 54, 0.12); color: #ef9a9a; }
+.dark .qf-m { background: rgba(255, 152, 0, 0.12); color: #ffcc80; }
+
 .quiz__content { flex: 1; min-width: 0; }
 .quiz__content .hljs { border-radius: 8px; font-size: 0.875rem; }
 .quiz__content pre:not(.hljs) { border-radius: 8px; }
@@ -454,6 +592,41 @@ async function renderMermaidDiagrams() {
 .quiz__search-clear:hover {
   background: var(--vp-c-border);
   color: var(--vp-c-text-1);
+}
+
+.quiz__freq-tabs {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.quiz__freq-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-2);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.quiz__freq-btn:hover {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+}
+
+.quiz__freq-btn--active {
+  border-color: #3eaf7c;
+  color: #3eaf7c;
+  background: var(--vp-c-green-soft, #e8f5e9);
+  font-weight: 600;
+}
+
+.dark .quiz__freq-btn--active {
+  background: rgba(62, 175, 124, 0.15);
+  color: #66c99c;
 }
 
 .quiz__sort {
@@ -544,6 +717,45 @@ async function renderMermaidDiagrams() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.quiz__row-freq {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.quiz__row-freq--high {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.1);
+}
+
+.quiz__row-freq--mid {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.1);
+}
+
+.quiz__row-freq--low {
+  color: #666;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .quiz__row-freq--high {
+  background: rgba(244, 67, 54, 0.2);
+  color: #ef9a9a;
+}
+
+.dark .quiz__row-freq--mid {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ffcc80;
+}
+
+.dark .quiz__row-freq--low {
+  background: rgba(255, 255, 255, 0.08);
+  color: #999;
 }
 
 .quiz__row-arrow {
@@ -679,6 +891,48 @@ async function renderMermaidDiagrams() {
   margin: 0 0 20px;
   line-height: 1.5;
   color: var(--vp-c-text-1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quiz__modal-freq {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.quiz__modal-freq--high {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.1);
+}
+
+.quiz__modal-freq--mid {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.1);
+}
+
+.quiz__modal-freq--low {
+  color: #666;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .quiz__modal-freq--high {
+  background: rgba(244, 67, 54, 0.2);
+  color: #ef9a9a;
+}
+
+.dark .quiz__modal-freq--mid {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ffcc80;
+}
+
+.dark .quiz__modal-freq--low {
+  background: rgba(255, 255, 255, 0.08);
+  color: #999;
 }
 
 .quiz__modal-answer {
@@ -809,6 +1063,7 @@ async function renderMermaidDiagrams() {
   }
   .quiz__tab { padding: 6px 10px; font-size: 0.8rem; }
   .quiz__toolbar { flex-direction: column; }
+  .quiz__freq-tabs { overflow-x: auto; }
   .quiz__modal { max-width: 100%; max-height: 95vh; }
   .quiz__modal-mask { padding: 0; }
   .quiz__modal--full { border-radius: 0; }
