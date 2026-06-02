@@ -4,7 +4,6 @@ layout: home
 
 hero:
   name: "前端知识体系"
-  text: "2026前端技术全景学习路径"
   tagline: HTML· CSS · JavaScript · Vue3 · React19 · Angular21 · 性能优化 · 工程化 · 监控埋点 · AI 前沿 · Go 语言
   image:
     src: /logo.svg
