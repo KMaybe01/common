@@ -18,6 +18,7 @@ export default withMermaid(defineConfig({
   base: '/common/',
   lang: 'zh-CN',
   lastUpdated: true,
+  scrollOffset: 70,
 
   ignoreDeadLinks: true,
 

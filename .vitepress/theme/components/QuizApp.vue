@@ -2,11 +2,20 @@
   <div class="quiz">
     <div class="quiz__header">
       <h2>📝 题库刷题</h2>
-      <p class="quiz__desc">共 {{ total }} 题，选择分类开始刷题</p>
+      <p class="quiz__desc">共 {{ total }} 题，{{ filtered.length }} 条匹配</p>
     </div>
 
     <div class="quiz__layout">
       <aside class="quiz__sidebar">
+        <button
+          class="quiz__tab"
+          :class="{ 'quiz__tab--active': activeCategory === '' }"
+          @click="switchCategory('')"
+        >
+          <span class="quiz__tab-icon">📋</span>
+          <span class="quiz__tab-name">全部</span>
+          <span class="quiz__tab-count">{{ total }}</span>
+        </button>
         <button
           v-for="cat in categories"
           :key="cat.id"
@@ -21,8 +30,30 @@
       </aside>
 
       <main class="quiz__content">
+        <div class="quiz__toolbar">
+          <div class="quiz__search-wrap">
+            <input
+              v-model="searchQuery"
+              class="quiz__search"
+              type="text"
+              placeholder="🔍 搜索题目..."
+            />
+            <button
+              v-show="searchQuery"
+              class="quiz__search-clear"
+              @click="searchQuery = ''"
+            >✕</button>
+          </div>
+          <select v-model="sortBy" class="quiz__sort">
+            <option value="default">默认排序</option>
+            <option value="question-asc">题目 A→Z</option>
+            <option value="question-desc">题目 Z→A</option>
+            <option value="category">按分类</option>
+          </select>
+        </div>
+
         <div v-if="filtered.length === 0" class="quiz__empty">
-          ← 选择左侧分类开始刷题
+          没有匹配的题目
         </div>
 
         <template v-else>
@@ -34,48 +65,73 @@
               />
             </div>
             <span class="quiz__progress-text">
-              {{ currentIndex + 1 }} / {{ filtered.length }}
+              {{ pagedData.length }} 题 · 第 {{ page }} / {{ totalPages }} 页
             </span>
           </div>
 
-          <div class="quiz__card">
-            <div class="quiz__q-header">
-              <span class="quiz__q-num">第 {{ currentIndex + 1 }} 题</span>
-            </div>
-            <div class="quiz__q-text">{{ current.question }}</div>
+          <div class="quiz__nav" style="margin-bottom:16px">
+            <button class="quiz__btn" :disabled="page <= 1" @click="page--">← 上一页</button>
+            <button class="quiz__btn" :disabled="page >= totalPages" @click="page++">下一页 →</button>
+          </div>
 
-            <button
-              class="quiz__toggle"
-              :class="{ 'quiz__toggle--open': showAnswer }"
-              @click="showAnswer = !showAnswer"
+          <div class="quiz__list">
+            <div
+              v-for="(q, i) in pagedData"
+              :key="q.id"
+              class="quiz__row"
+              @click="openDetail(q)"
             >
-              {{ showAnswer ? '🙈 隐藏答案' : '👀 显示答案' }}
-            </button>
-
-            <div v-show="showAnswer" class="quiz__answer">
-              <div class="quiz__answer-body" v-html="renderedAnswer" />
+              <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
+              <span class="quiz__row-q">{{ q.question }}</span>
+              <span class="quiz__row-arrow">→</span>
             </div>
           </div>
 
           <div class="quiz__nav">
-            <button
-              class="quiz__btn quiz__btn--prev"
-              :disabled="currentIndex === 0"
-              @click="goPrev"
-            >
-              ← 上一题
-            </button>
-            <button
-              class="quiz__btn quiz__btn--next"
-              :disabled="currentIndex === filtered.length - 1"
-              @click="goNext"
-            >
-              下一题 →
-            </button>
+            <button class="quiz__btn" :disabled="page <= 1" @click="page--">← 上一页</button>
+            <button class="quiz__btn" :disabled="page >= totalPages" @click="page++">下一页 →</button>
           </div>
         </template>
       </main>
     </div>
+
+    <Teleport to="body">
+      <div v-if="detailVisible" class="quiz__modal-mask" @click.self="detailVisible = false">
+        <div class="quiz__modal" :class="{ 'quiz__modal--full': isFull }">
+          <div class="quiz__modal-header">
+            <span class="quiz__modal-cat">{{ getCategoryName(detailItem.category) }}</span>
+            <span class="quiz__modal-index">{{ detailIndex + 1 }} / {{ filtered.length }}</span>
+            <div class="quiz__modal-actions">
+              <button class="quiz__modal-action" @click="isFull = !isFull" :title="isFull ? '缩小' : '放大'">
+                {{ isFull ? '⧉' : '⛶' }}
+              </button>
+              <button class="quiz__modal-close" @click="detailVisible = false">✕</button>
+            </div>
+          </div>
+          <div class="quiz__modal-main">
+            <div class="quiz__modal-body">
+              <h3 class="quiz__modal-title">{{ detailItem.question }}</h3>
+              <div class="quiz__modal-answer quiz__answer-body" v-html="detailRendered" />
+            </div>
+            <div class="quiz__modal-side">
+              <button
+                class="quiz__modal-side-btn"
+                :disabled="detailIndex <= 0"
+                @click="detailPrev"
+              >↑</button>
+              <span class="quiz__modal-side-label">上一题</span>
+              <div class="quiz__modal-side-sep" />
+              <span class="quiz__modal-side-label">下一题</span>
+              <button
+                class="quiz__modal-side-btn"
+                :disabled="detailIndex >= filtered.length - 1"
+                @click="detailNext"
+              >↓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -131,38 +187,85 @@ const categories = rawData.categories
 const questions = rawData.questions
 
 const activeCategory = ref('')
-const currentIndex = ref(0)
-const showAnswer = ref(true)
+const searchQuery = ref('')
+const sortBy = ref('default')
+const page = ref(1)
+const pageSize = 20
+
+const detailVisible = ref(false)
+const detailItem = ref({ question: '', answer: '', category: '' })
+const detailIndex = ref(0)
+const isFull = ref(false)
+
+const categoryMap = {}
+categories.forEach(c => { categoryMap[c.id] = c.name })
+
+function getCategoryName(id) {
+  return categoryMap[id] || id
+}
+
+const total = computed(() => questions.length)
 
 const filtered = computed(() => {
-  if (!activeCategory.value) return []
-  return questions.filter(q => q.category === activeCategory.value)
+  let list = questions
+  if (activeCategory.value) {
+    list = list.filter(q => q.category === activeCategory.value)
+  }
+  if (searchQuery.value.trim()) {
+    const kw = searchQuery.value.trim().toLowerCase()
+    list = list.filter(q =>
+      q.question.toLowerCase().includes(kw) ||
+      q.answer.toLowerCase().includes(kw)
+    )
+  }
+  if (sortBy.value === 'question-asc') {
+    list = [...list].sort((a, b) => a.question.localeCompare(b.question, 'zh'))
+  } else if (sortBy.value === 'question-desc') {
+    list = [...list].sort((a, b) => b.question.localeCompare(a.question, 'zh'))
+  } else if (sortBy.value === 'category') {
+    list = [...list].sort((a, b) => a.category.localeCompare(b.category))
+  }
+  return list
 })
 
-const current = computed(() => filtered.value[currentIndex.value] ?? { question: '', answer: '' })
-const total = computed(() => questions.length)
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
+
+const pagedData = computed(() => {
+  const start = (page.value - 1) * pageSize
+  return filtered.value.slice(start, start + pageSize)
+})
+
 const progressPct = computed(() => {
   if (filtered.value.length === 0) return 0
-  return Math.round(((currentIndex.value + 1) / filtered.value.length) * 100)
+  return Math.round((page.value / totalPages.value) * 100)
 })
 
 function switchCategory(id) {
   activeCategory.value = id
-  currentIndex.value = 0
-  showAnswer.value = true
+  page.value = 1
 }
 
-function goPrev() {
-  if (currentIndex.value > 0) {
-    currentIndex.value--
-    showAnswer.value = true
+watch([activeCategory, searchQuery, sortBy], () => {
+  page.value = 1
+})
+
+function openDetail(q) {
+  detailItem.value = q
+  detailIndex.value = filtered.value.findIndex(item => item.id === q.id)
+  detailVisible.value = true
+}
+
+function detailPrev() {
+  if (detailIndex.value > 0) {
+    detailIndex.value--
+    detailItem.value = filtered.value[detailIndex.value]
   }
 }
 
-function goNext() {
-  if (currentIndex.value < filtered.value.length - 1) {
-    currentIndex.value++
-    showAnswer.value = true
+function detailNext() {
+  if (detailIndex.value < filtered.value.length - 1) {
+    detailIndex.value++
+    detailItem.value = filtered.value[detailIndex.value]
   }
 }
 
@@ -171,44 +274,37 @@ function renderMd(str) {
   return md.render(str)
 }
 
-const renderedAnswer = computed(() => {
+const detailRendered = computed(() => {
   try {
-    return renderMd(current.value.answer)
+    return renderMd(detailItem.value.answer)
   } catch {
-    return `<pre>${current.value.answer || ''}</pre>`
+    return `<pre>${detailItem.value.answer || ''}</pre>`
   }
+})
+
+watch(detailRendered, () => {
+  nextTick(() => renderMermaidDiagrams())
 })
 
 async function renderMermaidDiagrams() {
   await nextTick()
   await nextTick()
   await nextTick()
-
-  const els = document.querySelectorAll('.quiz__content pre.mermaid[data-quiz-id]:not([data-processed])')
+  const els = document.querySelectorAll('.quiz__modal pre.mermaid[data-quiz-id]:not([data-processed])')
   if (!els.length) return
-
   for (const el of els) {
     const id = el.dataset.quizId
     const code = mermaid._quizCodes?.[id]
     if (!code) continue
-
     const graphId = `qmgraph-${id}-${Date.now()}`
     try {
       const { svg } = await mermaid.render(graphId, code)
       el.outerHTML = `<div class="mermaid-rendered" data-quiz-id="${id}">${svg}</div>`
-    } catch (e) {
+    } catch {
       el.outerHTML = `<div class="mermaid-error" data-quiz-id="${id}"><details><summary>图表渲染失败</summary><pre>${md.utils.escapeHtml(code)}</pre></details></div>`
     }
   }
 }
-
-watch(renderedAnswer, () => {
-  nextTick(() => renderMermaidDiagrams())
-})
-
-onMounted(() => {
-  renderMermaidDiagrams()
-})
 </script>
 
 <style scoped>
@@ -306,6 +402,71 @@ onMounted(() => {
   font-size: 1rem;
 }
 
+.quiz__toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.quiz__search-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.quiz__search {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.quiz__search:focus {
+  border-color: #3eaf7c;
+}
+
+.quiz__search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.quiz__search-clear:hover {
+  background: var(--vp-c-border);
+  color: var(--vp-c-text-1);
+}
+
+.quiz__sort {
+  padding: 8px 12px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+}
+
 .quiz__progress {
   display: flex;
   align-items: center;
@@ -334,141 +495,69 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.quiz__card {
+.quiz__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   border: 1px solid var(--vp-c-border);
-  border-radius: 12px;
-  padding: 24px;
-  background: var(--vp-c-bg);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.dark .quiz__card {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.quiz__q-header { margin-bottom: 12px; }
-
-.quiz__q-num {
-  font-size: 0.8rem;
-  color: #3eaf7c;
-  font-weight: 600;
-}
-
-.quiz__q-text {
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  color: var(--vp-c-text-1);
-}
-
-.quiz__toggle {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border: 1px dashed #3eaf7c;
-  border-radius: 8px;
-  background: var(--vp-c-green-soft, #f0faf5);
-  color: #3eaf7c;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.dark .quiz__toggle { background: rgba(62, 175, 124, 0.1); }
-.quiz__toggle:hover { background: var(--vp-c-green-soft, #e0f5ea); }
-.dark .quiz__toggle:hover { background: rgba(62, 175, 124, 0.2); }
-.quiz__toggle--open { border-style: solid; background: var(--vp-c-green-soft, #e8f5e9); }
-.dark .quiz__toggle--open { background: rgba(62, 175, 124, 0.15); }
-
-.quiz__answer {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.quiz__answer-body {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--vp-c-text-1);
-}
-
-.quiz__answer-body :deep(pre) {
-  background: var(--vp-c-bg-soft);
-  border-radius: 8px;
-  padding: 16px;
-  overflow-x: auto;
-  font-size: 0.85rem;
-}
-
-.quiz__answer-body :deep(pre code) { background: transparent; padding: 0; }
-
-.quiz__answer-body :deep(code) {
-  background: var(--vp-c-bg-soft);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-.quiz__answer-body :deep(table) {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 12px 0;
-}
-
-.quiz__answer-body :deep(th),
-.quiz__answer-body :deep(td) {
-  border: 1px solid var(--vp-c-border);
-  padding: 8px 12px;
-  text-align: left;
-  font-size: 0.85rem;
-}
-
-.quiz__answer-body :deep(th) {
-  background: var(--vp-c-bg-soft);
-  font-weight: 600;
-}
-
-.quiz__answer-body :deep(blockquote) {
-  border-left: 3px solid #3eaf7c;
-  margin: 12px 0;
-  padding: 8px 16px;
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
-  border-radius: 0 4px 4px 0;
-}
-
-.quiz__answer-body :deep(ul),
-.quiz__answer-body :deep(ol) { padding-left: 20px; margin: 8px 0; }
-.quiz__answer-body :deep(li) { margin: 4px 0; }
-.quiz__answer-body :deep(p) { margin: 8px 0; }
-.quiz__answer-body :deep(h1),
-.quiz__answer-body :deep(h2),
-.quiz__answer-body :deep(h3),
-.quiz__answer-body :deep(h4) { margin: 16px 0 8px; font-weight: 600; }
-
-.quiz__answer-body :deep(.mermaid-placeholder) {
-  min-height: 100px;
-  background: var(--vp-c-bg-soft);
-  border-radius: 8px;
+.quiz__row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--vp-c-bg);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.quiz__row:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.quiz__row + .quiz__row {
+  border-top: 1px solid var(--vp-c-border);
+}
+
+.quiz__row-cat {
+  font-size: 0.75rem;
+  color: #3eaf7c;
+  background: var(--vp-c-green-soft, #e8f5e9);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dark .quiz__row-cat {
+  background: rgba(62, 175, 124, 0.15);
+  color: #66c99c;
+}
+
+.quiz__row-q {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz__row-arrow {
   color: var(--vp-c-text-3);
-  font-size: 0.8rem;
-  margin: 10px 0;
+  flex-shrink: 0;
 }
 
 .quiz__nav {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 16px;
 }
 
 .quiz__btn {
-  flex: 1;
   padding: 10px 20px;
   border: 1px solid var(--vp-c-border);
   border-radius: 8px;
@@ -489,6 +578,224 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
+/* Modal */
+.quiz__modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.quiz__modal {
+  background: var(--vp-c-bg);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transition: max-width 0.25s, max-height 0.25s;
+}
+
+.quiz__modal--full {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.quiz__modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--vp-c-border);
+  flex-shrink: 0;
+}
+
+.quiz__modal-cat {
+  font-size: 0.8rem;
+  color: #3eaf7c;
+  background: var(--vp-c-green-soft, #e8f5e9);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.dark .quiz__modal-cat {
+  background: rgba(62, 175, 124, 0.15);
+  color: #66c99c;
+}
+
+.quiz__modal-index {
+  font-size: 0.8rem;
+  color: var(--vp-c-text-3);
+}
+
+.quiz__modal-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.quiz__modal-action,
+.quiz__modal-close {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--vp-c-text-2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.quiz__modal-action:hover,
+.quiz__modal-close:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.quiz__modal-main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.quiz__modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  min-width: 0;
+}
+
+.quiz__modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 20px;
+  line-height: 1.5;
+  color: var(--vp-c-text-1);
+}
+
+.quiz__modal-answer {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--vp-c-text-1);
+}
+
+.quiz__modal-answer :deep(pre) {
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.quiz__modal-answer :deep(.hljs) {
+  background: var(--vp-c-bg-soft) !important;
+}
+
+.quiz__modal-answer :deep(code) {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.875rem;
+}
+
+.quiz__modal-answer :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+.quiz__modal-answer :deep(th),
+.quiz__modal-answer :deep(td) {
+  border: 1px solid var(--vp-c-border);
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.quiz__modal-answer :deep(th) {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+.quiz__modal-answer :deep(blockquote) {
+  border-left: 3px solid #3eaf7c;
+  margin: 12px 0;
+  padding: 8px 16px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  border-radius: 0 4px 4px 0;
+}
+
+.quiz__modal-answer :deep(ul),
+.quiz__modal-answer :deep(ol) { padding-left: 20px; margin: 8px 0; }
+.quiz__modal-answer :deep(li) { margin: 4px 0; }
+.quiz__modal-answer :deep(p) { margin: 8px 0; }
+.quiz__modal-answer :deep(h1),
+.quiz__modal-answer :deep(h2),
+.quiz__modal-answer :deep(h3),
+.quiz__modal-answer :deep(h4) { margin: 16px 0 8px; font-weight: 600; }
+
+.quiz__modal-side {
+  width: 56px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-left: 1px solid var(--vp-c-border);
+  padding: 16px 0;
+}
+
+.quiz__modal-side-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.quiz__modal-side-btn:hover:not(:disabled) {
+  border-color: #3eaf7c;
+  color: #3eaf7c;
+  background: var(--vp-c-green-soft, #f0faf5);
+}
+
+.dark .quiz__modal-side-btn:hover:not(:disabled) {
+  background: rgba(62, 175, 124, 0.15);
+}
+
+.quiz__modal-side-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quiz__modal-side-label {
+  font-size: 0.65rem;
+  color: var(--vp-c-text-3);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.05em;
+}
+
+.quiz__modal-side-sep {
+  width: 16px;
+  height: 1px;
+  background: var(--vp-c-border);
+}
+
 @media (max-width: 768px) {
   .quiz__layout { flex-direction: column; }
   .quiz__sidebar {
@@ -501,5 +808,9 @@ onMounted(() => {
     max-height: none;
   }
   .quiz__tab { padding: 6px 10px; font-size: 0.8rem; }
+  .quiz__toolbar { flex-direction: column; }
+  .quiz__modal { max-width: 100%; max-height: 95vh; }
+  .quiz__modal-mask { padding: 0; }
+  .quiz__modal--full { border-radius: 0; }
 }
 </style>

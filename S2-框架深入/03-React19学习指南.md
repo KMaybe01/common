@@ -190,7 +190,7 @@ timeline
 ### 环境要求
 
 ```
-Node.js 18+
+Node.js 22+（推荐 LTS）
 npm / yarn / pnpm
 VS Code + ESLint + Prettier 插件
 ```

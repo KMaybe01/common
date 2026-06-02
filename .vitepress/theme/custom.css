@@ -8,6 +8,10 @@
   --vp-home-hero-image-filter: blur(80px);
 }
 
+html {
+  scroll-padding-top: 72px;
+}
+
 .vp-doc h1 {
   font-size: 1.8em;
 }

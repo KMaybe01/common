@@ -84,6 +84,48 @@ function extractQA(content, regex, lines) {
   }))
 }
 
+// Extract H2 lesson sections from 学习指南 files as separate questions
+function extractH2Lessons(lines, category, idPrefix) {
+  const questions = []
+  let current = null
+  let idx = 0
+  const skipH2 = /^(?:#{1,2}\s+(?:[📌🧠📈📖📝💡🔗📚🛠️💻🔤🔒⚙️🌐✨🧩📦🔧🔄📝]|知识脑图|版本|学习|阅读|前置|你将学到|核心能力|目录))/i
+  const lessonRe = /^## (\d+-\d+)\s+(.+)/  // ## 1-1 lesson name
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const m = line.match(lessonRe)
+    if (m) {
+      if (current && current.answer.trim()) questions.push(current)
+      idx++
+      current = {
+        num: idx,
+        question: clean(m[2]),
+        answer: '',
+      }
+    } else if (current) {
+      // Stop at Q&A section or next major heading
+      if (/^##\s+Q\d+[：:]/.test(line) || /^#\s+/.test(line)) {
+        if (current.answer.trim()) questions.push(current)
+        current = null
+        break
+      }
+      if (current.answer) current.answer += '\n'
+      current.answer += line
+    }
+  }
+  if (current && current.answer.trim()) questions.push(current)
+
+  return questions
+    .filter(q => q.answer.trim().length > 20)
+    .map(q => ({
+      id: `${idPrefix}-lesson-q${q.num}`,
+      category,
+      question: q.question,
+      answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+    }))
+}
+
 function isHeading(line) {
   return line.startsWith('## ') || line.startsWith('### ') || line.startsWith('#### ') || line.startsWith('##### ')
 }
@@ -157,51 +199,43 @@ function extractTopics(content, lines, category, idPrefix) {
 function parseFile(filePath, relPath) {
   const content = readFileSync(filePath, 'utf-8')
   const lines = content.split('\n')
+  const cat = categoryMap[relPath]
+  if (!cat) return []
 
-  // Try all Q&A patterns first
+  let allQs = []
+
+  // Phase 1: Extract Q&A sections
   for (const regex of [Q3_RE, Q2_RE, Q5_RE]) {
     const qs = extractQA(content, regex, lines)
     if (qs.length > 0) {
-      return qs.map(q => ({
-        id: `${categoryMap[relPath]?.id ?? 'misc'}-q${q.num}`,
-        category: categoryMap[relPath]?.id ?? 'misc',
+      allQs.push(...qs.map(q => ({
+        id: `${cat.id}-q${q.num}`,
+        category: cat.id,
         question: q.question,
         answer: q.answer,
-      }))
+      })))
+      break
     }
   }
 
-  // For algo file, use ALGO_RE
-  if (relPath === 'S3-进阶提升/04-算法题解.md') {
-    const qs = []
-    let current = null
-    for (let i = 0; i < lines.length; i++) {
-      const m = lines[i].match(ALGO_RE)
-      if (m) {
-        if (current) qs.push(current)
-        current = {
-          num: parseInt(m[1]),
-          question: clean(m[2]),
-          answer: '',
-        }
-      } else if (current) {
-        if (current.answer) current.answer += '\n'
-        current.answer += lines[i]
-      }
-    }
-    if (current) qs.push(current)
-    return qs.filter(q => q.answer.trim()).map(q => ({
-      id: `algo-q${q.num}`,
-      category: 'algo',
-      question: q.question,
-      answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
-    }))
+  // Phase 2: Extract H3/H4 topics as knowledge points (always, as supplement)
+  const topicQs = extractTopics(content, lines, cat.id, cat.id)
+  allQs.push(...topicQs)
+
+  // Phase 3: For 学习指南 files, also extract H2 lesson sections
+  if (relPath.includes('学习指南')) {
+    const lessonQs = extractH2Lessons(lines, cat.id, cat.id)
+    allQs.push(...lessonQs)
   }
 
-  // Fallback: extract ### numbered topics as knowledge points
-  const cat = categoryMap[relPath]
-  if (!cat) return []
-  return extractTopics(content, lines, cat.id, cat.id)
+  // Deduplicate by question title
+  const seen = new Set()
+  return allQs.filter(q => {
+    const key = q.question
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 function scanFiles(dir) {
