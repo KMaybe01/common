@@ -271,7 +271,7 @@ interface RoleConfig {
 
 | 层级 | 技术选型 | 关键版本 |
 |------|----------|----------|
-| 框架 | Angular (Standalone + Signals + 声明式控制流) | 20.3 |
+| 框架 | Angular (Standalone + Signals + 声明式控制流) | 21.3 |
 | UI | Ng-Zorro + @axyom-ui 自研组件库 (table/form/acl/theme) | 20.4 |
 | 图表 | ECharts (按需引入 Bar/Pie/Line/Tree) | 5.x |
 | 地图 | OpenLayers + GeoServer WMS | 10.x |

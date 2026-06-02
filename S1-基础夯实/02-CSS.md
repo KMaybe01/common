@@ -817,7 +817,7 @@ flowchart LR
 .my-image {
   background: url('low.png');
 }
-@media only screen and (min-device-pixel-ratio: 1.5) {
+@media only screen and (min-resolution: 144dpi) {
   .my-image {
     background: url('high.png');
   }
@@ -2231,7 +2231,7 @@ flowchart TD
 .right {
   position: relative;
   left: 200px;
-  float: right;
+  float: left;
   margin-left: -200px;      /* 拉回上一行 */
   width: 200px;
   height: 100px;
@@ -2366,7 +2366,6 @@ flowchart TD
 // flexible 方案的简化版 - 基于 rem 的适配
 (function flexible() {
   const docEl = document.documentElement;
-  const maxWidth = 750;
 
   function setRemUnit() {
     const width = docEl.clientWidth;
@@ -2503,6 +2502,12 @@ flowchart TD
 #### float 实现
 
 ```css
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
 .div1 { background: red; margin: 0 auto; }
 .div2 { background: green; float: left; margin-left: calc(50% - 50px); }
 .div3 { background: blue; float: left; margin-left: 10px; }

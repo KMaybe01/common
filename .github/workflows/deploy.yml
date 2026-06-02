@@ -27,6 +27,9 @@ jobs:
       - name: Generate quiz data
         run: node scripts/parse-questions.mjs
 
+      - name: Assign frequency levels
+        run: node scripts/assign-frequency.mjs
+
       - name: Build with VitePress
         run: npm run build
 

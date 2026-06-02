@@ -358,7 +358,7 @@ timeline
 | **Angular 18** | 2024 | **Zoneless 实验性** | 可选的精确变更检测 |
 | **Angular 19** | 2025 | `linkedSignal`、`resource()` | 声明式数据获取 |
 | **Angular 20** | 2025 | `httpResource`、Signal Forms | 响应式全面化 |
-| **Angular 21** | 2026 | **Zoneless 默认（预期）**、esbuild 原生 | 全面现代化 |
+| **Angular 21** | 2025 | **Zoneless 默认（预期）**、esbuild 原生 | 全面现代化 |
 
 ### ⚡ Angular 关键转折点：AngularJS → Angular 2 → Ivy → Zoneless
 
@@ -445,7 +445,10 @@ bootstrapApplication(AppComponent, {
 // 之前
 data$ = this.http.get('/api/data');
 // 之后
-data = resource(() => ({ request: '/api/data' }));
+data = resource({
+    request: () => '/api/data',
+    loader: ({ request }) => this.http.get(request)
+  });
 
 // 4. 测试中移除 zone.js/testing
 // "polyfills": ["zone.js", "zone.js/testing"] → 删除
@@ -1777,9 +1780,9 @@ export const routes: Routes = [
     path: 'analytics',
     loadChildren: () => 
       import('./analytics/analytics.module').then(m => m.AnalyticsModule),
-    canLoad: [authGuard],  // ⚠️ Deprecated in Angular 15+, use canMatch instead
-  },
-  
+    canMatch: [authGuard],  // ✅ canLoad 已废弃，使用 canMatch
+
+
   // 6️⃣ 通配符路由（必须放在最后）
   { path: '**', component: NotFoundComponent }
 ];
@@ -2136,7 +2139,7 @@ ng generate service product             # 生成服务
 ng generate directive highlight          # 生成指令
 ng generate pipe filter                  # 生成管道
 ng generate guard auth                   # 生成守卫
-ng build --prod                          # 生产构建
+ng build --configuration production      # 生产构建
 ng test                                  # 运行测试
 ng lint                                  # 代码检查
 ```
@@ -3674,7 +3677,7 @@ const routes: Routes = [{
   canActivate: [AuthGuard],           // 进入前检查（权限）
   canDeactivate: [UnsavedGuard],      // 离开前检查（未保存）
   canActivateChild: [ChildGuard],     // 子路由激活前检查
-  canLoad: [LoadGuard],               // 懒加载前检查（Angular 15+ 弃用）
+  canMatch: [LoadGuard],              // ✅ canLoad 已废弃，使用 canMatch
   resolve: { data: UserResolver },    // 路由激活前预取数据
   children: [/* ... */]
 }]

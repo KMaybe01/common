@@ -95,6 +95,7 @@ graph TD
 export interface Tool {
   name: string;
   description: string;
+  parameters: Record<string, unknown>;  // JSON Schema 描述参数
   execute: (params: Record<string, unknown>) => Promise<string>;
 }
 
@@ -102,6 +103,13 @@ export interface Tool {
 export const searchTool: Tool = {
   name: 'web_search',
   description: '搜索互联网获取最新信息',
+  parameters: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: '搜索关键词' },
+    },
+    required: ['query'],
+  },
   execute: async ({ query }) => {
     const res = await fetch(`/api/search?q=${query}`);
     const data = await res.json();
@@ -113,6 +121,13 @@ export const searchTool: Tool = {
 export const calcTool: Tool = {
   name: 'calculator',
   description: '执行数学计算',
+  parameters: {
+    type: 'object',
+    properties: {
+      expression: { type: 'string', description: '数学表达式，如 2 + 2' },
+    },
+    required: ['expression'],
+  },
   execute: async ({ expression }) => {
     try {
       return String(Function(`"use strict"; return (${expression})`)());
@@ -126,53 +141,74 @@ export const toolRegistry = new Map<string, Tool>([
   [searchTool.name, searchTool],
   [calcTool.name, calcTool],
 ]);
+
+// 转换为 OpenAI tools 格式
+export function toOpenAITools(): OpenAI.Chat.CompletionCreateParams.Tool[] {
+  return Array.from(toolRegistry.values()).map((tool) => ({
+    type: 'function' as const,
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.parameters as Record<string, unknown>,
+    },
+  }));
+}
 ```
 
 #### 4.4 [ReAct](https://arxiv.org/abs/2210.03629) Agent 核心
 
 ```typescript
 // lib/agent/react-agent.ts
+import OpenAI from 'openai';
+
 export class ReActAgent {
   private maxIterations = 5;
+  private openai = new OpenAI();
 
   async run(task: string): Promise<string> {
-    let history = `任务: ${task}
-`;
+    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+      { role: 'system', content: '你是一个智能助手，可以使用工具完成任务。' },
+      { role: 'user', content: task },
+    ];
+
+    const tools = toOpenAITools();
 
     for (let i = 0; i < this.maxIterations; i++) {
-      // 1. 调用 LLM 决定下一步行动
-      const decision = await this.callLLM(history);
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages,
+        tools,
+        tool_choice: 'auto',
+      });
 
-      // 2. 解析 LLM 输出
-      const action = this.parseAction(decision);
-      if (!action) return decision; // 找到最终答案
+      const message = response.choices[0].message;
+      messages.push(message);
 
-      // 3. 执行工具
-      const tool = toolRegistry.get(action.name);
-      if (!tool) {
-        history += `观察: 工具 ${action.name} 不存在
-`;
-        continue;
+      if (!message.tool_calls || message.tool_calls.length === 0) {
+        return message.content ?? '未获取到回答';
       }
 
-      const observation = await tool.execute(action.params);
-      history += `思考: ${decision}
-行动: ${action.name}
-观察: ${observation}
-`;
+      for (const toolCall of message.tool_calls) {
+        const tool = toolRegistry.get(toolCall.function.name);
+        if (!tool) {
+          messages.push({
+            role: 'tool',
+            tool_call_id: toolCall.id,
+            content: `工具 ${toolCall.function.name} 不存在`,
+          });
+          continue;
+        }
+
+        const args = JSON.parse(toolCall.function.arguments);
+        const observation = await tool.execute(args);
+        messages.push({
+          role: 'tool',
+          tool_call_id: toolCall.id,
+          content: observation,
+        });
+      }
     }
     return '达到最大迭代次数，未能完成任务。';
-  }
-
-  private async callLLM(history: string): Promise<string> {
-    // 调用 OpenAI API...
-    return '...';
-  }
-
-  private parseAction(text: string): { name: string; params: any } | null {
-    // 解析 "Action: tool_name
-Input: {...}" 格式
-    return null;
   }
 }
 ```

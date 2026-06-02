@@ -186,7 +186,7 @@ timeline
 | **Angular 18** | 2024 | Zoneless 实验性 | 更小运行时 |
 | **Angular 19** | 2024 | **httpResource** 实验性 | 声明式数据获取 |
 | **Angular 20** | 2025 | Signals 全面化 | Zoneless 开发者预览 |
-| **Angular 21** | 2026 | 全 Zoneless 默认 | 极致性能 |
+| **Angular 21** | 2025 | 全 Zoneless 默认 | 极致性能 |
 
 ---
 

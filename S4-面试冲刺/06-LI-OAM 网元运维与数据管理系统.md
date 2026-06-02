@@ -118,7 +118,7 @@ LI-OAM（Lawful Intercept Operation, Administration & Maintenance）是一套面
 │                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │                      前端技术栈                               │   │
-│  │  Angular 21.x + PrimeNG 20.3.0 + Tailwind CSS 4.1.11     │   │
+│  │  Angular 21.x + PrimeNG 20.x + Tailwind CSS 4.x          │   │
 │  │  RxJS 7.8.0 + Ace Editor 1.43.3                             │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                              │                                      │

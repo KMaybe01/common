@@ -303,8 +303,8 @@ timeline
          : 函数式革命
     2022 : React 18
          : 并发模式
-    2025 : React 19
-         : Actions + Compiler
+     2024 : React 19
+          : Actions + Compiler
     2026 : React 19 生态成熟
          : RSC 普及化
 ```
@@ -319,7 +319,7 @@ timeline
 | **React 16.8** | 2019 | **Hooks** 发布 | 函数组件拥有状态，告别 class |
 | **React 17** | 2020 | 渐进升级桥梁版 | 无重大新特性，平滑过渡 |
 | **React 18** | 2022 | 并发模式、自动批处理 | 更好的用户体验，Suspense 完善 |
-| **React 19** | 2025 | Actions、use()、React Compiler | 表单革新、自动记忆化、RSC |
+| **React 19** | 2024 | Actions、use()、React Compiler | 表单革新、自动记忆化、RSC |
 
 ### React 15 → 16 → 17 → 18 → 19 核心变化
 
@@ -364,7 +364,7 @@ Fiber 将原本不可中断的**递归渲染**（Stack Reconciler）改造成了
 ### 🌟 重要特性速览
 
 ```
-React 19 (2025)
+React 19 (2024)
 ├─ React Compiler (自动优化)
 ├─ Actions (统一表单处理)
 ├─ use() Hook (异步数据)
@@ -475,9 +475,9 @@ function ThemedButton() {
 
 ### ⏱️ React 18 vs 19 关键变化
 
-| 特性 | React 18 (2022) | React 19 (2025) |
+| 特性 | React 18 (2022) | React 19 (2024) |
 |------|-----------------|-----------------|
-| 并发模式 | useTransition/useDeferredValue opt-in | 同 React 18，并发特性保持兼容 |
+| 并发模式 | useTransition/useDeferredValue opt-in | 默认启用，并发特性为内置行为 |
 | startTransition | ✅ | ✅ 增强 |
 | use() | ❌ | ✅ |
 | useOptimistic | ❌ | ✅ |

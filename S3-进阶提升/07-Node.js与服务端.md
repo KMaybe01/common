@@ -274,7 +274,7 @@ graph TD
 import cluster from 'cluster';
 import os from 'os';
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
   const cpuCount = os.cpus().length;
   console.log(`Master ${process.pid} 启动，fork ${cpuCount} 个 Worker`);
 
@@ -685,22 +685,22 @@ graph LR
 
 ```javascript
 // a.js
-import b from './b';
+const b = require('./b');
 console.log('a.js: b.name =', b.name);
-export default { name: 'module-a' };
+module.exports = { name: 'module-a' };
 
 // b.js
-import a from './a';
+const a = require('./a');
 console.log('b.js: a =', a);  // 此时 a 是空对象 {}！
-export default { name: 'module-b' };
+module.exports = { name: 'module-b' };
 
 // main.js
 require('./a');
 
 // 执行顺序：
 // 1. main.js require('./a') → a.js 开始执行
-// 2. a.js 第 2 行 require('./b') → 进入 b.js
-// 3. b.js 第 2 行 require('./a') → 从缓存中找到 a（尚未执行完，仅返回 {}）
+// 2. a.js 第 3 行 require('./b') → 进入 b.js
+// 3. b.js 第 3 行 require('./a') → 从缓存中找到 a（尚未执行完，仅返回 {}）
 // 4. b.js 输出: a = {}（空对象）
 // 5. b.js 导出 { name: 'module-b' }
 // 6. 回到 a.js: b.name = 'module-b'

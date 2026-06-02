@@ -121,7 +121,7 @@ projects/table/
 | **模型数** | 5个 | Column/Config/Page/Row/Menu |
 | **单元测试文件** | 9个 | spec文件 |
 | **演示页面** | 15+个 | 使用场景 |
-| **Angular版本** | 20.3 | 最新 |
+| **Angular版本** | 21.3 | 最新 |
 
 ### 六、核心数据结构
 

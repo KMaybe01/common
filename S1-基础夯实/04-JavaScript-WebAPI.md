@@ -386,8 +386,8 @@ observer.observe(targetNode, {
   // 是否记录文本旧值
   characterDataOldValue: true,
 
-  // 监听的特定属性列表（默认监听所有）
-  attributeFilter: ['class', 'style', 'data-*']
+  // 监听的特定属性列表（默认监听所有，不支持通配符）
+  attributeFilter: ['class', 'style']
 })
 ```
 
@@ -1767,7 +1767,7 @@ function deepCopy(object) {
   for (let key in object) {
     if (object.hasOwnProperty(key)) {
       newObject[key] =
-        typeof object[key] === "object" ? deepCopy(object[key]) : object[key];
+        object[key] !== null && typeof object[key] === "object" ? deepCopy(object[key]) : object[key];
     }
   }
   return newObject;
@@ -3228,11 +3228,11 @@ console.log(isEmpty(0));       // false
 split → reverse → join 链式调用。
 
 ```javascript
-String.prototype._reverse = function (a) {
-  return a.split("").reverse().join("");
+String.prototype._reverse = function () {
+  return this.split("").reverse().join("");
 };
 
-console.log('hello'._reverse('hello')); // 'olleh'
+console.log('hello'._reverse()); // 'olleh'
 ```
 
 #### 4️⃣ s2 中出现的字符在 s1 中删掉
@@ -3242,12 +3242,12 @@ console.log('hello'._reverse('hello')); // 'olleh'
 ```javascript
 function remove(s1, s2) {
   for (let i = 0, len = s2.length; i < len; i++) {
-    s1 = s1.replace(s2[i], "");
+    s1 = s1.replaceAll(s2[i], "");
   }
   return s1;
 }
 
-console.log(remove('hello world', 'ol')); // 'he wrd'
+console.log(remove('hello world', 'ol')); // 'he wrd' (使用 replaceAll 移除所有匹配)
 ```
 
 #### 5️⃣ 判断子序列
@@ -3258,9 +3258,9 @@ console.log(remove('hello world', 'ol')); // 'he wrd'
 const isSubsequence = (b, a) => {
   let bi = 0, ai = 0;
   while (bi < b.length) {
-    if (a[ai] === b[bi]) { bi++; }
-    else { ai++; }
-    if (ai > a.length) return false;
+    if (ai >= a.length) return false;
+    if (a[ai] === b[bi]) bi++;
+    ai++;
   }
   return true;
 };
@@ -3411,8 +3411,9 @@ function createImg(url) {
   return new Promise((resolve, reject) => {
     if (url) {
       let ImgEle = document.createElement("img");
+      ImgEle.onload = () => resolve(ImgEle);
+      ImgEle.onerror = () => reject(new Error('图片加载失败: ' + url));
       ImgEle.src = url;
-      resolve(ImgEle);
     } else {
       reject("url is not right");
     }
@@ -3576,7 +3577,15 @@ function handleFetchQueue(urls, max, callback) {
       } else if (len === urlCount) {
         typeof callback === 'function' && callback(results);
       }
-    }).catch(e => { results.push(e); });
+    }).catch(e => {
+      results.push(e);
+      requestsQueue.shift();
+      if (i + 1 < urlCount) {
+        handleRequest(urls[++i]);
+      } else if (results.length === urlCount) {
+        typeof callback === 'function' && callback(results);
+      }
+    });
 
     if (requestsQueue.push(req) < max) {
       handleRequest(urls[++i]);

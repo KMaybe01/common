@@ -560,7 +560,6 @@ flowchart TD
 
 ```html
 <video controls>
-  <source src="movie.flv" type="video/flv">
   <source src="movie.mp4" type="video/mp4">
   <source src="movie.webm" type="video/webm">
   您的浏览器不支持视频播放
@@ -717,7 +716,7 @@ history.go(-1);
 
 | 类别 | 移除的标签 | 替代方案 |
 |------|-----------|---------|
-| 纯表现元素 | `basefont`, `big`, `center`, `font`, `s`, `strike`, `tt`, `u` | CSS 样式 |
+| 纯表现元素 | `basefont`, `big`, `center`, `font`, `strike`, `tt` | CSS 样式（`<s>`、`<u>` 在 HTML5 中被重新赋予语义，未被移除） |
 | 对可用性有负面影响的元素 | `frame`, `frameset`, `noframes` | `<iframe>` + CSS |
 
 ---
@@ -793,7 +792,7 @@ flowchart LR
 
 **常见：** `<br>`, `<hr>`, `<img>`, `<input>`, `<link>`, `<meta>`
 
-**较少见：** `<area>`, `<base>`, `<col>`, `<colgroup>`, `<command>`, `<embed>`, `<keygen>`, `<param>`, `<source>`, `<track>`, `<wbr>`
+**较少见：** `<area>`, `<base>`, `<col>`, `<embed>`, `<param>`, `<source>`, `<track>`, `<wbr>`
 
 ---
 
@@ -2784,9 +2783,17 @@ function trapFocus(container) {
 
 // 程序化检查
 function checkA11y(element) {
-  const name = element.getAttribute('aria-label')
-    || element.getAttribute('aria-labelledby')
-    || element.textContent.trim();
+  let name = element.getAttribute('aria-label');
+  if (!name) {
+    const labelledby = element.getAttribute('aria-labelledby');
+    if (labelledby) {
+      const refEl = document.getElementById(labelledby);
+      name = refEl ? refEl.textContent.trim() : '';
+    }
+  }
+  if (!name) {
+    name = element.textContent.trim();
+  }
   if (!name) {
     console.warn('元素缺少可访问名称:', element);
   }

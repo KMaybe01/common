@@ -24,17 +24,17 @@ timeline
     2009-2015 : ES5（2009）严格模式/JSON
               : ES6/ES2015（2015）重大变革
               : let/const/class/Promise/模块
-    2016-2020 : ES2016（async/await）
-              : ES2017（Object.entries/values）
+     2016-2020 : ES2016（Array.includes/指数运算符）
+               : ES2017（async/await）
               : ES2018（rest/spread/异步迭代）
               : ES2019（flat/flatMap）
               : ES2020（可选链/空值合并/globalThis）
     2021-2024 : ES2021（replaceAll/逻辑赋值）
               : ES2022（类字段/顶层 await）
               : ES2023（数组 toSorted/toReversed）
-              : ES2024（Records/Tuples/正则 v 标志）
-    2025-2026 : ES2025（模式匹配/装饰器稳定）
-              : ES2026（显式资源管理/管道运算符草案）
+               : ES2024（正则 v 标志）
+     2025-2026 : ES2025（模式匹配/管道运算符草案）
+               : ES2026（显式资源管理）
 ```
 
 ### 关键版本对比
@@ -44,13 +44,13 @@ timeline
 | **ES3** | 1999 | try/catch、正则、switch | 语言基础定型 |
 | **ES5** | 2009 | 严格模式、JSON、bind | jQuery 时代 |
 | **ES6/ES2015** | 2015 | **let/const、class、Promise、模块** | **现代 JS 起点** |
-| **ES2016** | 2016 | async/await | 异步编程范式革新 |
+| **ES2017** | 2017 | async/await | 异步编程范式革新 |
 | **ES2017** | 2017 | Object entries/values | 对象操作增强 |
 | **ES2020** | 2020 | 可选链、空值合并、globalThis | 代码简洁性提升 |
 | **ES2022** | 2022 | 类字段、顶层 await | OOP + 模块完善 |
 | **ES2023** | 2023 | 数组不可变方法 | 函数式编程增强 |
-| **ES2024** | 2024 | Records/Tuples、正则 v | 数据结构扩展 |
-| **ES2025** | 2025 | 装饰器稳定、模式匹配 | 元编程成熟 |
+| **ES2024** | 2024 | 正则 v 标志 | 正则增强 |
+| **ES2025** | 2025 | 模式匹配、管道运算符 | 元编程成熟 |
 
 ### 为什么 ES6 是 JavaScript 的分水岭？
 
@@ -1509,7 +1509,7 @@ parent.insertBefore(newNode, referenceNode)
 
 // 删除节点
 parent.removeChild(child)
-child.remove()  // ES5+
+child.remove()  // DOM Living Standard
 
 // 修改节点
 element.innerHTML = '<span>new</span>'
@@ -1540,8 +1540,8 @@ with (obj) { x = 1 }  // SyntaxError
 function test() { console.log(this) }
 test()  // undefined (非严格模式为 window)
 
-// 3. 禁止重复属性名
-var obj = { a: 1, a: 2 }  // SyntaxError
+// 3. 禁止重复参数名
+function test(a, a) { }  // SyntaxError
 
 // 4. 禁止删除不可删除属性
 delete Object.prototype  // TypeError
@@ -3470,14 +3470,14 @@ console.log(env === self)     // WebWorker: true
 ```javascript
 // polyfill (仅在不支持的环境中需要)
 // 实际上现代浏览器/Node都已支持
-if (!globalThis) {
-  Object.defineProperty(Object.prototype, 'globalThis', {
-    get() {
-      // 通过 Function 构造函数获取全局对象
-      return Function('return this')()
-    },
-    configurable: true
-  })
+if (typeof globalThis === 'undefined') {
+  const getGlobal = function() {
+    if (typeof self !== 'undefined') return self;
+    if (typeof window !== 'undefined') return window;
+    if (typeof global !== 'undefined') return global;
+    return Function('return this')();
+  };
+  (getGlobal()).globalThis = getGlobal();
 }
 ```
 
