@@ -14,6 +14,7 @@
 - [08-Axyom Form](./08-Axyom-Form%20项目技术分析.md) — 动态表单引擎技术分析
 - [09-Axyom Table](./09-Axyom-Table%20项目技术分析.md) — 高性能表格组件技术分析
 - [10-Prometheus+Grafana](./10-Prometheus+Grafana.md) — 监控体系与可视化
+- [11-FMS-UI企业级融合管理系统](./11-FMS-UI企业级融合管理系统.md) — 企业级融合管理系统前端深度技术分析
 
 ## 学习路线
 
