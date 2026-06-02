@@ -45,6 +45,7 @@ export default withMermaid(defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
+      { text: '题库', link: '/quiz/' },
       {
         text: '基础夯实',
         link: '/S1-基础夯实/',

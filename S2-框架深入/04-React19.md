@@ -219,6 +219,8 @@ function UserCard({ user }) {
 
 **虚拟 DOM 的本质是"性能保底"**：React 通过虚拟 DOM 保证即使在没有手动优化的情况下，性能也不会太差。React 的设计原则是 **"默认足够快，需要极致时可手动优化"**。
 
+**虚拟 DOM 的终极评价：** 它不是最快的 UI 更新方案，但它是**最优雅的折衷方案**——在开发体验（声明式）、性能（批量更新）、跨平台（抽象层）之间找到了最佳平衡点。React Compiler 的目标不是取代虚拟 DOM，而是让它的 Diff 范围更小、更精准。
+
 #### ④ 函数式编程（Functional）
 
 > **核心思想**：纯函数 + 不可变数据
@@ -4778,6 +4780,342 @@ setState(produce(draft => {
 
 ---
 
+## 🧬 虚拟 DOM 原理深度讲解
+
+### 虚拟 DOM 的本质
+
+虚拟 DOM 本质上就是一个**普通的 JavaScript 对象树**，是真实 DOM 的轻量级抽象表示。
+
+```typescript
+// 虚拟 DOM 节点（React Element）的核心数据结构
+interface ReactElement {
+  $$typeof: Symbol;          // 标记为 React 元素（防 XSS）
+  type: string | Function;   // 'div' / 'span' / 组件函数
+  key: string | null;        // Diff 优化标识
+  ref: Ref | null;           // DOM 引用
+  props: {
+    children?: ReactElement | ReactElement[];
+    [propName: string]: any;
+  };
+  _owner: Fiber | null;      // 创建该元素的 Fiber 节点
+}
+```
+
+```typescript
+// 一个 JSX 表达式编译后的虚拟 DOM
+// <div className="container"><h1>Hello</h1></div>
+
+// JSX 编译后（React 17 及以前）：
+React.createElement(
+  'div',
+  { className: 'container' },
+  React.createElement('h1', null, 'Hello')
+)
+
+// JSX 编译后（React 17+ 新 JSX 转换，自动导入 jsx）：
+import { jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
+_jsxs('div', { className: 'container', children: [
+  _jsx('h1', { children: 'Hello' })
+]})
+
+// 生成的虚拟 DOM 对象：
+{
+  $$typeof: Symbol.for('react.element'),
+  type: 'div',
+  key: null,
+  ref: null,
+  props: {
+    className: 'container',
+    children: [{
+      $$typeof: Symbol.for('react.element'),
+      type: 'h1',
+      key: null,
+      ref: null,
+      props: { children: 'Hello' },
+    }]
+  }
+}
+```
+
+**与真实 DOM 的关键区别：**
+
+| 维度 | 真实 DOM | 虚拟 DOM |
+|------|---------|----------|
+| **数据结构** | 浏览器 C++ 对象，属性极多（>200 个） | 普通 JS 对象，仅 5-6 个属性 |
+| **创建开销** | 高（需解析 HTML/CSS，构建渲染树） | 极低（new Object） |
+| **修改开销** | 触发重排/重绘、样式计算、合成 | 无（纯 JS 对象比较） |
+| **读写速度** | 慢（跨引擎边界） | 快（全 JS 堆内存） |
+| **内存占用** | 大 | 小（仅保留渲染所需字段） |
+
+---
+
+###  JSX 到虚拟 DOM 的编译链路
+
+JSX 不是模板引擎，而是**语法糖**，编译后直接变成 `React.createElement()` 调用。
+
+```mermaid
+graph LR
+    A["JSX<br/>&lt;div class='box'&gt;Hi&lt;/div&gt;"] --> B["Babel/TypeScript<br/>编译"]
+    B --> C["React.createElement('div',<br/>{className:'box'}, 'Hi')"]
+    C --> D["虚拟 DOM 对象<br/>{type:'div', props:{...}}"]
+    D --> E["Fiber 节点<br/>{tag, memoizedState, ...}"]
+    E --> F["真实 DOM<br/>document.createElement('div')"]
+```
+
+**编译产出对比（React 17 vs 19）：**
+
+```typescript
+// JSX 源码
+function Greeting({ name }: { name: string }) {
+  return <div className="greeting">Hello, {name}</div>;
+}
+
+// React 17 编译结果（需要 React 在作用域内）
+import React from 'react';
+function Greeting({ name }) {
+  return React.createElement('div', { className: 'greeting' }, 'Hello, ', name);
+}
+
+// React 17+ / 19 编译结果（自动导入，无需手动 import React）
+import { jsx as _jsx } from 'react/jsx-runtime';
+function Greeting({ name }) {
+  return _jsx('div', { className: 'greeting', children: ['Hello, ', name] });
+}
+```
+
+**为什么改用了 `jsx()` 函数？** 新函数做了两点优化：
+1. **自动导入**：无需每个文件手动 `import React`，Tree Shaking 友好
+2. **简化参数**：`jsx()` 比 `createElement()` 少了 `key`/`ref` 等参数处理，减少编译体积
+
+---
+
+### 虚拟 DOM 的全生命周期
+
+```mermaid
+sequenceDiagram
+    participant Dev as 开发者
+    participant VDOM as 虚拟 DOM
+    participant Reconciler as Fiber Reconciler
+    participant DOM as 真实 DOM
+
+    Note over Dev,DOM: 初次渲染
+    Dev->>VDOM: render() / JSX
+    VDOM->>Reconciler: 创建 Fiber 树
+    Reconciler->>DOM: 递归挂载到容器
+    DOM-->>Dev: 页面展示
+
+    Note over Dev,DOM: 更新渲染
+    Dev->>VDOM: setState / dispatch
+    VDOM->>Reconciler: 创建新虚拟 DOM 树
+    Reconciler->>Reconciler: Diff 新旧 Fiber 树
+    Reconciler->>Reconciler: 收集副作用（effect list）
+    Reconciler->>DOM: 批量提交 DOM 更新
+    DOM-->>Dev: 页面更新
+
+    Note over Dev,DOM: 卸载
+    Dev->>Reconciler: 组件 unmount
+    Reconciler->>DOM: 移除 DOM 节点
+    Reconciler->>Reconciler: 执行清理工作
+```
+
+**三个阶段详细说明：**
+
+| 阶段 | 名称 | 做什么 | 是否可中断 | 产生什么 |
+|------|------|--------|-----------|---------|
+| **Render** | 协调（Reconciliation） | 创建虚拟 DOM，Diff 比较，标记变更 | ✅ 可中断（Fiber 时间切片） | Fiber 树的副作⽤标记 |
+| **Commit** | 提交 | 根据副作⽤标记操作真实 DOM | ❌ 不可中断（同步执行） | DOM 变更 |
+| **Cleanup** | 清理 | 执⾏ useEffect 清理函数 | ❌ 同步 | 副作⽤清理 |
+
+---
+
+### 虚拟 DOM 为什么能提升性能
+
+**❌ 常见误解："虚拟 DOM 比真实 DOM 快"**
+
+虚拟 DOM **不一定比直接操作 DOM 快**。它的核⼼价值是：
+- 提供**声明式编程模型**（描述 UI 状态，而非操作步骤）
+- 在**没有手动优化**的情况下性能不太差（性能保底）
+- **批量处理** DOM 变更，减少重排/重绘次数
+
+```typescript
+// 场景：连续修改 100 次列表
+for (let i = 0; i < 100; i++) {
+  list.appendChild(newItem);  // 直接操作 DOM → 100 次重排
+}
+
+// React 虚拟 DOM 的做法：
+// 1. 100 次 setState 合并为一次更新
+// 2. Diff 计算出最小变更集
+// 3. 一次批量更新 DOM → 1 次重排
+```
+
+**性能对比的真实情况：**
+
+| 场景 | 直接 DOM 操作 | 虚拟 DOM |
+|------|-------------|---------|
+| 单次简单更新（改文本） | ✅ 最快 | ❌ 有额外比较开销 |
+| 复杂树结构差异更新 | ❌ 难优化 | ✅ Diff 自动计算最小变更 |
+| 频繁批量更新 | ❌ 多次重排 | ✅ 批量合并，一次重排 |
+| 跨平台渲染 | ❌ 仅浏览器 | ✅ 可输出到 Native/Canvas/PDF |
+
+**真实性能瓶颈在哪？** 虚拟 DOM 的**比较（Diff）本身也有开销**。这就是 React Compiler（React Forget）的⽬标——跳过不必要的比较，直接在编译时优化。
+
+---
+
+### 虚拟 DOM 到 Fiber 的映射
+
+React 16+ 中，虚拟 DOM 并不直接参与 Diff，而是先转换成 **Fiber 节点**，再在 Fiber 树上进行 Diff：
+
+```typescript
+// 虚拟 DOM 与 Fiber 节点的映射关系
+interface Fiber {
+  tag: WorkTag;              // 节点类型（FunctionComponent = 0, HostComponent = 5, ...）
+  type: string | Function;   // 与虚拟 DOM 的 type 一致
+  key: string | null;        // 与虚拟 DOM 的 key 一致
+  pendingProps: any;         // 新的 props（来自虚拟 DOM）
+  memoizedProps: any;        // 旧的 props
+  memoizedState: any;        // 组件状态（Hook 链表头）
+  
+  // Fiber 树结构（单向链表）
+  return: Fiber | null;      // 父节点
+  child: Fiber | null;       // 第一个子节点
+  sibling: Fiber | null;     // 下一个兄弟节点
+  
+  // 副作⽤标记
+  flags: Flags;              // Placement / Update / Deletion / Passive
+  subtreeFlags: Flags;       // 子树副作⽤标记（React 18 优化）
+  deletions: Fiber[] | null; // 待删除的子节点
+  
+  // 双缓冲
+  alternate: Fiber | null;   // current ↔ workInProgress 互指
+}
+```
+
+**虚拟 DOM → Fiber 的转换流程：**
+
+```mermaid
+flowchart LR
+    subgraph VDOM["虚拟 DOM 树（React Element）"]
+        A1["div<br/>props:{...}"] --> B1["h1<br/>props:{...}"]
+        A1 --> B2["p<br/>props:{...}"]
+        B2 --> C1["span<br/>props:{...}"]
+    end
+
+    subgraph Fiber["Fiber 树"]
+        direction LR
+        A2["Fiber(div)<br/>child↓"] --> B3["Fiber(h1)<br/>sibling→"]
+        B3 --> B4["Fiber(p)<br/>child↓"]
+        B4 --> C2["Fiber(span)<br/>↑return"]
+    end
+
+    A1 -->|beginWork| A2
+    B1 -->|beginWork| B3
+    B2 -->|beginWork| B4
+    C1 -->|beginWork| C2
+```
+
+**为什么需要 Fiber 这一层？** 虚拟 DOM 树是普通树结构（只能用递归遍历），Fiber 将其转为**链表结构**（可用循环遍历），使得遍历过程可中断/恢复——这是并发模式的基础。
+
+---
+
+#### 6. 批量更新机制
+
+React 不会每次 setState 都立即更新，而是批量收集后一次提交：
+
+```mermaid
+sequenceDiagram
+    participant C as 组件
+    participant S as 调度器
+    participant Q as 更新队列
+    participant R as 渲染器
+
+    C->>S: setState(1)
+    C->>S: setState(2)
+    C->>S: setState(3)
+    S->>Q: 合并更新：3 次 → 1 次
+    Q->>R: 执行一次渲染
+    R-->>C: 更新完成
+```
+
+```typescript
+// React 18+ 自动批量更新
+function handleClick() {
+  setCount(c => c + 1);   // 不会立即渲染
+  setFlag(f => !f);       // 不会立即渲染
+  setText('hello');       // 不会立即渲染
+  // 三次 setState 合并为一次渲染
+}
+
+// 如果需要"非批量"（React 18 需要 flushSync）
+import { flushSync } from 'react-dom';
+function handleClick() {
+  flushSync(() => setCount(c => c + 1));  // 立即渲染
+  flushSync(() => setFlag(f => !f));      // 第二次渲染
+}
+```
+
+**批量更新的演进：**
+
+| 版本 | 机制 | 范围 |
+|------|------|------|
+| **React 15** | 事务机制（Transaction） | 仅合成事件内 |
+| **React 16-17** | 批量更新 + unstable_batchedUpdates | 合成事件 + 生命周期 |
+| **React 18+** | 自动批量更新（无需手动） | 所有场景（Promise、setTimeout 等） |
+
+---
+
+#### 7. key 的精准含义
+
+key 不是"索引"，而是**稳定标识符**，帮 Diff 算法判断元素是"移动"还是"新建"：
+
+```typescript
+// ❌ 用索引作 key（列表顺序会变时）
+{items.map((item, index) => <Item key={index} data={item} />)}
+
+// ✅ 用唯一 ID 作 key
+{items.map(item => <Item key={item.id} data={item} />)}
+```
+
+**key 不同导致的 Diff 行为差异：**
+
+```mermaid
+flowchart TD
+    subgraph NoKey["无 key / 索引作 key"]
+        A["旧: [A, B, C]<br/>新: [C, A, B]"]
+        A --> A1["比较索引0: A≠C → 销毁 A 创建 C"]
+        A1 --> A2["比较索引1: B≠A → 销毁 B 创建 A"]
+        A2 --> A3["比较索引2: C≠B → 销毁 C 创建 B"]
+        A3 --> A4["结果: 3 次销毁 + 3 次创建"]
+    end
+
+    subgraph WithKey["有 key（正确做法）"]
+        B["旧: {a→A, b→B, c→C}<br/>新: {c→C, a→A, b→B}"]
+        B --> B1["key=c: C 复用，位置从 3→1"]
+        B1 --> B2["key=a: A 复用，位置从 1→2"]
+        B2 --> B3["key=b: B 复用，位置从 2→3"]
+        B3 --> B4["结果: 0 次销毁/创建，3 次移动"]
+    end
+```
+
+**没有 key 时的表现：** 新旧列表按索引逐个比较，索引 0 → 索引 0，索引 1 → 索引 1。一旦结构变化（头部插入或排序），所有元素都匹配不上，触发全量重建。
+
+---
+
+#### 8. 虚拟 DOM 的演进与 React 19
+
+| 版本 | 虚拟 DOM 的角色 | 关键技术 |
+|------|----------------|---------|
+| **React 15** | Stack 递归遍历虚拟 DOM 树，同步、不可中断 | `createElement` + `diff` + `patch` |
+| **React 16+** | 虚拟 DOM 作为 Fiber 的"输入"，Diff 在 Fiber 树上执⾏ | Fiber 链表 + 双缓冲 + 时间切片 |
+| **React 18** | 并发渲染下虚拟 DOM 可多次创建（丢弃低优先级） | Lane 优先级 + Suspense |
+| **React 19** | React Compiler 在编译时跳过虚拟 DOM 的比较 | 编译时优化 + useMemo 自动注入 |
+
+**React Compiler 对虚拟 DOM 的影响：** Compiler 不再是"每次渲染都创建新虚拟 DOM → Diff"，而是**在编译时分析组件依赖**，跳过未变化组件的重新渲染，直接从源头减少虚拟 DOM 创建次数。但虚拟 DOM 作为**核心抽象层**仍然存在（处理跨平台、手写优化等场景）。
+
+---
+
+---
+
 ## 📌 Portals（createPortal）深度解析
 
 ### 基本概念
@@ -5203,11 +5541,408 @@ function performConcurrentWorkOnRoot(root, lanes) {
   commitRoot(root);
 }
 ```
+---
+
+### 📍 workLoop 核心循环 —— Fiber 如何"边干边让"
+
+Fiber 的核心是一个 `while` 循环，每次检查时间是否用完，用完了就让出主线程：
+
+```typescript
+// packages/react-reconciler/src/ReactFiberWorkLoop.ts
+
+// 同步渲染：不可中断
+function workLoopSync() {
+  while (workInProgress !== null) {
+    performUnitOfWork(workInProgress);
+  }
+}
+
+// 并发渲染：时间切片可中断
+function workLoopConcurrent() {
+  while (workInProgress !== null && !shouldYield()) {
+    performUnitOfWork(workInProgress);
+  }
+  // 如果 workInProgress !== null，说明被中断了
+  // Scheduler 会在下一个宏任务中恢复
+}
+
+// 判断是否让出主线程（每 5ms 检查一次）
+function shouldYield(): boolean {
+  const timeElapsed = performance.now() - startTime;
+  return timeElapsed > 5; // 5ms 时间片
+}
+```
+
+**中断恢复流程：**
+
+```mermaid
+sequenceDiagram
+    participant S as Scheduler
+    participant W as workLoop
+    participant B as beginWork
+    participant C as completeWork
+    participant D as DOM
+
+    S->>W: scheduleCallback(workLoop)
+    W->>W: workInProgress = fiberRoot
+    Note over W: 5ms 时间片开始
+    W->>B: performUnitOfWork
+    B->>B: 处理当前节点<br/>(diff / 创建子Fiber)
+    B->>W: 返回 child Fiber
+    W->>W: shouldYield? 时间＞5ms?
+    Note over W: 时间到！让出主线程
+    W->>S: postMessage(恢复)
+    Note over S: 等待下一个宏任务
+    S->>W: 恢复执行
+    W->>B: 从断点继续
+    B->>C: 子节点处理完毕 → completeWork
+    C->>C: 收集副作用<br/>(effect list / flags)
+    C->>W: 返回 sibling / return
+    W->>W: shouldYield?
+    Note over W: 全部完成
+    W->>D: commitRoot(批量提交 DOM)
+```
 
 ---
-## 🔍 Virtual DOM Diff 算法详解
 
-### 三个核心假设
+### 📍 beginWork / completeWork —— Fiber 的"递"与"归"
+
+Fiber 遍历是**先序深度优先遍历**，分为两个阶段：
+
+```mermaid
+flowchart TB
+    subgraph beginWork["beginWork（递）"]
+        direction TB
+        A["进入 Fiber 节点"] --> B{"检查能否复用<br/>bailout?"}
+        B -->|能| C["clone child Fiber<br/>跳过整棵子树"]
+        B -->|不能| D["执行函数组件 / 类组件 render"]
+        D --> E["reconcileChildren<br/>diff 创建子 Fiber"]
+        E --> F["返回 child → 继续深入"]
+        C --> F
+    end
+
+    subgraph completeWork["completeWork（归）"]
+        direction TB
+        G["子节点处理完毕或为 null"] --> H["completeUnitOfWork<br/>执行 completeWork"]
+        H --> I{"当前节点是<br/>原生 DOM 节点?"}
+        I -->|是| J["创建/更新 DOM 实例<br/>设置文本内容<br/>处理 props"]
+        I -->|否| K["仅更新 flags 标记"]
+        J --> L["收集节点 flags 到父节点"]
+        K --> L
+        L --> M{"有 sibling?"}
+        M -->|是| N["返回 sibling<br/>→ 回到 beginWork"]
+        M -->|否| O["返回 return（父节点）<br/>继续 completeWork"]
+        O --> P["所有节点完成 → commitRoot"]
+    end
+
+    F -->|"递归深入"| G
+    N -->|"转向兄弟"| A
+```
+
+```typescript
+// 核心遍历函数
+function performUnitOfWork(unitOfWork: Fiber): void {
+  const current = unitOfWork.alternate;
+  let next: Fiber | null;
+
+  // ① beginWork（递）：处理当前节点，返回子节点
+  next = beginWork(current, unitOfWork, renderLanes);
+  unitOfWork.memoizedProps = unitOfWork.pendingProps;
+
+  if (next !== null) {
+    // 有子节点 → 继续深入（深度优先）
+    workInProgress = next;
+  } else {
+    // ② completeWork（归）：没有子节点，开始回溯
+    completeUnitOfWork(unitOfWork);
+  }
+}
+
+// 回溯函数
+function completeUnitOfWork(unitOfWork: Fiber): void {
+  let completedWork = unitOfWork;
+  do {
+    const current = completedWork.alternate;
+    const returnFiber = completedWork.return;
+
+    // ① 执行 completeWork：创建 DOM / 收集 flags
+    next = completeWork(current, completedWork, renderLanes);
+
+    // ② 收集子节点的 flags 到当前节点
+    if (returnFiber !== null) {
+      // flags 冒泡：子节点的变化向上传递
+      returnFiber.flags |= completedWork.flags;
+    }
+
+    // ③ 转向兄弟节点
+    if (completedWork.sibling !== null) {
+      workInProgress = completedWork.sibling;
+      return; // 回到 performUnitOfWork 的 beginWork
+    }
+
+    // ④ 没有兄弟 → 回到父节点继续 completeWork
+    completedWork = returnFiber;
+  } while (completedWork !== null); // 全部完成
+}
+```
+
+**核心洞察：** `beginWork` 是"向下递"，负责创建子 Fiber（调用组件 render、执行 diff）；`completeWork` 是"向上归"，负责创建 DOM 实例、更新 props、将副作用冒泡到父节点。这个"递→归→递→归"的模式让遍历过程可以**在任意节点暂停**（只需记住当前 `workInProgress` 指针）。
+
+---
+
+### 📍 完整更新链路 —— 从 setState 到 DOM 变更
+
+```mermaid
+sequenceDiagram
+    participant C as 组件
+    participant U as updateQueue
+    participant R as 调度器
+    participant W as workLoop
+    participant F as Fiber 树
+    participant D as DOM
+
+    C->>U: setState(n => n + 1)
+    U->>U: createUpdate(lane)
+    U->>U: enqueueUpdate(fiber, update)
+    U->>R: scheduleUpdateOnFiber(fiber, lane)
+
+    R->>R: markRootUpdated(root, lane)
+    R->>R: ensureRootIsScheduled(root)
+
+    Note over R: 判断优先级
+    alt 同步更新（click 事件内）
+        R->>W: performSyncWorkOnRoot
+        W->>W: workLoopSync（不可中断）
+    else 并发更新（startTransition）
+        R->>W: performConcurrentWorkOnRoot
+        W->>W: workLoopConcurrent（可中断）
+    end
+
+    W->>F: performUnitOfWork
+    F->>F: beginWork（递）
+    F->>F: reconcileChildren（Diff）
+    F->>F: completeWork（归 / 收集 flags）
+
+    W->>W: 全部完成 → finishConcurrentRender
+
+    W->>D: commitRoot
+    D->>D: commitBeforeMutationEffects（getSnapshotBeforeUpdate）
+    D->>D: commitMutationEffects（DOM 操作：增/删/改）
+    D->>D: 切换 current 指针
+    D->>D: commitLayoutEffects（useLayoutEffect / componentDidMount/Update）
+    D-->>C: 更新完成
+
+    Note over C,D: 浏览器绘制后
+    D->>D: flushPassiveEffects（useEffect 回调）
+```
+
+```typescript
+// 更新入口 → 调度关键路径
+function scheduleUpdateOnFiber(fiber: Fiber, lane: Lane): void {
+  // 1. 找到 FiberRoot
+  const root = markUpdateLaneFromFiberToRoot(fiber, lane);
+
+  // 2. 标记 root 有更新
+  markRootUpdated(root, lane);
+
+  // 3. 确保 root 被调度
+  ensureRootIsScheduled(root);
+}
+
+// 从任意 Fiber 回溯到 FiberRoot
+function markUpdateLaneFromFiberToRoot(fiber: Fiber, lane: Lane): FiberRoot {
+  let node = fiber;
+  let parent = fiber.return;
+
+  // 沿 return 链向上回溯到根
+  while (parent !== null) {
+    node = parent;
+    parent = parent.return;
+  }
+
+  // node 现在是 RootFiber（最顶层 Fiber）
+  // node.stateNode 就是 FiberRoot
+  return node.stateNode;
+}
+```
+
+---
+
+### 📍 FiberRoot vs RootFiber —— 两棵"根"的区别
+
+```typescript
+// FiberRoot：容器级别（每个 ReactDOM.createRoot 一个）
+interface FiberRoot {
+  containerInfo: Element;         // 挂载的 DOM 容器（如 document.getElementById('root')）
+  current: Fiber;                // 指向当前显示的 RootFiber
+  finishedWork: Fiber | null;    // 构建完成的 workInProgress 树
+  pendingLanes: Lanes;           // 待处理的优先级
+  callbackNode: any;             // Scheduler 回调
+  callbackPriority: Lane;        // 回调优先级
+  expirationTimes: number[];     // 过期时间
+}
+
+// RootFiber：组件树的根 Fiber 节点
+interface Fiber {
+  tag: WorkTag;                  // HostRoot（值为 3）
+  stateNode: FiberRoot;          // 反向指向 FiberRoot
+  child: Fiber;                  // 真正的根组件（如 <App/>）
+  // ... 其他 Fiber 字段
+}
+```
+
+```mermaid
+graph TB
+    subgraph Container["DOM 容器"]
+        ROOT_DIV["&lt;div id='root'&gt;"]
+    end
+
+    subgraph React["React 内存"]
+        FR["FiberRoot<br/>containerInfo → div#root<br/>current → RootFiber"]
+        RF["RootFiber (HostRoot)<br/>tag=3, stateNode → FiberRoot<br/>child → App Fiber"]
+        APP["App Fiber (FunctionComponent)<br/>tag=0, type=App<br/>child → div Fiber"]
+        DIV["div Fiber (HostComponent)<br/>tag=5, type='div'<br/>stateNode → 真实 DOM"]
+    end
+
+    ROOT_DIV <-->|"containerInfo"| FR
+    FR -->|"current"| RF
+    RF -->|"child"| APP
+    APP -->|"child"| DIV
+    DIV -->|"stateNode"| ROOT_DIV
+```
+
+**关键区别：**
+
+| 维度 | FiberRoot | RootFiber |
+|------|----------|-----------|
+| **数量** | 每个 `createRoot` 一个 | 每个 FiberRoot 一个（`current` 指向） |
+| **角色** | 容器状态管理 | 组件树根节点 |
+| **DOM 关联** | `containerInfo` 持有真实 DOM 容器 | 通过 `stateNode` 反向持有 FiberRoot |
+| **更新** | 持有 `pendingLanes`、`finishedWork` | 作为 fiber 树的遍历起点 |
+| **双缓冲** | `current` 指向当前显示的 RootFiber | `alternate` 指向 workInProgress 版本 |
+
+---
+
+### 📍 bailout 机制 —— 如何跳过未变化子树
+
+React 在 `beginWork` 中会做 bailout 判断——如果能确定子树没有变化，**直接跳过整棵树**，不执行任何 reconciliation：
+
+```typescript
+// beginWork 简化逻辑
+function beginWork(current: Fiber | null, workInProgress: Fiber, renderLanes: Lanes): Fiber | null {
+  // 1. 非首次渲染且 props/state/context 都没变 → 尝试 bailout
+  if (current !== null) {
+    const oldProps = current.memoizedProps;
+    const newProps = workInProgress.pendingProps;
+
+    // props 没变 + 自身无更新 + context 没变 + 子树无更新
+    if (oldProps === newProps &&
+        !hasLegacyContextChanged() &&
+        !checkScheduledUpdate(workInProgress, renderLanes)) {
+
+      // 检查子树是否需要更新
+      if (includesSomeLane(renderLanes, workInProgress.childLanes)) {
+        // 子树有更新 → 不能完全跳过，但可以克隆子树
+        cloneChildFibers(current, workInProgress);
+        return workInProgress.child;
+      }
+
+      // 整棵子树都没更新 → bailout！
+      return null;
+    }
+  }
+
+  // 2. 需要更新 → 执行组件渲染和 reconciliation
+  // ...
+}
+```
+
+**bailout 的四个必要条件（必须全部满足）：**
+
+| 条件 | 含义 | 不满足的典型场景 |
+|------|------|----------------|
+| `oldProps === newProps` | props 引用没变 | 父组件渲染传了新对象 `{...x}` |
+| `!hasLegacyContextChanged()` | Context 没变 | Context.Provider 的值变了 |
+| `!checkScheduledUpdate()` | 自身没有待处理更新 | 组件调用了 setState |
+| `childLanes 不包含当前 Lane` | 子树没有待处理更新 | 子组件调用了 setState |
+
+**这就是 `React.memo` / `useMemo` 的原理**：通过保持 props 引用稳定，让 `oldProps === newProps` 成立，触发 bailout，跳过子树的 reconciliation。
+
+---
+
+### 📍 subtreeFlags 优化 —— React 18 的位运算革命
+
+React 18 之前，commit 阶段通过 **effect list**（单向链表）遍历有副作用的节点：
+
+```
+React 17 及以前（effect list）：
+currentFiber.firstEffect → fiberA → fiberB → fiberC → lastEffect
+遍历：从 firstEffect 沿 nextEffect 指针逐个处理
+问题：effect list 需要在 completeWork 中构建，无法利用树结构
+```
+
+React 18 用 **subtreeFlags 位掩码**替代 effect list：
+
+```
+React 18+（subtreeFlags）：
+每个 Fiber 节点用 32 位整数的位运算标记子树的副作用类别
+
+const PerformedWork = 0b000000000001;  // 已执行工作
+const Placement    = 0b000000000010;  // 新增/移动
+const Update       = 0b000000000100;  // 更新
+const Deletion     = 0b000000001000;  // 删除
+const Snapshot     = 0b000010000000;  // getSnapshotBeforeUpdate
+const Passive      = 0b000100000000;  // useEffect
+
+// 合并子树 flags
+function bubbleProperties(completedWork: Fiber): void {
+  let newSubtreeFlags = NoFlags;
+  let child = completedWork.child;
+  while (child !== null) {
+    newSubtreeFlags |= child.subtreeFlags;  // 合并子树的 flags
+    newSubtreeFlags |= child.flags;         // 合并节点自身的 flags
+    child = child.sibling;
+  }
+  completedWork.subtreeFlags = newSubtreeFlags;
+}
+
+// commit 时快速跳过：整棵子树无副作用则跳过
+function commitMutationEffects(root: FiberRoot, renderLanes: Lanes): void {
+  commitMutationEffectsOnFiber(root.current, renderLanes);
+}
+
+function commitMutationEffectsOnFiber(fiber: Fiber, renderLanes: Lanes): void {
+  // ⚡ 位运算检查：子树是否有任何副作用？
+  if ((fiber.subtreeFlags & MutationMask) === NoFlags) {
+    // 整棵子树都无需操作 → 直接跳过
+    return;
+  }
+
+  // 有副作⽤ → 遍历子节点
+  let child = fiber.child;
+  while (child !== null) {
+    commitMutationEffectsOnFiber(child, renderLanes);
+    child = child.sibling;
+  }
+
+  // 处理当前节点的 flags
+  if (fiber.flags & Placement) { /* 插入/移动 DOM */ }
+  if (fiber.flags & Update) { /* 更新 DOM 属性 */ }
+  if (fiber.flags & Deletion) { /* 删除 DOM */ }
+}
+```
+
+**effect list vs subtreeFlags 对比：**
+
+| 维度 | effect list（React 17） | subtreeFlags（React 18+） |
+|------|----------------------|------------------------|
+| **数据结构** | 独立链表 | 位掩码（32 位整数） |
+| **构建方式** | completeWork 中手动连接 | completeWork 中位运算合并 |
+| **子树检查** | 必须遍历链表 | O(1) 位运算判断 `subtreeFlags & mask` |
+| **内存占用** | 链表指针（8 字节 × n） | 1 个整数（4 字节） |
+| **跳过整棵子树** | 不支持 | ✅ `subtreeFlags === NoFlags` 直接 return |
+
+**性能收益：** 对于一棵有 10 万 Fiber 节点的树，如果只有 100 个节点有副作⽤，subtreeFlags 可以用 O(1) 判断跳过 99.9% 的子树遍历，而 effect list 必须遍历完整的链表（至少要把 100 个节点串起来）。这是 React 18 大规模应用性能提升的关键原因之一。
 
 React 的 diff 算法基于三个大胆假设，将 O(n³) 复杂度降低到 O(n)：
 
