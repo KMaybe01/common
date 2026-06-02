@@ -83,10 +83,23 @@
 import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import rawData from '../../../quiz-data.json'
 import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
 import mermaid from 'mermaid'
 
 let mermaidCounter = 0
-const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  typographer: true,
+  highlight(str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code></pre>`
+      } catch {}
+    }
+    return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
+  },
+})
 
 const defaultFence = md.renderer.rules.fence.bind(md.renderer.rules)
 md.renderer.rules.fence = (tokens, idx, options, env, self) => {
@@ -283,6 +296,8 @@ onMounted(() => {
 }
 
 .quiz__content { flex: 1; min-width: 0; }
+.quiz__content .hljs { border-radius: 8px; font-size: 0.875rem; }
+.quiz__content pre:not(.hljs) { border-radius: 8px; }
 
 .quiz__empty {
   text-align: center;
