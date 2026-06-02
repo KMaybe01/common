@@ -1,3 +1,4 @@
 ---
 layout: QuizPage
+sidebar: false
 ---

@@ -55,3 +55,7 @@ html {
     font-size: 0.85em;
   }
 }
+
+/* ── 全局隐藏侧边栏 ── */
+.VPSidebar { display: none !important; }
+.VPContent.has-sidebar { padding-left: 0 !important; }

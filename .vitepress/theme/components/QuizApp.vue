@@ -7,20 +7,12 @@
         <span class="quiz__stat quiz__stat--high">🔥 {{ freqCounts.high }}</span>
         <span class="quiz__stat quiz__stat--mid">📌 {{ freqCounts.mid }}</span>
         <span class="quiz__stat quiz__stat--low">📖 {{ freqCounts.low }}</span>
+        <span class="quiz__stat quiz__stat--progress">✅ {{ progressStats.done }} / 🔄 {{ progressStats.review }}</span>
       </div>
     </div>
 
     <div class="quiz__layout">
       <aside class="quiz__sidebar">
-        <button
-          class="quiz__tab"
-          :class="{ 'quiz__tab--active': activeCategory === '' }"
-          @click="switchCategory('')"
-        >
-          <span class="quiz__tab-icon">📋</span>
-          <span class="quiz__tab-name">全部</span>
-          <span class="quiz__tab-count">{{ total }}</span>
-        </button>
         <button
           v-for="cat in categories"
           :key="cat.id"
@@ -31,10 +23,6 @@
           <span class="quiz__tab-icon">{{ cat.icon }}</span>
           <span class="quiz__tab-name">{{ cat.name }}</span>
           <span class="quiz__tab-count">{{ cat.count }}</span>
-          <span v-if="catFreq[cat.id]" class="quiz__tab-freq">
-            <i v-if="catFreq[cat.id].high" class="qf qf-h">🔥{{ catFreq[cat.id].high }}</i>
-            <i v-if="catFreq[cat.id].mid" class="qf qf-m">📌{{ catFreq[cat.id].mid }}</i>
-          </span>
         </button>
       </aside>
 
@@ -59,12 +47,12 @@
             <button class="quiz__freq-btn quiz__freq-btn--mid" :class="{ 'quiz__freq-btn--active': activeFreq === 'mid' }" @click="activeFreq = 'mid'">📌 常考</button>
             <button class="quiz__freq-btn quiz__freq-btn--low" :class="{ 'quiz__freq-btn--active': activeFreq === 'low' }" @click="activeFreq = 'low'">📖 了解</button>
           </div>
-          <button
-            class="quiz__mode-btn"
-            :class="{ 'quiz__mode-btn--active': studyMode }"
-            @click="studyMode = !studyMode"
-            :title="studyMode ? '切换普通模式' : '切换学习模式（高频→常考→了解）'"
-          >{{ studyMode ? '📚' : '📖' }}</button>
+          <div class="quiz__status-tabs">
+            <button class="quiz__freq-btn quiz__status--done" :class="{ 'quiz__freq-btn--active': activeStatus === 'done' }" @click="activeStatus = 'done'">✅ 已掌握</button>
+            <button class="quiz__freq-btn quiz__status--review" :class="{ 'quiz__freq-btn--active': activeStatus === 'review' }" @click="activeStatus = 'review'">🔄 待复习</button>
+            <button class="quiz__freq-btn quiz__status--new" :class="{ 'quiz__freq-btn--active': activeStatus === 'new' }" @click="activeStatus = 'new'">📝 未开始</button>
+          </div>
+          <button class="quiz__rand-btn" @click="goRandom" title="随机一题">🎲</button>
           <select v-model="sortBy" class="quiz__sort">
             <option value="default">默认排序</option>
             <option value="freq-desc">频率高→低</option>
@@ -105,7 +93,8 @@
               @click="openDetail(q)"
             >
               <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
-              <span class="quiz__row-q">{{ q.question }}</span>
+              <span class="quiz__row-status" :class="'quiz__row-status--' + (progress[q.id] || '')">{{ statusIcon(progress[q.id] || '') }}</span>
+            <span class="quiz__row-q">{{ q.question }}</span>
               <span v-if="q.freq" class="quiz__row-freq" :class="'quiz__row-freq--' + q.freq">{{ freqLabel(q.freq) }}</span>
               <span class="quiz__row-arrow">→</span>
             </div>
@@ -126,6 +115,9 @@
             <span class="quiz__modal-cat">{{ getCategoryName(detailItem.category) }}</span>
             <span class="quiz__modal-index">{{ detailIndex + 1 }} / {{ filtered.length }}</span>
             <div class="quiz__modal-actions">
+              <button class="quiz__modal-status" :class="'quiz__modal-status--' + (progress[detailItem.id] || 'new')" @click="toggleStatus(detailItem.id)" :title="progress[detailItem.id] === 'done' ? '标记为待复习' : progress[detailItem.id] === 'review' ? '取消标记' : '标记为已掌握'">
+                {{ progress[detailItem.id] === 'done' ? '✅' : progress[detailItem.id] === 'review' ? '🔄' : '◻️' }}
+              </button>
               <button class="quiz__modal-action" @click="isFull = !isFull" :title="isFull ? '缩小' : '放大'">
                 {{ isFull ? '⧉' : '⛶' }}
               </button>
@@ -217,9 +209,54 @@ const activeCategory = ref('')
 const searchQuery = ref('')
 const sortBy = ref('default')
 const activeFreq = ref('')
-const studyMode = ref(false)
+const activeStatus = ref('')
 const page = ref(1)
 const pageSize = 20
+
+// ── 进度追踪（localStorage） ──
+const STORAGE_KEY = 'quiz-progress-v1'
+const progress = ref({})
+
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) progress.value = JSON.parse(saved)
+  } catch {}
+}
+
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress.value)) } catch {}
+}
+
+function toggleStatus(id) {
+  const cur = progress.value[id] || ''
+  if (cur === 'done') progress.value[id] = 'review'
+  else if (cur === 'review') progress.value[id] = ''
+  else progress.value[id] = 'done'
+  saveProgress()
+}
+
+function statusIcon(s) {
+  return s === 'done' ? '✅' : s === 'review' ? '🔄' : ''
+}
+
+const progressStats = computed(() => {
+  const s = { done: 0, review: 0, pending: 0 }
+  for (const q of questions) {
+    const st = progress.value[q.id] || ''
+    if (st === 'done') s.done++
+    else if (st === 'review') s.review++
+    else s.pending++
+  }
+  return s
+})
+
+function goRandom() {
+  const list = filtered.value
+  if (!list.length) return
+  const idx = Math.floor(Math.random() * list.length)
+  openDetail(list[idx])
+}
 
 const detailVisible = ref(false)
 const detailItem = ref({ question: '', answer: '', category: '' })
@@ -272,10 +309,14 @@ const filtered = computed(() => {
       q.answer.toLowerCase().includes(kw)
     )
   }
-  if (studyMode.value && !activeFreq.value) {
-    // Study mode: sort by frequency high→mid→low
-    list = [...list].sort((a, b) => (freqOrder[a.freq] || 3) - (freqOrder[b.freq] || 3))
-  } else if (sortBy.value === 'freq-desc') {
+  if (activeStatus.value === 'done') {
+    list = list.filter(q => progress.value[q.id] === 'done')
+  } else if (activeStatus.value === 'review') {
+    list = list.filter(q => progress.value[q.id] === 'review')
+  } else if (activeStatus.value === 'new') {
+    list = list.filter(q => !progress.value[q.id])
+  }
+  if (sortBy.value === 'freq-desc') {
     list = [...list].sort((a, b) => (freqOrder[a.freq] || 3) - (freqOrder[b.freq] || 3))
   } else if (sortBy.value === 'freq-asc') {
     list = [...list].sort((a, b) => (freqOrder[b.freq] || 3) - (freqOrder[a.freq] || 3))
@@ -293,7 +334,6 @@ function syncStateToURL() {
   const p = new URLSearchParams()
   if (activeCategory.value) p.set('cat', activeCategory.value)
   if (activeFreq.value) p.set('freq', activeFreq.value)
-  if (studyMode.value) p.set('mode', 'study')
   if (sortBy.value !== 'default') p.set('sort', sortBy.value)
   if (searchQuery.value.trim()) p.set('q', searchQuery.value.trim())
   const qs = p.toString()
@@ -305,13 +345,15 @@ function loadStateFromURL() {
   const p = new URLSearchParams(window.location.search)
   if (p.has('cat')) activeCategory.value = p.get('cat')
   if (p.has('freq')) activeFreq.value = p.get('freq')
-  if (p.has('mode')) studyMode.value = true
   if (p.has('sort')) sortBy.value = p.get('sort')
   if (p.has('q')) searchQuery.value = p.get('q')
 }
 
 // Sync to URL on mount
-onMounted(loadStateFromURL)
+onMounted(() => {
+  loadProgress()
+  loadStateFromURL()
+})
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
 
@@ -330,7 +372,7 @@ function switchCategory(id) {
   page.value = 1
 }
 
-watch([activeCategory, activeFreq, studyMode, searchQuery, sortBy], () => {
+watch([activeCategory, activeFreq, searchQuery, sortBy], () => {
   page.value = 1
   syncStateToURL()
 })
@@ -478,6 +520,7 @@ async function renderMermaidDiagrams() {
   text-align: left;
   transition: all 0.15s;
   color: var(--vp-c-text-2);
+  width: 100%;
 }
 
 .quiz__tab:hover {
@@ -507,27 +550,21 @@ async function renderMermaidDiagrams() {
   font-size: 0.7rem;
   color: var(--vp-c-text-3);
   flex-shrink: 0;
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  min-width: 24px;
+  text-align: center;
 }
-
-.quiz__tab-freq {
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-  align-items: center;
+.quiz__tab--active .quiz__tab-count {
+  background: rgba(62, 175, 124, 0.12);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
 }
-
-.qf {
-  font-size: 0.6rem;
-  font-style: normal;
-  padding: 1px 3px;
-  border-radius: 3px;
-  line-height: 1.2;
+.dark .quiz__tab--active .quiz__tab-count {
+  background: rgba(62, 175, 124, 0.2);
 }
-
-.qf-h { color: #d32f2f; background: rgba(211, 47, 47, 0.08); }
-.qf-m { color: #e65100; background: rgba(230, 81, 0, 0.08); }
-.dark .qf-h { background: rgba(244, 67, 54, 0.12); color: #ef9a9a; }
-.dark .qf-m { background: rgba(255, 152, 0, 0.12); color: #ffcc80; }
 
 .quiz__content { flex: 1; min-width: 0; }
 .quiz__content .hljs { border-radius: 8px; font-size: 0.875rem; }
@@ -694,6 +731,50 @@ async function renderMermaidDiagrams() {
 .quiz__row + .quiz__row {
   border-top: 1px solid var(--vp-c-border);
 }
+
+.quiz__row-status {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+.quiz__row-status--done { opacity: 0.8; }
+.quiz__row-status--review { opacity: 1; }
+
+.quiz__status-tabs { display: flex; gap: 4px; flex-shrink: 0; }
+.quiz__status--done { color: #2e7d32; }
+.quiz__status--review { color: #e65100; }
+.quiz__status--new { color: #666; }
+.dark .quiz__status--done { color: #66bb6a; }
+.dark .quiz__status--review { color: #ffcc80; }
+.dark .quiz__status--new { color: #999; }
+
+.quiz__rand-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-2);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.quiz__rand-btn:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-brand-1);
+}
+
+.quiz__modal-status {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.quiz__modal-status:hover { background: var(--vp-c-bg-soft); }
 
 .quiz__row-cat {
   font-size: 0.75rem;
