@@ -995,13 +995,13 @@ export class ParentComponent {
 
 | 语法 | 用途 | 示例 |
 |------|------|------|
-| `&#123;&#123; expression &#125;&#125;` | 插值 | `&#123;&#123; user.name &#125;&#125;` |
+| `{{ expression }}` | 插值 | `{{ user.name }}` |
 | `[property]="value"` | 属性绑定 | `[disabled]="!form.valid"` |
 | `(event)="handler()"` | 事件绑定 | `(click)="submit()"` |
 | `[(ngModel)]="value"` | 双向绑定 | `[(ngModel)]="searchTerm"` |
 | `@if (condition)` | 条件渲染 | `@if (isAdmin) { ... }` |
 | `@for (item of list)` | 列表渲染 | `@for (item of items; track item.id)` |
-| `\| pipe` | 管道转换 | `&#123;&#123; price \| currency &#125;&#125;` |
+| `\| pipe` | 管道转换 | `{{ price \| currency }}` |
 
 ---
 

@@ -63,11 +63,11 @@ export default withMermaid(defineConfig({
         items: [
           { text: '阶段概览', link: '/S2-框架深入/' },
           { text: '01-Vue3 学习指南', link: '/S2-框架深入/01-Vue3学习指南' },
-          { text: '02-Vue3 面试', link: '/S2-框架深入/02-Vue3' },
+          { text: '02-Vue3 ', link: '/S2-框架深入/02-Vue3' },
           { text: '03-React19 学习指南', link: '/S2-框架深入/03-React19学习指南' },
-          { text: '04-React19 面试', link: '/S2-框架深入/04-React19' },
+          { text: '04-React19 ', link: '/S2-框架深入/04-React19' },
           { text: '05-Angular21 学习指南', link: '/S2-框架深入/05-Angular21学习指南' },
-          { text: '06-Angular21 面试', link: '/S2-框架深入/06-Angular21' },
+          { text: '06-Angular21 ', link: '/S2-框架深入/06-Angular21' },
           { text: '07-框架对比', link: '/S2-框架深入/07-框架对比' },
         ]
       },
@@ -116,6 +116,7 @@ export default withMermaid(defineConfig({
           { text: '06-前沿技术与生态', link: '/S5-AI/06-前沿技术与生态' },
           { text: '07-技术选型对比合集', link: '/S5-AI/07-技术选型对比合集' },
           { text: '08-开发实战与架构指南', link: '/S5-AI/08-开发实战与架构指南' },
+          { text: '09-AI推荐学习', link: '/S5-AI/09-AI推荐学习' },
           { text: '10-基础篇', link: '/S5-AI/10-基础篇' },
           { text: '11-工具协议篇', link: '/S5-AI/11-工具协议篇' },
           { text: '12-大模型基础篇', link: '/S5-AI/12-大模型基础篇' },
