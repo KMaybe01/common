@@ -1,8 +1,9 @@
 <template>
   <div class="quiz">
     <div class="quiz__header">
-      <h2>📝 题库刷题</h2>
-      <p class="quiz__desc">共 {{ total }} 题，{{ filtered.length }} 条匹配 <template v-if="activeFreq"> · {{ freqLabel(activeFreq) }}</template></p>
+      <div class="quiz__header-top">
+        <LoginUI @sync="onSync" />
+      </div>
       <div class="quiz__stats">
         <span class="quiz__stat quiz__stat--high">🔥 {{ freqCounts.high }}</span>
         <span class="quiz__stat quiz__stat--mid">📌 {{ freqCounts.mid }}</span>
@@ -156,6 +157,7 @@
 
 <script setup>
 import { ref, computed, nextTick, onMounted, watch } from 'vue'
+import LoginUI from './LoginUI.vue'
 import rawData from '../../../quiz-data.json'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
@@ -226,6 +228,10 @@ function loadProgress() {
 
 function saveProgress() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress.value)) } catch {}
+}
+
+function onSync() {
+  loadProgress()
 }
 
 function toggleStatus(id) {
@@ -444,6 +450,7 @@ async function renderMermaidDiagrams() {
 
 .quiz__header { margin-bottom: 20px; }
 .quiz__header h2 { margin: 0; font-size: 1.5rem; }
+.quiz__header-top { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
 .quiz__desc {
   color: var(--vp-c-text-2);
   margin: 4px 0 0;

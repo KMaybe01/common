@@ -164,7 +164,6 @@ export default withMermaid(defineConfig({
     search: {
       provider: 'local',
       options: {
-        baseUrl: '/common/'
       }
     }
   },
@@ -173,6 +172,6 @@ export default withMermaid(defineConfig({
     build: {
       target: 'es2020',
       chunkSizeWarningLimit: 1000
-    }
+    },
   }
 }))
