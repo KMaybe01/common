@@ -59,3 +59,26 @@ html {
 /* ── 全局隐藏侧边栏 ── */
 .VPSidebar { display: none !important; }
 .VPContent.has-sidebar { padding-left: 0 !important; }
+
+/* ── 右侧目录栏靠右布局 ── */
+@media (min-width: 1280px) {
+  .VPDoc.has-aside .container {
+    max-width: 100%;
+  }
+
+  .VPDoc.has-aside .aside {
+    max-width: 0;
+    min-width: 0;
+    padding-left: 0;
+    overflow: visible;
+  }
+
+  .VPDoc.has-aside .aside-container {
+    right: 0;
+    width: 336px;
+  }
+
+  .VPDoc.has-aside .aside-curtain {
+    width: 336px;
+  }
+}

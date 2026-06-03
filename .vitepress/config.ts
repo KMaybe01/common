@@ -100,6 +100,7 @@ export default withMermaid(defineConfig({
           { text: '08-Axyom-Form 项目技术分析', link: '/S4-面试冲刺/08-Axyom-Form 项目技术分析' },
           { text: '09-Axyom-Table 项目技术分析', link: '/S4-面试冲刺/09-Axyom-Table 项目技术分析' },
           { text: '10-Prometheus+Grafana', link: '/S4-面试冲刺/10-Prometheus+Grafana' },
+          { text: '11-FMS-UI企业级融合管理系统', link: '/S4-面试冲刺/11-FMS-UI企业级融合管理系统' },
         ]
       },
       {
