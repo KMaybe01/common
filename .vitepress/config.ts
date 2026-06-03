@@ -63,11 +63,11 @@ export default withMermaid(defineConfig({
         items: [
           { text: '阶段概览', link: '/S2-框架深入/' },
           { text: '01-Vue3 学习指南', link: '/S2-框架深入/01-Vue3学习指南' },
-          { text: '02-Vue3 ', link: '/S2-框架深入/02-Vue3' },
+          { text: '02-Vue3', link: '/S2-框架深入/02-Vue3' },
           { text: '03-React19 学习指南', link: '/S2-框架深入/03-React19学习指南' },
-          { text: '04-React19 ', link: '/S2-框架深入/04-React19' },
+          { text: '04-React19', link: '/S2-框架深入/04-React19' },
           { text: '05-Angular21 学习指南', link: '/S2-框架深入/05-Angular21学习指南' },
-          { text: '06-Angular21 ', link: '/S2-框架深入/06-Angular21' },
+          { text: '06-Angular21', link: '/S2-框架深入/06-Angular21' },
           { text: '07-框架对比', link: '/S2-框架深入/07-框架对比' },
         ]
       },

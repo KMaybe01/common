@@ -993,15 +993,27 @@ export class ParentComponent {
 
 ### 📋 模板语法完整参考
 
-| 语法 | 用途 | 示例 |
-|------|------|------|
-| `{{ expression }}` | 插值 | `{{ user.name }}` |
-| `[property]="value"` | 属性绑定 | `[disabled]="!form.valid"` |
-| `(event)="handler()"` | 事件绑定 | `(click)="submit()"` |
-| `[(ngModel)]="value"` | 双向绑定 | `[(ngModel)]="searchTerm"` |
-| `@if (condition)` | 条件渲染 | `@if (isAdmin) { ... }` |
-| `@for (item of list)` | 列表渲染 | `@for (item of items; track item.id)` |
-| `\| pipe` | 管道转换 | `{{ price \| currency }}` |
+```html
+<!-- 插值：将组件数据渲染到模板 -->
+{{ expression }}                    <!-- 变量插值 -->
+{{ user.name }}                     <!-- 属性访问 -->
+{{ price | currency }}              <!-- 管道转换 -->
+
+<!-- 属性绑定：动态绑定 DOM 属性 -->
+[disabled]="!form.valid"            <!-- 布尔属性 -->
+[src]="imageUrl"                    <!-- 字符串属性 -->
+
+<!-- 事件绑定：监听用户操作 -->
+(click)="submit()"                  <!-- 点击事件 -->
+(keyup.enter)="search()"            <!-- 按键修饰符 -->
+
+<!-- 双向绑定：表单控件 -->
+[(ngModel)]="searchTerm"            <!-- 模型绑定 -->
+
+<!-- 控制流语法 -->
+@if (isAdmin) { ... }               <!-- 条件渲染 -->
+@for (item of items; track item.id) { ... }  <!-- 列表渲染 -->
+```
 
 ---
 
