@@ -44,8 +44,7 @@ timeline
 | **ES3** | 1999 | try/catch、正则、switch | 语言基础定型 |
 | **ES5** | 2009 | 严格模式、JSON、bind | jQuery 时代 |
 | **ES6/ES2015** | 2015 | **let/const、class、Promise、模块** | **现代 JS 起点** |
-| **ES2017** | 2017 | async/await | 异步编程范式革新 |
-| **ES2017** | 2017 | Object entries/values | 对象操作增强 |
+| **ES2017** | 2017 | async/await、Object.entries/values | 异步编程范式革新 |
 | **ES2020** | 2020 | 可选链、空值合并、globalThis | 代码简洁性提升 |
 | **ES2022** | 2022 | 类字段、顶层 await | OOP + 模块完善 |
 | **ES2023** | 2023 | 数组不可变方法 | 函数式编程增强 |
@@ -236,7 +235,29 @@ console.log(typeof 10n);             // bigint
 - `null` 被检测为 `object`（JS 第一版遗留bug，null 的机器码全0，与 object 的类型标签相同）
 - 数组、对象都被检测为 `object`，无法区分具体对象类型
 
-#### 2️⃣ instanceof
+#### 2️⃣ 现代类型检测最佳实践
+
+```javascript
+// 封装类型检测工具函数
+const typeCheck = {
+  isArray: Array.isArray,
+  isNull: (v) => v === null,
+  isUndefined: (v) => v === undefined,
+  isNil: (v) => v == null,
+  isObject: (v) => typeof v === 'object' && v !== null,
+  isPlainObject: (v) => Object.prototype.toString.call(v) === '[object Object]',
+  isFunction: (v) => typeof v === 'function',
+  isPrimitive: (v) => v == null || (typeof v !== 'object' && typeof v !== 'function'),
+};
+
+// 使用示例
+console.log(typeCheck.isArray([]));           // true
+console.log(typeCheck.isPlainObject({}));      // true
+console.log(typeCheck.isPrimitive(null));      // true
+console.log(typeCheck.isNil(undefined));       // true
+```
+
+#### 3️⃣ instanceof
 
 ```javascript
 // instanceof 检测构造函数原型是否在原型链上

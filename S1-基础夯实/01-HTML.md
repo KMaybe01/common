@@ -1,7 +1,7 @@
 ﻿# 📚 HTML 知识点详解版
 
 > 🎯 **面试星级**：★★★★☆ | **建议用时**：2 天
-> HTML 核心知识全面梳理，涵盖语义化、HTML5 新特性、Web Components、Resource Hints、Service Worker 等核心考点
+> HTML 核心知识全面梳理，涵盖语义化、HTML5 新特性、Web Components、Resource Hints、Service Workers 等核心考点
 
 ---
 
@@ -152,12 +152,36 @@ flowchart TD
 > **关键影响**：当浏览器解析到 `<script src="js.js"></script>` 时，会**暂停**后续文档的下载和渲染，直到该脚本加载、编译、执行完毕。这就是为什么 `<script>` 标签通常放在 `</body>` 之前，而不是 `<head>` 中。
 
 ```html
-<!-- 放在底部，不阻塞上方 DOM 的渲染 -->
+<!-- 方案1：放在底部，不阻塞上方 DOM 的渲染 -->
 <body>
   <div>内容</div>
   <script src="app.js"></script>
 </body>
+
+<!-- 方案2：使用 defer 属性（推荐） - 保持执行顺序，DOM解析完成后执行 -->
+<head>
+  <script defer src="app.js"></script>
+</head>
+
+<!-- 方案3：使用 async 属性 - 乱序执行，适合独立脚本 -->
+<head>
+  <script async src="analytics.js"></script>
+</head>
+
+<!-- 方案4：使用 Module Script - 默认defer，支持import/export -->
+<head>
+  <script type="module" src="app.js"></script>
+</head>
 ```
+
+**脚本加载方式对比：**
+
+| 方式 | 执行时机 | 执行顺序 | 适用场景 |
+|------|---------|---------|---------|
+| 无属性 | 阻塞解析，下载完立即执行 | 按文档顺序 | 遗留代码 |
+| `defer` | DOM解析完成后执行 | 按文档顺序 | 需要DOM的脚本（推荐） |
+| `async` | 下载完立即执行 | 乱序 | 独立脚本（如统计） |
+| `type="module"` | 默认defer | 按模块顺序 | ESM模块 |
 
 ### href（Hypertext Reference — 建立联系）
 

@@ -44,9 +44,11 @@ const categoryMap = {
 }
 
 // Regex patterns for different Q&A formats
-const Q3_RE = /^### Q(\d+)[：:]\s*(.+)/    // ### Q1：... or ### Q1:...
-const Q2_RE = /^## Q(\d+)[：:]\s*(.+)/     // ## Q1：... or ## Q1:...
-const Q5_RE = /^##### Q(\d+)[：:]\s*(.+)/  // ##### Q1：...
+const Q3_RE = /^### Q(\d+)[：:.\-]\s*(.+)/    // ### Q1：... or ### Q1:... or ### Q1. ... or ### Q1 - ...
+const Q2_RE = /^## Q(\d+)[：:.\-]\s*(.+)/     // ## Q1：... or ## Q1:... or ## Q1. ... or ## Q1 - ...
+const Q4_RE = /^#### Q(\d+)[：:.\-]\s*(.+)/   // #### Q1：... or #### Q1:... or #### Q1. ... or #### Q1 - ...
+const Q5_RE = /^##### Q(\d+)[：:.\-]\s*(.+)/  // ##### Q1：...
+const Q_NO_PREFIX_RE = /^#{2,5}\s+(?:❓\s*)?(?:[（(]?\d+[)）]?\s*[.、]?\s*)?(?!Q\d)(.+\?)\s*$/  // ### 什么是 LLM？ or ### ❓ 什么是 LLM？
 const TOPIC_H3_RE = /^### (?:[1-9]️⃣|[0-9]+️⃣)\s+(.+)/  // ### 1️⃣ topic
 const TOPIC_DOT_H3_RE = /^### (?:[0-9]+)\.\s+(.+)/      // ### 1. topic
 const TOPIC_PLAIN_H3_RE = /^### (.+)/                     // ### plain topic
@@ -221,6 +223,50 @@ function extractTopics(content, lines, category, idPrefix) {
     })
 }
 
+function extractQuestionsWithoutPrefix(lines, category, idPrefix) {
+  const questions = []
+  let current = null
+  let idx = 0
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const m = line.match(Q_NO_PREFIX_RE)
+    if (m) {
+      if (current && current.answer.trim()) questions.push(current)
+      idx++
+      current = {
+        num: idx,
+        question: clean(m[1]),
+        answer: '',
+      }
+    } else if (current) {
+      // Stop at next heading or horizontal rule
+      if (/^#{1,5}\s+/.test(line) || /^---+\s*$/.test(line)) {
+        if (current.answer.trim()) questions.push(current)
+        current = null
+        break
+      }
+      if (current.answer) current.answer += '\n'
+      current.answer += line
+    }
+  }
+  if (current && current.answer.trim()) questions.push(current)
+
+  return questions
+    .filter(q => q.answer.trim().length > 20)
+    .map(q => {
+      const text = q.question + '\n' + q.answer
+      const fm = text.match(FREQ_RE)
+      return {
+        id: `${idPrefix}-extra-q${q.num}`,
+        category,
+        question: q.question,
+        answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+        freq: fm && FREQ_EMOJI[fm[1]] ? FREQ_EMOJI[fm[1]] : '',
+      }
+    })
+}
+
 function parseFile(filePath, relPath) {
   const content = readFileSync(filePath, 'utf-8')
   const lines = content.split('\n')
@@ -230,7 +276,7 @@ function parseFile(filePath, relPath) {
   let allQs = []
 
   // Phase 1: Extract Q&A sections
-  for (const regex of [Q3_RE, Q2_RE, Q5_RE]) {
+  for (const regex of [Q3_RE, Q2_RE, Q4_RE, Q5_RE]) {
     const qs = extractQA(content, regex, lines)
     if (qs.length > 0) {
       allQs.push(...qs.map(q => ({
@@ -244,11 +290,15 @@ function parseFile(filePath, relPath) {
     }
   }
 
-  // Phase 2: Extract H3/H4 topics as knowledge points (always, as supplement)
+  // Phase 2: Extract questions without Q prefix (e.g., ### 什么是 LLM？)
+  const extraQs = extractQuestionsWithoutPrefix(lines, cat.id, cat.id)
+  allQs.push(...extraQs)
+
+  // Phase 3: Extract H3/H4 topics as knowledge points (always, as supplement)
   const topicQs = extractTopics(content, lines, cat.id, cat.id)
   allQs.push(...topicQs)
 
-  // Phase 3: For 学习指南 files, also extract H2 lesson sections
+  // Phase 4: For 学习指南 files, also extract H2 lesson sections
   if (relPath.includes('学习指南')) {
     const lessonQs = extractH2Lessons(lines, cat.id, cat.id)
     allQs.push(...lessonQs)
