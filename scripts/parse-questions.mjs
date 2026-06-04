@@ -61,7 +61,13 @@ const FREQ_EMOJI = { '🔥': 'high', '📌': 'mid', '📖': 'low' }
 const FREQ_RE = /\*\*频率\*\*[：:]\s*([🔥📌📖])/u
 
 function clean(str) {
-  return str.trim().replace(/\s+/g, ' ')
+  return str
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\((?:https?:\/\/|www\.)[^\s)]+\)/g, '')
+    .replace(/\bhttps?:\/\/[^\s)]+/g, '')
+    .replace(/\bwww\.[^\s)]+/g, '')
+    .trim()
+    .replace(/\s+/g, ' ')
 }
 
 function extractQA(content, regex, lines) {
@@ -270,7 +276,10 @@ function extractQuestionsWithoutPrefix(lines, category, idPrefix) {
 function parseFile(filePath, relPath) {
   const content = readFileSync(filePath, 'utf-8')
   const lines = content.split('\n')
-  const cat = categoryMap[relPath]
+  let cat = categoryMap[relPath]
+  if (!cat && relPath.startsWith('S6-Go/') && relPath !== 'S6-Go/index.md') {
+    cat = { id: 'go', name: 'Go', icon: '🐹' }
+  }
   if (!cat) return []
 
   let allQs = []
@@ -323,7 +332,7 @@ function scanFiles(dir) {
       results.push(...scanFiles(full))
     } else if (entry.isFile() && entry.name.endsWith('.md')) {
       const relPath = posix(relative(root, full))
-      if (categoryMap[relPath]) {
+      if (categoryMap[relPath] || (relPath.startsWith('S6-Go/') && relPath !== 'S6-Go/index.md')) {
         results.push({ relPath, full })
       }
     }
