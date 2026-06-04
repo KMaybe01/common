@@ -66,6 +66,7 @@ function clean(str) {
     .replace(/\((?:https?:\/\/|www\.)[^\s)]+\)/g, '')
     .replace(/\bhttps?:\/\/[^\s)]+/g, '')
     .replace(/\bwww\.[^\s)]+/g, '')
+    .replace(/\*\*/g, '')
     .trim()
     .replace(/\s+/g, ' ')
 }
