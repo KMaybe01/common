@@ -1,4 +1,4 @@
-﻿# 🚀 [Angular 21](https://angular.dev) 完整学习指南
+# 🚀 [Angular 21](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > Angular 21 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
@@ -1063,27 +1063,21 @@ socket$ = webSocket('ws://...');
 
 ### 🔄 数据流向可视化
 
-```
-┌─────────────────────────────────────────────────┐
-│           Angular 数据流架构                     │
-├─────────────────────────────────────────────────┤
-│                                                 │
-│  组件类                    模板                  │
-│  ┌──────────┐              ┌───────┐           │
-│  │  count   │◄─ 读取 ─►│{{ count  │           │
-│  │  变量    │            │  }}     │           │
-│  └──────────┘            └───────┘           │
-│       ▲                       │                │
-│       │ [@] Input 传入         │ 事件绑定      │
-│       │                       ▼                │
-│  ┌──────────┐              ┌───────┐           │
-│  │ onSubmit │◄─ 处理 ◄─ (click) │           │
-│  │ 方法     │            └───────┘           │
-│  └──────────┘                                  │
-│                                                 │
-│  单向数据流保证可预测性 ✅                      │
-│  变更检测机制确保同步 ✅                        │
-└─────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    subgraph 组件类
+        CountVar["变量 count"]
+        MethodSubmit["方法 onSubmit"]
+    end
+    
+    subgraph 模板
+        Interp["插值 {{ count }}"]
+        EventClick["事件 (click)"]
+    end
+    
+    CountVar <-->|读取| Interp
+    Input["[@] Input 传入"] --> CountVar
+    EventClick -->|处理| MethodSubmit
 ```
 
 ### 🎯 四种绑定方式详解
@@ -1654,22 +1648,16 @@ export class DataService {
 
 ### 🏗️ 注入器层级结构
 
-```
-┌────────────────────────────────┐
-│     应用级（根）注入器           │ 
-│  providedIn: 'root' 的服务      │
-└──────────────┬─────────────────┘
-               │
-   ┌───────────┴────────────┐
-   │                        │
-┌──▼──────────┐    ┌──────▼───┐
-│  模块注入器   │    │  模块注入器 │
-│  （NgModule）│    │（NgModule）│
-└──────────────┘    └───────────┘
-   │ │              │ │
-┌──▼─▼────┐    ┌───▼─▼──┐
-│组件注入器 │    │组件注入器│
-└──────────┘    └────────┘
+```mermaid
+graph TD
+    Root["应用级（根）注入器<br/>providedIn: 'root' 的服务"] --> Module1["模块注入器 (NgModule)"]
+    Root --> Module2["模块注入器 (NgModule)"]
+    
+    Module1 --> Comp1["组件注入器"]
+    Module1 --> Comp2["组件注入器"]
+    
+    Module2 --> Comp3["组件注入器"]
+    Module2 --> Comp4["组件注入器"]
 ```
 
 ### 💉 现代 DI 用法（inject() API）
@@ -2032,30 +2020,23 @@ export class UserFormComponent {
 
 ### 🔄 生命周期执行顺序图
 
-```
-组件创建
-  ↓
-constructor() ← 构造函数（不是钩子）
-  ↓
-ngOnChanges() ← 输入属性变化（首次 + 后续变化）
-  ↓
-ngOnInit() ← 初始化（只执行一次）
-  ↓
-ngDoCheck() ← 自定义变更检测（每次检测都执行）
-  ↓
-ngAfterContentInit() ← 内容投影初始化
-  ↓
-ngAfterContentChecked() ← 内容投影检查
-  ↓
-┌─────────────────────────┐
-│  显示视图，用户交互       │ ← 这期间会多次执行检查钩子
-│  ↓ ngDoCheck()          │
-│  ↓ ngAfterViewChecked() │
-└─────────────────────────┘
-  ↓
-ngOnDestroy() ← 销毁前清理
-  ↓
-组件销毁
+```mermaid
+graph TD
+    A["组件创建"] --> B["constructor() <br/> 构造函数（不是钩子）"]
+    B --> C["ngOnChanges() <br/> 输入属性变化（首次 + 后续变化）"]
+    C --> D["ngOnInit() <br/> 初始化（只执行一次）"]
+    D --> E["ngDoCheck() <br/> 自定义变更检测"]
+    E --> F["ngAfterContentInit() <br/> 内容投影初始化"]
+    F --> G["ngAfterContentChecked() <br/> 内容投影检查"]
+    G --> H["显示视图，用户交互"]
+    
+    subgraph 运行期间检查
+    H -.-> I["ngDoCheck()"]
+    I -.-> J["ngAfterViewChecked()"]
+    end
+    
+    H --> K["ngOnDestroy() <br/> 销毁前清理"]
+    K --> L["组件销毁"]
 ```
 
 ### 📊 生命周期钩子详解表
@@ -2486,36 +2467,35 @@ export class AuthService {
 
 ### 📊 优化策略金字塔
 
-```
-                    🚀 性能优化
-                   /          \
-                  /            \
-          用户体验优化        运行时优化
-         (Core Web Vitals)  (变更检测)
-
-       ┌──────────────────────────────┐
-       │  网络层优化                   │
-       │  • 模块懒加载                 │
-       │  • 资源预加载                 │
-       │  • CDN 部署                  │
-       │  • HTTP/2 多路复用           │
-       └──────────────────────────────┘
-
-       ┌──────────────────────────────┐
-       │  编译时优化                 │
-       │  • AOT 编译                 │
-       │  • Tree-shaking            │
-       │  • 代码压缩                 │
-       │  • 静态分析                 │
-       └──────────────────────────────┘
-
-       ┌──────────────────────────────┐
-       │  运行时优化                 │
-       │  • OnPush 策略              │
-       │  • Signals 响应式           │
-       │  • trackBy 优化             │
-       │  • 虚拟滚动                 │
-       └──────────────────────────────┘
+```mermaid
+graph TD
+    Opt[🚀 性能优化] --> UX[用户体验优化<br/>Core Web Vitals]
+    Opt --> Runtime[运行时优化<br/>变更检测]
+    
+    subgraph 网络层优化
+    Net1[模块懒加载]
+    Net2[资源预加载]
+    Net3[CDN 部署]
+    Net4[HTTP/2 多路复用]
+    end
+    
+    subgraph 编译时优化
+    Comp1[AOT 编译]
+    Comp2[Tree-shaking]
+    Comp3[代码压缩]
+    Comp4[静态分析]
+    end
+    
+    subgraph 运行时优化策略
+    Run1[OnPush 策略]
+    Run2[Signals 响应式]
+    Run3[trackBy 优化]
+    Run4[虚拟滚动]
+    end
+    
+    UX -.-> Net1
+    Runtime -.-> Comp1
+    Runtime -.-> Run1
 ```
 
 #### 性能优化决策树

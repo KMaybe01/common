@@ -69,6 +69,7 @@ export default withMermaid(defineConfig({
           { text: '🔴 Angular21 学习指南', link: '/S2-框架深入/05-Angular21学习指南' },
           { text: '🔴 Angular21', link: '/S2-框架深入/06-Angular21' },
           { text: '⚖️ 框架对比', link: '/S2-框架深入/07-框架对比' },
+          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/08-Vue3.0源码深度解析' },
         ]
       },
       {

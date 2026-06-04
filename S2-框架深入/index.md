@@ -11,6 +11,7 @@
 - [🔴 Angular21 学习指南](./05-Angular21学习指南) — Angular 21 系统学习：Signals、Ivy、Zoneless、RxJS
 - [🔴 Angular21 面试](./06-Angular21) — Angular 21 面试题精讲：依赖注入、变更检测、路由守卫
 - [⚖️ 框架对比](./07-框架对比) — Vue 3 vs React 19 vs Angular 21 横向对比
+- [⚖️ Vue3.0 源码深度解析](./08-Vue3.0源码深度解析.md) — 源码深度解析
 
 ## 学习路线
 

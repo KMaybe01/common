@@ -1,4 +1,4 @@
-﻿# 🚀 [React 19](https://react.dev) 完整学习指南
+# 🚀 [React 19](https://react.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
 > React 19 系统学习指南，融合核心原理、高级特性、工程实践与面试题，从入门到精通、源码级原理、React Compiler 深度、项目实战重难点、内存泄漏排查、深度面试追问题
@@ -2452,20 +2452,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 ### 📊 状态管理全景图
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    React 状态管理生态（2026）                  │
-├──────────────┬──────────────┬──────────────┬────────────────┤
-│  本地状态      │  跨组件共享    │  全局状态      │  服务器状态      │
-│              │              │              │                │
-│ useState     │ Context API  │ Redux        │ TanStack Query│
-│ useReducer   │ useMemo(值)  │ Zustand      │ SWR            │
-│ useRef       │              │ Jotai        │ Apollo         │
-│              │              │ MobX         │ RTK Query      │
-│              │              │ Valtio       │                │
-│              │              │ Legend State │                │
-└──────────────┴──────────────┴──────────────┴────────────────┘
-```
+| 本地状态 | 跨组件共享 | 全局状态 | 服务器状态 |
+| :--- | :--- | :--- | :--- |
+| `useState` | Context API | Redux | TanStack Query |
+| `useReducer` | `useMemo`(值) | Zustand | SWR |
+| `useRef` | | Jotai | Apollo |
+| | | MobX | RTK Query |
+| | | Valtio | |
+| | | Legend State | |
 
 ### 🧭 状态管理分类与演进
 
@@ -4085,36 +4079,35 @@ function CheckoutFlow() {
 
 ### 📊 优化策略金字塔
 
-```
-                    🚀 性能优化
-                   /          \
-                  /            \
-          用户体验优化        运行时优化
-         (Core Web Vitals)  (渲染/状态)
-
-       ┌──────────────────────────────┐
-       │  网络层优化                   │
-       │  • 代码分割                   │
-       │  • 资源预加载                 │
-       │  • CDN 部署                  │
-       │  • HTTP/2 多路复用           │
-       └──────────────────────────────┘
-
-       ┌──────────────────────────────┐
-       │  编译时优化                 │
-       │  • React Compiler           │
-       │  • Tree-shaking            │
-       │  • 代码压缩                 │
-       │  • 静态分析                 │
-       └──────────────────────────────┘
-
-       ┌──────────────────────────────┐
-       │  运行时优化                 │
-       │  • React.memo               │
-       │  • useMemo / useCallback    │
-       │  • 虚拟列表                 │
-       │  • 并发特性                 │
-       └──────────────────────────────┘
+```mermaid
+graph TD
+    Opt[🚀 性能优化] --> UX[用户体验优化<br/>Core Web Vitals]
+    Opt --> Runtime[运行时优化<br/>渲染/状态]
+    
+    subgraph 网络层优化
+    Net1[代码分割]
+    Net2[资源预加载]
+    Net3[CDN 部署]
+    Net4[HTTP/2 多路复用]
+    end
+    
+    subgraph 编译时优化
+    Comp1[React Compiler]
+    Comp2[Tree-shaking]
+    Comp3[代码压缩]
+    Comp4[静态分析]
+    end
+    
+    subgraph 运行时优化策略
+    Run1[React.memo]
+    Run2[useMemo / useCallback]
+    Run3[虚拟列表]
+    Run4[并发特性]
+    end
+    
+    UX -.-> Net1
+    Runtime -.-> Comp1
+    Runtime -.-> Run1
 ```
 
 #### 性能优化决策树
@@ -7437,15 +7430,19 @@ function TrackedComponent({ data }) {
 
 **三阶段模型：**
 
-```
-┌──────────┐    ┌───────────┐    ┌────────┐
-│  Trigger  │ → │   Render   │ → │  Commit  │
-│  触发更新  │   │  渲染阶段   │   │  提交阶段  │
-│ setState  │   │ 构建 VNode │   │ 操作 DOM │
-│  useState │   │  Diff 对比  │   │ 生命周期 │
-│  useReducer│   │ 收集 Effect│   │ 执行 Effect│
-└──────────┘   └───────────┘    └────────┘
-      ↑ 可多次           ↓ 可中断            ← 不可中断
+```mermaid
+graph LR
+    Trigger["**Trigger (触发更新)**<br/>setState<br/>useState<br/>useReducer"] --> Render
+    Render["**Render (渲染阶段)**<br/>构建 VNode<br/>Diff 对比<br/>收集 Effect"] --> Commit
+    Commit["**Commit (提交阶段)**<br/>操作 DOM<br/>生命周期<br/>执行 Effect"]
+    
+    classDef trigger fill:#e1f5fe,stroke:#333;
+    classDef render fill:#fff3e0,stroke:#333,stroke-dasharray: 5 5;
+    classDef commit fill:#e8f5e9,stroke:#333;
+    
+    class Trigger trigger;
+    class Render render;
+    class Commit commit;
 ```
 
 **详细过程：**
