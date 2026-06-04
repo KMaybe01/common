@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev . && node scripts/assign-frequency.mjs && node scripts/parse-questions.mjs",
-    "build": "vitepress build .",
+    "build": "vitepress build . && node scripts/gen-version.mjs",
     "preview": "vitepress preview ."
   },
   "devDependencies": {

@@ -175,6 +175,12 @@ export default withMermaid(defineConfig({
   },
 
   vite: {
+    optimizeDeps: {
+      include: ['dayjs']
+    },
+    ssr: {
+      noExternal: ['dayjs']
+    },
     build: {
       target: 'es2020',
       chunkSizeWarningLimit: 1000
