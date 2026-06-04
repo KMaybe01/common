@@ -7846,6 +7846,2067 @@ function workLoop(fiber: Fiber) {
 | **客户端 JS** | 不包含服务端组件 | 包含所有组件 |
 | **交互性** | 无（纯数据） | 有（Hydration） |
 
+### Q17：类组件的 shouldComponentUpdate 与 React.memo 的关系？
+
+**本质相同**：都是防止不必要的重渲染，但应用对象不同。
+
+```typescript
+// 类组件：shouldComponentUpdate 控制实例是否更新
+class List extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return nextProps.items !== this.props.items; // 浅比较
+  }
+  render() { /* ... */ }
+}
+
+// 函数组件：React.memo 包裹组件实现同样效果
+const List = React.memo(function List({ items }) {
+  return /* ... */;
+});
+
+// 自定义比较函数
+const List = React.memo(
+  () => { /* ... */ },
+  (prevProps, nextProps) => prevProps.items === nextProps.items
+);
+```
+
+| 维度 | shouldComponentUpdate | React.memo |
+|------|----------------------|------------|
+| 适用组件 | 类组件 | 函数组件 |
+| 比较方式 | 手动实现 | 默认浅比较，可自定义 |
+| 返回值 | boolean（是否更新） | boolean（是否跳过） |
+| 实现位置 | 组件内部 | 组件外部包裹 |
+
+### Q18：React 中 setState 是同步还是异步？
+
+**结论：看执行上下文。**
+
+```typescript
+class Example extends React.Component {
+  state = { count: 0 };
+
+  handleClick = () => {
+    // ✅ React 合成事件：异步（批量）
+    this.setState({ count: this.state.count + 1 });
+    console.log(this.state.count); // 0（未更新）
+  };
+
+  componentDidMount() {
+    // ✅ 生命周期：异步（批量）
+    this.setState({ count: 1 });
+    console.log(this.state.count); // 0
+
+    // ❌ 原生事件：同步（React 17-）/ 异步（React 18+ 自动批处理）
+    document.addEventListener('click', () => {
+      this.setState({ count: 2 });
+      console.log(this.state.count); // React 17-: 2, React 18+: 0
+    });
+
+    // ❌ setTimeout：React 17- 同步，React 18+ 自动批处理
+    setTimeout(() => {
+      this.setState({ count: 3 });
+      console.log(this.state.count); // React 17-: 3, React 18+: 0
+    }, 0);
+  }
+}
+```
+
+| 场景 | React 17- | React 18+ |
+|------|-----------|-----------|
+| 合成事件 | 异步（批量） | 异步（批量） |
+| 生命周期 | 异步（批量） | 异步（批量） |
+| setTimeout/Promise | **同步** | **异步（自动批处理）** |
+| 原生事件 | **同步** | **异步（自动批处理）** |
+| flushSync | — | ✅ 强制同步 |
+
+### Q19：自定义 Hook 的命名规范和设计原则？
+
+**命名规范：** 必须以 `use` 开头（React 通过命名检测 Hook 规则，相关 ESLint 规则依赖此前缀）。
+
+```typescript
+// ✅ 正确命名
+function useLocalStorage<T>(key: string, initialValue: T) { /* ... */ }
+function useWindowSize() { /* ... */ }
+function useDebounce<T>(value: T, delay: number): T { /* ... */ }
+
+// ❌ 错误：不以 use 开头
+function localStorage(key, initial) { /* ... */ }
+// 后果：ESLint 无法检查 Hook 调用规则，建议不通过
+```
+
+**设计原则（S-I-D）：**
+
+```typescript
+// 1️⃣ Single Responsibility（单一职责）
+// ❌ 一个 Hook 做太多事
+function useUserAndTheme() {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState('light');
+  return { user, theme };
+}
+
+// ✅ 拆分为独立 Hook
+function useUser() { /* ... */ }
+function useTheme() { /* ... */ }
+
+// 2️⃣ 返回值一致性
+function useData<T>(url: string) {
+  const [state, setState] = useState<{
+    data: T | null;
+    loading: boolean;
+    error: Error | null;
+  }>({ data: null, loading: true, error: null });
+  // ... 统一返回 { data, loading, error }
+  return state;
+}
+
+// 3️⃣ 输入输出清晰
+function useDebounce<T>(value: T, delay: number): T {
+  // 输入明确，输出单一
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
+```
+
+### Q20：React 中受控组件和非受控组件的选择策略？
+
+```typescript
+// 受控组件（推荐大多数场景）
+function ControlledForm() {
+  const [email, setEmail] = useState('');
+  const handleSubmit = () => {
+    // 提交时可以读取最新 state，无需访问 DOM
+    submitAPI(email);
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={email} onChange={e => setEmail(e.target.value)} />
+      <button>提交</button>
+    </form>
+  );
+}
+
+// 非受控组件（简单场景/文件上传）
+function UncontrolledForm() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleSubmit = () => {
+    // 需要时才从 DOM 读取
+    console.log(inputRef.current?.value);
+  };
+  // defaultValue 只初始化一次，后续变化不影响
+  return <input ref={inputRef} defaultValue="默认值" />;
+}
+```
+
+**选择策略树：**
+
+```
+需要实时校验/格式化？ → ✅ 受控组件
+仅提交时读取一次值？ → ✅ 非受控组件
+文件上传（<input type="file">）？→ ✅ 非受控（只读）
+动态控制表单值（禁用/填充）？→ ✅ 受控组件
+第三方 JS 库集成（如富文本）？→ ✅ 非受控 + ref
+```
+
+### Q21：forwardRef 的作用和 React 19 的变化？
+
+```typescript
+// React 18：必须用 forwardRef
+const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+  return <input ref={ref} {...props} />;
+});
+
+// React 19：ref 可直接作为 prop
+function Input({ ref, ...props }: InputProps & { ref: Ref<HTMLInputElement> }) {
+  return <input ref={ref} {...props} />;
+}
+// React 19 不再需要 forwardRef，ref 可以和 props 一样传递
+
+// useImperativeHandle：控制暴露给父组件的方法
+const FancyInput = forwardRef(function FancyInput(_, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+    clear: () => { inputRef.current!.value = ''; },
+    scrollToView: () => inputRef.current?.scrollIntoView(),
+  }), []);
+  return <input ref={inputRef} />;
+});
+```
+
+| 版本 | 传递 ref 方式 | 是否需要 forwardRef |
+|------|-------------|-------------------|
+| React 16-18 | forwardRef 包裹 | ✅ 必须 |
+| React 19 | ref 直接作为 prop | ❌ 不需要（但 forwardRef 仍可用） |
+
+### Q22：React Portal 的使用场景和事件冒泡机制？
+
+```typescript
+import { createPortal } from 'react-dom';
+
+function Modal({ children, onClose }: { children: ReactNode; onClose: () => void }) {
+  return createPortal(
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        {children}
+      </div>
+    </div>,
+    document.body // 挂载到 body，脱离父容器 DOM 层级
+  );
+}
+
+function App() {
+  return (
+    <div onClick={() => console.log('App clicked')}>
+      <Modal onClose={() => console.log('close')}>
+        <p>弹窗内容</p>
+      </Modal>
+    </div>
+  );
+}
+// 点击弹窗内容 → "close" ✅（父子关系由 React 树决定，不是 DOM 树）
+```
+
+**关键规则：**
+- **事件冒泡**：沿 React 组件树冒泡，不是 DOM 树
+- **Context**：Portal 内可访问父组件的 Context
+- **CSS 隔离**：DOM 层级独立，不受父容器 overflow/z-index 限制
+
+### Q23：ErrorBoundary 为什么必须是类组件？函数组件怎么实现错误处理？
+
+```typescript
+// ErrorBoundary 必须是类组件的原因：
+// 只有类组件有 componentDidCatch 和 getDerivedStateFromError 生命周期
+class ErrorBoundary extends React.Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  state = { hasError: false, error: null };
+  
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('Caught:', error, info.componentStack);
+    // 上报错误监控
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || <h2>出错了：{this.state.error?.message}</h2>;
+    }
+    return this.props.children;
+  }
+}
+
+// 函数组件方案：封装 ErrorBoundary 为 Hook 或使用第三方库
+// react-error-boundary（推荐）
+import { ErrorBoundary } from 'react-error-boundary';
+
+function Fallback({ error, resetErrorBoundary }: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>重试</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary FallbackComponent={Fallback} onError={logError}>
+      <MyComponent />
+    </ErrorBoundary>
+  );
+}
+
+// React 19 中 use() + ErrorBoundary 处理异步错误
+function AsyncComponent() {
+  const data = use(fetchData());
+  return <div>{data}</div>;
+}
+// 异步错误被 ErrorBoundary 捕获
+```
+
+| 能捕获 | 不能捕获 |
+|--------|---------|
+| 渲染错误 | 事件处理错误 |
+| 生命周期错误 | 异步代码（setTimeout） |
+| 构造函数错误 | 服务端渲染错误 |
+| 子组件树错误 | ErrorBoundary 自身错误 |
+
+### Q24：React 19 useOptimistic 的实现原理和适用场景？
+
+```typescript
+import { useOptimistic, useTransition } from 'react';
+
+interface Todo { id: number; text: string; done: boolean; }
+
+function TodoList({ todos: initialTodos }: { todos: Todo[] }) {
+  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
+    initialTodos,
+    (state, newTodo: Todo) => [...state, { ...newTodo, pending: true }]
+  );
+
+  const [, startTransition] = useTransition();
+
+  const handleSubmit = async (formData: FormData) => {
+    const text = formData.get('text') as string;
+    const tempId = Date.now();
+    
+    // 1. 乐观更新：立即在 UI 中显示
+    addOptimisticTodo({ id: tempId, text, done: false });
+    
+    try {
+      // 2. 实际提交
+      const saved = await saveTodo({ text });
+      // useOptimistic 会自动回退到实际数据
+    } catch {
+      // 3. 失败时自动回滚
+      console.error('Failed to save');
+    }
+  };
+
+  return (
+    <form action={handleSubmit}>
+      <input name="text" />
+      <ul>
+        {optimisticTodos.map(todo => (
+          <li key={todo.id} style={{ opacity: todo.pending ? 0.5 : 1 }}>
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    </form>
+  );
+}
+```
+
+**适用场景：**
+- ✅ 消息发送（即时显示，后台发送）
+- ✅ 点赞/收藏（即时 UI 反馈）
+- ✅ 删除操作（立即移除，失败恢复）
+- ✅ 表单提交（乐观显示结果）
+
+**原理：** useOptimistic 在底层维护一个"乐观状态"，当 `addOptimisticTodo` 调用时，React 立即用更新函数计算新的乐观状态并渲染；当实际数据返回后，React 自动丢弃乐观状态，切换到真实数据。
+
+### Q25：Hooks 闭包陷阱（Stale Closure）的成因和解决方案？
+
+```typescript
+function Timer() {
+  const [count, setCount] = useState(0);
+
+  // ❌ 问题：闭包捕获了过时的 count
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log(count);      // 始终是 0
+      setCount(count + 1);     // 始终设置为 1
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []); // 空依赖数组，count 被冻结在首次渲染的值
+
+  return <div>{count}</div>;
+}
+```
+
+**成因：** `useEffect` 的回调闭包捕获了创建时的 `count` 值（首次渲染时为 0），后续渲染虽然创建了新的 `count`，但 effect 的闭包中引用的是旧的 `count`。
+
+**四种解决方案：**
+
+```typescript
+// ✅ 方案 1：函数式更新（适用于 setState 场景）
+useEffect(() => {
+  const timer = setInterval(() => {
+    setCount(prev => prev + 1); // 不依赖外部 count
+  }, 1000);
+  return () => clearInterval(timer);
+}, []);
+
+// ✅ 方案 2：添加依赖项（适用于非 setState 场景）
+useEffect(() => {
+  const timer = setInterval(() => {
+    setCount(count + 1);
+    sendLog(count); // 需要最新 count 的其他操作
+  }, 1000);
+  return () => clearInterval(timer);
+}, [count]); // 依赖变化时重新创建 timer
+
+// ✅ 方案 3：useRef 保存最新值
+const countRef = useRef(count);
+useEffect(() => { countRef.current = count; }, [count]);
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log(countRef.current); // ✅ 总是最新
+    setCount(countRef.current + 1);
+  }, 1000);
+  return () => clearInterval(timer);
+}, []);
+
+// ✅ 方案 4：useCallback + ref（适用于回调函数）
+function useLatestCallback<T extends (...args: any[]) => any>(fn: T): T {
+  const ref = useRef(fn);
+  ref.current = fn;
+  
+  return useCallback((...args: any[]) => ref.current(...args), []) as T;
+}
+```
+
+### Q26：React HOC、Render Props、Hooks 三种复用方案对比？
+
+```typescript
+// 1️⃣ HOC（高阶组件）- 装饰器模式
+function withLoading<P>(WrappedComponent: React.ComponentType<P>) {
+  return function WithLoading(props: P & { loading: boolean }) {
+    const { loading, ...rest } = props as any;
+    if (loading) return <Spinner />;
+    return <WrappedComponent {...rest} />;
+  };
+}
+const UserListWithLoading = withLoading(UserList);
+
+// 2️⃣ Render Props - 函数作为 children
+function DataProvider({ children }: { children: (data: any) => ReactNode }) {
+  const [data, setData] = useState(null);
+  useEffect(() => { fetchData().then(setData); }, []);
+  return children(data);
+}
+// 使用
+<DataProvider>
+  {data => data ? <UserList data={data} /> : <Spinner />}
+</DataProvider>
+
+// 3️⃣ Hooks - 组合式函数
+function useData<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch(url).then(r => r.json()).then(d => { setData(d); setLoading(false); });
+  }, [url]);
+  return { data, loading };
+}
+// 使用
+function UserList() {
+  const { data, loading } = useData<User[]>('/api/users');
+  if (loading) return <Spinner />;
+  return <List data={data} />;
+}
+```
+
+| 维度 | HOC | Render Props | Hooks |
+|------|-----|-------------|-------|
+| 代码量 | 多 | 多 | 少 |
+| 命名冲突 | ⚠️ props 合并可能冲突 | ✅ 不会 | ✅ 不会 |
+| 嵌套层级 | 深（多层包裹） | 深（回调嵌套） | 浅（扁平） |
+| 静态类型 | ⚠️ 复杂 | ⚠️ 复杂 | ✅ 友好 |
+| Tree Shaking | ❌ 困难 | ❌ 困难 | ✅ 容易 |
+| 学习曲线 | 中 | 中 | 低 |
+| **推荐度** | ⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ |
+
+### Q27：useMemo 和 useCallback 什么时候必须用？
+
+```typescript
+// ✅ 必须用 useMemo：计算开销大
+function ExpensiveList({ items, filter }: { items: Item[]; filter: string }) {
+  const filteredItems = useMemo(
+    () => items
+      .filter(item => item.name.includes(filter))
+      .sort((a, b) => expensiveCompare(a, b)),
+    [items, filter]
+  );
+  return <List data={filteredItems} />;
+}
+
+// ✅ 必须用 useCallback：作为 React.memo 子组件的 props
+const MemoChild = React.memo(Child);
+
+function Parent() {
+  const handleClick = useCallback((id: number) => {
+    dispatch({ type: 'SELECT', payload: id });
+  }, [dispatch]);
+  
+  return <MemoChild onClick={handleClick} />; // 无 useCallback → 每次都新函数 → memo 失效
+}
+
+// ✅ 必须用 useCallback：作为 useEffect 的依赖
+function Component({ id }: { id: number }) {
+  const fetchItem = useCallback(async () => {
+    const res = await fetch(`/api/items/${id}`);
+    return res.json();
+  }, [id]);
+  
+  useEffect(() => {
+    fetchItem().then(setItem);
+  }, [fetchItem]); // fetchItem 引用不变 → 避免无限循环
+}
+
+// ❌ 不需要：简单计算
+const fullName = firstName + ' ' + lastName; // 不用 useMemo
+
+// ❌ 不需要：作为原生事件处理函数
+function Button() {
+  const handleClick = () => console.log('clicked'); // 每次渲染新函数，但原生元素无影响
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+| 场景 | 是否需要 | 原因 |
+|------|---------|------|
+| 昂贵计算（排序/过滤/格式化） | ✅ useMemo | 避免每次渲染重复计算 |
+| React.memo 子组件的 props | ✅ useCallback | 保持引用稳定 |
+| useEffect 的依赖函数 | ✅ useCallback | 防止无限循环 |
+| 简单计算 | ❌ 不需要 | 开销小于 Hook 本身 |
+| 原生元素事件 | ❌ 不需要 | DOM 元素不检查 props 引用 |
+
+### Q28：React 中 useEffect 的清理函数什么时机执行？
+
+```typescript
+function EffectCleanup() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log('Effect 执行', count);
+    
+    return () => {
+      console.log('清理', count); // 捕获创建时的 count
+    };
+  }, [count]);
+
+  // 执行顺序：
+  // 挂载:   Effect 执行 0
+  // count=1: 清理 0 → Effect 执行 1
+  // count=2: 清理 1 → Effect 执行 2
+  // 卸载:   清理 2
+}
+```
+
+**三个执行时机：**
+
+| 时机 | 说明 |
+|------|------|
+| **依赖变化** | 重新执行 effect 前，先清理上一次 effect |
+| **组件卸载** | 组件从 DOM 移除前，执行最后一次清理 |
+| **StrictMode 开发环境** | 组件挂载→卸载→重新挂载，检测清理是否遗漏 |
+
+```typescript
+function DataFetcher({ id }: { id: number }) {
+  useEffect(() => {
+    const controller = new AbortController();
+    
+    fetch(`/api/data/${id}`, { signal: controller.signal })
+      .then(res => res.json())
+      .then(data => setData(data));
+    
+    // 清理：id 变化或组件卸载时，取消进行中的请求
+    return () => controller.abort();
+  }, [id]);
+}
+```
+
+### Q29：React 中 Context 的性能问题如何优化？
+
+```typescript
+// ❌ 问题：Context value 每次渲染都创建新对象
+function App() {
+  const [user, setUser] = useState({ name: 'Alice' });
+  
+  // 每次 App 渲染都创建新对象 → 所有消费者都重渲染
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      <Profile />
+      <Settings />
+    </UserContext.Provider>
+  );
+}
+
+// ✅ 方案 1：拆分 Context（高频/低频分开）
+const UserContext = createContext<User | null>(null);
+const UserDispatchContext = createContext<Dispatch | null>(null);
+
+function App() {
+  const [user, dispatch] = useReducer(userReducer, null);
+  
+  return (
+    <UserDispatchContext.Provider value={dispatch}>
+      <UserContext.Provider value={user}>
+        <Profile />    {/* 只关心 user */}
+        <Settings />   {/* 只关心 dispatch */}
+      </UserContext.Provider>
+    </UserDispatchContext.Provider>
+  );
+}
+
+// ✅ 方案 2：useMemo 缓存 value
+function AppProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  
+  const value = useMemo(() => ({ state, dispatch }), [state]);
+  
+  return (
+    <AppContext.Provider value={value}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+// ✅ 方案 3：对于不需要 Context 的组件，使用 React.memo
+const MemoizedProfile = React.memo(Profile);
+// 或者用 useMemo 包裹 JSX
+```
+
+**Context 优化的核心原则：**
+1. **拆分细粒度**：读和写分开，高频更新和低频更新分开
+2. **缓存 value**：Provider 的 value 用 useMemo 包装
+3. **局部状态优先**：能用 props 传递就不要用 Context
+
+### Q30：React 19 中 useActionState 和 useFormStatus 如何配合使用？
+
+```typescript
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+
+// 服务端 Action 函数
+async function submitOrder(_prev: any, formData: FormData) {
+  const items = formData.get('items');
+  const address = formData.get('address');
+  
+  try {
+    const order = await fetch('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({ items, address }),
+    });
+    return { success: true, orderId: order.id };
+  } catch (e) {
+    return { success: false, error: '提交失败，请重试' };
+  }
+}
+
+// 提交按钮子组件（使用 useFormStatus 获取最近的 form 状态）
+function SubmitButton() {
+  const { pending, data } = useFormStatus();
+  // pending: 表单是否正在提交
+  // data: 当前 FormData
+  
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? (
+        <span className="flex items-center gap-2">
+          <Spinner /> 提交中...
+        </span>
+      ) : (
+        '提交订单'
+      )}
+    </button>
+  );
+}
+
+// 表单主组件
+function OrderForm() {
+  const [state, formAction] = useActionState(submitOrder, null);
+
+  return (
+    <form action={formAction}>
+      <input name="address" required />
+      <input type="hidden" name="items" value={JSON.stringify(cartItems)} />
+      
+      <SubmitButton />
+      
+      {state?.success && (
+        <div className="success">下单成功！订单号：{state.orderId}</div>
+      )}
+      {state?.error && (
+        <div className="error">{state.error}</div>
+      )}
+    </form>
+  );
+}
+```
+
+### Q31：React 事件代理机制中，e.stopPropagation() 为何不能阻止原生事件冒泡？
+
+```typescript
+function App() {
+  useEffect(() => {
+    // 原生事件绑定在 root 上
+    document.getElementById('root')?.addEventListener('click', () => {
+      console.log('Native: root clicked'); // 仍然会执行！
+    });
+  }, []);
+
+  return (
+    <div onClick={() => console.log('React: div clicked')}>
+      <button onClick={(e) => {
+        e.stopPropagation();
+        console.log('React: button clicked');
+      }}>
+        点击
+      </button>
+    </div>
+  );
+}
+
+// 点击按钮输出：
+// "React: button clicked"
+// "React: div clicked"  — ❌ 奇怪，不是阻止了吗？
+```
+
+**原因：** React 的事件代理机制中，`e.stopPropagation()` 阻止的是 **React 合成事件的冒泡**，但是原生事件已经通过事件代理冒泡到了 root 节点上才被 React 拦截处理。具体来说：
+
+1. 用户点击 `<button>` → 原生事件冒泡到 `root` 节点
+2. React 在 root 上的统一监听器捕获到该事件
+3. React 创建合成事件，在 **Fiber 树**上模拟事件冒泡
+4. `e.stopPropagation()` 阻止的是这个**模拟的冒泡过程**
+5. 原生事件本身已经冒泡完成
+
+**正确阻止原生事件冒泡：**
+
+```typescript
+// ✅ 使用 addEventListener 在捕获阶段阻止
+function Button() {
+  const ref = useRef<HTMLButtonElement>(null);
+  
+  useEffect(() => {
+    const el = ref.current;
+    const handler = (e: Event) => e.stopPropagation();
+    el?.addEventListener('click', handler);
+    return () => el?.removeEventListener('click', handler);
+  }, []);
+
+  return (
+    <button ref={ref} onClick={(e) => {
+      e.nativeEvent.stopImmediatePropagation(); // 立即阻止所有监听器
+    }}>
+      点击
+    </button>
+  );
+}
+```
+
+### Q32：React 中如何实现组件间通信？（所有方式总结）
+
+```mermaid
+graph TB
+    subgraph 组件通信方式
+        A["父→子"] -->|props| B["Props 传递"]
+        C["子→父"] -->|回调| D["回调函数"]
+        E["兄弟"] -->|状态提升| F["共同父组件转发"]
+        G["跨层级"] -->|Context| H["Context API"]
+        I["任意"] -->|全局状态| J["Redux / Zustand"]
+        K["DOM 直接访问"] -->|ref| L["useRef / forwardRef"]
+    end
+```
+
+```typescript
+// 1️⃣ 父→子：Props
+function Child({ name }: { name: string }) {
+  return <div>{name}</div>;
+}
+function Parent() {
+  return <Child name="Alice" />;
+}
+
+// 2️⃣ 子→父：回调函数
+function Child({ onAction }: { onAction: (data: string) => void }) {
+  return <button onClick={() => onAction('hello')}>触发</button>;
+}
+function Parent() {
+  return <Child onAction={(data) => console.log(data)} />;
+}
+
+// 3️⃣ 兄弟：状态提升
+function Parent() {
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <CounterDisplay count={count} />
+      <CounterControls onIncrement={() => setCount(c => c + 1)} />
+    </>
+  );
+}
+
+// 4️⃣ 跨层级：Context
+const ThemeCtx = createContext('light');
+
+// 5️⃣ 全局：Zustand
+const useStore = create((set) => ({ count: 0, inc: () => set(s => ({ count: s.count + 1 })) }));
+
+// 6️⃣ 修改子组件：forwardRef + useImperativeHandle
+const Child = forwardRef((_, ref) => {
+  useImperativeHandle(ref, () => ({ focus: () => console.log('focus') }));
+  return <input />;
+});
+```
+
+| 方式 | 复杂度 | 适用场景 | 耦合度 |
+|------|--------|---------|--------|
+| Props | 🟢 低 | 父子直接传递 | 高 |
+| 回调函数 | 🟢 低 | 子传父 | 高 |
+| 状态提升 | 🟡 中 | 兄弟组件 | 中 |
+| Context | 🟡 中 | 跨层级共享 | 低 |
+| 全局状态（Zustand/Redux） | 🔴 高 | 任意组件 | 低 |
+| ref + forwardRef | 🟡 中 | 命令式操作 | 高 |
+
+### Q33：React 合成事件与原生事件混用需要注意什么？
+
+```typescript
+function MixedEvents() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // 原生事件绑定
+  useEffect(() => {
+    const el = ref.current;
+    const nativeHandler = () => console.log('1. Native');
+    el?.addEventListener('click', nativeHandler);
+    return () => el?.removeEventListener('click', nativeHandler);
+  }, []);
+
+  // React 事件
+  const reactHandler = () => console.log('2. React');
+
+  return <div ref={ref} onClick={reactHandler}>点击</div>;
+}
+// 输出：1. Native → 2. React
+
+// 注意：混合使用时的执行顺序
+// 原生事件在捕获/冒泡阶段执行
+// React 事件在原生事件冒泡到 root 后执行
+```
+
+**注意事项总结：**
+
+| 问题 | 说明 |
+|------|------|
+| 执行顺序 | 原生事件先于 React 事件（因为 React 事件代理在 root） |
+| 阻止冒泡 | 原生 `e.stopPropagation()` 阻止 React 事件处理 |
+| 内存泄漏 | 原生事件需在 useEffect 清理函数中移除 |
+| 优先级 | React 事件可享受并发优先级调度，原生事件不能 |
+| **最佳实践** | 优先使用 React 事件，避免混用 |
+
+### Q34：React 中 key 使用数组索引有什么危害？
+
+```typescript
+// ❌ 危害：列表重排时状态错乱
+function BuggyList() {
+  const [items, setItems] = useState([
+    { id: 1, name: 'A', input: '' },
+    { id: 2, name: 'B', input: '' },
+  ]);
+
+  const moveToTop = (index: number) => {
+    const [removed] = items.splice(index, 1);
+    items.unshift(removed);
+    setItems([...items]); // 使用索引作为 key
+  };
+
+  return (
+    <>
+      {items.map((item, index) => (
+        <div key={index}> {/* ❌ 索引作为 key */}
+          <input
+            value={item.input}
+            onChange={e => {
+              const newItems = [...items];
+              newItems[index].input = e.target.value;
+              setItems(newItems);
+            }}
+          />
+          <button onClick={() => moveToTop(index)}>置顶</button>
+        </div>
+      ))}
+    </>
+  );
+}
+// 问题：输入框内容在置顶操作后会错乱
+// 因为 React 按 key 匹配组件，索引 0 → 'B' 但输入框显示的仍是之前的 value
+```
+
+**使用索引作为 key 的三个危害：**
+
+| 危害 | 场景 | 表现 |
+|------|------|------|
+| 状态错乱 | 有状态组件（input/checkbox）的列表重排 | 状态与元素不匹配 |
+| 性能下降 | 列表插入/删除/排序 | 所有子节点重新创建 |
+| 动画失效 | 使用 TransitionGroup 或 framer-motion | 元素被错误识别为新增/删除 |
+
+### Q35：React 18 的自动批处理（Automatic Batching）是怎么实现的？
+
+```typescript
+// React 17 及以前：仅在合成事件中批处理
+function handleClick() {
+  // 合成事件内 → 批处理（1 次渲染）
+  setCount(c => c + 1);
+  setFlag(f => !f);
+}
+
+setTimeout(() => {
+  // setTimeout 中 → 不批处理（2 次渲染）
+  setCount(c => c + 1); // 第 1 次渲染
+  setFlag(f => !f);     // 第 2 次渲染
+}, 0);
+
+// React 18：所有场景自动批处理
+function handleClick() {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+  // 1 次渲染 ✅
+}
+
+setTimeout(() => {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+  // 1 次渲染 ✅（React 18 新行为）
+}, 0);
+
+fetch('/api/data').then(() => {
+  setLoading(false);
+  setData(result);
+  // 1 次渲染 ✅
+});
+```
+
+**实现原理：** React 18 引入了一个全局的"更新上下文"（更新批次），所有更新在同一个微任务/宏任务中被收集，当当前执行栈清空时统一提交。这通过 `startTransition` 内部的机制扩展到所有异步场景。
+
+**如果想跳过批处理：**
+
+```typescript
+import { flushSync } from 'react-dom';
+
+function handleClick() {
+  flushSync(() => setCount(c => c + 1)); // 立即渲染
+  flushSync(() => setFlag(f => !f));     // 第二次渲染
+}
+```
+
+### Q36：React 中 props 和 state 的本质区别？
+
+| 维度 | props | state |
+|------|-------|-------|
+| 来源 | 父组件传入 | 组件内部初始化 |
+| 可变性 | **不可变**（只读） | 可通过 setState/useState 修改 |
+| 触发渲染 | 父组件重新渲染传入新 props | 调用 setState/useState dispatch |
+| 作用范围 | 当前组件及其子组件 | 当前组件 |
+| 默认值 | `Component.defaultProps` | `useState(initialValue)` |
+
+```typescript
+// props：父组件控制，组件自身不可修改
+function Child({ name, onAction }: { name: string; onAction: () => void }) {
+  // name 只读，不能修改
+  // name = 'new name' ❌
+  return <button onClick={onAction}>{name}</button>;
+}
+
+// state：组件自有，通过 setState 修改
+function Counter() {
+  const [count, setCount] = useState(0); // 组件自有状态
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+
+// 核心原则：props 向下流动，state 本地管理
+// props → 组件 → state
+//    ↓              ↓
+//  子组件          setState
+```
+
+### Q37：React 中 PureComponent 和 Component 的区别？
+
+```typescript
+import React, { PureComponent, Component } from 'react';
+
+// Component：默认每次调用 setState 都重新渲染（shouldComponentUpdate 返回 true）
+class RegularList extends Component<{ items: string[] }> {
+  render() {
+    console.log('RegularList rendered');
+    return <ul>{this.props.items.map(i => <li key={i}>{i}</li>)}</ul>;
+  }
+}
+
+// PureComponent：自动浅比较 props/state（shouldComponentUpdate 自动实现）
+class PureList extends PureComponent<{ items: string[] }> {
+  render() {
+    console.log('PureList rendered');
+    return <ul>{this.props.items.map(i => <li key={i}>{i}</li>)}</ul>;
+  }
+}
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const items = ['A', 'B', 'C'];
+
+  return (
+    <div>
+      <button onClick={() => setCount(c => c + 1)}>{count}</button>
+      {/* ⚠️ items 每次渲染都创建新数组！PureComponent 浅比较 → 引用不同 → 还是重新渲染 */}
+      <PureList items={items} />
+      <RegularList items={items} />
+    </div>
+  );
+}
+```
+
+**PureComponent 的局限性：**
+
+| 问题 | 示例 | 后果 |
+|------|------|------|
+| 浅比较 | `{ a: { b: 1 } }` 与 `{ a: { b: 1 } }` | 引用不同 → 重新渲染 |
+| 内联对象 | `items={['A']}` | 每次新引用 → 重新渲染 |
+| 内联函数 | `onClick={() => {}}` | 每次新引用 → 重新渲染 |
+| 深层嵌套 | `data.list.items` | 只比较 data 引用，内部变化检测不到 |
+
+**三者对比：**
+
+| 维度 | Component | PureComponent | React.memo |
+|------|-----------|--------------|------------|
+| 适用 | 类组件 | 类组件 | 函数组件 |
+| 比较策略 | 不比较（总是渲染） | props 浅比较 | props 浅比较（可自定义） |
+| 性能 | 可能过度渲染 | 避免部分重渲染 | 避免部分重渲染 |
+| 使用建议 | 简单场景 | 纯展示组件 | 纯展示函数组件 |
+
+### Q38：React 中 Fragment（<></>）的作用和原理？
+
+```typescript
+// ❌ 问题：JSX 必须有一个根元素
+function Table() {
+  return (
+    <table>
+      <tr>
+        <td>A</td>
+        <td>B</td>
+      </tr>
+      {/* <td>C</td> <td>D</td> 不能直接放，需要额外包裹 */}
+    </table>
+  );
+}
+
+// ✅ 使用 Fragment：不产生额外 DOM 节点
+function Table() {
+  return (
+    <table>
+      <tr>
+        <Columns />
+      </tr>
+    </table>
+  );
+}
+
+function Columns() {
+  return (
+    <>
+      <td>列1</td>
+      <td>列2</td>
+    </>
+  );
+  // 编译为：
+  // React.createElement(React.Fragment, null,
+  //   React.createElement('td', null, '列1'),
+  //   React.createElement('td', null, '列2')
+  // );
+}
+```
+
+| 写法 | 是否产生 DOM 节点 | 是否支持 key |
+|------|-----------------|-------------|
+| `<></>` | ❌ 无 | ❌ 不支持 |
+| `<Fragment></Fragment>` | ❌ 无 | ✅ 支持 |
+| `<div></div>` | ✅ 有 | ✅ 支持 |
+
+```typescript
+// Fragment 需要 key 的场景：循环列表
+function Glossary({ items }: { items: { term: string; desc: string }[] }) {
+  return (
+    <dl>
+      {items.map(item => (
+        <Fragment key={item.term}>
+          <dt>{item.term}</dt>
+          <dd>{item.desc}</dd>
+        </Fragment>
+      ))}
+    </dl>
+  );
+}
+```
+
+**原理：** `React.Fragment` 是一个特殊的组件类型，React 在渲染时不会为其创建 DOM 节点，只渲染其子节点。源码中通过 `REACT_FRAGMENT_TYPE` 标记，在 commit 阶段跳过 DOM 操作。
+
+### Q39：React 中 ref 的几种使用方式及各自适用场景？
+
+```typescript
+import { useRef, createRef, forwardRef, useImperativeHandle, useCallback } from 'react';
+
+// 1️⃣ useRef（函数组件，推荐）
+function TextInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const focusInput = () => inputRef.current?.focus();
+  return <><input ref={inputRef} /><button onClick={focusInput}>聚焦</button></>;
+}
+
+// 2️⃣ createRef（类组件）
+class ClassInput extends React.Component {
+  inputRef = createRef<HTMLInputElement>();
+  componentDidMount() { this.inputRef.current?.focus(); }
+  render() { return <input ref={this.inputRef} />; }
+}
+
+// 3️⃣ 回调 Refs（更精细的控制）
+function CallbackInput() {
+  const [height, setHeight] = useState(0);
+  
+  const measureRef = useCallback((node: HTMLInputElement | null) => {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []); // 注意：回调 ref 在组件更新时不会重新调用（除非 deps 变化）
+  
+  return <input ref={measureRef} />;
+}
+
+// 4️⃣ forwardRef（透传 ref 到子组件 DOM）
+const FancyButton = forwardRef<HTMLButtonElement, { children: ReactNode }>(
+  (props, ref) => <button ref={ref} className="fancy">{props.children}</button>
+);
+
+// 5️⃣ useImperativeHandle（控制暴露的 API）
+const CustomInput = forwardRef<{ focus: () => void; clear: () => void }, {}>(
+  (_, ref) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    useImperativeHandle(ref, () => ({
+      focus: () => inputRef.current?.focus(),
+      clear: () => { inputRef.current!.value = ''; },
+    }), []);
+    return <input ref={inputRef} />;
+  }
+);
+```
+
+**ref 的使用场景总结：**
+
+| 场景 | 推荐方式 | 原因 |
+|------|---------|------|
+| 管理焦点/文本选择 | useRef | 最简洁 |
+| 媒体播放（video/audio） | useRef | DOM 控制 |
+| 动画触发 | useRef + callback ref | 可获取 DOM 测量值 |
+| 保存可变值（不触发渲染） | **useRef** | `.current` 修改不触发重渲染 |
+| 与第三方库集成（D3/Chart） | callback ref | 可获取 DOM 测量和通知 |
+| 暴露子组件方法 | forwardRef + useImperativeHandle | 封装性好 |
+
+### Q40：React 中 StrictMode 的作用和检测机制？
+
+```typescript
+import { StrictMode } from 'react';
+
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+```
+
+**StrictMode 在开发环境做的检测：**
+
+| 检测项 | 机制 | 目的 |
+|--------|------|------|
+| **不安全的生命周期** | 警告 UNSAFE_componentWillMount 等 | 引导迁移到安全生命周期 |
+| **副作用双重调用** | 挂载→卸载→重新挂载 | 检测 useEffect 清理是否遗漏 |
+| **Ref 回调重复调用** | 创建→清理→创建 | 检测 ref 清理是否正确 |
+| **过时 API 检测** | 检测 findDOMNode / context 旧用法 | 引导迁移 |
+| **意外的副作用** | 多次调用 reducer/state 初始化函数 | 检测纯函数性 |
+
+```typescript
+function TestComponent() {
+  useEffect(() => {
+    console.log('Effect runs'); // 开发环境会打印两次
+    return () => console.log('Cleanup');
+  }, []);
+  
+  return <div>Test</div>;
+}
+
+// 非 StrictMode：挂载 → "Effect runs" → 卸载 → "Cleanup"
+// StrictMode 开发环境：挂载 → "Effect runs" → 卸载 → "Cleanup" → 挂载 → "Effect runs"
+// 这帮助检测：如果 cleanup 没有正确执行，内存泄漏会暴露
+```
+
+**双重调用只发生在开发环境，生产环境不受影响。**
+
+React 实现方式：StrictMode 通过 `React.StrictMode` 组件标记子树，Fiber 节点上设置 `mode` 标志位为 `StrictMode`。在 commit 阶段，如果检测到 `StrictMode` 标志，开发环境的渲染器会执行双重生命周期。
+
+### Q41：React 中如何实现条件渲染？各方式对比？
+
+```typescript
+function ConditionalRendering({ user, loading, error }: {
+  user: User | null;
+  loading: boolean;
+  error: Error | null;
+}) {
+  // 1️⃣ 三元运算符（最常用）
+  return (
+    <div>
+      {loading ? (
+        <Spinner />
+      ) : error ? (
+        <Error message={error.message} />
+      ) : user ? (
+        <Profile user={user} />
+      ) : (
+        <LoginPrompt />
+      )}
+    </div>
+  );
+
+  // 2️⃣ && 短路运算（适用于"有则显示"场景）
+  // return <div>{show && <Panel />}</div>;
+
+  // 3️⃣ 提前 return（逻辑复杂时）
+  // if (loading) return <Spinner />;
+  // if (error) return <Error message={error.message} />;
+  // if (!user) return <LoginPrompt />;
+  // return <Profile user={user} />;
+
+  // 4️⃣ IIFE（立即执行函数，不推荐）
+  // return <div>{(() => { if (loading) return <Spinner />; })()}</div>;
+
+  // 5️⃣ 变量存储（逻辑复杂时）
+  // let content: ReactNode;
+  // if (loading) content = <Spinner />;
+  // else if (error) content = <Error />;
+  // else content = <Profile />;
+  // return <div>{content}</div>;
+}
+```
+
+| 方式 | 代码量 | 可读性 | 复杂度 | 推荐度 |
+|------|--------|--------|--------|--------|
+| 三元运算符 | 少 | 高 | 2-3 分支 | ⭐⭐⭐⭐⭐ |
+| `&&` 短路 | 最少 | 高 | 布尔判断 | ⭐⭐⭐⭐⭐ |
+| 提前 return | 中 | 高 | 多分支 | ⭐⭐⭐⭐ |
+| 变量存储 | 中 | 中 | 复杂逻辑 | ⭐⭐⭐ |
+| IIFE | 多 | 低 | 极少用 | ⭐ |
+
+**选择原则：** 2-3 个分支用三元；纯布尔判断用 `&&`；4+ 分支或逻辑复杂用提前 return。
+
+### Q42：React 中 dangerouslySetInnerHTML 的危险性和安全替代方案？
+
+```typescript
+function DangerousExample() {
+  const html = '<img src=x onerror="alert(\'XSS\')" />';
+  
+  // ❌ 危险：直接插入 HTML，可能触发 XSS
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+// ✅ 安全方案 1：DOMPurify 净化 HTML
+import DOMPurify from 'dompurify';
+
+function SafeHTML({ html }: { html: string }) {
+  const clean = DOMPurify.sanitize(html); // 移除危险标签/属性
+  return <div dangerouslySetInnerHTML={{ __html: clean }} />;
+}
+
+// ✅ 安全方案 2：React 默认转义（绝大多数场景）
+function SafeExample({ text }: { text: string }) {
+  // React 默认转义 HTML 实体，不会执行脚本
+  return <div>{text}</div>;
+  // 输入 '<script>alert(1)</script>' → 显示为文本，不会执行
+}
+
+// ✅ 安全方案 3：使用更安全的渲染方式（富文本）
+// 推荐使用 Quill、Slate、TipTap 等成熟的富文本编辑器
+```
+
+**为什么 `dangerouslySetInnerHTML` 是危险的？**
+
+```typescript
+// React 默认行为：转义所有 HTML
+const userInput = '<script>alert("XSS")</script>';
+<div>{userInput}</div>
+// 渲染为文本：&lt;script&gt;alert("XSS")&lt;/script&gt;
+
+// dangerouslySetInnerHTML 跳过转义
+<div dangerouslySetInnerHTML={{ __html: userInput }} />
+// 直接插入 HTML，脚本会执行！
+```
+
+**安全使用建议：**
+1. 绝大多数场景不需要它（直接用 `{text}` 即可）
+2. 必须用时，先用 DOMPurify 等库净化
+3. 服务端渲染的 HTML 片段可以使用，但确保服务端输出安全
+4. 使用 `__html` 属性名是 React 故意设计的警示
+
+### Q43：React 中 useEffect 与 useLayoutEffect 的选择策略？
+
+```typescript
+function EffectStrategy() {
+  const [width, setWidth] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // ✅ useEffect：绝大多数场景
+  // 执行时机：浏览器绘制后，不阻塞渲染
+  useEffect(() => {
+    fetchData().then(setData);
+    // 数据获取、日志、订阅——不需要用户立刻看到变化
+  }, []);
+
+  // ⚡ useLayoutEffect：需要同步读取/修改 DOM 的场景
+  // 执行时机：DOM 更新后、浏览器绘制前，阻塞渲染
+  useLayoutEffect(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setWidth(rect.width); // 测量 DOM → 同步更新 state → 在绘制前合并
+    }
+  }, []);
+
+  return <div ref={ref}>Width: {width}px</div>;
+}
+```
+
+**决策树：**
+
+```
+需要读取或修改 DOM？→ YES → 用户能看到变化前的闪烁？→ YES → useLayoutEffect
+                    ↓                     ↓
+                   NO                    NO
+                    ↓                     ↓
+               useEffect            useEffect
+```
+
+**选择原则：**
+
+| 场景 | 选择 | 原因 |
+|------|------|------|
+| 数据获取 | `useEffect` | 数据显示晚一点没关系 |
+| 事件监听 | `useEffect` | 不阻塞绘制 |
+| 日志上报 | `useEffect` | 不需要用户感知 |
+| 订阅/定时器 | `useEffect` | 不涉及 DOM |
+| 测量 DOM 尺寸 | `useLayoutEffect` | 需要在绘制前获取 |
+| DOM 动画/滚动位置 | `useLayoutEffect` | 需要在绘制前设置 |
+| 避免闪烁 | `useLayoutEffect` | 同步更新 state 后合并绘制 |
+
+**SSR 警告：** `useLayoutEffect` 在 SSR 中会触发警告，因为它需要在浏览器环境中执行。
+
+### Q44：React 中列表渲染为什么需要 key？Diff 算法如何利用 key？
+
+```typescript
+// 场景：列表头部插入新元素
+// 旧列表：[{ id: 1, name: 'A' }, { id: 2, name: 'B' }]
+// 新列表：[{ id: 3, name: 'C' }, { id: 1, name: 'A' }, { id: 2, name: 'B' }]
+
+// ❌ 无 key / index 作为 key
+// React 按索引比较：
+//   index 0: A → C（类型相同？都是对象 → type 相同 → 复用，更新 props）
+//   index 1: B → A（复用，更新 props）
+//   index 2: — → B（新增）
+// 结果：没有节点被复用为原来的样子，全部更新了一遍
+
+// ✅ 唯一 key
+// React 按 key 匹配：
+//   key=3: 没有旧节点 → 新建
+//   key=1: 旧有 key=1 → 复用（A），无需更新
+//   key=2: 旧有 key=2 → 复用（B），无需更新
+// 结果：只新建了 C，A 和 B 完美复用
+
+// Diff 算法对 key 的处理：
+function reconcileChildren(currentFirstChild, newChildren) {
+  let oldFiber = currentFirstChild;
+  let newIdx = 0;
+  
+  // 第 1 轮遍历：逐个比较 key
+  for (; oldFiber && newIdx < newChildren.length; newIdx++) {
+    const newChild = newChildren[newIdx];
+    // 如果 key 相同且 type 相同 → 可复用
+    if (oldFiber.key === newChild.key && oldFiber.type === newChild.type) {
+      // 复用 Fiber，更新 props
+      const clone = useFiber(oldFiber, newChild.props);
+      // ...
+    } else {
+      break; // key 不匹配，跳出循环
+    }
+    oldFiber = oldFiber.sibling;
+  }
+  
+  // 第 2 轮：处理剩余节点（通过 key map 快速查找可复用的）
+  if (oldFiber) {
+    const existingChildren = mapRemainingChildren(oldFiber);
+    for (; newIdx < newChildren.length; newIdx++) {
+      const matched = existingChildren.get(newChildren[newIdx].key);
+      if (matched) {
+        // 复用，标记移动
+      } else {
+        // 新建
+      }
+    }
+  }
+}
+```
+
+**核心机制：** React 通过 key 建立了"旧节点→新节点"的映射，使得 Diff 算法能在 O(1) 时间内找到可复用的节点，避免全量重建。
+
+### Q45：React 16+ 为什么废弃三个 will 生命周期？
+
+**三个废弃的生命周期：**
+- `componentWillMount`
+- `componentWillReceiveProps`
+- `componentWillUpdate`
+
+**根本原因：Fiber 架构的引入。**
+
+```mermaid
+graph LR
+    subgraph React 15 Stack
+        A["递归渲染"] --> B["不可中断"]
+        B --> C["Will 方法只执行一次 ✅"]
+    end
+    
+    subgraph React 16+ Fiber
+        D["Fiber 链表"] --> E["可中断/恢复"]
+        E --> F["Will 方法可能执行多次 ❌"]
+    end
+```
+
+**具体问题分析：**
+
+| 废弃方法 | Fiber 下的问题 | 风险 |
+|---------|---------------|------|
+| **componentWillMount** | 可能被中断后重复调用 | 重复请求 API、重复初始化 |
+| **componentWillReceiveProps** | 可能被调用多次，且容易在内部调用 setState | 多次 setState 覆盖、状态不一致 |
+| **componentWillUpdate** | 可能被中断，此时读取的 DOM 快照不准确 | 滚动位置错误、动画错乱 |
+
+```typescript
+// ❌ 废弃用法：componentWillMount 中发起请求
+class UserProfile extends React.Component {
+  componentWillMount() {
+    // Fiber 中可能执行多次！❌
+    fetch(`/api/user/${this.props.id}`)
+      .then(r => r.json())
+      .then(user => this.setState({ user }));
+    // 结果：重复请求，浪费带宽，数据可能被覆盖
+  }
+}
+
+// ✅ 正确做法：componentDidMount 中发起请求
+class UserProfile extends React.Component {
+  componentDidMount() {
+    // 只会执行一次 ✅
+    fetch(`/api/user/${this.props.id}`)
+      .then(r => r.json())
+      .then(user => this.setState({ user }));
+  }
+}
+```
+
+**替代方案对应表：**
+
+| 废弃方法 | 推荐替代 | 说明 |
+|---------|---------|------|
+| componentWillMount | constructor / componentDidMount | 初始化放 constructor，异步放 componentDidMount |
+| componentWillReceiveProps | getDerivedStateFromProps / 完全受控组件 | 静态方法，纯函数，无副作用 |
+| componentWillUpdate | getSnapshotBeforeUpdate + componentDidUpdate | DOM 快照在 Pre-commit 阶段只执行一次 |
+
+### Q46：React 类组件中事件绑定 this 的几种方式？
+
+```typescript
+// 方式 1：constructor 中 bind（官方推荐）
+class Counter1 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+    this.handleClick = this.handleClick.bind(this); // 只绑定一次
+  }
+  handleClick() { this.setState(s => ({ count: s.count + 1 })); }
+  render() { return <button onClick={this.handleClick}>{this.state.count}</button>; }
+}
+
+// 方式 2：public class fields 语法（最简洁，推荐）
+class Counter2 extends React.Component {
+  state = { count: 0 };
+  handleClick = () => { // 箭头函数自动绑定 this
+    this.setState(s => ({ count: s.count + 1 }));
+  };
+  render() { return <button onClick={this.handleClick}>{this.state.count}</button>; }
+}
+
+// 方式 3：render 中 bind（不推荐：每次渲染创建新函数）
+class Counter3 extends React.Component {
+  render() {
+    return <button onClick={this.handleClick.bind(this)}>
+      {this.state.count}
+    </button>;
+  }
+}
+
+// 方式 4：箭头函数包裹（不推荐：每次渲染创建新函数）
+class Counter4 extends React.Component {
+  render() {
+    return <button onClick={() => this.handleClick()}>
+      {this.state.count}
+    </button>;
+  }
+}
+```
+
+| 方式 | 性能 | 推荐度 | 说明 |
+|------|------|--------|------|
+| constructor bind | ✅ 只绑定一次 | ⭐⭐⭐⭐ | 传统的标准做法 |
+| class fields (箭头函数) | ✅ 只绑定一次 | ⭐⭐⭐⭐⭐ | 最简洁，无需 bind |
+| render bind | ❌ 每次创建新函数 | ⭐⭐ | 可能引发子组件不必要渲染 |
+| 箭头函数包裹 | ❌ 每次创建新函数 | ⭐ | 同左，且可读性差 |
+
+### Q47：React 中 setState 的合并策略是什么？
+
+```typescript
+// setState 的两种用法
+
+// 1️⃣ 对象形式（浅合并）
+class Example extends React.Component {
+  state = { count: 0, name: 'Alice' };
+
+  handleClick = () => {
+    this.setState({ count: this.state.count + 1 });
+    // 只更新 count，name 不受影响
+    // 等价于：this.state = { ...this.state, count: 1 }
+  };
+
+  // 多次对象形式 setState 会合并：
+  handleMultiple = () => {
+    this.setState({ count: this.state.count + 1 }); // 无效
+    this.setState({ count: this.state.count + 1 }); // 无效
+    this.setState({ count: this.state.count + 1 }); // 最终 +1
+    // 合并为：Object.assign({}, { count: 0+1 }, { count: 0+1 }, { count: 0+1 })
+    // 结果：count = 1（不是 3）
+  };
+
+  // 2️⃣ 函数形式（基于前一个状态）
+  handleCorrect = () => {
+    this.setState(s => ({ count: s.count + 1 })); // ✅
+    this.setState(s => ({ count: s.count + 1 })); // ✅
+    this.setState(s => ({ count: s.count + 1 })); // ✅
+    // 队列执行：0→1→2→3
+    // 结果：count = 3
+  };
+}
+```
+
+**合并原则：**
+
+| 形式 | 合并行为 | 适用场景 |
+|------|---------|---------|
+| `setState({ key: value })` | 浅合并（Object.assign） | 不依赖前一个 state |
+| `setState(prev => ({ key: prev.key + 1 }))` | 队列依次执行 | 依赖前一个 state |
+| 多次对象形式 | 最后一次覆盖前面（非 count 累加） | 避免：连续累加 |
+| 多次函数形式 | 依次执行（count 累加） | ✅ 推荐连续更新 |
+
+### Q48：React 中函数组件每次渲染都有独立闭包是什么意思？
+
+```typescript
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  const handleClick = () => {
+    setTimeout(() => {
+      alert(count); // 点击时的 count 值，不是最新的
+    }, 3000);
+  };
+  
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+1</button>
+      <button onClick={handleClick}>3 秒后显示 count</button>
+    </div>
+  );
+}
+// 操作：count=0 → 快速点 3 次 +1 → 点"3 秒后显示" → 再点 5 次 +1
+// 3 秒后 alert 显示：3（点击 handleClick 时闭包捕获的 count 值）
+// 不是 8（当前最新值）
+```
+
+**核心概念：** 每次渲染都是独立的快照。
+
+```typescript
+// 每次渲染的"快照"：
+// 第 1 次渲染：count=0 → handleClick 闭包捕获 count=0
+// 第 2 次渲染：count=1 → handleClick 闭包捕获 count=1
+// 第 3 次渲染：count=2 → handleClick 闭包捕获 count=2
+// ...
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  // 每次渲染都有独立的：
+  const count = 0;           // 独立的 count 值
+  const handleClick = () => { // 独立的函数闭包
+    alert(0);
+  };
+  
+  // 返回的 JSX 也是独立的
+  return <div>0</div>;
+}
+```
+
+**与类组件的对比：**
+
+```typescript
+// 类组件：this.state.count 始终指向最新值
+class ClassCounter extends React.Component {
+  state = { count: 0 };
+  handleClick = () => {
+    setTimeout(() => {
+      alert(this.state.count); // 始终是最新值
+    }, 3000);
+  };
+}
+
+// 函数组件：闭包捕获的是渲染时的值
+function FunctionCounter() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => {
+    setTimeout(() => {
+      alert(count); // 点击时的值
+    }, 3000);
+  };
+}
+```
+
+### Q49：React 中 getDerivedStateFromProps 的真实使用场景？
+
+```typescript
+// 官方警示：大多数场景不需要 getDerivedStateFromProps
+// 只有在 props 变化时需要重置组件内部 state 时才使用
+
+// ❌ 错误用法：直接复制 props 到 state（完全受控组件可以解决）
+static getDerivedStateFromProps(props, state) {
+  return { email: props.email }; // ❌ 多余，直接用 props.email
+}
+
+// ✅ 场景 1：props 变化时重置内部状态
+class EmailInput extends React.Component<{ email: string }> {
+  state = {
+    email: this.props.email,   // 初始化用 props
+    prevEmail: this.props.email, // 记住上一次的 props
+  };
+
+  static getDerivedStateFromProps(props: { email: string }, state: { prevEmail: string }) {
+    // props.email 变化时才重置（不是每次父组件渲染都重置）
+    if (props.email !== state.prevEmail) {
+      return {
+        email: props.email,
+        prevEmail: props.email,
+      };
+    }
+    return null; // 不更新
+  }
+
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ email: e.target.value });
+  };
+
+  render() {
+    return <input value={this.state.email} onChange={this.handleChange} />;
+  }
+}
+
+// ✅ 场景 2：根据 props 计算派生数据
+class List extends React.Component<{ items: Item[]; filter: string }> {
+  state = {
+    filteredItems: this.computeFilteredItems(this.props),
+    prevProps: this.props,
+  };
+
+  static getDerivedStateFromProps(props: typeof this.props, state: { prevProps: typeof this.props }) {
+    // 只有 props 变化时才重新计算
+    if (props.items !== state.prevProps.items || props.filter !== state.prevProps.filter) {
+      return {
+        filteredItems: props.items.filter(i => i.name.includes(props.filter)),
+        prevProps: props,
+      };
+    }
+    return null;
+  }
+
+  computeFilteredItems(props: typeof this.props) {
+    return props.items.filter(i => i.name.includes(props.filter));
+  }
+}
+```
+
+**两种场景总结：**
+
+| 场景 | 说明 | 更推荐的替代方案 |
+|------|------|----------------|
+| 缓存计算结果 | props 变化重新计算派生数据 | **useMemo**（函数组件） |
+| props 变化重置 state | 如编辑表单中外部数据变化重置 | **key 属性**：`<EmailInput key={user.id} />` 或完全受控组件 |
+
+### Q50：React 中 useState 和 useReducer 如何选择？
+
+```typescript
+// ✅ useState：简单独立的状态
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+
+// ✅ useReducer：复杂相关状态（多个值需要一起更新）
+interface State { count: number; step: number; }
+type Action =
+  | { type: 'INCREMENT' }
+  | { type: 'DECREMENT' }
+  | { type: 'SET_STEP'; payload: number };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'INCREMENT': return { ...state, count: state.count + state.step };
+    case 'DECREMENT': return { ...state, count: state.count - state.step };
+    case 'SET_STEP':  return { ...state, step: action.payload };
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0, step: 1 });
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'INCREMENT' })}>+</button>
+      <input type="number" value={state.step}
+        onChange={e => dispatch({ type: 'SET_STEP', payload: +e.target.value })} />
+    </div>
+  );
+}
+
+// ✅ useReducer：下一个 state 依赖前一个（dispatch 引用稳定）
+function HeavyComponent() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // dispatch 引用稳定，不会导致子组件重渲染
+  return <ExpensiveChild onAction={dispatch} />; // 无需 useCallback
+}
+
+// 用 useState 的等价写法（需要 useCallback）
+function HeavyComponent() {
+  const [state, setState] = useState(initialState);
+  const dispatch = useCallback((action: Action) => {
+    setState(prev => reducer(prev, action));
+  }, []);
+  return <ExpensiveChild onAction={dispatch} />;
+}
+```
+
+**选择策略：**
+
+```
+状态类型简单（数字/布尔/字符串）？→ ✅ useState
+状态类型复杂（对象/数组/多个值）？→ ❌ 感觉 setState 麻烦？→ ✅ useReducer
+更新逻辑涉及前一个状态？→ ✅ useReducer（dispatch 引用稳定）
+更新逻辑在组件外可复用？→ ✅ useReducer（reducer 是纯函数，可单独测试）
+```
+
+| 维度 | useState | useReducer |
+|------|----------|------------|
+| 状态结构 | 简单值 | 复杂对象/数组 |
+| 更新逻辑 | 内联在组件中 | 独立 reducer 函数 |
+| 可测试性 | 低（需渲染组件） | 高（纯函数） |
+| dispatch 稳定性 | 需 useCallback | ✅ 始终稳定 |
+| 适用场景 | 2-3 个独立状态 | 多个相关状态 |
+
+### Q51：React 中 useEffect 的依赖比较机制（Object.is 比较）？
+
+```typescript
+useEffect(() => {
+  console.log('Effect runs');
+}, [dep]);
+// React 使用 Object.is 逐个比较依赖项
+// Object.is(NaN, NaN) === true
+// Object.is(+0, -0) === false
+// Object.is({}, {}) === false（对象/函数每次渲染都是新引用）
+
+// ❌ 陷阱：对象/函数作为依赖
+function Search({ query }: { query: string }) {
+  const options = { page: 1, size: 10 }; // 每次渲染新对象
+  
+  useEffect(() => {
+    fetchSearch(query, options);
+  }, [query, options]); // options 每次都是新引用 → 无限循环！
+}
+
+// ✅ 方案 1：将对象拆为原始值
+useEffect(() => {
+  fetchSearch(query, { page: 1, size: 10 });
+}, [query]); // 只用 query
+
+// ✅ 方案 2：useMemo 稳定引用
+const options = useMemo(() => ({ page: 1, size: 10 }), []);
+useEffect(() => {
+  fetchSearch(query, options);
+}, [query, options]);
+
+// ✅ 方案 3：ref 保存（真的需要变化时读取最新值）
+const optionsRef = useRef({ page: 1, size: 10 });
+useEffect(() => {
+  fetchSearch(query, optionsRef.current);
+}, [query]);
+```
+
+**Object.is 与 === 的区别：**
+- `Object.is(NaN, NaN)` → `true`（`NaN === NaN` → `false`）
+- `Object.is(+0, -0)` → `false`（`+0 === -0` → `true`）
+- 其他情况与 `===` 一致
+
+**依赖比较的最佳实践：**
+1. 优先使用原始值（string/number/boolean）作为依赖
+2. 对象/函数作为 props 传入时，父组件用 useMemo/useCallback 稳定引用
+3. 避免将不必要的引用类型放入依赖数组
+4. ESLint `react-hooks/exhaustive-deps` 规则帮你检查
+
+### Q52：React 中 ref 回调的执行时机？
+
+```typescript
+function RefCallback() {
+  const [show, setShow] = useState(true);
+
+  // ref 回调：在 DOM 挂载/卸载时同步执行
+  const measureRef = useCallback((node: HTMLDivElement | null) => {
+    if (node !== null) {
+      // DOM 已挂载，可以读取尺寸
+      console.log('Mounted:', node.getBoundingClientRect().width);
+    } else {
+      // DOM 已卸载
+      console.log('Unmounted');
+    }
+  }, []);
+
+  return (
+    <div>
+      <button onClick={() => setShow(s => !s)}>Toggle</button>
+      {show && <div ref={measureRef}>Hello</div>}
+    </div>
+  );
+}
+
+// 执行时序：
+// 首次挂载：DOM 创建 → ref 回调(node) → useEffect 回调
+// 卸载：ref 回调(null) → useEffect 清理
+// 更新：ref 回调(null) → 更新 DOM → ref 回调(node) → useEffect
+```
+
+**与 useEffect 的时序对比：**
+
+```typescript
+function OrderOfExecution() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // 第 1 个执行：ref 回调（DOM 可用）
+  const cbRef = useCallback((node) => {
+    if (node) console.log('1. Ref callback: DOM ready');
+    else console.log('1. Ref callback: DOM removed');
+  }, []);
+
+  // 第 2 个执行：useLayoutEffect（DOM 已更新，浏览器未绘制）
+  useLayoutEffect(() => {
+    console.log('2. useLayoutEffect');
+  });
+
+  // 第 3 个执行：useEffect（浏览器已绘制）
+  useEffect(() => {
+    console.log('3. useEffect');
+  });
+
+  return <div ref={cbRef}>Order</div>;
+}
+// 输出顺序：
+// 1. Ref callback: DOM ready
+// 2. useLayoutEffect
+// 3. useEffect
+```
+
+### Q53：React 中 forceUpdate 的使用场景和替代方案？
+
+```typescript
+// 类组件：forceUpdate 强制重新渲染
+class ForceUpdateExample extends React.Component {
+  data: string[] = []; // 不是 state
+
+  addData = (item: string) => {
+    this.data.push(item); // 直接修改实例属性
+    this.forceUpdate(); // 强制触发重渲染（跳过 shouldComponentUpdate）
+  };
+
+  render() {
+    return <ul>{this.data.map((d, i) => <li key={i}>{d}</li>)}</ul>;
+  }
+}
+
+// ❌ forceUpdate 的问题：
+// 1. 破坏了 React 的可预测性
+// 2. 跳过 shouldComponentUpdate 优化
+// 3. 通常意味着状态没放在正确的位置
+
+// ✅ 替代方案：将数据放入 state
+class BetterExample extends React.Component {
+  state = { data: [] as string[] };
+
+  addData = (item: string) => {
+    this.setState(s => ({ data: [...s.data, item] }));
+  };
+
+  render() {
+    return <ul>{this.state.data.map((d, i) => <li key={i}>{d}</li>)}</ul>;
+  }
+}
+
+// ✅ 函数组件无 forceUpdate，用递增 key 或 useState 替代
+function FunctionForceUpdate() {
+  const [, forceUpdate] = useReducer(x => x + 1, 0); // forceUpdate Hack
+  // 或
+  const [, setTick] = useState(0);
+  const forceUpdate = () => setTick(t => t + 1);
+
+  return <button onClick={forceUpdate}>Force Update</button>;
+}
+```
+
+**forceUpdate 的替代方案：**
+
+| 方案 | 类组件 | 函数组件 | 说明 |
+|------|--------|---------|------|
+| 放入 state | ✅ | ✅ | 正确的 React 方式 |
+| useReducer Hack | ❌ | ✅ | `useReducer(x => x + 1, 0)` |
+| 递增 key | ✅ | ✅ | 重新创建整个组件 |
+| forceUpdate | ✅ | ❌ | 尽量不用 |
+
+### Q54：React 中 createElement、cloneElement、isValidElement 的用途？
+
+```typescript
+import { createElement, cloneElement, isValidElement, ReactNode } from 'react';
+
+// 1️⃣ createElement：创建 React 元素（JSX 的底层实现）
+// <div className="box">Hello</div>
+// 编译为：
+createElement('div', { className: 'box' }, 'Hello');
+// 参数：type, props, ...children
+
+// 2️⃣ cloneElement：克隆并扩展元素
+function List({ children }: { children: ReactNode }) {
+  return (
+    <ul>
+      {React.Children.map(children, (child, index) => {
+        if (isValidElement(child)) {
+          // 克隆子元素并注入额外 props
+          return cloneElement(child, {
+            key: index,          // 自动分配 key
+            className: 'list-item',
+            'data-index': index,
+          });
+        }
+        return child;
+      })}
+    </ul>
+  );
+}
+// 使用
+<List>
+  <li>Item 1</li> {/* 自动变成 <li key={0} className="list-item" data-index={0}> */}
+  <li>Item 2</li>
+</List>
+
+// 3️⃣ isValidElement：验证是否为 React 元素
+function SafeRender({ children }: { children: ReactNode }) {
+  if (isValidElement(children)) {
+    return cloneElement(children, { className: 'wrapper' });
+  }
+  return <div className="wrapper">{children}</div>;
+}
+
+// 4️⃣ React.Children 工具集
+function ChildrenUtils({ children }: { children: ReactNode }) {
+  return (
+    <div>
+      <p>子元素数量：{React.Children.count(children)}</p>
+      {React.Children.map(children, child => <div className="child">{child}</div>)}
+      {/* React.Children.toArray、forEach、only 等 */}
+    </div>
+  );
+}
+```
+
+**使用场景总结：**
+
+| API | 用途 | 典型场景 |
+|-----|------|---------|
+| `createElement` | 创建新元素 | JSX 编译目标，或动态创建元素 |
+| `cloneElement` | 克隆并扩展 | 高阶组件/布局组件中注入 props |
+| `isValidElement` | 类型判断 | 安全处理 children |
+| `React.Children` | children 操作 | 遍历、计数、转换子元素 |
+
+### Q55：React 中 Profiler 如何使用？如何分析渲染性能？
+
+```typescript
+import { Profiler, ProfilerOnRenderCallback } from 'react';
+
+// Profiler：测量组件渲染性能
+const onRender: ProfilerOnRenderCallback = (
+  id,               // Profiler 的 id
+  phase,            // 'mount' | 'update' | 'nested-update'
+  actualDuration,   // 本次渲染实际耗时（ms）
+  baseDuration,     // 子树最优渲染耗时（缓存情况）
+  startTime,        // 开始时间
+  commitTime,       // commit 时间
+  interactions      // 交互集合（与 scheduler 相关）
+) => {
+  console.table({ id, phase, actualDuration, baseDuration });
+  
+  // 警告：渲染超过 16ms（60fps 一帧）
+  if (actualDuration > 16) {
+    console.warn(`⚠️ ${id} 渲染超时：${actualDuration.toFixed(2)}ms`);
+  }
+};
+
+function App() {
+  return (
+    <Profiler id="App" onRender={onRender}>
+      <Profiler id="Sidebar" onRender={onRender}>
+        <Sidebar />
+      </Profiler>
+      <Profiler id="MainContent" onRender={onRender}>
+        <MainContent />
+      </Profiler>
+    </Profiler>
+  );
+}
+
+// 自定义 Hook：自动追踪渲染原因和耗时
+function useRenderTrace(componentName: string) {
+  const renderCount = useRef(0);
+  const startTime = useRef(performance.now());
+
+  renderCount.current++;
+  
+  useEffect(() => {
+    const duration = performance.now() - startTime.current;
+    console.log(`[${componentName}] render #${renderCount.current}: ${duration.toFixed(2)}ms`);
+    
+    // React DevTools 中查看渲染原因
+    // 勾选 "Highlight updates when components render"
+    // 勾选 "Record why each component rendered"
+  });
+}
+```
+
+**Profiler 的最佳实践：**
+
+| 场景 | 操作 | 目标 |
+|------|------|------|
+| 首屏性能 | Profiler 包裹根组件 | 找出首次渲染慢的子树 |
+| 交互性能 | Profiler 包裹交互区域 | 找出更新渲染慢的组件 |
+| 列表性能 | Profiler 包裹列表组件 | 检查列表重渲染次数 |
+| Context 性能 | Profiler 包裹消费组件 | 检查 Context 变化导致的重渲染 |
+
 ---
 
 ## Hooks 实现原理
