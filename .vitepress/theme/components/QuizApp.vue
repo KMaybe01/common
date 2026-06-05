@@ -54,6 +54,12 @@
             <button class="quiz__freq-btn quiz__status--new" :class="{ 'quiz__freq-btn--active': activeStatus === 'new' }" @click="activeStatus = 'new'">📝 未开始</button>
           </div>
           <button class="quiz__rand-btn" @click="goRandom" title="随机一题">🎲</button>
+          <select v-model.number="pageSize" class="quiz__sort" title="每页条数">
+            <option :value="10">10 条/页</option>
+            <option :value="20">20 条/页</option>
+            <option :value="50">50 条/页</option>
+            <option :value="100">100 条/页</option>
+          </select>
           <select v-model="sortBy" class="quiz__sort">
             <option value="default">默认排序</option>
             <option value="freq-desc">频率高→低</option>
@@ -81,77 +87,54 @@
             </span>
           </div>
 
-          <div class="quiz__nav" style="margin-bottom:16px">
-            <button class="quiz__btn" :disabled="page <= 1" @click="page--">← 上一页</button>
-            <button class="quiz__btn" :disabled="page >= totalPages" @click="page++">下一页 →</button>
-          </div>
-
           <div class="quiz__list">
             <div
-              v-for="(q, i) in pagedData"
+              v-for="q in pagedData"
               :key="q.id"
-              class="quiz__row"
-              @click="openDetail(q)"
+              class="quiz__item"
+              :class="{ 'quiz__item--expanded': expandedId === q.id }"
             >
-              <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
-              <span class="quiz__row-status" :class="'quiz__row-status--' + (progress[q.id] || '')">{{ statusIcon(progress[q.id] || '') }}</span>
-            <span class="quiz__row-q">{{ q.question }}</span>
-              <span v-if="q.freq" class="quiz__row-freq" :class="'quiz__row-freq--' + q.freq">{{ freqLabel(q.freq) }}</span>
-              <span class="quiz__row-arrow">→</span>
+              <div class="quiz__row" @click="toggleExpand(q.id)">
+                <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
+                <span class="quiz__row-status" :class="'quiz__row-status--' + (progress[q.id] || '')">{{ statusIcon(progress[q.id] || '') }}</span>
+                <span class="quiz__row-q">{{ q.question }}</span>
+                <span v-if="q.freq" class="quiz__row-freq" :class="'quiz__row-freq--' + q.freq">{{ freqLabel(q.freq) }}</span>
+                <span class="quiz__row-arrow">{{ expandedId === q.id ? '▾' : '▸' }}</span>
+              </div>
+              <div v-if="expandedId === q.id" class="quiz__panel">
+                <div class="quiz__panel-answer quiz__answer-body" v-html="renderAnswer(q.answer)" />
+                <div class="quiz__panel-foot">
+                  <span class="quiz__panel-status" :class="'quiz__panel-status--' + (progress[q.id] || 'new')" @click.stop="toggleStatus(q.id)" :title="progress[q.id] === 'done' ? '标记为待复习' : progress[q.id] === 'review' ? '取消标记' : '标记为已掌握'">
+                    <span v-if="progress[q.id] === 'done'">✅ 已掌握</span>
+                    <span v-else-if="progress[q.id] === 'review'">🔄 待复习</span>
+                    <span v-else>◻️ 标记已掌握</span>
+                  </span>
+                  <div class="quiz__panel-nav">
+                    <button class="quiz__panel-btn" :disabled="getExpandedIndex() <= 0 && page <= 1" @click.stop="expandPrev">← 上一题</button>
+                    <span class="quiz__panel-index">{{ getExpandedIndex() + 1 }} / {{ filtered.length }}</span>
+                    <button class="quiz__panel-btn" :disabled="getExpandedIndex() >= filtered.length - 1 && page >= totalPages" @click.stop="expandNext">下一题 →</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="quiz__nav">
-            <button class="quiz__btn" :disabled="page <= 1" @click="page--">← 上一页</button>
-            <button class="quiz__btn" :disabled="page >= totalPages" @click="page++">下一页 →</button>
+          <div class="quiz__pagination">
+            <button class="quiz__page-btn" :disabled="page <= 1" @click="page--">←</button>
+            <button
+              v-for="p in pageNumbers"
+              :key="p"
+              class="quiz__page-num"
+              :class="{ 'quiz__page-num--active': p === page }"
+              :disabled="p === '...'"
+              @click="goToPage(p)"
+            >{{ p }}</button>
+            <button class="quiz__page-btn" :disabled="page >= totalPages" @click="page++">→</button>
+            <span class="quiz__page-total">共 {{ totalPages }} 页</span>
           </div>
         </template>
       </main>
     </div>
-
-    <Teleport to="body">
-      <div v-if="detailVisible" class="quiz__modal-mask" @click.self="detailVisible = false">
-        <div class="quiz__modal" :class="{ 'quiz__modal--full': isFull }">
-          <div class="quiz__modal-header">
-            <span class="quiz__modal-cat">{{ getCategoryName(detailItem.category) }}</span>
-            <span class="quiz__modal-index">{{ detailIndex + 1 }} / {{ filtered.length }}</span>
-            <div class="quiz__modal-actions">
-              <button class="quiz__modal-status" :class="'quiz__modal-status--' + (progress[detailItem.id] || 'new')" @click="toggleStatus(detailItem.id)" :title="progress[detailItem.id] === 'done' ? '标记为待复习' : progress[detailItem.id] === 'review' ? '取消标记' : '标记为已掌握'">
-                {{ progress[detailItem.id] === 'done' ? '✅' : progress[detailItem.id] === 'review' ? '🔄' : '◻️' }}
-              </button>
-              <button class="quiz__modal-action" @click="isFull = !isFull" :title="isFull ? '缩小' : '放大'">
-                {{ isFull ? '⧉' : '⛶' }}
-              </button>
-              <button class="quiz__modal-close" @click="detailVisible = false">✕</button>
-            </div>
-          </div>
-          <div class="quiz__modal-main">
-            <div class="quiz__modal-body">
-              <h3 class="quiz__modal-title">
-                {{ detailItem.question }}
-                <span v-if="detailItem.freq" class="quiz__modal-freq" :class="'quiz__modal-freq--' + detailItem.freq">{{ freqLabel(detailItem.freq) }}</span>
-              </h3>
-              <div class="quiz__modal-answer quiz__answer-body" v-html="detailRendered" />
-            </div>
-            <div class="quiz__modal-side">
-              <button
-                class="quiz__modal-side-btn"
-                :disabled="detailIndex <= 0"
-                @click="detailPrev"
-              >↑</button>
-              <span class="quiz__modal-side-label">上一题</span>
-              <div class="quiz__modal-side-sep" />
-              <span class="quiz__modal-side-label">下一题</span>
-              <button
-                class="quiz__modal-side-btn"
-                :disabled="detailIndex >= filtered.length - 1"
-                @click="detailNext"
-              >↓</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
   </div>
 </template>
 
@@ -213,7 +196,7 @@ const sortBy = ref('default')
 const activeFreq = ref('')
 const activeStatus = ref('')
 const page = ref(1)
-const pageSize = 20
+const pageSize = ref(20)
 
 // ── 进度追踪（localStorage） ──
 const STORAGE_KEY = 'quiz-progress-v1'
@@ -261,13 +244,59 @@ function goRandom() {
   const list = filtered.value
   if (!list.length) return
   const idx = Math.floor(Math.random() * list.length)
-  openDetail(list[idx])
+  expandedId.value = list[idx].id
+  nextTick(() => {
+    const el = document.querySelector('.quiz__item--expanded')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
 }
 
-const detailVisible = ref(false)
-const detailItem = ref({ question: '', answer: '', category: '' })
-const detailIndex = ref(0)
-const isFull = ref(false)
+const expandedId = ref('')
+
+function toggleExpand(id) {
+  expandedId.value = expandedId.value === id ? '' : id
+}
+
+function getExpandedIndex() {
+  if (!expandedId.value) return 0
+  return filtered.value.findIndex(item => item.id === expandedId.value)
+}
+
+function expandToId(targetId) {
+  const targetIdx = filtered.value.findIndex(q => q.id === targetId)
+  if (targetIdx < 0) return
+  const targetPage = Math.floor(targetIdx / pageSize.value) + 1
+  if (page.value !== targetPage) {
+    page.value = targetPage
+  }
+  expandedId.value = targetId
+  nextTick(() => scrollToExpanded())
+}
+
+function expandPrev() {
+  const idx = getExpandedIndex()
+  if (idx > 0) {
+    expandToId(filtered.value[idx - 1].id)
+  } else if (page.value > 1) {
+    const targetIdx = (page.value - 1) * pageSize.value - 1
+    expandToId(filtered.value[targetIdx].id)
+  }
+}
+
+function expandNext() {
+  const idx = getExpandedIndex()
+  if (idx >= 0 && idx < filtered.value.length - 1) {
+    expandToId(filtered.value[idx + 1].id)
+  } else if (page.value < totalPages.value) {
+    const targetIdx = page.value * pageSize.value
+    expandToId(filtered.value[targetIdx].id)
+  }
+}
+
+function scrollToExpanded() {
+  const el = document.querySelector('.quiz__item--expanded')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 
 const categoryMap = {}
 categories.forEach(c => { categoryMap[c.id] = c.name })
@@ -361,11 +390,11 @@ onMounted(() => {
   loadStateFromURL()
 })
 
-const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize.value)))
 
 const pagedData = computed(() => {
-  const start = (page.value - 1) * pageSize
-  return filtered.value.slice(start, start + pageSize)
+  const start = (page.value - 1) * pageSize.value
+  return filtered.value.slice(start, start + pageSize.value)
 })
 
 const progressPct = computed(() => {
@@ -373,50 +402,54 @@ const progressPct = computed(() => {
   return Math.round((page.value / totalPages.value) * 100)
 })
 
+const pageNumbers = computed(() => {
+  const total = totalPages.value
+  const cur = page.value
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const list = [1]
+  const start = Math.max(2, cur - 1)
+  const end = Math.min(total - 1, cur + 1)
+  if (start > 2) list.push('...')
+  for (let i = start; i <= end; i++) list.push(i)
+  if (end < total - 1) list.push('...')
+  list.push(total)
+  return list
+})
+
+function goToPage(p) {
+  if (p === '...') return
+  const n = Number(p)
+  if (n >= 1 && n <= totalPages.value) {
+    page.value = n
+    expandedId.value = ''
+  }
+}
+
 function switchCategory(id) {
   activeCategory.value = id
   page.value = 1
 }
 
-watch([activeCategory, activeFreq, searchQuery, sortBy], () => {
+watch([activeCategory, activeFreq, activeStatus, searchQuery, sortBy, pageSize], () => {
   page.value = 1
+  expandedId.value = ''
   syncStateToURL()
 })
-
-function openDetail(q) {
-  detailItem.value = q
-  detailIndex.value = filtered.value.findIndex(item => item.id === q.id)
-  detailVisible.value = true
-}
-
-function detailPrev() {
-  if (detailIndex.value > 0) {
-    detailIndex.value--
-    detailItem.value = filtered.value[detailIndex.value]
-  }
-}
-
-function detailNext() {
-  if (detailIndex.value < filtered.value.length - 1) {
-    detailIndex.value++
-    detailItem.value = filtered.value[detailIndex.value]
-  }
-}
 
 function renderMd(str) {
   if (!str) return ''
   return md.render(str)
 }
 
-const detailRendered = computed(() => {
+function renderAnswer(answer) {
   try {
-    return renderMd(detailItem.value.answer)
+    return renderMd(answer)
   } catch {
-    return `<pre>${detailItem.value.answer || ''}</pre>`
+    return `<pre>${answer || ''}</pre>`
   }
-})
+}
 
-watch(detailRendered, () => {
+watch(expandedId, () => {
   nextTick(() => renderMermaidDiagrams())
 })
 
@@ -424,7 +457,7 @@ async function renderMermaidDiagrams() {
   await nextTick()
   await nextTick()
   await nextTick()
-  const els = document.querySelectorAll('.quiz__modal pre.mermaid[data-quiz-id]:not([data-processed])')
+  const els = document.querySelectorAll('.quiz__panel pre.mermaid[data-quiz-id]:not([data-processed])')
   if (!els.length) return
   for (const el of els) {
     const id = el.dataset.quizId
@@ -735,9 +768,129 @@ async function renderMermaidDiagrams() {
   background: var(--vp-c-bg-soft);
 }
 
-.quiz__row + .quiz__row {
+.quiz__item + .quiz__item {
   border-top: 1px solid var(--vp-c-border);
 }
+
+.quiz__item--expanded .quiz__row {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+.quiz__panel {
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-border);
+  padding: 16px 20px 20px;
+  animation: quizPanelIn 0.2s ease-out;
+}
+
+@keyframes quizPanelIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz__panel-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--vp-c-border);
+}
+
+.quiz__panel-foot .quiz__panel-nav {
+  margin-left: auto;
+}
+
+.quiz__panel-status {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-border);
+  transition: background 0.15s;
+}
+.quiz__panel-status:hover { background: var(--vp-c-bg-soft); }
+
+.quiz__panel-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz__panel-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg);
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-1);
+  transition: background 0.15s, opacity 0.15s;
+}
+.quiz__panel-btn:hover:not(:disabled) { background: var(--vp-c-bg-soft); }
+.quiz__panel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.quiz__panel-index {
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2);
+  min-width: 60px;
+  text-align: center;
+}
+
+.quiz__panel-answer :deep(pre) {
+  max-width: 100%;
+  overflow-x: auto;
+  background: var(--vp-code-block-bg);
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+.quiz__panel-answer :deep(.hljs) {
+  background: transparent;
+}
+
+.quiz__panel-answer :deep(code) {
+  font-size: 0.85em;
+}
+
+.quiz__panel-answer :deep(table) {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+
+.quiz__panel-answer :deep(th),
+.quiz__panel-answer :deep(td) {
+  border: 1px solid var(--vp-c-border);
+  padding: 6px 10px;
+  white-space: normal;
+}
+
+.quiz__panel-answer :deep(th) { background: var(--vp-c-bg-soft); font-weight: 600; }
+
+.quiz__panel-answer :deep(blockquote) {
+  border-left: 3px solid var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  color: var(--vp-c-text-2);
+}
+
+.quiz__panel-answer :deep(ul),
+.quiz__panel-answer :deep(ol) { padding-left: 20px; margin: 8px 0; }
+.quiz__panel-answer :deep(li) { margin: 4px 0; }
+.quiz__panel-answer :deep(p) { margin: 8px 0; }
+.quiz__panel-answer :deep(h1),
+.quiz__panel-answer :deep(h2),
+.quiz__panel-answer :deep(h3),
+.quiz__panel-answer :deep(h4) { margin: 16px 0 8px; font-weight: 600; }
 
 .quiz__row-status {
   width: 22px;
@@ -876,6 +1029,61 @@ async function renderMermaidDiagrams() {
 .quiz__btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.quiz__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 20px;
+  padding: 12px 0;
+}
+
+.quiz__page-btn,
+.quiz__page-num {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz__page-btn:hover:not(:disabled),
+.quiz__page-num:hover:not(:disabled) {
+  border-color: #3eaf7c;
+  color: #3eaf7c;
+}
+
+.quiz__page-btn:disabled,
+.quiz__page-num:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quiz__page-num--active {
+  background: #3eaf7c;
+  color: #fff;
+  border-color: #3eaf7c;
+}
+
+.quiz__page-num--active:hover {
+  color: #fff;
+}
+
+.quiz__page-total {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2);
 }
 
 /* Modal */
