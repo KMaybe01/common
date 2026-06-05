@@ -6,9 +6,7 @@ const posix = (p) => p.split(sep).join('/')
 
 // All files to parse with their category
 const categoryMap = {
-  'S1-基础夯实/01-HTML.md':                    { id: 'html',     name: 'HTML',       icon: '📄' },
-  'S1-基础夯实/02-CSS.md':                     { id: 'css',      name: 'CSS',        icon: '🎨' },
-  'S1-基础夯实/03-JavaScript-核心.md':          { id: 'js-core',  name: 'JS核心',     icon: '⚡' },
+  'S3-进阶提升/04-算法题解.md':                 { id: 'algo',     name: '算法题解',   icon: '🧮' },
   'S1-基础夯实/04-JavaScript-WebAPI.md':       { id: 'js-api',   name: 'JS WebAPI',  icon: '🌐' },
   'S2-框架深入/01-Vue3学习指南.md':             { id: 'vue3-l',   name: 'Vue3学习',   icon: '📗' },
   'S2-框架深入/02-Vue3.md':                    { id: 'vue3',     name: 'Vue3面试',   icon: '🟢' },
@@ -20,12 +18,9 @@ const categoryMap = {
   'S3-进阶提升/01-浏览器原理.md':               { id: 'browser',  name: '浏览器原理', icon: '🌍' },
   'S3-进阶提升/02-性能优化.md':                 { id: 'perf',     name: '性能优化',   icon: '🚀' },
   'S3-进阶提升/03-前端工程化.md':               { id: 'eng',      name: '前端工程化', icon: '🛠️' },
-  'S3-进阶提升/04-算法题解.md':                 { id: 'algo',     name: '算法题解',   icon: '🧮' },
   'S3-进阶提升/05-计算机网络.md':               { id: 'network',  name: '网络',       icon: '🌐' },
   'S3-进阶提升/06-前端监控与埋点.md':           { id: 'monitor',  name: '监控埋点',   icon: '📊' },
-  'S3-进阶提升/07-Node.js与服务端.md':         { id: 'node',     name: 'Node.js',    icon: '💚' },
   'S4-面试冲刺/03-反向面试.md':                 { id: 'reverse',  name: '反向面试',   icon: '💬' },
-  'S4-面试冲刺/06-LI-OAM 网元运维与数据管理系统.md': { id: 'lioam', name: 'LI-OAM', icon: '⚙️' },
   'S5-AI/01-入门期-AI聊天室.md':               { id: 'ai-chat',  name: 'AI聊天室',   icon: '🤖' },
   'S5-AI/02-进阶期-RAG应用.md':                { id: 'ai-rag',   name: 'AI RAG',     icon: '📚' },
   'S5-AI/03-深耕期-端侧推理.md':               { id: 'ai-edge',  name: '端侧推理',   icon: '🔌' },
@@ -40,7 +35,6 @@ const categoryMap = {
   'S5-AI/13-框架工具链篇.md':                   { id: 'ai-fw',    name: 'AI框架',     icon: '📦' },
   'S5-AI/14-实战项目篇.md':                    { id: 'ai-proj',  name: 'AI实战',     icon: '🚀' },
   'S5-AI/15-前沿趋势篇.md':                    { id: 'ai-trend', name: 'AI前沿',     icon: '🔮' },
-  'S6-Go/Go常识.md':                          { id: 'go',       name: 'Go',         icon: '🐹' },
 }
 
 // Regex patterns for different Q&A formats
@@ -274,6 +268,56 @@ function extractQuestionsWithoutPrefix(lines, category, idPrefix) {
     })
 }
 
+// Extract algorithm problems by number (### 1. Title 🟢)
+function extractAlgoQuestions(content, lines, cat) {
+  const questions = []
+  let current = null
+  let idx = 0
+
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(ALGO_RE)
+    if (m) {
+      if (current && current.answer.trim()) questions.push(current)
+      idx++
+      const title = clean(m[2]).trim()
+      if (!title) continue
+      current = {
+        num: idx,
+        question: title,
+        answer: '',
+      }
+    } else if (current) {
+      if (current.answer) current.answer += '\n'
+      current.answer += lines[i]
+    }
+  }
+  if (current && current.answer.trim()) questions.push(current)
+
+  return questions
+    .filter(q => q.answer.trim().length > 20)
+    .map(q => {
+      const text = q.question + '\n' + q.answer
+      const fm = text.match(FREQ_RE)
+      let freq = fm && FREQ_EMOJI[fm[1]] ? FREQ_EMOJI[fm[1]] : ''
+      if (!freq) {
+        const freqNumMatch = text.match(/\*\*频度[：:]\*\*\s*(\d+)/u)
+        if (freqNumMatch) {
+          const v = parseInt(freqNumMatch[1])
+          if (v >= 300) freq = 'high'
+          else if (v >= 100) freq = 'mid'
+          else freq = 'low'
+        }
+      }
+      return {
+        id: `${cat}-q${q.num}`,
+        category: cat,
+        question: q.question,
+        answer: q.answer.replace(/\n{3,}/g, '\n\n').trim(),
+        freq,
+      }
+    })
+}
+
 function parseFile(filePath, relPath) {
   const content = readFileSync(filePath, 'utf-8')
   const lines = content.split('\n')
@@ -305,7 +349,13 @@ function parseFile(filePath, relPath) {
   allQs.push(...extraQs)
 
   // Phase 3: Extract H3/H4 topics as knowledge points (always, as supplement)
-  const topicQs = extractTopics(content, lines, cat.id, cat.id)
+  let topicQs = []
+  if (cat.id === 'algo') {
+    // Algorithm: only extract numbered problems like "### 1. 两数之和 🟢"
+    topicQs = extractAlgoQuestions(content, lines, cat.id)
+  } else {
+    topicQs = extractTopics(content, lines, cat.id, cat.id)
+  }
   allQs.push(...topicQs)
 
   // Phase 4: For 学习指南 files, also extract H2 lesson sections

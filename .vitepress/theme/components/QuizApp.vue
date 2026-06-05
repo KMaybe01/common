@@ -53,20 +53,11 @@
             <button class="quiz__freq-btn quiz__status--review" :class="{ 'quiz__freq-btn--active': activeStatus === 'review' }" @click="activeStatus = 'review'">🔄 待复习</button>
             <button class="quiz__freq-btn quiz__status--new" :class="{ 'quiz__freq-btn--active': activeStatus === 'new' }" @click="activeStatus = 'new'">📝 未开始</button>
           </div>
-          <button class="quiz__fullscreen-btn" @click="isListFullscreen = !isListFullscreen" :title="isListFullscreen ? '退出全屏' : '列表全屏'">{{ isListFullscreen ? '⛶' : '⛶' }}</button>
           <select v-model.number="pageSize" class="quiz__sort" title="每页条数">
             <option :value="10">10 条/页</option>
             <option :value="20">20 条/页</option>
             <option :value="50">50 条/页</option>
             <option :value="100">100 条/页</option>
-          </select>
-          <select v-model="sortBy" class="quiz__sort">
-            <option value="default">默认排序</option>
-            <option value="freq-desc">频率高→低</option>
-            <option value="freq-asc">频率低→高</option>
-            <option value="question-asc">题目 A→Z</option>
-            <option value="question-desc">题目 Z→A</option>
-            <option value="category">按分类</option>
           </select>
         </div>
 
@@ -87,19 +78,32 @@
             </span>
           </div>
 
-          <div class="quiz__list" :class="{ 'quiz__list--fullscreen': isListFullscreen }">
+          <div class="quiz__table">
+            <div class="quiz__table-header">
+              <span class="quiz__table-th quiz__table-th--q" @click="toggleSort('question')">
+                题目
+                <span class="quiz__sort-arrow" :class="{ 'quiz__sort-arrow--active': sortKey === 'question' }">{{ sortKey === 'question' ? (sortDir === 'asc' ? '▲' : '▼') : '' }}</span>
+              </span>
+              <span class="quiz__table-th quiz__table-th--freq" @click="toggleSort('freq')">
+                频率
+                <span class="quiz__sort-arrow" :class="{ 'quiz__sort-arrow--active': sortKey === 'freq' }">{{ sortKey === 'freq' ? (sortDir === 'asc' ? '▲' : '▼') : '' }}</span>
+              </span>
+            </div>
             <div
               v-for="q in pagedData"
               :key="q.id"
-              class="quiz__item"
-              :class="{ 'quiz__item--expanded': expandedId === q.id }"
+              class="quiz__table-row"
+              :class="{ 'quiz__table-row--expanded': expandedId === q.id }"
             >
-              <div class="quiz__row" @click="toggleExpand(q.id)">
-                <span class="quiz__row-cat">{{ getCategoryName(q.category) }}</span>
-                <span class="quiz__row-status" :class="'quiz__row-status--' + (progress[q.id] || '')">{{ statusIcon(progress[q.id] || '') }}</span>
-                <span class="quiz__row-q">{{ q.question }}</span>
-                <span v-if="q.freq" class="quiz__row-freq" :class="'quiz__row-freq--' + q.freq">{{ freqLabel(q.freq) }}</span>
-                <span class="quiz__row-arrow">{{ expandedId === q.id ? '▾' : '▸' }}</span>
+              <div class="quiz__table-row-main" @click="toggleExpand(q.id)">
+                <span class="quiz__table-td quiz__table-td--q">
+                  <span class="quiz__status-icon" :class="'quiz__status-icon--' + (progress[q.id] || '')">{{ statusIcon(progress[q.id] || '') }}</span>
+                  <span v-html="highlightText(q.question, searchQuery)"></span>
+                </span>
+                <span class="quiz__table-td quiz__table-td--freq">
+                  <span v-if="q.freq" class="quiz__freq-badge" :class="'quiz__freq-badge--' + q.freq">{{ freqLabel(q.freq) }}</span>
+                </span>
+                <span class="quiz__table-arrow" :class="{ 'quiz__table-arrow--open': expandedId === q.id }">▸</span>
               </div>
               <div v-if="expandedId === q.id" class="quiz__panel">
                 <div class="quiz__panel-answer quiz__answer-body" v-html="renderAnswer(q.answer)" />
@@ -139,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import LoginUI from './LoginUI.vue'
 import rawData from '../../../quiz-data.json'
 import MarkdownIt from 'markdown-it'
@@ -192,13 +196,12 @@ const questions = rawData.questions
 
 const activeCategory = ref('')
 const searchQuery = ref('')
-const sortBy = ref('default')
+const sortKey = ref('freq')
+const sortDir = ref('desc')
 const activeFreq = ref('')
 const activeStatus = ref('')
 const page = ref(1)
 const pageSize = ref(20)
-const isListFullscreen = ref(false)
-
 // ── 进度追踪（localStorage） ──
 const STORAGE_KEY = 'quiz-progress-v1'
 const progress = ref({})
@@ -284,7 +287,7 @@ function expandNext() {
 }
 
 function scrollToExpanded() {
-  const el = document.querySelector('.quiz__item--expanded')
+  const el = document.querySelector('.quiz__table-row--expanded')
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 
@@ -341,25 +344,38 @@ const filtered = computed(() => {
   } else if (activeStatus.value === 'new') {
     list = list.filter(q => !progress.value[q.id])
   }
-  if (sortBy.value === 'freq-desc') {
-    list = [...list].sort((a, b) => (freqOrder[a.freq] || 3) - (freqOrder[b.freq] || 3))
-  } else if (sortBy.value === 'freq-asc') {
-    list = [...list].sort((a, b) => (freqOrder[b.freq] || 3) - (freqOrder[a.freq] || 3))
-  } else if (sortBy.value === 'question-asc') {
-    list = [...list].sort((a, b) => a.question.localeCompare(b.question, 'zh'))
-  } else if (sortBy.value === 'question-desc') {
-    list = [...list].sort((a, b) => b.question.localeCompare(a.question, 'zh'))
-  } else if (sortBy.value === 'category') {
-    list = [...list].sort((a, b) => a.category.localeCompare(b.category))
+  if (sortKey.value === 'question') {
+    const cmp = (a, b) => a.question.localeCompare(b.question, 'zh')
+    list = [...list].sort(sortDir.value === 'asc' ? cmp : (a, b) => cmp(b, a))
+  } else {
+    list = [...list].sort((a, b) => {
+      const order = (freqOrder[a.freq] ?? 3) - (freqOrder[b.freq] ?? 3)
+      return sortDir.value === 'desc' ? order : -order
+    })
   }
   return list
 })
+
+function toggleSort(key) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = key === 'freq' ? 'desc' : 'asc'
+  }
+}
+
+function highlightText(text, query) {
+  if (!query.trim()) return text
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="quiz__highlight">$1</mark>')
+}
 
 function syncStateToURL() {
   const p = new URLSearchParams()
   if (activeCategory.value) p.set('cat', activeCategory.value)
   if (activeFreq.value) p.set('freq', activeFreq.value)
-  if (sortBy.value !== 'default') p.set('sort', sortBy.value)
+  if (sortKey.value !== 'freq' || sortDir.value !== 'desc') { p.set('sort', sortKey.value + '-' + sortDir.value) }
   if (searchQuery.value.trim()) p.set('q', searchQuery.value.trim())
   const qs = p.toString()
   const url = qs ? '?' + qs : window.location.pathname
@@ -370,7 +386,12 @@ function loadStateFromURL() {
   const p = new URLSearchParams(window.location.search)
   if (p.has('cat')) activeCategory.value = p.get('cat')
   if (p.has('freq')) activeFreq.value = p.get('freq')
-  if (p.has('sort')) sortBy.value = p.get('sort')
+  if (p.has('sort')) {
+    const parts = p.get('sort').split('-')
+    if (parts.length === 2 && ['question', 'freq'].includes(parts[0]) && ['asc', 'desc'].includes(parts[1])) {
+      sortKey.value = parts[0]; sortDir.value = parts[1]
+    }
+  }
   if (p.has('q')) searchQuery.value = p.get('q')
 }
 
@@ -378,18 +399,7 @@ function loadStateFromURL() {
 onMounted(() => {
   loadProgress()
   loadStateFromURL()
-  window.addEventListener('keydown', handleKeydown)
 })
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
-
-function handleKeydown(e) {
-  if (e.key === 'Escape' && isListFullscreen.value) {
-    isListFullscreen.value = false
-  }
-}
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize.value)))
 
@@ -427,16 +437,17 @@ function goToPage(p) {
 }
 
 function switchCategory(id) {
+  expandedId.value = ''
   activeCategory.value = id
   page.value = 1
 }
 
-watch([activeCategory, activeFreq, activeStatus, searchQuery, sortBy, pageSize], () => {
+watch([activeCategory, activeFreq, activeStatus, searchQuery, sortKey, sortDir, pageSize], () => {
   page.value = 1
   expandedId.value = ''
   syncStateToURL()
   nextTick(() => {
-    const list = document.querySelector('.quiz__list')
+    const list = document.querySelector('.quiz__table')
     if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
 })
@@ -756,77 +767,145 @@ async function renderMermaidDiagrams() {
   white-space: nowrap;
 }
 
-.quiz__list {
+.quiz__table {
   display: flex;
   flex-direction: column;
-  gap: 1px;
   border: 1px solid var(--vp-c-border);
   border-radius: 10px;
   overflow-y: auto;
-  max-height: calc(100vh - 270px);
+  max-height: calc(100vh - 220px);
   background: var(--vp-c-bg);
   transition: max-height 0.2s, border-radius 0.2s;
 }
 
-.quiz__list--fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  max-height: 100vh;
-  height: 100vh;
-  border-radius: 0;
-  border: none;
-}
-
-.quiz__fullscreen-btn {
-  padding: 6px 10px;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 6px;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-text-2);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  line-height: 1;
-}
-.quiz__fullscreen-btn:hover {
+.quiz__table-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--vp-c-border);
   background: var(--vp-c-bg-soft);
-  border-color: var(--vp-c-brand-1);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-.quiz__row {
+.quiz__table-th {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  user-select: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--vp-c-bg);
-  cursor: pointer;
-  transition: background 0.15s;
+  gap: 4px;
+  transition: color 0.15s;
+}
+.quiz__table-th:hover { color: var(--vp-c-brand-1); }
+
+.quiz__table-th--freq {
+  width: 90px;
+  flex-shrink: 0;
+  justify-content: center;
 }
 
-.quiz__row:hover {
-  background: var(--vp-c-bg-soft);
+.quiz__sort-arrow {
+  font-size: 0.65rem;
+  color: var(--vp-c-text-3);
 }
+.quiz__sort-arrow--active { color: var(--vp-c-brand-1); }
 
-.quiz__item + .quiz__item {
+.quiz__table-row + .quiz__table-row {
   border-top: 1px solid var(--vp-c-border);
 }
 
-.quiz__item--expanded .quiz__row {
+.quiz__table-row-main {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.quiz__table-row-main:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.quiz__table-row--expanded > .quiz__table-row-main {
   background: var(--vp-c-bg-soft);
   font-weight: 600;
+}
+
+.quiz__table-td {
+  font-size: 0.9rem;
+  color: var(--vp-c-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz__table-td--q {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz__table-td--freq {
+  width: 90px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.quiz__status-icon {
+  width: 20px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+.quiz__status-icon--done { opacity: 0.8; }
+.quiz__status-icon--review { opacity: 1; }
+
+.quiz__freq-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.quiz__freq-badge--high { color: #d32f2f; background: rgba(211, 47, 47, 0.1); }
+.quiz__freq-badge--mid { color: #e65100; background: rgba(230, 81, 0, 0.1); }
+.quiz__freq-badge--low { color: #666; background: rgba(0, 0, 0, 0.05); }
+.dark .quiz__freq-badge--high { background: rgba(244, 67, 54, 0.2); color: #ef9a9a; }
+.dark .quiz__freq-badge--mid { background: rgba(255, 152, 0, 0.2); color: #ffcc80; }
+.dark .quiz__freq-badge--low { background: rgba(255, 255, 255, 0.08); color: #999; }
+
+.quiz__table-arrow {
+  color: var(--vp-c-text-3);
+  flex-shrink: 0;
+  display: inline-block;
+  transition: transform 0.25s ease;
+  width: 16px;
+  text-align: center;
+}
+.quiz__table-arrow--open { transform: rotate(90deg); }
+
+.quiz__highlight {
+  background: #fff3cd;
+  color: #856404;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+.dark .quiz__highlight {
+  background: #664d00;
+  color: #ffd700;
 }
 
 .quiz__panel {
   background: var(--vp-c-bg-soft);
   border-top: 1px solid var(--vp-c-border);
   padding: 16px 20px 20px;
-  animation: quizPanelIn 0.2s ease-out;
-}
-
-@keyframes quizPanelIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 .quiz__panel-foot {
@@ -932,15 +1011,6 @@ async function renderMermaidDiagrams() {
 .quiz__panel-answer :deep(h3),
 .quiz__panel-answer :deep(h4) { margin: 16px 0 8px; font-weight: 600; }
 
-.quiz__row-status {
-  width: 22px;
-  flex-shrink: 0;
-  font-size: 0.85rem;
-  text-align: center;
-}
-.quiz__row-status--done { opacity: 0.8; }
-.quiz__row-status--review { opacity: 1; }
-
 .quiz__status-tabs { display: flex; gap: 4px; flex-shrink: 0; }
 .quiz__status--done { color: #2e7d32; }
 .quiz__status--review { color: #e65100; }
@@ -961,73 +1031,7 @@ async function renderMermaidDiagrams() {
 }
 .quiz__modal-status:hover { background: var(--vp-c-bg-soft); }
 
-.quiz__row-cat {
-  font-size: 0.75rem;
-  color: #3eaf7c;
-  background: var(--vp-c-green-soft, #e8f5e9);
-  padding: 2px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
 
-.dark .quiz__row-cat {
-  background: rgba(62, 175, 124, 0.15);
-  color: #66c99c;
-}
-
-.quiz__row-q {
-  flex: 1;
-  font-size: 0.9rem;
-  color: var(--vp-c-text-1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.quiz__row-freq {
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  font-weight: 600;
-}
-
-.quiz__row-freq--high {
-  color: #d32f2f;
-  background: rgba(211, 47, 47, 0.1);
-}
-
-.quiz__row-freq--mid {
-  color: #e65100;
-  background: rgba(230, 81, 0, 0.1);
-}
-
-.quiz__row-freq--low {
-  color: #666;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.dark .quiz__row-freq--high {
-  background: rgba(244, 67, 54, 0.2);
-  color: #ef9a9a;
-}
-
-.dark .quiz__row-freq--mid {
-  background: rgba(255, 152, 0, 0.2);
-  color: #ffcc80;
-}
-
-.dark .quiz__row-freq--low {
-  background: rgba(255, 255, 255, 0.08);
-  color: #999;
-}
-
-.quiz__row-arrow {
-  color: var(--vp-c-text-3);
-  flex-shrink: 0;
-}
 
 .quiz__nav {
   display: flex;
@@ -1385,7 +1389,7 @@ async function renderMermaidDiagrams() {
   .quiz__tab { padding: 6px 10px; font-size: 0.8rem; }
   .quiz__toolbar { flex-direction: column; }
   .quiz__freq-tabs { overflow-x: auto; }
-  .quiz__list { max-height: none; }
+  .quiz__table { max-height: none; }
   .quiz__modal { max-width: 100%; max-height: 95vh; }
   .quiz__modal-mask { padding: 0; }
   .quiz__modal--full { border-radius: 0; }

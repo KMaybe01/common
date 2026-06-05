@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev . && node scripts/assign-frequency.mjs && node scripts/parse-questions.mjs",
-    "build": "vitepress build . && node scripts/gen-version.mjs",
+    "generate": "node scripts/parse-questions.mjs && node scripts/assign-frequency.mjs",
+    "dev": "npm run generate && vitepress dev .",
+    "build": "npm run generate && vitepress build . && node scripts/gen-version.mjs",
     "preview": "vitepress preview ."
   },
   "devDependencies": {

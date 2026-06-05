@@ -77,10 +77,10 @@ export default withMermaid(defineConfig({
         activeMatch: '/S3-进阶提升/',
         items: [
           { text: '📖 阶段概览', link: '/S3-进阶提升/' },
-          { text: '🌍 浏览器原理', link: '/S3-进阶提升/01-浏览器原理' },
+          { text: '💡 算法题解', link: '/S3-进阶提升/04-算法题解' },
           { text: '🚀 性能优化', link: '/S3-进阶提升/02-性能优化' },
           { text: '🏗️ 前端工程化', link: '/S3-进阶提升/03-前端工程化' },
-          { text: '💡 算法题解', link: '/S3-进阶提升/04-算法题解' },
+          { text: '🌍 浏览器原理', link: '/S3-进阶提升/01-浏览器原理' },
           { text: '🌐 计算机网络', link: '/S3-进阶提升/05-计算机网络' },
           { text: '📊 前端监控与埋点', link: '/S3-进阶提升/06-前端监控与埋点' },
           { text: '📦 Node.js与服务端', link: '/S3-进阶提升/07-Node.js与服务端' },

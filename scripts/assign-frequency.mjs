@@ -806,6 +806,21 @@ function assignFrequency(question, catId) {
   const answer = question.answer || ''
   const fullText = text + '\n' + answer
 
+  // 0. 算法题按频度数值（优先）
+  if (catId === 'algo') {
+    const freqMatch = fullText.match(/\*\*频度[：:]\*\*\s*(\d+)/u)
+    if (freqMatch) {
+      const freqVal = parseInt(freqMatch[1])
+      if (freqVal >= 300) { question.freq = 'high'; return }
+      if (freqVal >= 100) { question.freq = 'mid'; return }
+      question.freq = 'low'; return
+    }
+    // 降级：按难度
+    if (/简单|🟢/u.test(text)) { question.freq = 'low'; return }
+    if (/中等|🟡/u.test(text)) { question.freq = 'mid'; return }
+    if (/困难|🔴/u.test(text)) { question.freq = 'low'; return }
+  }
+
   // 1. 显式标记 → high
   if (hasMarker(text)) {
     question.freq = 'high'
@@ -885,13 +900,6 @@ function assignFrequency(question, catId) {
   if (anyMid && score >= 1) {
     question.freq = 'mid'
     return
-  }
-
-  // 9. 算法题按难度
-  if (catId === 'algo') {
-    if (/简单|🟢/u.test(text)) { question.freq = 'low'; return }
-    if (/中等|🟡/u.test(text)) { question.freq = 'mid'; return }
-    if (/困难|🔴/u.test(text)) { question.freq = 'low'; return }
   }
 
   // 10. 保留已有的频率（如 source 中提取的）
