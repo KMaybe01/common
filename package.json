@@ -1,0 +1,22 @@
+{
+  "name": "frontend-interview-notes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev . && node scripts/assign-frequency.mjs && node scripts/parse-questions.mjs",
+    "build": "vitepress build . && node scripts/gen-version.mjs",
+    "preview": "vitepress preview ."
+  },
+  "devDependencies": {
+    "mermaid": "^11.15.0",
+    "typescript": "^6.0.3",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17",
+    "vue-tsc": "^3.3.3"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.2.0"
+  }
+}
