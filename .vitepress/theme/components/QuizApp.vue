@@ -2,13 +2,13 @@
   <div class="quiz">
     <div class="quiz__header">
       <div class="quiz__header-top">
+        <div class="quiz__stats">
+          <span class="quiz__stat quiz__stat--high">🔥 {{ freqCounts.high }}</span>
+          <span class="quiz__stat quiz__stat--mid">📌 {{ freqCounts.mid }}</span>
+          <span class="quiz__stat quiz__stat--low">📖 {{ freqCounts.low }}</span>
+          <span class="quiz__stat quiz__stat--progress">✅ {{ progressStats.done }} / 🔄 {{ progressStats.review }}</span>
+        </div>
         <LoginUI @sync="onSync" />
-      </div>
-      <div class="quiz__stats">
-        <span class="quiz__stat quiz__stat--high">🔥 {{ freqCounts.high }}</span>
-        <span class="quiz__stat quiz__stat--mid">📌 {{ freqCounts.mid }}</span>
-        <span class="quiz__stat quiz__stat--low">📖 {{ freqCounts.low }}</span>
-        <span class="quiz__stat quiz__stat--progress">✅ {{ progressStats.done }} / 🔄 {{ progressStats.review }}</span>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
             <button class="quiz__freq-btn quiz__status--review" :class="{ 'quiz__freq-btn--active': activeStatus === 'review' }" @click="activeStatus = 'review'">🔄 待复习</button>
             <button class="quiz__freq-btn quiz__status--new" :class="{ 'quiz__freq-btn--active': activeStatus === 'new' }" @click="activeStatus = 'new'">📝 未开始</button>
           </div>
-          <button class="quiz__rand-btn" @click="goRandom" title="随机一题">🎲</button>
+          <button class="quiz__fullscreen-btn" @click="isListFullscreen = !isListFullscreen" :title="isListFullscreen ? '退出全屏' : '列表全屏'">{{ isListFullscreen ? '⛶' : '⛶' }}</button>
           <select v-model.number="pageSize" class="quiz__sort" title="每页条数">
             <option :value="10">10 条/页</option>
             <option :value="20">20 条/页</option>
@@ -87,7 +87,7 @@
             </span>
           </div>
 
-          <div class="quiz__list">
+          <div class="quiz__list" :class="{ 'quiz__list--fullscreen': isListFullscreen }">
             <div
               v-for="q in pagedData"
               :key="q.id"
@@ -139,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import LoginUI from './LoginUI.vue'
 import rawData from '../../../quiz-data.json'
 import MarkdownIt from 'markdown-it'
@@ -197,6 +197,7 @@ const activeFreq = ref('')
 const activeStatus = ref('')
 const page = ref(1)
 const pageSize = ref(20)
+const isListFullscreen = ref(false)
 
 // ── 进度追踪（localStorage） ──
 const STORAGE_KEY = 'quiz-progress-v1'
@@ -239,17 +240,6 @@ const progressStats = computed(() => {
   }
   return s
 })
-
-function goRandom() {
-  const list = filtered.value
-  if (!list.length) return
-  const idx = Math.floor(Math.random() * list.length)
-  expandedId.value = list[idx].id
-  nextTick(() => {
-    const el = document.querySelector('.quiz__item--expanded')
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  })
-}
 
 const expandedId = ref('')
 
@@ -388,7 +378,18 @@ function loadStateFromURL() {
 onMounted(() => {
   loadProgress()
   loadStateFromURL()
+  window.addEventListener('keydown', handleKeydown)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
+
+function handleKeydown(e) {
+  if (e.key === 'Escape' && isListFullscreen.value) {
+    isListFullscreen.value = false
+  }
+}
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize.value)))
 
@@ -434,6 +435,10 @@ watch([activeCategory, activeFreq, activeStatus, searchQuery, sortBy, pageSize],
   page.value = 1
   expandedId.value = ''
   syncStateToURL()
+  nextTick(() => {
+    const list = document.querySelector('.quiz__list')
+    if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
 })
 
 function renderMd(str) {
@@ -483,7 +488,7 @@ async function renderMermaidDiagrams() {
 
 .quiz__header { margin-bottom: 20px; }
 .quiz__header h2 { margin: 0; font-size: 1.5rem; }
-.quiz__header-top { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+.quiz__header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .quiz__desc {
   color: var(--vp-c-text-2);
   margin: 4px 0 0;
@@ -630,15 +635,21 @@ async function renderMermaidDiagrams() {
 
 .quiz__search {
   width: 100%;
-  padding: 8px 32px 8px 12px;
+  padding: 12px 40px 12px 16px;
   border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--vp-c-bg);
   color: var(--vp-c-text-1);
-  font-size: 0.9rem;
+  font-size: clamp(1rem, 1.2vw + 0.7rem, 1.25rem);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
+  min-width: 200px;
+}
+
+.quiz__search:focus {
+  border-color: #3eaf7c;
+  box-shadow: 0 0 0 3px rgba(62, 175, 124, 0.15);
 }
 
 .quiz__search:focus {
@@ -647,15 +658,15 @@ async function renderMermaidDiagrams() {
 
 .quiz__search-clear {
   position: absolute;
-  right: 6px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   border: none;
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-2);
-  font-size: 0.75rem;
-  width: 20px;
-  height: 20px;
+  font-size: 0.85rem;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -751,7 +762,36 @@ async function renderMermaidDiagrams() {
   gap: 1px;
   border: 1px solid var(--vp-c-border);
   border-radius: 10px;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: calc(100vh - 270px);
+  background: var(--vp-c-bg);
+  transition: max-height 0.2s, border-radius 0.2s;
+}
+
+.quiz__list--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
+}
+
+.quiz__fullscreen-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-2);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.quiz__fullscreen-btn:hover {
+  background: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-brand-1);
 }
 
 .quiz__row {
@@ -909,21 +949,6 @@ async function renderMermaidDiagrams() {
 .dark .quiz__status--review { color: #ffcc80; }
 .dark .quiz__status--new { color: #999; }
 
-.quiz__rand-btn {
-  padding: 6px 10px;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 6px;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-text-2);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  line-height: 1;
-}
-.quiz__rand-btn:hover {
-  background: var(--vp-c-bg-soft);
-  border-color: var(--vp-c-brand-1);
-}
 
 .quiz__modal-status {
   border: none;
@@ -1360,6 +1385,7 @@ async function renderMermaidDiagrams() {
   .quiz__tab { padding: 6px 10px; font-size: 0.8rem; }
   .quiz__toolbar { flex-direction: column; }
   .quiz__freq-tabs { overflow-x: auto; }
+  .quiz__list { max-height: none; }
   .quiz__modal { max-width: 100%; max-height: 95vh; }
   .quiz__modal-mask { padding: 0; }
   .quiz__modal--full { border-radius: 0; }
