@@ -308,7 +308,7 @@ flowchart TD
 | `visibility: hidden`               | 占据         | 否           | 重绘                  |
 | `opacity: 0`                       | 占据         | 是           | 合成（composite）     |
 | `position: absolute` + 移出可视区  | 不占据       | 否           | 重排                  |
-| `z-index: 负值`                   | 占据         | 是（被遮盖） | 重绘                  |
+| `z-index: 负值`                   | 占据         | 受堆叠上下文影响 | 重绘                |
 | `clip / clip-path: inset(0)`    | 占据         | 否           | 重绘                  |
 | `transform: scale(0,0)`           | 占据         | 否           | 合成（composite）     |
 
@@ -348,11 +348,11 @@ flowchart TD
 | JS 控制 DOM       | 支持                       | 不支持                       |
 | 额外功能           | 可定义 RSS 等其他事物      | 只能加载 CSS                 |
 
-```css
-/* link 方式（推荐） */
+```html
+<!-- link 方式（推荐）：与页面并行加载 -->
 <link rel="stylesheet" href="style.css">
 
-/* @import 方式 */
+<!-- @import 方式（不推荐）：CSS 解析后才发起，串行阻塞 -->
 <style>
   @import url("style.css");
 </style>

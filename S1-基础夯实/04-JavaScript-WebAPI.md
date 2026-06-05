@@ -121,18 +121,17 @@ const observer = new IntersectionObserver(callback, {
   // 目标与视口交叉比例，0~1 或数组 [0, 0.5, 1]
   threshold: 0.5,
 
-  // 视口偏移量，类似 CSS margin
+  // 视口偏移量，类似 CSS margin（可正可负，负值提前触发）
   rootMargin: '10px 20px 30px 40px',
 
   // 指定父级元素作为视口（默认使用浏览器视口）
   root: document.querySelector('.scroll-container'),
-
-  // 延迟触发时机
-  delay: 100,
-
-  // 是否跟踪实际可见性（实验性）
-  trackVisibility: false
 })
+
+// ⚠️ 注意事项：
+// 1. 不存在 'delay' 配置项——若需节流请自行用 setTimeout 包裹回调
+// 2. 'trackVisibility' 仍为实验性 API，仅在部分浏览器（Chrome 86+ 需 flag）支持
+// 3. 'threshold' 数组形式：[0, 0.5, 1] 表示元素可见比例穿过 0%/50%/100% 时各触发一次
 ```
 
 #### 实战: 图片懒加载
