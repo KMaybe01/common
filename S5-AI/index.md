@@ -3,9 +3,8 @@
 > **学习目标**：掌握 AI 与前端融合的核心技术：RAG、Agent、端侧推理、MCP/A2A 协议
 
 ## 内容章节
-
+- [🎯 AI推荐学习](./00-AI推荐学习.md) — AI 学习资源推荐（Claude Code、LLM、RAG、Vibe Coding）
 - [💬 入门期-AI聊天室](./01-入门期-AI聊天室.md) — 入门：AI 聊天室搭建、LLM API 调用
-- [🎯 AI推荐学习](./09-AI推荐学习.md) — AI 学习资源推荐（Claude Code、LLM、RAG、Vibe Coding）
 - [🔗 进阶期-RAG应用](./02-进阶期-RAG应用.md) — 进阶：RAG 应用开发、向量数据库
 - [📱 深耕期-端侧推理](./03-深耕期-端侧推理.md) — 深耕：WebGPU/WebNN 端侧推理
 - [🤖 专家期-Agent设计](./04-专家期-Agent设计.md) — 专家：AI Agent 设计模式

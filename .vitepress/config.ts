@@ -109,7 +109,7 @@ export default withMermaid(defineConfig({
         activeMatch: '/S5-AI/',
         items: [
           { text: '📖 阶段概览', link: '/S5-AI/' },
-          { text: '🎯 AI推荐学习', link: '/S5-AI/09-AI推荐学习' },
+          { text: '🎯 AI推荐学习', link: '/S5-AI/00-AI推荐学习' },
           { text: '💬 入门期-AI聊天室', link: '/S5-AI/01-入门期-AI聊天室' },
           { text: '🔗 进阶期-RAG应用', link: '/S5-AI/02-进阶期-RAG应用' },
           { text: '📱 深耕期-端侧推理', link: '/S5-AI/03-深耕期-端侧推理' },
