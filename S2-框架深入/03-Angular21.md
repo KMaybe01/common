@@ -1015,6 +1015,8 @@ export class ParentComponent {
 @for (item of items; track item.id) { ... }  <!-- 列表渲染 -->
 ```
 
+> 🔗 **链式思考**：Angular Signals 的设计与 Vue 3 的 `ref`/`computed` 几乎同源——都是"getter 收集依赖，setter 触发更新"的模式。但 Angular Signals 要求手动调用 `.get()` 或 `.set()`，而 Vue 的 `ref.value` 在模板中自动解包。React 没有内置 Signal，但 React 19 的 `use()` Hook 实现了类似"惰性求值"的效果——在 Suspense 边界内等待异步数据。详见 [04-框架对比](./04-框架对比) 的"响应式原理深度对比"。
+
 ---
 
 ## 6️⃣ Signals vs Observables
@@ -1402,6 +1404,8 @@ export class SearchComponent {
 }
 ```
 
+> 🔗 **链式思考**：Angular 状态管理从 NgRx（Redux 模式）演进到 SignalStore（响应式模式），趋势与 Vue 从 Vuex 到 Pinia 一致——更简洁、更类型安全、更低样板代码。React 的 Zustand 则从一开始就走"极简 API + 不可变更新"路线。核心规律：状态管理正从"类 Redux"（action/reducer/dispatch）向"响应式 Store"（signal/ref + computed）演进。详见 [04-框架对比](./04-框架对比) 的"状态管理生态"。
+
 ---
 
 ## 🔟 状态管理（NgRx/Signals Store）
@@ -1582,6 +1586,8 @@ export const selectAllProducts = createSelector(
 );
 ```
 
+> 🔗 **链式思考**：Angular DI 是 Angular 最独特的架构特征——它是一个"编译时可 tree-shaking"的层级注入系统。Vue 的 `provide/inject` 是"运行时响应式"的组件树注入，两者都支持"祖先→后代"传递，但 Angular 的注入器有独立的层级结构（根/模块/组件），而 Vue 完全依赖组件树层级。React 的 Context 则是最简单的"单一值传递"，缺少层级查找和多例管理能力。详见 [04-框架对比](./04-框架对比) 的"DI 与 Context 对比"。
+
 ---
 
 # 第二部分：高级特性
@@ -1695,6 +1701,8 @@ export class UppercasePipe implements PipeTransform {
   }
 }
 ```
+
+> 🔗 **链式思考**：Angular Router 是三框架中最"重量级"的——自带路由守卫（canActivate/canDeactivate/resolve）、多出口（`<router-outlet>` 带 name 属性）、以及懒加载模块支持。Vue Router 在灵活性上类似但更简洁（路由守卫更少、命名视图较新）。React Router v6.4+ 则用 `loaders`/`actions` 替代传统守卫，走"声明式数据获取"路线。详见 [04-框架对比](./04-框架对比) 的"路由方案"。
 
 ---
 
@@ -1862,6 +1870,8 @@ export class UserDetailComponent {
 <router-outlet></router-outlet>
 <router-outlet name="sidebar"></router-outlet>
 ```
+
+> 🔗 **链式思考**：Angular 的 Reactive Forms 显式声明 `FormGroup`/`FormControl`，在代码中管理验证逻辑——这与 React 受控组件 + 手动验证模式相似（`useState` + `onChange` + 验证函数）。Vue 的 `v-model` 则是"声明式双向绑定"，验证逻辑分散在模板中（或通过第三方库 VeeValidate）。选型建议：复杂表单用 Angular Reactive Forms 或 React React Hook Form；简单表单用 Vue v-model 或 Angular 模板驱动表单。详见 [04-框架对比](./04-框架对比) 的"状态管理生态"。
 
 ---
 
@@ -2137,6 +2147,8 @@ ng test                                  # 运行测试
 ng lint                                  # 代码检查
 ```
 
+> 🔗 **链式思考**：Angular 的变更检测经历 Zone.js（全量检测）→ OnPush（组件级优化）→ Zoneless + Signals（精确依赖追踪）的演进。Vue 3 从一开始就是精确到属性级的自动追踪（Proxy），跳过了"全量检测"阶段。React 至今仍是"全量 Diff"，但通过 Fiber 调度 + React Compiler 自动 memo 来最小化开销。三种路线：精确追踪（Vue）、全量 Diff + 可中断（React）、渐进优化（Angular 从 Zone.js 到 Signals）。详见 [04-框架对比](./04-框架对比) 的"响应式原理深度对比"。
+
 ---
 
 ## 2️⃣ 变更检测机制
@@ -2238,6 +2250,8 @@ export class OptimizedListComponent {
   }
 }
 ```
+
+> 🔗 **链式思考**：Angular 21 的 `httpResource()` + Signals 实现了"声明式数据获取"：描述数据来源，框架自动处理 loading/error/refetch。这与 React 19 的 `use()` + Server Functions 理念一致，也类似 Vue 生态的 `useFetch`（Nuxt）/ TanStack Query（React）。三者的共同演进方向：从"手动管理请求状态"到"声明式描述数据依赖"。详见 [04-框架对比](./04-框架对比) 的"SSR/SSG 方案"。
 
 ---
 
@@ -3491,484 +3505,6 @@ export class MemoryLeakDetector {
   }
 }
 ```
-
-# 第八部分：面试题汇总
-
-### Q1：Angular 的变更检测机制是什么？Zone.js 和 Signals 有什么区别？
-
-**Angular 变更检测的演进三阶段：**
-
-```
-阶段一：Zone.js（Angular 2-17）
-  └─ 拦截所有异步操作（setTimeout/Promise/DOM 事件）
-  └─ → 触发全量变更检测（从根组件遍历整棵树）
-  └─ → 优点：开发者完全无感
-  └─ → 缺点：过度检测，每个异步操作都检查
-
-阶段二：OnPush（Angular 5+）
-  └─ 仅在 @Input 改变 / 组件内事件 / Signal 变化时检测
-  └─ → 性能大幅提升
-
-阶段三：Signals + Zoneless（Angular 17+，21 默认）
-  └─ 精确依赖追踪，Signal 变化仅更新相关组件
-  └─ 完全取消 Zone.js，不再拦截异步操作
-  └─ → 性能最好，调试最清晰
-```
-
-| 特性 | Zone.js | OnPush | Zoneless + Signals |
-|------|---------|--------|-------------------|
-| **检测范围** | 全量组件树 | 仅单组件 | 精确到依赖 |
-| **Bundle** | +40KB | 0KB | 0KB |
-| **异步拦截** | ✅ 自动 | ❌ | ❌ |
-| **微前端兼容** | ❌ 差 | ✅ 好 | ✅ 极好 |
-
-**面试追问：** *为什么要从 Zone.js 迁移到 Zoneless？*
-> Zone.js 无法精确知道哪个组件变了，每次异步操作都触发全量检测。而且 Zone.js 在微前端和 Web Worker 中难以集成。Signals 提供了精确依赖追踪，不需要 Zone.js 的补丁。
-
-### Q2：Angular 依赖注入（DI）的核心原理是什么？
-
-**DI 的三大核心角色：**
-
-```typescript
-// 1. 注入器（Injector）— DI 容器
-// Angular 有层级注入器：
-//   根注入器 → 模块注入器 → 组件注入器
-//   从子到父逐层查找，直到找到 Provider
-
-// 2. 提供者（Provider）— 告诉注入器如何创建依赖
-@Injectable({ providedIn: 'root' })  // 根级（Tree-shakable）
-// 或
-@Component({
-  providers: [UserService]  // 组件级（每个组件独立实例）
-})
-
-// 3. 注入令牌（InjectionToken）— 不基于类的依赖
-export const API_URL = new InjectionToken<string>('API_URL')
-providers: [{ provide: API_URL, useValue: 'https://api.example.com' }]
-```
-
-**查找规则（从子到父）：**
-```
-组件注入器 → 父组件注入器 → ... → 根注入器
-（查找第一个匹配的 Provider，不会向上继续）
-```
-
-**三种注入方式：**
-```typescript
-// 方式 1：构造函数注入（传统）
-constructor(private userService: UserService) {}
-
-// 方式 2：inject() 函数（Angular 14+，现代推荐）
-private userService = inject(UserService);
-private apiUrl = inject(API_URL);
-
-// 方式 3：@Optional（可选注入）
-constructor(@Optional() private logger?: LoggerService) {}
-```
-
-### Q3：Signals 和 Observables 的核心区别？
-
-| 维度 | Signals | Observables (RxJS) |
-|------|---------|-------------------|
-| **同步/异步** | ✅ 同步（立即获取值） | ❌ 异步（subscribe 才能获得） |
-| **当前值** | ✅ `signal()` 总有值 | ❌ 需要 BehaviorSubject 或初始值 |
-| **依赖追踪** | ✅ 自动（computed 自动收集） | ❌ 需 pipe 手动组合 |
-| **内存消耗** | 低（无订阅链路） | 较高（整个 Observable 链） |
-| **学习曲线** | 🟢 低 | 🔴 陡峭（操作符繁多） |
-| **框架依赖** | 无 | RxJS 库 |
-| **取消订阅** | 无需 | 需 unsubscribe / async pipe |
-| **多播** | 天然 | share / shareReplay |
-
-**何时用哪个？**
-
-```typescript
-// ✅ Signals：本地组件状态、UI 状态
-count = signal(0)
-user = signal<User | null>(null)
-filteredItems = computed(() => 
-  this.items().filter(i => i.name.includes(this.search()))
-)
-
-// ✅ Observable：异步操作、数据流
-users$ = this.http.get<User[]>('/api/users')
-clicks$ = fromEvent(element, 'click')
-formValue$ = this.form.valueChanges.pipe(debounceTime(300))
-
-// ✅ resource()：两者结合（Angular 19+）
-userResource = resource({
-  request: () => this.userId(),
-  loader: ({ request }) => this.http.get(`/api/users/${request}`)
-})
-```
-
-### Q4：Angular 的生命周期执行顺序？哪些在 SSR 中不执行？
-
-```
-组件创建
-  ├─ constructor（SSR ✅）
-  ├─ ngOnChanges（SSR ✅）— @Input 绑定变化时触发
-  ├─ ngOnInit（SSR ✅）— 组件初始化完成
-  ├─ ngDoCheck（SSR ⚠️ 不触发）
-  ├─ ngAfterContentInit（SSR ✅）
-  ├─ ngAfterContentChecked（SSR ⚠️ 不触发）
-  ├─ ngAfterViewInit（SSR ✅）
-  └─ ngAfterViewChecked（SSR ⚠️ 不触发）
-
-组件销毁
-  └─ ngOnDestroy（SSR ✅）— 清理资源
-```
-
-**关键注意：**
-- `ngOnChanges` 仅在 `@Input` 有值传递时触发
-- `constructor` 中不要做复杂初始化（依赖可能还没准备好）
-- `ngOnInit` 才是业务初始化的正确位置
-
-### Q5：Angular 的 `@Input` / `@Output` / `@ViewChild` 原理？
-
-```typescript
-@Component({ selector: 'app-child', template: `...` })
-export class ChildComponent {
-  // @Input：属性绑定（父→子）
-  // Angular 编译时在组件上注册输入属性
-  // 变更检测时对比新旧值，触发 ngOnChanges
-  @Input() title = ''
-  @Input({ required: true }) userId!: number  // Angular 16+
-
-  // @Output：事件发射（子→父）
-  // 基于 RxJS Subject，emit() 触发父组件的事件绑定
-  @Output() itemClick = new EventEmitter<number>()
-
-  // @ViewChild：获取子组件/DOM 引用
-  // 在 ngAfterViewInit 之后可用
-  @ViewChild('header') headerEl!: ElementRef
-  @ViewChild(ChildComponent) childComp!: ChildComponent
-}
-```
-
-**信号化输入输出（Angular 17+）：**
-```typescript
-@Component({})
-export class ModernComponent {
-  // signal input（只读）
-  title = input('')               // 自动推导类型
-  userId = input.required<number>()  // 必填
-
-  // signal output
-  itemClick = output<number>()       // emit 代替 EventEmitter
-
-  // model（双向绑定）
-  count = model(0)                   // => [(count)]="value"
-}
-```
-
-### Q6：Angular Router 的路由守卫有哪些？执行顺序？
-
-```typescript
-const routes: Routes = [{
-  path: 'admin',
-  canActivate: [AuthGuard],           // 进入前检查（权限）
-  canDeactivate: [UnsavedGuard],      // 离开前检查（未保存）
-  canActivateChild: [ChildGuard],     // 子路由激活前检查
-  canMatch: [LoadGuard],              // ✅ canLoad 已废弃，使用 canMatch
-  resolve: { data: UserResolver },    // 路由激活前预取数据
-  children: [/* ... */]
-}]
-
-// 典型实现
-@Injectable({ providedIn: 'root' })
-export class AuthGuard {
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const auth = inject(AuthService)
-    if (!auth.isLoggedIn()) {
-      return inject(Router).parseUrl('/login')  // 重定向
-    }
-    return true
-  }
-}
-```
-
-**执行顺序：**
-```
-① canDeactivate（离开当前路由）
-② canActivateChild / canActivate（进入新路由）
-③ resolve（数据预取）
-④ 组件实例化 → ngOnInit
-```
-
-### Q7：Angular 如何处理表单？Reactive Forms vs Template-driven？
-
-| 维度 | Reactive Forms | Template-driven Forms |
-|------|---------------|---------------------|
-| **数据模型** | 显式 `FormGroup` | 隐式（模板绑定） |
-| **可测试性** | ✅ 优秀 | ❌ 困难 |
-| **灵活性** | ✅ 高（动态增减控件） | ⚠️ 有限 |
-| **验证** | 代码中定义 | 模板指令 |
-| **复杂场景** | ✅ 推荐 | ❌ 不推荐 |
-
-```typescript
-// ✅ Reactive Forms（推荐）
-@Component({})
-export class LoginFormComponent {
-  form = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-  })
-
-  onSubmit() {
-    if (this.form.valid) {
-      this.auth.login(this.form.value)
-    }
-  }
-}
-```
-
-### Q8：Angular 中如何防止内存泄漏？最佳实践？
-
-| 方案 | 适用场景 | 代码量 |
-|------|---------|--------|
-| **`takeUntilDestroyed`**（Angular 16+） | Observable 订阅 | 少 |
-| **`async` 管道** | 模板中的 Observable | 0 |
-| **Signals/`resource()`** | 新代码首选 | 少 |
-| **`ngOnDestroy` 手动取消** | 旧代码兼容 | 多 |
-
-```typescript
-// ✅ 最佳方案：takeUntilDestroyed（Angular 20+ 推荐）
-@Component({})
-export class ModernComponent {
-  private destroyRef = inject(DestroyRef)
-  
-  ngOnInit() {
-    this.service.data$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(data => this.data.set(data))
-  }
-  // 无需 ngOnDestroy
-}
-
-// ✅ 几乎 0 代码方案：async 管道
-@Component({
-  template: `{{ users$ | async }}`  // 自动 subscribe/unsubscribe
-})
-export class SimpleComponent {
-  users$ = this.http.get('/api/users')
-}
-```
-
-### Q9：Angular 19+ 的 `resource()` 和 `httpResource()` 是什么？
-
-```typescript
-const userId = signal(1)
-
-// resource()：声明式数据获取
-const userResource = resource({
-  request: () => ({ id: userId() }),  // 依赖信号，变化时重新加载
-  loader: ({ request, abortSignal }) =>
-    fetch(`/api/users/${request.id}`, { signal: abortSignal }).then(r => r.json())
-})
-
-// httpResource()：HttpClient 便捷封装（Angular 20+）
-const userResource = httpResource<User>(() => `/api/users/${userId()}`)
-
-// 模板中直接使用
-@if (userResource.isLoading()) { <Spinner /> }
-@else { <div>{{ userResource.value().name }}</div> }
-```
-
-**优势：**
-- 声明式：描述"数据从哪里来"，不用手动管理 loading/error
-- 响应式：依赖 Signal 变化自动重新请求
-- 取消：`abortSignal` 自动取消过期请求
-- 少代码：替代大量 `effect + subscribe` 模式
-
-### Q10：Angular 21 Zoneless 模式下如何迁移？
-
-**迁移四步骤：**
-
-```typescript
-// 第一步：从 angular.json 移除 zone.js polyfills
-// "polyfills": ["zone.js"] → 删除
-
-// 第二步：确保组件使用 OnPush 或 Signals
-@Component({
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class MyComponent {
-  // 使用 Signals 替代部分 Observable
-  count = signal(0)
-}
-
-// 第三步：使用 resource()/httpResource() 替代手动 subscribe
-const data = httpResource(() => '/api/data')
-
-// 第四步：测试中移除 zone.js/testing
-// "polyfills": ["zone.js", "zone.js/testing"] → 删除
-```
-
-**不兼容场景：**
-- 依赖 Zone.js 自动检测的旧组件（改用 Signals + markForCheck）
-- `NgZone` API 的使用（`onStable`、`runOutsideAngular`）
-- 第三方库依赖 Zone.js 的自动检测
-
-### Q11：Angular 的 AOT 和 JIT 编译有什么区别？
-
-| 维度 | JIT（Just-in-Time） | AOT（Ahead-of-Time） |
-|------|-------------------|---------------------|
-| **编译时机** | 浏览器运行时 | 构建阶段 |
-| **包体积** | 大（需要编译器） | 小（无编译器） |
-| **启动速度** | 慢（先编译后运行） | 快（直接执行） |
-| **错误检测** | 运行时 | 编译时 |
-| **默认模式** | 开发 | **生产** |
-
-**AOT 的好处：**
-- 模板错误在构建时捕获，而非运行时
-- 减少 bundle 体积（无需在浏览器中编译模板）
-- 更快的首次渲染（无需等待编译）
-
-### Q12：Angular 中如何实现跨组件通信？
-
-| 方式 | 适用范围 | 方向 |
-|------|---------|------|
-| `@Input` / `@Output` | 父子组件 | 双向 |
-| `@ViewChild` / `@ContentChild` | 父访问子 | 父→子 |
-| `Service + DI` | 任意组件（推荐） | 全局 |
-| `provide/inject`（Angular 14+） | 组件树范围 | 祖先→后代 |
-| `@Output` + Event Bus | 任意组件 | 全局 |
-| NgRx / SignalStore | 全局状态 | 全局 |
-
-```typescript
-// ✅ 首选：Service + DI
-@Injectable({ providedIn: 'root' })
-export class SharedStateService {
-  private user = signal<User | null>(null)
-  readonly user$ = this.user.asReadonly()
-  
-  updateUser(user: User) { this.user.set(user) }
-}
-
-// 服务端注入，无需在构造函数做任何事情
-@Component({})
-export class AnyComponent {
-  private shared = inject(SharedStateService)
-  user = this.shared.user$
-}
-```
-
-### Q13：如何优化大型 Angular 应用的性能？
-
-```
-📦 构建优化
-  ├─ AOT 编译（默认）
-  ├─ 延迟加载（loadChildren）
-  └─ Tree Shaking
-
-⚡ 变更检测优化
-  ├─ OnPush 策略（最关键，20-30% 提升）
-  ├─ Signals 替代 Observable
-  └─ trackBy 函数
-
-🎨 渲染优化
-  ├─ 虚拟滚动（cdk-virtual-scroll）
-  ├─ 图片懒加载
-  └─ 避免模板中的方法调用
-
-📡 网络优化
-  ├─ HTTP 缓存 + 拦截器缓存
-  ├─ 请求合并（batch requests）
-  └─ 预加载关键资源
-
-🛠️ 工程化
-  ├─ Nx Monorepo 模块化
-  ├─ 代码规范 + ESLint
-  └─ Lighthouse CI 性能预算
-```
-
----
-
-### Q14：Standalone 组件 vs NgModule 有什么区别？
-
-| 维度 | Standalone | NgModule |
-|------|-----------|----------|
-| 导入方式 | 组件内 `imports` | NgModule 内 `imports` |
-| 模块文件 | ❌ 不需要 | ✅ 需要 |
-| 懒加载 | ✅ 支持 | ✅ 支持 |
-| 推荐度 | ✅ Angular 17+ 推荐 | ⚠️ 旧项目兼容 |
-| 适用场景 | 新项目 | 遗留项目 |
-
-### Q15：纯管道 vs 非纯管道的区别？
-
-- **纯管道**：只在输入值变化时重新计算（通过引用比较），性能好
-- **非纯管道**：每次变更检测都重新计算，性能较差
-
-```typescript
-@Pipe({ name: 'pure', pure: true })    // 纯管道
-@Pipe({ name: 'impure', pure: false }) // 非纯管道
-```
-
-### Q16：Angular 模块加载方式有哪些？
-
-```
-Eager（立即加载）: 在 AppModule 中直接导入 → 包含在初始 Bundle 中
-Lazy（懒加载）: loadChildren / loadComponent → 按需加载代码块
-Preload（预加载）: PreloadAllModules → 在初始加载后后台加载
-```
-
-### Q17：Angular 有哪些跨平台能力？
-
-```
-Web        → @angular/platform-browser
-Mobile     → @angular/platform-browser + Capacitor/Cordova
-Native     → NativeScript (Angular + NativeScript)
-SSR        → @angular/ssr (Angular Universal)
-Desktop    → Electron + Angular
-PWA        → @angular/service-worker
-```
-
-### Q18：Angular 变更检测与 React 的区别？
-
-| 维度 | Angular | React |
-|------|---------|-------|
-| **检测方式** | Zone.js 自动 | 手动 setState |
-| **检测粒度** | 组件级 | 组件级 |
-| **优化策略** | OnPush + Signals | memo + useMemo |
-| **调度机制** | Zone.js 调度 | Fiber 调度器 |
-
-```typescript
-// Angular：Zone.js 自动检测
-@Component({
-  template: `<p>{{ data }}</p>`
-})
-export class MyComponent {
-  data = 'initial';
-  update() {
-    this.data = 'updated';  // Zone.js 自动触发检测
-  }
-}
-
-// React：手动触发
-function MyComponent() {
-  const [data, setData] = useState('initial');
-  const update = () => setData('updated');  // 手动触发
-}
-```
-
-### Q19：Angular DI 与 React Context 的区别？
-
-| 维度 | Angular DI | React Context |
-|------|-----------|---------------|
-| **层级** | 多级注入器 | 单一 Provider |
-| **性能** | 精确更新 | 全量更新 |
-| **类型安全** | 强类型 | 较弱 |
-| **Tree-shaking** | 支持 | 不支持 |
-
-### Q20：Angular Signals 与 Vue 3 Signals 的区别？
-
-| 维度 | Angular Signals | Vue 3 Signals |
-|------|----------------|---------------|
-| **实现方式** | Signal 函数 | Proxy |
-| **依赖追踪** | 手动 read() | 自动 getter |
-| **更新粒度** | Signal 级 | 组件级 |
-| **生态整合** | RxJS 深度整合 | 独立生态 |
-
 
 ## 总结与最佳实践
 

@@ -62,14 +62,11 @@ export default withMermaid(defineConfig({
         activeMatch: '/S2-框架深入/',
         items: [
           { text: '📖 阶段概览', link: '/S2-框架深入/' },
-          { text: '🟢 Vue3 学习指南', link: '/S2-框架深入/01-Vue3学习指南' },
-          { text: '🟢 Vue3', link: '/S2-框架深入/02-Vue3' },
-          { text: '🔵 React19 学习指南', link: '/S2-框架深入/03-React19学习指南' },
-          { text: '🔵 React19', link: '/S2-框架深入/04-React19' },
-          { text: '🔴 Angular21 学习指南', link: '/S2-框架深入/05-Angular21学习指南' },
-          { text: '🔴 Angular21', link: '/S2-框架深入/06-Angular21' },
-          { text: '⚖️ 框架对比', link: '/S2-框架深入/07-框架对比' },
-          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/08-Vue3.0源码深度解析' },
+          { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
+          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
+          { text: '🔵 React19', link: '/S2-框架深入/02-React19' },
+          { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
+          { text: '⚖️ 框架对比', link: '/S2-框架深入/04-框架对比' },
         ]
       },
       {
@@ -100,8 +97,8 @@ export default withMermaid(defineConfig({
           { text: '🔒 Axyom ACL & HTTP Decorator Library', link: '/S4-面试冲刺/07-Axyom ACL & HTTP Decorator Library' },
           { text: '📋 Axyom-Form 项目技术分析', link: '/S4-面试冲刺/08-Axyom-Form 项目技术分析' },
           { text: '📊 Axyom-Table 项目技术分析', link: '/S4-面试冲刺/09-Axyom-Table 项目技术分析' },
-          { text: '📈 Prometheus+Grafana', link: '/S4-面试冲刺/10-Prometheus+Grafana' },
           { text: '🏗️ FMS-UI企业级融合管理系统', link: '/S4-面试冲刺/11-FMS-UI企业级融合管理系统' },
+          { text: '📈 Prometheus+Grafana', link: '/S4-面试冲刺/10-Prometheus+Grafana' },
         ]
       },
       {
@@ -142,9 +139,6 @@ export default withMermaid(defineConfig({
       },
       { text: '题库', link: '/quiz/' },
     ],
-
-    sidebar: false,
-
     socialLinks: [
       { icon: 'github', link: 'https://github.com/KMaybe01/common' }
     ],
