@@ -152,6 +152,7 @@ async function correctiveRAG(query: string) {
 }
 
 async function evaluateRelevance(query: string, docs: string[]): Promise<number> {
+  // 需要 @langchain/community cross-encoder 模型 (如 HuggingFaceCrossEncoder)
   const scores = await Promise.all(docs.map(d => crossEncoder(query, d)));
   return Math.max(...scores);
 }
@@ -296,9 +297,7 @@ export class TextSplitter {
         chunks.push(currentChunk.trim());
         currentChunk = para;
       } else {
-        currentChunk = currentChunk ? currentChunk + '
-
-' + para : para;
+        currentChunk = currentChunk ? currentChunk + '\n\n' + para : para;
       }
     }
     if (currentChunk) chunks.push(currentChunk.trim());
@@ -342,14 +341,14 @@ export class VectorStoreManager {
 
   // 📥 添加文档到向量库
   async addDocuments(docs: Array<{ content: string; metadata?: Record<string, unknown> }>): Promise<void> {
-    const index = this.pinecone.Index(this.config.indexName);
+    const index = this.pinecone.index(this.config.indexName);
     const lcDocs = docs.map(d => new LCDocument({ pageContent: d.content, metadata: d.metadata || {} }));
     await PineconeStore.fromDocuments(lcDocs, this.embeddings, { pineconeIndex: index, namespace: this.config.namespace });
   }
 
   // 🔍 语义搜索
   async search(query: string, topK = 5): Promise<Array<{ content: string; metadata: Record<string, unknown>; score: number }>> {
-    const index = this.pinecone.Index(this.config.indexName);
+    const index = this.pinecone.index(this.config.indexName);
     const vectorStore = new PineconeStore(this.embeddings, { pineconeIndex: index, namespace: this.config.namespace });
     const results = await vectorStore.similaritySearchWithScore(query, topK);
     return results.map(([doc, score]) => ({ content: doc.pageContent, metadata: doc.metadata as Record<string, unknown>, score }));
@@ -364,7 +363,7 @@ export class VectorStoreManager {
 import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
+import { RunnableSequence, RunnablePassthrough, RunnableLambda } from '@langchain/core/runnables';
 import { VectorStoreManager } from './vector-store';
 
 export interface RAGResponse { answer: string; sources: Array<{ content: string; score: number }> }
@@ -391,14 +390,10 @@ export class RAGChain {
 用户问题：{question}
 回答：`);
 
-    const retriever = RunnablePassthrough.fromConfig<{ question: string }>(
-      async (input) => {
+    const retriever = RunnableLambda.from(
+      async (input: { question: string }) => {
         const results = await this.vectorStore.search(input.question, 5);
-        return results.map(r => r.content).join('
-
----
-
-');
+        return results.map(r => r.content).join('\n\n---\n\n');
       }
     );
 
@@ -452,6 +447,18 @@ graph TD
 
 ```typescript
 // lib/hybrid-search.ts
+interface ScoredResult {
+  content: string;
+  metadata: Record<string, unknown>;
+  score: number;
+}
+
+interface RankedResult {
+  content: string;
+  metadata: Record<string, unknown>;
+  score: number;
+}
+
 export class HybridSearch {
   private vectorStore: VectorStoreManager;
   
@@ -541,7 +548,7 @@ export class SemanticChunker {
     const breaks: number[] = [0];
     
     for (let i = 1; i < sentences.length; i++) {
-      const similarity = cosineSimilarity(embeddings[i - 1], embeddings[i]);
+      const similarity = this.cosineSimilarity(embeddings[i - 1], embeddings[i]);
       if (similarity < 0.5) breaks.push(i); // 语义转折点
     }
     
@@ -581,6 +588,8 @@ graph LR
 
 ```typescript
 // 查询重写器
+import { ChatOpenAI } from '@langchain/openai';
+
 export class QueryRewriter {
   constructor(private llm: ChatOpenAI) {}
 
