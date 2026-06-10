@@ -1396,11 +1396,14 @@ function promiseAll(promises) {
     var resolvedCounter = 0;
     var promiseNum = promises.length;
     var resolvedResult = [];
+    if (promiseNum === 0) {
+      return resolve([]);
+    }
     for (let i = 0; i < promiseNum; i++) {
       Promise.resolve(promises[i]).then(value=>{
         resolvedCounter++;
         resolvedResult[i] = value;
-        if (resolvedCounter == promiseNum) {
+        if (resolvedCounter === promiseNum) {
             return resolve(resolvedResult)
           }
       },error=>{
@@ -1938,23 +1941,17 @@ console.log(uniqueArray(arr));         // [1, 2, 3, 4]
 利用模 3 余数确定第一个逗号位置，剩余部分按每三位一组用 `.match(/\d{3}/g)` 分割。
 
 ```javascript
-let format = n => {
-    let num = n.toString()
-    let decimals = ''
-    num.indexOf('.') > -1 ? decimals = num.split('.')[1] : decimals
-    let len = num.length
-    if (len <= 3) {
-        return num
-    } else {
-        let temp = ''
-        let remainder = len % 3
-        decimals ? temp = '.' + decimals : temp
-        if (remainder > 0) {
-            return num.slice(0, remainder) + ',' + num.slice(remainder, len).match(/\d{3}/g).join(',') + temp
-        } else {
-            return num.slice(0, len).match(/\d{3}/g).join(',') + temp
-        }
-    }
+function format(n) {
+    const [intPart, ...decParts] = n.toString().split('.')
+    const decPart = decParts.length ? '.' + decParts.join('') : ''
+    const sign = intPart.startsWith('-') ? '-' : ''
+    const digits = sign ? intPart.slice(1) : intPart
+    if (digits.length <= 3) return n.toString()
+    const remainder = digits.length % 3
+    const result = remainder > 0
+      ? digits.slice(0, remainder) + ',' + digits.slice(remainder).match(/\d{3}/g).join(',')
+      : digits.match(/\d{3}/g).join(',')
+    return sign + result + decPart
 }
 
 console.log(format(1234567));      // '1,234,567'
@@ -2010,8 +2007,9 @@ console.log(jsonToTree(data));
 
 ```javascript
 function parseParam(url) {
-  const paramsStr = /.+\?(.+)$/.exec(url)[1];
-  const paramsArr = paramsStr.split('&');
+  const match = /.+\?(.+)$/.exec(url);
+  if (!match) return {};
+  const paramsArr = match[1].split('&');
   let paramsObj = {};
   paramsArr.forEach(param => {
     if (/=/.test(param)) {
@@ -2233,17 +2231,13 @@ function handleRes(res) {
 深度遍历时记录父级引用链，每访问一个子对象就与所有祖先对象比对，有相同则存在循环引用。
 
 ```javascript
-const isCycleObject = (obj,parent) => {
+function isCycleObject(obj, parent) {
     const parentArr = parent || [obj];
-    for(let i in obj) {
-        if(typeof obj[i] === 'object') {
-            let flag = false;
-            parentArr.forEach((pObj) => {
-                if(pObj === obj[i]){ flag = true; }
-            })
-            if(flag) return true;
-            flag = isCycleObject(obj[i],[...parentArr,obj[i]]);
-            if(flag) return true;
+    for (const key of Object.keys(obj)) {
+        const val = obj[key];
+        if (typeof val === 'object' && val !== null) {
+            if (parentArr.includes(val)) return true;
+            if (isCycleObject(val, [...parentArr, val])) return true;
         }
     }
     return false;
@@ -3020,7 +3014,7 @@ function myStringify(data) {
     key => typeof data[key] !== 'function' && typeof data[key] !== 'symbol' && data[key] !== undefined
   )
   const pairs = keys.map(key => `"${key}":${myStringify(data[key])}`)
-  return `{${pairs.join(',')&#125;&#125;`
+  return `{${pairs.join(',')}}`
 }
 
 ### 7️⃣ Array 方法实现
@@ -3097,12 +3091,16 @@ graph TD
 
 ```javascript
 function reduce(arr, reduceCallback, initialValue) {
-  if (!Array.isArray(arr) || !arr.length || typeof reduceCallback !== 'function') {
+  if (!Array.isArray(arr) || typeof reduceCallback !== 'function') {
     return [];
   }
-  let hasInitialValue = initialValue !== undefined;
+  const hasInitialValue = arguments.length > 2;
+  if (arr.length === 0) {
+    if (hasInitialValue) return initialValue;
+    throw new TypeError('Reduce of empty array with no initial value');
+  }
   let value = hasInitialValue ? initialValue : arr[0];
-  for (let i = hasInitialValue ? 1 : 0, len = arr.length; i < len; i++) {
+  for (let i = hasInitialValue ? 0 : 1, len = arr.length; i < len; i++) {
     value = reduceCallback(value, arr[i], i, arr);
   }
   return value;
@@ -3137,8 +3135,7 @@ function myIndexOf(string, target) {
   if (typeof string !== 'string') {
     throw new Error('string only');
   }
-  let mt = string.match(new RegExp(target));
-  return mt ? mt.index : -1;
+  return string.indexOf(target);
 }
 
 console.log(myIndexOf('hello world', 'world')); // 6
@@ -3278,9 +3275,11 @@ const deepEqual = function (x, y) {
   if ((typeof x === 'object' && x != null) && (typeof y === 'object' && y != null)) {
     if (Object.keys(x).length !== Object.keys(y).length) return false;
     for (let prop in x) {
-      if (y.hasOwnProperty(prop)) {
+      if (Object.prototype.hasOwnProperty.call(y, prop)) {
         if (!deepEqual(x[prop], y[prop])) return false;
-      } else { return false; }
+      } else if (Object.prototype.hasOwnProperty.call(x, prop)) {
+        return false;
+      }
     }
     return true;
   }
@@ -3563,6 +3562,10 @@ addTask(300, 3); addTask(100, 1);
 ```javascript
 function handleFetchQueue(urls, max, callback) {
   const urlCount = urls.length;
+  if (urlCount === 0) {
+    typeof callback === 'function' && callback([]);
+    return;
+  }
   const requestsQueue = [];
   const results = [];
   let i = 0;
@@ -3852,7 +3855,7 @@ class ParkingLot {
     }
   }
 
-  showLeftSites() { this.board.showLeftSapce(this.leftSites); }
+  showLeftSites() { this.board.showLeftSpace(this.leftSites); }
 }
 
 class ParkingSpace {
@@ -3866,7 +3869,7 @@ class Car {
 }
 
 class DisplayBoard {
-  showLeftSapce(n) { console.log('当前剩余' + n + '个停车位'); }
+  showLeftSpace(n) { console.log('当前剩余' + n + '个停车位'); }
 }
 
 const park = new ParkingLot(3);
@@ -3893,7 +3896,7 @@ function deepCopyBFS(origin) {
   if (target !== origin) { queue.push([origin, target]); map.set(origin, target); }
   while (queue.length) {
     let [ori, tar] = queue.shift();
-    for (let key in ori) {
+    for (const key of Object.keys(ori)) {
       if (map.get(ori[key])) { tar[key] = map.get(ori[key]); continue; }
       tar[key] = getEmpty(ori[key]);
       if (tar[key] !== ori[key]) { queue.push([ori[key], tar[key]]); map.set(ori[key], tar[key]); }
@@ -3908,7 +3911,7 @@ function deepCopyDFS(origin) {
   if (target !== origin) { stack.push([origin, target]); map.set(origin, target); }
   while (stack.length) {
     let [ori, tar] = stack.pop();
-    for (let key in ori) {
+    for (const key of Object.keys(ori)) {
       if (map.get(ori[key])) { tar[key] = map.get(ori[key]); continue; }
       tar[key] = getEmpty(ori[key]);
       if (tar[key] !== ori[key]) { stack.push([ori[key], tar[key]]); map.set(ori[key], tar[key]); }
