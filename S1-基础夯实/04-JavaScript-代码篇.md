@@ -1,8 +1,7 @@
-﻿# 🌐 JavaScript 浏览器 Web API & 手写实现
+﻿# 🌐 JavaScript 手写实现
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：2 天
-> 浏览器 Web API、20+ 手写代码实现、经典代码输出题
-> 📌 本文件是 [`03-JavaScript-核心.md`](./03-JavaScript-核心.md) 的姊妹篇，请先掌握核心语言基础后再学习本篇
+>
 
 ---
 
@@ -1145,7 +1144,7 @@ flowchart LR
 
 ---
 
-## ✍️ 十一、手写代码实现
+## ✍️ 一、手写代码实现
 
 ### 1️⃣ JavaScript基础
 
@@ -4011,7 +4010,7 @@ function merge(target, ...sources) {
 
 
 
-## 💻 十四、代码输出题
+## 💻 二、代码输出题
 
 ```mermaid
 mindmap
@@ -4139,7 +4138,7 @@ console.log(4);
 sequenceDiagram
     participant M as 宏任务
     participant μ as 微任务
-    
+
     Note over M: 第一轮宏任务: script
     M->>μ: Promise.resolve().then
     M->>M: timer1加入宏任务队列
@@ -4453,7 +4452,7 @@ sequenceDiagram
     participant S as 同步
     participant μ as 微任务
     participant M as 宏任务
-    
+
     S->>S: 打印 3
     S->>S: 进入p打印7
     S->>M: 定时器加入宏任务
@@ -5006,7 +5005,7 @@ flowchart TD
         B --> C{"a in target?"}
         C -->|是| D["返回 target.a = 1"]
         C -->|否| E["返回 not found"]
-        
+
         F["proxy.b = 3"] --> G{"set陷阱"}
         G --> H["打印 set b = 3"]
         H --> I["target.b = 3"]
@@ -5113,7 +5112,7 @@ flowchart TD
     E --> F["Parent.prototype.__proto__"]
     F --> G["Object.prototype"]
     G --> H["null"]
-    
+
     C --> I["Child.prototype.constructor"]
     I --> J["Child"]
     E --> K["Parent.prototype.constructor"]
@@ -5130,11 +5129,11 @@ flowchart TD
 class Foo {
   static count = 0;
   #secret = 'hidden';
-  
+
   constructor() {
     Foo.count++;
   }
-  
+
   getSecret() {
     return this.#secret;
   }
@@ -5283,49 +5282,5 @@ flowchart TD
 
 **解析：** WeakMap 的 key 是**弱引用**，不会阻止垃圾回收。当 `obj = null` 断开强引用后，对象没有其他强引用指向它，会被 GC 回收。此时 `wm.has(obj)` 传入 `null`，返回 false（且 WeakMap 已经自动清除了该键值对）。WeakMap 不可迭代，没有 `size` 属性，key 必须是对象。**注意**：`wm.has(obj)` 中 obj 已经是 null，WeakMap 的 key 只能是对象，所以这里实际传入了 null，返回 false。设计上 WeakMap 不允许原始值作为 key，传入非对象会抛出 TypeError，但 null 不会报错，而是返回 false。更准确地说，WeakMap 中已无该键值对，`wm.has(null)` 返回 false。
 
-**WeakMap 的主要用途：** 存储 DOM 节点的元数据（节点被移除后自动清理，防止内存泄漏）、缓存私有数据。
+**WeakMap 的主要用途：** 存储 DOM 节点的元数据（节点被移除后自动清理，防止内存泄漏）、缓存私有数据
 
----
-
-## 📋 总结
-
-```mermaid
-mindmap
-  root((现代 JavaScript))
-    ES2020+
-      可选链 ?.
-      空值合并 ??
-      globalThis
-      Promise.allSettled
-    ES2022
-      Top-level await
-      Error cause
-      Promise.withResolvers
-      Array.fromAsync
-      .at（） 方法
-    ES2023+
-      Array findLast/findLastIndex
-      Immutable Array (toSorted/toReversed)
-      Hashbang Grammar
-      Set 新方法
-      Iterator Helpers
-    ES2024+
-      Object.groupBy / Map.groupBy
-      RegExp v flag (Unicode Sets)
-      JSON.rawJSON
-      Promise.try()
-    Web API
-      IntersectionObserver: 懒加载/曝光
-      ResizeObserver: 自适应
-      MutationObserver: DOM监控
-      AbortController: 请求中止
-      PerformanceObserver: 性能监控
-      BroadcastChannel: 跨标签通信
-      Navigation API: 前端路由
-      File System Access: 本地读写
-      Screen Wake Lock: 屏幕常亮
-      Clipboard API: 异步剪贴板
-    新工具
-      structuredClone: 深度克隆
-      WeakRef / FinalizationRegistry: 弱引用
-```

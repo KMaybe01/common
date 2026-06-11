@@ -54,7 +54,7 @@ export default withMermaid(defineConfig({
           { text: '🌐 HTML', link: '/S1-基础夯实/01-HTML' },
           { text: '🎨 CSS', link: '/S1-基础夯实/02-CSS' },
           { text: '⚡ JavaScript 核心', link: '/S1-基础夯实/03-JavaScript-核心' },
-          { text: '🧩 JavaScript WebAPI', link: '/S1-基础夯实/04-JavaScript-WebAPI' },
+          { text: '🧩 JavaScript 代码篇', link: '/S1-基础夯实/04-JavaScript-代码篇' },
         ]
       },
       {
@@ -63,10 +63,10 @@ export default withMermaid(defineConfig({
         items: [
           { text: '📖 阶段概览', link: '/S2-框架深入/' },
           { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
-          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
           { text: '🔵 React19', link: '/S2-框架深入/02-React19' },
           { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
           { text: '⚖️ 框架对比', link: '/S2-框架深入/04-框架对比' },
+          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
         ]
       },
       {
@@ -75,10 +75,10 @@ export default withMermaid(defineConfig({
         items: [
           { text: '📖 阶段概览', link: '/S3-进阶提升/' },
           { text: '💡 算法题解', link: '/S3-进阶提升/04-算法题解' },
-          { text: '🚀 性能优化', link: '/S3-进阶提升/02-性能优化' },
-          { text: '🏗️ 前端工程化', link: '/S3-进阶提升/03-前端工程化' },
-          { text: '🌍 浏览器原理', link: '/S3-进阶提升/01-浏览器原理' },
           { text: '🌐 计算机网络', link: '/S3-进阶提升/05-计算机网络' },
+          { text: '🏗️ 前端工程化', link: '/S3-进阶提升/03-前端工程化' },
+          { text: '🚀 性能优化', link: '/S3-进阶提升/02-性能优化' },
+          { text: '🌍 浏览器原理', link: '/S3-进阶提升/01-浏览器原理' },
           { text: '📊 前端监控与埋点', link: '/S3-进阶提升/06-前端监控与埋点' },
           { text: '📦 Node.js与服务端', link: '/S3-进阶提升/07-Node.js与服务端' },
         ]
