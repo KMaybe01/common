@@ -383,3 +383,499 @@ spec:
 > 3. **转发机制**：AlertManager 通过 Webhook 发送告警到 SNMP 网关，网关将告警转换为 SNMP Trap
 > 4. **OID 树管理**：遵循 3GPP TS 28.552 定义的 OID 树结构，符合电信行业标准
 > 5. **双通道**：Prometheus/Grafana 用于内部可视化运维，SNMP Trap 用于上报到顶层 NMS
+
+---
+
+## 十二、Prometheus 核心原理深度解析
+
+### 12.1 TSDB 本地存储引擎
+
+#### 内存数据结构：memSeries
+
+Prometheus 在内存中使用 `memSeries` 结构存储时间序列，一条时间序列对应一个 `memSeries`：
+
+| 字段 | 说明 |
+|------|------|
+| `ref` | 递增的 uint64 正整数，作为 series 的唯一标识。不用 hash 是因为 hash random 且不利于索引压缩 |
+| `lset` | 识别该 series 的 label 集合 |
+| `headChunk` | 当前活跃的 memChunk，存储最近一段时间内的 sample 集合 |
+| `mmappedChunks` | 已持久化到磁盘但仍在内存中保留引用的 chunk |
+| `sampleBuf` | 最近 4 个 sample 的缓存，用于 Gorilla 压缩算法 |
+
+**ref 的生成逻辑**（源码 `head.go`）：
+
+```go
+// 使用递增正整数而非 hash，因为 hash random 且不利于 postings 压缩
+id := atomic.AddUint64(&h.lastSeriesID, 1)
+```
+
+#### 哈希表与分片锁（stripeSeries）
+
+Prometheus 维护两张哈希表：
+- `series map[uint64]*memSeries` — ref 到 memSeries 的映射
+- `hashes map[uint64][]*memSeries` — label 哈希值到 memSeries 的映射
+
+**锁优化：分片锁（striped locking）**
+
+默认将哈希表拆分为 `1 << 14 = 16384` 个小哈希表，每个小表独立加锁：
+- 查询时根据 ref 对 16384 取模找到对应的分片，只需锁单个分片
+- 取模使用位运算 `&` 而非 `%`（前提是分片数为 2^n）
+- 大大降低锁竞争，提升读写吞吐量
+
+```go
+type stripeSeries struct {
+    size   int
+    series []map[uint64]*memSeries
+    hashes []seriesHashmap
+    locks  []stripeLock
+}
+
+func (s *stripeSeries) getByHash(hash uint64, lset labels.Labels) *memSeries {
+    i := hash & uint64(s.size-1) // 位运算取模
+    s.locks[i].RLock()
+    defer s.locks[i].RUnlock()
+    return s.hashes[i].get(hash, lset)
+}
+```
+
+#### WAL（Write-Ahead Log）
+
+| 特性 | 说明 |
+|------|------|
+| **Segment 文件** | 连续编号，默认 128MB 上限，写入 32KB 页面 |
+| **Checkpoint** | 内存数据持久化后清理冗余 segment，剩余有用数据移至 checkpoint |
+| **Record 类型** | series 和 samples 以 Record 形式批量写入 |
+| **恢复机制** | 重启时先加载 checkpoint，再按序加载各 segment |
+
+#### 磁盘数据结构
+
+```
+data/
+├── 01GJ2H3K4L5M6N7O8P9Q0R/   # Block 目录
+│   ├── index                  # 倒排索引（label → series）
+│   ├── chunks/                # 压缩后的 sample 数据（最大 512MB 每段）
+│   │   ├── 000001
+│   │   └── 000002
+│   ├── tombstones             # 删除标记（延迟清理）
+│   └── meta.json              # block 元信息
+├── wal/
+│   ├── checkpoint.000001/
+│   └── 000002
+└── queries.active            # 当前活跃查询记录
+```
+
+**关键参数：**
+- 每个 Block 默认 2 小时时间窗口
+- `--storage.tsdb.retention.time`：数据保留时间（默认 15d）
+- `--storage.tsdb.retention.size`：数据保留大小限制
+- `--storage.tsdb.max-block-duration`：最大 block 时长
+
+#### Compaction（块压缩合并）
+
+- **标记删除**：删除 series 时先记录 tombstone，合并时统一清理
+- **合并操作**：将多个小 block 合并为大 block，减少查询时的 block 遍历数
+- **chunk 重构**：合并时重新压缩 chunk 数据，提升压缩率
+- **过期数据删除**：超过 retention 时间的 block 整目录删除
+
+### 12.2 倒排索引原理
+
+#### 数据结构
+
+```go
+type MemPostings struct {
+    mtx     sync.RWMutex
+    m       map[string]map[string][]uint64  // label name → label value → []series ref
+    ordered bool
+}
+```
+
+#### 索引过程
+
+当 Prometheus 采集到一个新的 series `node_cpu_seconds_total{mode="user", cpu="0", instance="1.1.1.1:9100"}`（ref = x），倒排索引更新如下：
+
+```
+MemPostings.m["__name__"]["node_cpu_seconds_total"] = {..., x, ...}
+MemPostings.m["mode"]["user"]                       = {..., x, ...}
+MemPostings.m["cpu"]["0"]                           = {..., x, ...}
+MemPostings.m["instance"]["1.1.1.1:9100"]           = {..., x, ...}
+```
+
+#### 查询匹配
+
+```
+求 node_cpu_seconds_total{mode="user"}
+= {1,2,3,5,7,8} & {10,2,3,4,6,8} → 交集 → {2,3,8}
+```
+
+通过保持每个 label pair 内的 series 有序，将交集复杂度从 O(n²) 降为 O(n)。
+
+#### 高基数（Cardinality）判断
+
+**三种定位方法：**
+
+| 方法 | 命令/接口 | 说明 |
+|------|----------|------|
+| TSDB Status API | `GET /api/v1/status/tsdb` | 基于内存倒排索引取 top10 最大堆，展示 seriesCountByMetricName |
+| Query Log | 配置 `query_log_file` | 分析 queryPreparationTime 耗时 |
+| PromQL 统计 | `topk(5, count({__name__=~".+"}) by (__name__) > 100)` | 实时统计各 metric 的 series 数量 |
+
+**高基数原因：**
+- 标签值过多。例如 histogram 类型，若 bucket 有 20 个 le 值，再加上 3 个各有 100 个值的标签，则 series 数可达 `100×100×100×20 = 2kw`
+- 典型高基数指标：`apiserver_request_duration_seconds_bucket`、`etcd_request_duration_seconds_bucket`
+
+### 12.3 Gorilla 压缩算法
+
+参考 Facebook 2016 年论文 *Gorilla: A Fast, Scalable, In-Memory Time Series Database*。
+
+| 指标 | 数值 |
+|------|------|
+| 原始大小 | 16 byte / data point（timestamp 8B + value 8B） |
+| 压缩后 | ~1.37 byte / data point |
+| 压缩比 | 11.6x |
+| Block 窗口 | 2 小时 |
+
+#### DOD（Delta of Delta）压缩 Timestamp
+
+由于时序数据采集间隔基本稳定（如 15s），timestamp 的 delta 值变化很小，采用不等长编码：
+
+```
+Timestamps:  T1=02:01:02  T2=02:02:02  T3=02:03:02
+Delta:       D1=60s       D2=60s       D3=60s      (64 bits each)
+DOD:         62           '10':-2      '0'         (不等长编码)
+Bit length:  64           14           9           1
+```
+
+理想情况下（无丢点），后续 DOD 全为 0，只需 1 bit。
+
+#### XOR 压缩 Value
+
+时序数据相邻点变化不大 → 异或后前导 0 和后缀 0 较多 → 用少量 bit 存储有效中间位
+
+压缩效果取决于曲线波动情况：越平滑压缩越好，越剧烈压缩越差。
+
+### 12.4 Range Query 执行过程详解
+
+#### 查询阶段耗时分解
+
+```
+ExecTotalTime = ExecQueueTime + EvalTotalTime
+EvalTotalTime = QueryPreparationTime + InnerEvalTime + ResultSortTime
+```
+
+| 阶段 | 对应耗时 | 说明 |
+|------|---------|------|
+| ExecQueueTime | 队列等待时间 | 参数 `--query.max-concurrency`（默认 20），高则说明慢查询占满队列 |
+| QueryPreparationTime | 准备 querier + select series | 最易成为瓶颈，涉及倒排索引查询和 series 加载 |
+| InnerEvalTime | 内存中执行 PromQL eval | 涉及解压 chunk、聚合计算 |
+| ResultSortTime | 结果排序 | 通常耗时最低 |
+
+**查询过程源码路径（`web/api/v1/api.go`）：**
+
+```
+queryRange → NewRangeQuery(解析promql) → exec(设置超时+进入队列)
+  → execEvalStmt → Querier(获取查询器) → populateSeries(Select)
+    → blockQuerier.Select → PostingsForMatchers(倒排索引匹配)
+    → newBlockSeriesSet(加载chunk) → evaluator.Eval(执行聚合)
+```
+
+#### Heavy Query 原因
+
+- 查询涉及大量 series（10w~100w），解压后内存暴增
+- 1 个 heavy_query：1 万个 series × 24 小时 × 30 秒/点 × 16 byte = 439 MB
+- 多个 heavy_query 并发 → OOM
+
+#### 保护参数
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `--query.max-concurrency` | 最大并发查询数 | 20 |
+| `--query.max-samples` | 单查询最大加载样本数 | 50,000,000 |
+| `--storage.remote.read-sample-limit` | remote_read 最大加载点数 | 5e7 |
+| `--storage.remote.read-concurrent-limit` | remote_read 并发数 | 10 |
+
+#### Query Log 配置
+
+```yaml
+global:
+  query_log_file: /opt/logs/prometheus_query_log
+```
+
+日志包含每阶段耗时，可用于定位慢查询。
+
+### 12.5 Recording Rules 预聚合
+
+#### 原理
+
+Prometheus 把 Recording Rule 和 Alerting Rule 统一处理：同一套 Eval 循环，查询结果直接通过 `app.Add(s.Metric, s.T, s.V)` 写入 TSDB。
+
+```go
+// rules/manager.go
+for _, s := range vector {
+    app.Add(s.Metric, s.T, s.V)  // 预计算结果写入 TSDB
+}
+```
+
+#### 配置示例
+
+```yaml
+groups:
+  - name: example
+    interval: 30s
+    rules:
+      - record: node:avg_cpu_usage:5m
+        expr: avg(1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) * 100
+```
+
+#### 收益
+
+| 维度 | 实时查询 | 预聚合后 |
+|------|---------|---------|
+| 加载 series 数 | 10 万 | 几个 |
+| 仪表盘加载 | 10+ 秒 | <1 秒 |
+| 计算复杂度 | O(n²) | O(1) |
+| 代价 | — | 约 10% 额外存储 |
+
+#### 局限性
+
+- 预聚合本身也是查询，如果源查询就是高基数（`{__name__=~".+"}`），预聚合也无法提速
+- 预聚合条件需提前定义，无法随意组合
+
+### 12.6 Alertmanager 核心机制
+
+#### 架构功能
+
+| 功能 | 说明 |
+|------|------|
+| **分组（Grouping）** | 同一告警组内共享参数，`group_wait` 首次等待 / `group_interval` 组内聚合间隔 / `repeat_interval` 重复发送间隔 |
+| **路由（Routing）** | 路由匹配树，支持按 job/severity 等标签分流到不同 receiver |
+| **抑制（Inhibition）** | 当 critical 告警触发时抑制同源的 warning 告警，防止告警风暴 |
+| **静默（Silencing）** | 通过 API `POST /api/v2/silences` 创建，支持按标签匹配、定时静默 |
+| **去重（Deduplication）** | 多个 Prometheus 发送同一条告警，Alertmanager 集群通过 gossip 去重 |
+| **高可用（HA）** | Gossip 协议同步告警状态、静默信息 |
+
+#### Gossip 同步内容
+
+- 新接收的告警信息（含通知发送状态）
+- 静默（Silence）信息
+- 配置文件（inhibit、route 等静态配置不参与 gossip）
+
+#### 告警分组关键参数
+
+```yaml
+route:
+  group_by: ['alertname']        # 按 alertname 分组
+  group_wait: 10s                # 新告警组首次等待，积累更多同类告警
+  group_interval: 5m             # 组内已有告警的聚合等待间隔
+  repeat_interval: 4h            # 已发送告警的重复间隔
+```
+
+#### 抑制规则示例
+
+```yaml
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['instance']          # 同 instance 的 critical 抑制 warning
+```
+
+### 12.7 服务发现模式
+
+#### 支持的发现源
+
+| 模式 | 适用场景 |
+|------|---------|
+| `kubernetes_sd_config` | K8s 下自动发现 pod/service/node/endpoint/ingress |
+| `consul_sd_config` | 与 CMDB 联动，服务注册中心 |
+| `file_sd_config` | 自定义文件接口，兼容任意运维系统 |
+| `dns_sd_config` | 基于 DNS A/AAAA/SRV 记录发现 |
+| `ec2_sd_config` | AWS 云环境 |
+| `azure_sd_config` | Azure 云环境 |
+
+#### 文件服务发现（与 CMDB 对接的最佳方案）
+
+```yaml
+# prometheus.yml
+scrape_configs:
+  - job_name: 'ECS'
+    file_sd_configs:
+      - files:
+          - /opt/prometheus/sd/file_sd.json
+        refresh_interval: 5m
+```
+
+```json
+[
+  {
+    "targets": ["172.20.70.205:9100"],
+    "labels": {
+      "env": "prod",
+      "group": "inf",
+      "project": "monitor",
+      "region": "ap-south-1"
+    }
+  }
+]
+```
+
+**优势**：不依赖特定服务发现源，只要正确给出 JSON/YAML 文件即可，与 CMDB/服务树完美匹配。
+
+### 12.8 Remote Read 为何比直接查询慢
+
+#### 现象
+
+相同查询条件下，remote_read 比直接查询慢 2~3 倍：
+- `/api/v1/series`：7.8s（直接）vs 23.1s（remote_read）
+- `/api/v1/query_range`：3.0s（直接）vs 6.8s（remote_read）
+
+#### 根因分析
+
+1. **Fanout Storage 架构**：Prometheus 启动时将 localStorage 作为 primary，remoteStorage 作为 secondaries
+2. **Merge Querier**：查询时先并行查询 primary 和所有 secondary，再通过 `newGenericMergeSeriesSet` 做归并去重
+3. **Heap 去重开销**：merge 过程中将所有 series 推入堆中排序去重，增加遍历开销
+4. **网络传输与序列化**：remote_read 涉及 Protobuf 序列化/反序列化、HTTP 传输
+
+```go
+// storage/fanout.go
+fanoutStorage = storage.NewFanout(logger, localStorage, remoteStorage)
+
+// 查询时转化为 NewMergeQuerier，支持 concurrentSelect
+// 有 secondary 时开启并发 Select，之后 heap merge 去重
+```
+
+**最佳实践**：无论何种查询，都应使用聚合避免过多 series（官方建议 < 20 个 series 用于仪表盘渲染）。
+
+### 12.9 Federation 联邦的正确用法
+
+#### 常见误区
+
+将联邦 Prometheus 作为统一查询入口，从上游 Prometheus 采集全部数据 → 数据量巨大时导致联邦节点 OOM。
+
+#### 正确姿势
+
+使用 `match[]` 过滤，将数据分类：
+
+```yaml
+scrape_configs:
+  - job_name: 'federate'
+    metrics_path: '/federate'
+    params:
+      'match[]':
+        - '{__name__=~"job:.*"}'        # 只采集预聚合结果
+        - '{job="prometheus"}'
+```
+
+| 类别 | 采集策略 | 用途 |
+|------|---------|------|
+| 需要再聚合的数据 | 联邦收集 | 在各联邦上执行预聚合和告警 |
+| 其余数据 | 保留在采集器本地 | 本地查询，避免传输开销 |
+
+**统一查询的正确方案**：使用 `multi_remote_read` 而非联邦。
+
+**模拟降采样**：在联邦级别配置更大的 `scrape_interval`（如 5m），但这是随机选点而非真正的降采样（真实降采样需要 avg/max/min 等聚合算法支持）。
+
+### 12.10 Histogram 与 Summary 对比
+
+| 对比点 | Histogram | Summary |
+|--------|-----------|---------|
+| **计算位置** | 服务端（Prometheus） | 客户端（Exporter） |
+| **查询表达式** | `histogram_quantile(0.95, sum(rate(x_bucket[5m])) by (le))` | `x_summary{quantile="0.95"}` |
+| **客户端开销** | 低（仅累加 counter） | 高（流式分位数计算） |
+| **服务端开销** | 高（实时计算 + bucket 高基数） | 低（类似 gauge 查询） |
+| **聚合支持** | 支持（sum/avg 等） | 不支持（分位值无法跨实例聚合） |
+| **全局分位值** | 支持 | 不支持 |
+| **误差控制** | 随 bucket 精度变化（线性插值法） | φ 维度可配置 |
+| **配置要求** | 选择合适的 buckets | 选择 φ 分位数和滑动窗口 |
+
+**分位值计算原理**（以 95 分位为例）：将采集到的数据从小到大排列，取第 95 个位置的值。平均值会削峰填谷，高分位忽略长尾数据，适用于大部分用户场景。金融支付等场景需要 100% 成功则不适用。
+
+**Histogram 线性插值法**：假设数据在 bucket 范围内均匀分布，按比例估算分位值。误差随 bucket 增大而增大。
+
+### 12.11 Loki 日志系统
+
+#### 核心优势
+
+| 特性 | 说明 |
+|------|------|
+| **低索引开销** | 只对标签索引，不对日志内容索引。索引大小比日志量小一个数量级 |
+| **标签一致性** | 与 Prometheus 使用相同标签体系，可直接关联指标与日志 |
+| **并发查询** | 将查询分解为分片（shard），并行 grep，支持大规模日志 |
+| **与 Grafana 集成** | 避免在 Kibana 和 Grafana 之间切换 |
+
+#### 与 Elasticsearch 对比
+
+| 对比点 | Loki | Elasticsearch |
+|--------|------|---------------|
+| 索引策略 | 仅索引标签 | 全文索引 |
+| 索引开销 | 低（比日志量小一个数量级） | 高（索引大小 ≥ 日志数据大小） |
+| 查询方式 | 标签匹配 + 并行 grep | 全文检索 |
+| 资源占用 | 查询时按需加载 | 索引常驻内存 |
+| 标签体系 | Prometheus 兼容 | 独立定义 |
+
+#### 标签与高基数
+
+**静态标签**：在 promtail 配置中固定标签（如 `job="syslog"`），生成稳定的日志流
+
+**动态标签风险**：若将 IP、用户 ID 等高基数字段设为标签，每个唯一值都会创建新流，导致高基数问题
+
+**正确做法**：
+- 默认使用少量静态标签
+- 对非标签字段使用过滤器表达式加速：`{job="apache"} |= "11.11.11.11"`
+- 仅当日志量足够大（如 chunk 能在 `max_chunk_age` 内达到 1MB 压缩大小）时才考虑添加标签
+
+#### 架构组件
+
+| 组件 | 角色 |
+|------|------|
+| **Promtail** | 日志采集器（类比 Filebeat） |
+| **Distributor** | 写入分发，基于一致性哈希环 |
+| **Ingester** | 日志存储，按标签组合并为 chunk |
+| **Querier** | 查询器，从 Ingester 和后端存储获取数据 |
+| **Query Frontend** | 查询前置，分片和缓存 |
+
+---
+
+## 十三、面试加分知识图谱
+
+### 13.1 关键技术深度对照
+
+| 知识点 | 初级理解 | 进阶理解（面试加分） |
+|--------|---------|-------------------|
+| **TSDB 存储** | Prometheus 是时序数据库，存指标数据 | memSeries 结构 + stripeSeries 分片锁 + 16384 个哈希分片 + 位运算取模 |
+| **压缩算法** | Prometheus 压缩数据节省空间 | DOD 压缩 timestamp（不等长编码）+ XOR 压缩 value（异或取有效位），16B→1.37B，11.6x |
+| **倒排索引** | Prometheus 有索引能加速查询 | MemPostings 双层 map + `[]uint64` 有序存储 + 交集 O(n²)→O(n) |
+| **查询优化** | 慢查询要优化 PromQL | query_log 分析 5 阶段耗时 + QueryPreparationTime 是最大瓶颈 |
+| **预聚合** | 用 Recording Rules 提速 | 本质同 Alert Rules，`app.Add()` 写入 TSDB，不能解决源查询高基数 |
+| **高基数** | 标签值太多导致性能问题 | tsdb-status API 取 top10 排查 + histogram 标签爆炸可到 2kw series |
+| **Remote Read** | 配置远程存储查询 | Fanout→MergeQuerier→heap merge 去重导致 2-3x 慢 |
+| **Gossip** | Alertmanager 集群同步 | 只 sync 告警状态和静默，配置不 sync |
+| **抑制 vs 静默** | 抑制是 rules，静默是 API | 抑制：条件触发时自动阻止。静默：手动创建，定时生效 |
+| **Histogram 分位值** | 用 histogram_quantile 计算 | 线性插值法 + bucket 精度影响误差 + 服务端计算开销高 |
+| **Loki 索引** | Loki 比 ES 轻量 | 无全文索引 = 低资源，但需要标签匹配 + 并行 grep 补偿 |
+
+### 13.2 典型 PromQL 优化模式
+
+```promql
+# 差实践：不加 label 过滤的全量查询（高基数）
+rate({__name__=~".*"}[5m])
+
+# 好实践：限定 job 和必要标签
+rate(smf_sess_est_msg_counters{code="2.00"}[5m])
+
+# 差实践：直接使用 histogram 原始数据做数学运算
+histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))
+
+# 好实践：先聚合再计算分位值（减少 le 之外的 label 维度）
+histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+```
+
+### 13.3 常用排障工具
+
+| 场景 | 工具/命令 | 排查要点 |
+|------|----------|---------|
+| 查询慢 | `query_log_file` | 查看 queryPreparationTime 是否过高 |
+| 告警未触发 | `promtool check rules` | 语法校验 + `promtool test rules` 单元测试 |
+| OOM | `/api/v1/status/tsdb` | 查看 SeriesCountByMetricName top10 |
+| 资源冲突 | `catalog` 工具 | 跨分支版本碰撞检测 |
+| 一致性 | `verify-resources` | ConfigMap 与 JSON 源文件比对 |

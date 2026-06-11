@@ -649,6 +649,51 @@ function PageTransition({ children }) {
 | TanStack Query | 5+ | 更精细缓存，SSR 优化 |
 | React Testing Library | 16+ | 更好的异步测试 |
 
+### 🎯 Ant Design 版本与 React 18/19 兼容性
+
+| React 版本 | Ant Design 版本 | 兼容状态 | 说明 |
+|-----------|----------------|---------|------|
+| React 16-17 | antd 4.x | ✅ 兼容 | v4 已停止功能更新，仅维护 |
+| React 18 | antd 5.x | ✅ 原生支持 | 默认完全兼容，推荐使用 |
+| React 19 | antd 5.x (≥5.22.6) | ⚠️ 需补丁 | 需安装 `@ant-design/v5-patch-for-react-19` |
+| React 18+ | antd 6.x | ✅ 原生支持 | 最低要求 React 18，无需额外补丁 |
+| React 19 | antd 6.x | ✅ 原生支持 | 完全兼容，可移除 v5 兼容补丁 |
+
+#### 升级策略
+
+```mermaid
+graph TD
+    A["当前项目"] --> B{"React 版本?"}
+    B -->|"React 18"| C["antd 5.x 直接使用<br/>无需额外配置"]
+    B -->|"React 19"| D{"Ant Design 版本?"}
+    D -->|"antd 5.x"| E["安装 @ant-design/v5-patch-for-react-19<br/>antd >= 5.22.6"]
+    D -->|"antd 6.x"| F["原生支持 React 19<br/>可移除兼容补丁"]
+    E --> G["入口文件导入补丁"]
+    F --> H["直接使用，无需额外配置"]
+```
+
+**升级路径建议：**
+
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| 1️⃣ | React 18 → React 19 | 先升级到 React 18.3（过渡版），解决废弃 API 警告后再升 19 |
+| 2️⃣ | antd 5.x 升级最新 | 确保 `antd >= 5.22.6`，获得最佳 React 19 兼容 |
+| 3️⃣ | 安装兼容补丁 | `npm install @ant-design/v5-patch-for-react-19 --save` |
+| 4️⃣ | 入口导入补丁 | `import '@ant-design/v5-patch-for-react-19'` |
+| 5️⃣ | (可选) 升级 antd 6.x | v6 原生支持 React 19，移除兼容补丁 |
+
+#### 已知问题
+
+| 问题 | 影响范围 | 解决方案 |
+|------|---------|---------|
+| Wave 点击波纹效果异常 | 全局 Button、Tag 等 | 安装兼容补丁或升级 v6 |
+| Modal/Notification/Message 静态方法失效 | `Modal.confirm()`、`message.success()` 等 | 安装兼容补丁；hooks 调用方式不受影响 |
+| `element.ref` 访问移除 | 依赖 ref 的组件 | React 19 中 `ref` 是常规 prop，避免直接访问 `element.ref` |
+| Next.js 15 + React 19 兼容 | SSR 场景 | 安装 `@ant-design/nextjs-registry` + 兼容补丁 |
+| `findDOMNode` 废弃警告 | 使用类组件的场景 | v6 已移除相关兼容逻辑，推荐迁移到函数组件 |
+
+> 💡 **升级到 antd 6.x 可完全解决上述问题**：v6 最低要求 React 18，原生支持 React 19，无需 `@ant-design/v5-patch-for-react-19` 补丁包。v5 主分支将进入 1 年维护期，不再提供功能更新。
+
 #### 2026 年前端框架格局
 
 | 框架 | 定位 | 2026 状态 |
