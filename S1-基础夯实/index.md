@@ -6,8 +6,8 @@
 
 - [🌐 HTML](./01-HTML) — HTML 语义化、HTML5 新特性、Web Components、Resource Hints、Service Worker、View Transitions、Dialog、Popover、ARIA
 - [🎨 CSS](./02-CSS) — CSS 选择器、盒模型、布局（Flex/Grid）、响应式、动画、预处理器、BEM
-- [⚡ JavaScript 核心](./03-JavaScript-核心) — 数据类型、作用域、闭包、原型链、异步编程、ES6+ 新特性
-- [🧩 JavaScript 代码篇](./04-JavaScript-代码篇) — 面试代码实现和输出
+- [⚡ JavaScript 核心](./JavaScript核心/) — 数据类型、作用域、闭包、原型链、异步编程、ES6+ 新特性
+- [🧩 JavaScript 代码篇](./JavaScript代码篇/) — 面试代码实现和输出
 
 ## 学习路线
 

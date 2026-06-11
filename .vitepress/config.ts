@@ -53,8 +53,27 @@ export default withMermaid(defineConfig({
           { text: '📖 阶段概览', link: '/S1-基础夯实/' },
           { text: '🌐 HTML', link: '/S1-基础夯实/01-HTML' },
           { text: '🎨 CSS', link: '/S1-基础夯实/02-CSS' },
-          { text: '⚡ JavaScript 核心', link: '/S1-基础夯实/03-JavaScript-核心' },
-          { text: '🧩 JavaScript 代码篇', link: '/S1-基础夯实/04-JavaScript-代码篇' },
+          {
+            text: '⚡ JavaScript 核心',
+            items: [
+              { text: '📖 总览', link: '/S1-基础夯实/JavaScript核心/' },
+              { text: '数据类型与 ES6', link: '/S1-基础夯实/JavaScript核心/01-数据类型与ES6' },
+              { text: 'JavaScript 基础', link: '/S1-基础夯实/JavaScript核心/02-JavaScript基础' },
+              { text: '原型、作用域与 this', link: '/S1-基础夯实/JavaScript核心/03-原型作用域与this' },
+              { text: '异步编程', link: '/S1-基础夯实/JavaScript核心/04-异步编程' },
+              { text: '垃圾回收/事件循环/新特性', link: '/S1-基础夯实/JavaScript核心/05-垃圾回收事件循环与新特性' },
+              { text: 'TypeScript 高频题', link: '/S1-基础夯实/JavaScript核心/06-TypeScript高频题' },
+            ]
+          },
+          {
+            text: '🧩 JavaScript 代码篇',
+            items: [
+              { text: '📖 总览', link: '/S1-基础夯实/JavaScript代码篇/' },
+              { text: '浏览器 Web API', link: '/S1-基础夯实/JavaScript代码篇/01-浏览器WebAPI' },
+              { text: '手写代码实现', link: '/S1-基础夯实/JavaScript代码篇/02-手写实现' },
+              { text: '代码输出题', link: '/S1-基础夯实/JavaScript代码篇/03-代码输出题' },
+            ]
+          },
         ]
       },
       {
@@ -63,9 +82,30 @@ export default withMermaid(defineConfig({
         items: [
           { text: '📖 阶段概览', link: '/S2-框架深入/' },
           { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
-          { text: '🔵 React19', link: '/S2-框架深入/02-React19' },
           { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
-          { text: '⚖️ 框架对比', link: '/S2-框架深入/04-框架对比' },
+          {
+            text: '🔵 React19',
+            items: [
+              { text: '📖 总览', link: '/S2-框架深入/React19/' },
+              { text: '核心基础', link: '/S2-框架深入/React19/01-核心基础' },
+              { text: '高级特性', link: '/S2-框架深入/React19/02-高级特性' },
+              { text: '工程实践', link: '/S2-框架深入/React19/03-工程实践' },
+              { text: '性能优化', link: '/S2-框架深入/React19/04-性能优化' },
+              { text: '深入原理', link: '/S2-框架深入/React19/05-深入原理' },
+              { text: 'React 19 新特性', link: '/S2-框架深入/React19/06-React19新特性' },
+              { text: '调试与场景', link: '/S2-框架深入/React19/07-调试与场景' },
+            ]
+          },
+          {
+            text: '⚖️ 框架对比',
+            items: [
+              { text: '📖 总览', link: '/S2-框架深入/框架对比/' },
+              { text: '核心哲学与响应式', link: '/S2-框架深入/框架对比/01-核心哲学与响应式' },
+              { text: '组件化状态管理路由', link: '/S2-框架深入/框架对比/02-组件化状态管理路由' },
+              { text: '构建SSR与生态', link: '/S2-框架深入/框架对比/03-构建SSR生态' },
+              { text: '性能优化与选型', link: '/S2-框架深入/框架对比/04-性能与选型' },
+            ]
+          },
           { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
         ]
       },
@@ -178,7 +218,7 @@ export default withMermaid(defineConfig({
     },
     build: {
       target: 'es2020',
-      chunkSizeWarningLimit: 1000
+      chunkSizeWarningLimit: 1200,
     },
   }
 }))

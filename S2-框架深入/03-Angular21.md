@@ -1015,7 +1015,7 @@ export class ParentComponent {
 @for (item of items; track item.id) { ... }  <!-- 列表渲染 -->
 ```
 
-> 🔗 **链式思考**：Angular Signals 的设计与 Vue 3 的 `ref`/`computed` 几乎同源——都是"getter 收集依赖，setter 触发更新"的模式。但 Angular Signals 要求手动调用 `.get()` 或 `.set()`，而 Vue 的 `ref.value` 在模板中自动解包。React 没有内置 Signal，但 React 19 的 `use()` Hook 实现了类似"惰性求值"的效果——在 Suspense 边界内等待异步数据。详见 [04-框架对比](./04-框架对比) 的"响应式原理深度对比"。
+> 🔗 **链式思考**：Angular Signals 的设计与 Vue 3 的 `ref`/`computed` 几乎同源——都是"getter 收集依赖，setter 触发更新"的模式。但 Angular Signals 要求手动调用 `.get()` 或 `.set()`，而 Vue 的 `ref.value` 在模板中自动解包。React 没有内置 Signal，但 React 19 的 `use()` Hook 实现了类似"惰性求值"的效果——在 Suspense 边界内等待异步数据。详见 [框架对比](./框架对比/) 的"响应式原理深度对比"。
 
 ---
 
@@ -1404,7 +1404,7 @@ export class SearchComponent {
 }
 ```
 
-> 🔗 **链式思考**：Angular 状态管理从 NgRx（Redux 模式）演进到 SignalStore（响应式模式），趋势与 Vue 从 Vuex 到 Pinia 一致——更简洁、更类型安全、更低样板代码。React 的 Zustand 则从一开始就走"极简 API + 不可变更新"路线。核心规律：状态管理正从"类 Redux"（action/reducer/dispatch）向"响应式 Store"（signal/ref + computed）演进。详见 [04-框架对比](./04-框架对比) 的"状态管理生态"。
+> 🔗 **链式思考**：Angular 状态管理从 NgRx（Redux 模式）演进到 SignalStore（响应式模式），趋势与 Vue 从 Vuex 到 Pinia 一致——更简洁、更类型安全、更低样板代码。React 的 Zustand 则从一开始就走"极简 API + 不可变更新"路线。核心规律：状态管理正从"类 Redux"（action/reducer/dispatch）向"响应式 Store"（signal/ref + computed）演进。详见 [框架对比](./框架对比/) 的"状态管理生态"。
 
 ---
 
@@ -1586,7 +1586,7 @@ export const selectAllProducts = createSelector(
 );
 ```
 
-> 🔗 **链式思考**：Angular DI 是 Angular 最独特的架构特征——它是一个"编译时可 tree-shaking"的层级注入系统。Vue 的 `provide/inject` 是"运行时响应式"的组件树注入，两者都支持"祖先→后代"传递，但 Angular 的注入器有独立的层级结构（根/模块/组件），而 Vue 完全依赖组件树层级。React 的 Context 则是最简单的"单一值传递"，缺少层级查找和多例管理能力。详见 [04-框架对比](./04-框架对比) 的"DI 与 Context 对比"。
+> 🔗 **链式思考**：Angular DI 是 Angular 最独特的架构特征——它是一个"编译时可 tree-shaking"的层级注入系统。Vue 的 `provide/inject` 是"运行时响应式"的组件树注入，两者都支持"祖先→后代"传递，但 Angular 的注入器有独立的层级结构（根/模块/组件），而 Vue 完全依赖组件树层级。React 的 Context 则是最简单的"单一值传递"，缺少层级查找和多例管理能力。详见 [框架对比](./框架对比/) 的"DI 与 Context 对比"。
 
 ---
 
@@ -1702,7 +1702,7 @@ export class UppercasePipe implements PipeTransform {
 }
 ```
 
-> 🔗 **链式思考**：Angular Router 是三框架中最"重量级"的——自带路由守卫（canActivate/canDeactivate/resolve）、多出口（`<router-outlet>` 带 name 属性）、以及懒加载模块支持。Vue Router 在灵活性上类似但更简洁（路由守卫更少、命名视图较新）。React Router v6.4+ 则用 `loaders`/`actions` 替代传统守卫，走"声明式数据获取"路线。详见 [04-框架对比](./04-框架对比) 的"路由方案"。
+> 🔗 **链式思考**：Angular Router 是三框架中最"重量级"的——自带路由守卫（canActivate/canDeactivate/resolve）、多出口（`<router-outlet>` 带 name 属性）、以及懒加载模块支持。Vue Router 在灵活性上类似但更简洁（路由守卫更少、命名视图较新）。React Router v6.4+ 则用 `loaders`/`actions` 替代传统守卫，走"声明式数据获取"路线。详见 [框架对比](./框架对比/) 的"路由方案"。
 
 ---
 
@@ -1871,7 +1871,7 @@ export class UserDetailComponent {
 <router-outlet name="sidebar"></router-outlet>
 ```
 
-> 🔗 **链式思考**：Angular 的 Reactive Forms 显式声明 `FormGroup`/`FormControl`，在代码中管理验证逻辑——这与 React 受控组件 + 手动验证模式相似（`useState` + `onChange` + 验证函数）。Vue 的 `v-model` 则是"声明式双向绑定"，验证逻辑分散在模板中（或通过第三方库 VeeValidate）。选型建议：复杂表单用 Angular Reactive Forms 或 React React Hook Form；简单表单用 Vue v-model 或 Angular 模板驱动表单。详见 [04-框架对比](./04-框架对比) 的"状态管理生态"。
+> 🔗 **链式思考**：Angular 的 Reactive Forms 显式声明 `FormGroup`/`FormControl`，在代码中管理验证逻辑——这与 React 受控组件 + 手动验证模式相似（`useState` + `onChange` + 验证函数）。Vue 的 `v-model` 则是"声明式双向绑定"，验证逻辑分散在模板中（或通过第三方库 VeeValidate）。选型建议：复杂表单用 Angular Reactive Forms 或 React React Hook Form；简单表单用 Vue v-model 或 Angular 模板驱动表单。详见 [框架对比](./框架对比/) 的"状态管理生态"。
 
 ---
 
@@ -2147,7 +2147,7 @@ ng test                                  # 运行测试
 ng lint                                  # 代码检查
 ```
 
-> 🔗 **链式思考**：Angular 的变更检测经历 Zone.js（全量检测）→ OnPush（组件级优化）→ Zoneless + Signals（精确依赖追踪）的演进。Vue 3 从一开始就是精确到属性级的自动追踪（Proxy），跳过了"全量检测"阶段。React 至今仍是"全量 Diff"，但通过 Fiber 调度 + React Compiler 自动 memo 来最小化开销。三种路线：精确追踪（Vue）、全量 Diff + 可中断（React）、渐进优化（Angular 从 Zone.js 到 Signals）。详见 [04-框架对比](./04-框架对比) 的"响应式原理深度对比"。
+> 🔗 **链式思考**：Angular 的变更检测经历 Zone.js（全量检测）→ OnPush（组件级优化）→ Zoneless + Signals（精确依赖追踪）的演进。Vue 3 从一开始就是精确到属性级的自动追踪（Proxy），跳过了"全量检测"阶段。React 至今仍是"全量 Diff"，但通过 Fiber 调度 + React Compiler 自动 memo 来最小化开销。三种路线：精确追踪（Vue）、全量 Diff + 可中断（React）、渐进优化（Angular 从 Zone.js 到 Signals）。详见 [框架对比](./框架对比/) 的"响应式原理深度对比"。
 
 ---
 
@@ -2251,7 +2251,7 @@ export class OptimizedListComponent {
 }
 ```
 
-> 🔗 **链式思考**：Angular 21 的 `httpResource()` + Signals 实现了"声明式数据获取"：描述数据来源，框架自动处理 loading/error/refetch。这与 React 19 的 `use()` + Server Functions 理念一致，也类似 Vue 生态的 `useFetch`（Nuxt）/ TanStack Query（React）。三者的共同演进方向：从"手动管理请求状态"到"声明式描述数据依赖"。详见 [04-框架对比](./04-框架对比) 的"SSR/SSG 方案"。
+> 🔗 **链式思考**：Angular 21 的 `httpResource()` + Signals 实现了"声明式数据获取"：描述数据来源，框架自动处理 loading/error/refetch。这与 React 19 的 `use()` + Server Functions 理念一致，也类似 Vue 生态的 `useFetch`（Nuxt）/ TanStack Query（React）。三者的共同演进方向：从"手动管理请求状态"到"声明式描述数据依赖"。详见 [框架对比](./框架对比/) 的"SSR/SSG 方案"。
 
 ---
 
