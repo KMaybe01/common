@@ -18,6 +18,7 @@ const CHECK_INTERVAL = 300_000
 
 const visible = ref(false)
 let timer = null
+let isFirstCheck = true
 
 function getBase() {
   if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
@@ -36,12 +37,13 @@ async function checkUpdate() {
     const data = await res.json()
     const newVersion = String(data.timestamp)
 
-    const cachedVersion = localStorage.getItem(VERSION_KEY)
-    if (!cachedVersion) {
+    if (isFirstCheck) {
+      isFirstCheck = false
       localStorage.setItem(VERSION_KEY, newVersion)
       return
     }
 
+    const cachedVersion = localStorage.getItem(VERSION_KEY)
     const dismissedVersion = localStorage.getItem(DISMISSED_KEY)
     if (newVersion !== cachedVersion && newVersion !== dismissedVersion) {
       visible.value = true
