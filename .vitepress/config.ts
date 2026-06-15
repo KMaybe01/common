@@ -94,6 +94,7 @@ export default withMermaid(defineConfig({
               { text: '深入原理', link: '/S2-框架深入/React19/05-深入原理' },
               { text: 'React 19 新特性', link: '/S2-框架深入/React19/06-React19新特性' },
               { text: '调试与场景', link: '/S2-框架深入/React19/07-调试与场景' },
+              { text: 'React深入浅出解析', link: '/S2-框架深入/React19/08-React深入浅出解析' },
             ]
           },
           {
