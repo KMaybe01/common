@@ -141,6 +141,7 @@ export default withMermaid(defineConfig({
           { text: '🏗️ FMS-UI企业级融合管理系统', link: '/S4-面试冲刺/11-FMS-UI企业级融合管理系统' },
           { text: '📈 Prometheus+Grafana', link: '/S4-面试冲刺/10-Prometheus+Grafana' },
           { text: '📈 ToB前端可视化面试通关指南', link: '/S4-面试冲刺/12-ToB前端可视化面试通关指南' },
+          { text: '📈 ToC转型面试策略', link: '/S4-面试冲刺/13-ToC转型面试策略' },
         ]
       },
       {
