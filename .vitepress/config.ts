@@ -129,6 +129,7 @@ export default withMermaid(defineConfig({
         activeMatch: '/S4-面试冲刺/',
         items: [
           { text: '📖 阶段概览', link: '/S4-面试冲刺/' },
+          { text: '📈 面试技术亮点汇总', link: '/S4-面试冲刺/00-面试技术亮点汇总' },
           { text: '📝 简历', link: '/S4-面试冲刺/01-简历' },
           { text: '❓ 简历问题', link: '/S4-面试冲刺/02-简历问题' },
           { text: '🔄 反向面试', link: '/S4-面试冲刺/03-反向面试' },
