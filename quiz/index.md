@@ -1,4 +1,0 @@
----
-layout: QuizPage
-sidebar: false
----

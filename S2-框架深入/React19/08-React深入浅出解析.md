@@ -43,11 +43,11 @@ graph LR
     D --> E[Diff / 调和]
     E --> F[Fiber 架构]
     F --> G[DOM 更新]
-    
+
     H[setState] -.-> E
     I[事件系统] -.-> E
     J[生命周期] -.-> E
-    
+
     style A fill:#f9d71c,color:#000
     style C fill:#61dafb,color:#000
     style F fill:#61dafb,color:#000
@@ -80,7 +80,7 @@ sequenceDiagram
     participant Dev as 开发者
     participant Babel as Babel
     participant React as React Runtime
-    
+
     Dev->>Babel: <div id="app">Hello</div>
     Babel->>Babel: 词法分析 → AST
     Babel->>Babel: JSX → React.createElement
@@ -150,14 +150,14 @@ graph LR
         A3 --> A4[替换/插入]
         A4 --> A5[重排重绘]
     end
-    
+
     subgraph "声明式（React）"
         B1[state change] --> B2[生成新 VDOM]
         B2 --> B3[Diff 新旧 VDOM]
         B3 --> B4[计算最小变更]
         B4 --> B5[批量 DOM 更新]
     end
-    
+
     style A2 fill:#f44336,color:#fff
     style B4 fill:#4CAF50,color:#fff
 ```
@@ -193,7 +193,7 @@ graph TD
     D --> E{子节点是列表?}
     E -->|是| F[Key 对比复用]
     E -->|否| G[递归子节点]
-    
+
     style C fill:#f44336,color:#fff
     style F fill:#4CAF50,color:#fff
 ```
@@ -235,18 +235,18 @@ graph TD
         A2 --> A3[render]
         A3 --> A4[componentDidMount ✅]
     end
-    
+
     subgraph "更新 Update"
         B1[componentWillReceiveProps] --> B2[shouldComponentUpdate]
         B2 --> B3[componentWillUpdate]
         B3 --> B4[render]
         B4 --> B5[componentDidUpdate ✅]
     end
-    
+
     subgraph "卸载 Unmount"
         C1[componentWillUnmount ✅]
     end
-    
+
     style A2 fill:#f44336,color:#fff
     style B1 fill:#f44336,color:#fff
     style B3 fill:#f44336,color:#fff
@@ -263,19 +263,19 @@ graph TD
         A2 --> A3[render]
         A3 --> A4[componentDidMount ✅]
     end
-    
+
     subgraph "更新 Update"
         B1[getDerivedStateFromProps] --> B2[shouldComponentUpdate]
         B2 --> B3[render]
         B3 --> B4[getSnapshotBeforeUpdate]
         B4 --> B5[componentDidUpdate ✅]
     end
-    
+
     subgraph "卸载 / 错误"
         C1[componentWillUnmount ✅]
         D1[getDerivedStateFromError] --> D2[componentDidCatch]
     end
-    
+
     style A4 fill:#4CAF50,color:#fff
     style B5 fill:#4CAF50,color:#fff
     style C1 fill:#4CAF50,color:#fff
@@ -306,12 +306,12 @@ graph TD
         B -- 回调函数 --> A
         C -- 回调函数 --> A
     end
-    
+
     subgraph "跨层级通信"
         D[顶层 Provider] -- Context --> E[深层消费者]
         F[Redux Store] -- connect --> G[任意组件]
     end
-    
+
     style A fill:#61dafb,color:#000
     style D fill:#4CAF50,color:#fff
     style F fill:#764ABC,color:#fff
@@ -382,12 +382,12 @@ graph TD
         A3 --> A4["同步代码执行完毕"]
         A4 --> A5["close 事务 → 锁复位<br/>flushBatchedUpdates → 合并渲染"]
     end
-    
+
     subgraph "React 管控外（同步）"
         B1[setTimeout/原生事件] --> B2["执行时锁已释放"]
         B2 --> B3["setState 立即更新 DOM"]
     end
-    
+
     style A2 fill:#4CAF50,color:#fff
     style A5 fill:#4CAF50,color:#fff
     style B3 fill:#f44336,color:#fff
@@ -626,14 +626,14 @@ graph TD
         C --> D[创建合成事件]
         D --> E[事件分发到组件]
     end
-    
+
     subgraph "React 17+"
         F[点击 button] --> G[原生 DOM 事件]
         G -->|冒泡到| H[root 容器监听]
         H --> I[创建合成事件]
         I --> J[事件分发到组件]
     end
-    
+
     style C fill:#f44336,color:#fff
     style H fill:#4CAF50,color:#fff
 ```
@@ -691,7 +691,7 @@ graph TD
     D --> E[递归组件 C]
     E --> F[递归组件 N...]
     F --> G[同步更新 DOM]
-    
+
     style B fill:#f44336,color:#fff
     style G fill:#f44336,color:#fff
 ```
@@ -717,17 +717,17 @@ graph LR
         B[无优先级调度]
         C[主线程长期阻塞]
     end
-    
+
     subgraph "Fiber 方案"
         D[可中断异步渲染]
         E[优先级调度 Lanes]
         F[时间切片 Time Slicing]
     end
-    
+
     A --> D
     B --> E
     C --> F
-    
+
     style A fill:#f44336,color:#fff
     style C fill:#f44336,color:#fff
     style D fill:#4CAF50,color:#fff
@@ -765,21 +765,21 @@ const fiberNode = {
   type: 'div',               // 具体类型
   key: null,                 // 唯一标识
   stateNode: divElement,     // 对应真实 DOM | 组件实例
-  
+
   return: parentFiber,       // 指向父节点（类似链表）
   child: firstChildFiber,    // 指向第一个子节点
   sibling: nextSiblingFiber, // 指向兄弟节点
-  
+
   pendingProps: {},          // 新 props
   memoizedProps: {},         // 旧 props
   memoizedState: {},         // 当前 state
   updateQueue: null,         // 更新队列
-  
+
   effectTag: NoEffect,       // 副作用标记（位运算）
   nextEffect: null,          // 下一个副作用
   firstEffect: null,         // 第一个副作用
   lastEffect: null,          // 最后一个副作用
-  
+
   expirationTime: NoWork,    // 过期时间
   alternate: currentFiber,   // 双缓存替代节点
 };
@@ -794,26 +794,26 @@ graph TD
         S2[时间切片 5ms]
         S3[MessageChannel]
     end
-    
+
     subgraph "Reconciler 协调器"
         R1[构建 Fiber 树]
         R2[Diff 计算]
         R3[收集 Effect List]
     end
-    
+
     subgraph "Renderer 渲染器"
         M1[DOM 插入/更新/删除]
         M2[生命周期调用]
         M3[Ref / 回调]
     end
-    
+
     S1 --> R1
     S2 --> R1
     R1 --> R2
     R2 --> R3
     R3 --> M1
     R3 --> M2
-    
+
     style S1 fill:#FF9800,color:#fff
     style R1 fill:#61dafb,color:#000
     style M1 fill:#4CAF50,color:#fff
@@ -826,12 +826,12 @@ graph LR
     subgraph "更新前"
         C[current 树] -->|alternate| W[workInProgress 树]
     end
-    
+
     subgraph "更新中"
         D[更新发起] --> E[克隆 current → workInProgress]
         E --> F[在 workInProgress 上工作]
     end
-    
+
     subgraph "更新完成"
         G[交换 current 指针] --> H[workInProgress 成为新的 current]
         H --> I[旧 current 回收备用]
@@ -867,14 +867,14 @@ graph TD
     subgraph "FiberRootNode（唯一实例）"
         FR[containerInfo: DOM 容器<br/>current: current 树入口<br/>finishedWork: 副作用列表]
     end
-    
+
     subgraph "Fiber 树"
         A[Fiber A<br/>tag: HostRoot<br/>stateNode: #root] --> B[Fiber B<br/>tag: ClassComponent<br/>stateNode: App 实例]
         A --> C[Fiber C<br/>tag: HostComponent<br/>stateNode: div DOM]
         C --> D[Fiber D<br/>tag: HostComponent<br/>stateNode: button DOM]
         C --> E[Fiber E<br/>tag: HostText<br/>stateNode: 文本]
     end
-    
+
     FR -.->|current| A
 ```
 
@@ -931,7 +931,7 @@ function FiberNode(tag, pendingProps, key, mode) {
 graph LR
     subgraph "二进制位表示"
         B0["bit 0: PerformedWork"]
-        B1["bit 1: Placement (插入)"] 
+        B1["bit 1: Placement (插入)"]
         B2["bit 2: Update (更新)"]
         B3["bit 3: Deletion (删除)"]
         B4["bit 4: ContentReset"]
@@ -941,7 +941,7 @@ graph LR
         B8["bit 8: Snapshot"]
         B9["bit 9: Passive (useEffect)"]
     end
-    
+
     style B1 fill:#4CAF50,color:#fff
     style B2 fill:#2196F3,color:#fff
     style B3 fill:#f44336,color:#fff
@@ -981,7 +981,7 @@ graph TD
         T2 --> T3["Task 3<br/>priority: 3<br/>exp: 5000ms"]
         T3 --> T1
     end
-    
+
     style T1 fill:#f44336,color:#fff
     style T2 fill:#FF9800,color:#fff
     style T3 fill:#4CAF50,color:#fff
@@ -1083,7 +1083,7 @@ graph LR
     G --> H
     H --> I[commit 阶段 commitRoot]
     I --> J[DOM 更新 ✅]
-    
+
     style A fill:#61dafb,color:#000
     style D fill:#FF9800,color:#fff
     style I fill:#f44336,color:#fff
@@ -1150,7 +1150,7 @@ render 阶段剪开环：
 graph TD
     A[ReactDOM.render] --> B[创建 FiberRoot + RootFiber]
     B --> C[scheduleUpdateOnFiber]
-    
+
     subgraph "Render 阶段（可中断）"
         D[performUnitOfWork]
         D --> E["🔽 递（beginWork）<br/>创建/复用子 Fiber"]
@@ -1161,17 +1161,17 @@ graph TD
         I -->|是| J[遍历兄弟]
         I -->|否| K[回到父节点 completeWork]
     end
-    
+
     subgraph "Commit 阶段（同步不可中断）"
         L[commitRoot]
         L --> M[Before Mutation<br/>getSnapshotBeforeUpdate]
         M --> N[Mutation<br/>DOM 插入/更新/删除]
         N --> O[Layout<br/>componentDidMount/Update<br/>useLayoutEffect]
     end
-    
+
     K --> L
     O --> P[屏幕更新 ✅]
-    
+
     style A fill:#61dafb,color:#000
     style P fill:#4CAF50,color:#fff
     style L fill:#f44336,color:#fff
@@ -1188,7 +1188,7 @@ graph LR
     B -->|update| D{props/type 不变?<br/>且优先级不满足?}
     D -->|是| E[bailout → 复用子节点 ✅]
     D -->|否| F[进入 reconcileChildren]
-    
+
     style E fill:#4CAF50,color:#fff
 ```
 
@@ -1267,7 +1267,7 @@ graph LR
         A[绝对值比较] --> B[优先级粒度不够细]
         B --> C[中断恢复困难]
     end
-    
+
     subgraph "Lanes 车道（React 17+/18）"
         D[位运算操作] --> E[更精细的优先级]
         D --> F[支持多同级更新]
@@ -1283,11 +1283,11 @@ graph TD
     B -->|FunctionComponent| C[执行函数 → get 子元素]
     B -->|ClassComponent| D[调用 render → get 子元素]
     B -->|HostComponent| E[取 props.children → get 子元素]
-    
+
     C --> F[reconcileChildren]
     D --> F
     E --> F
-    
+
     F --> G{子元素类型}
     G -->|单个 Element| H[reconcileSingleElement]
     G -->|Text| I[reconcileSingleTextNode]
@@ -1364,7 +1364,7 @@ let lastPlacedIndex = 0;
 
 第二轮：剩余 oldFiber: b(1), c(2), d(3)
        newChildren: c, d, b
-       
+
   c: oldIndex=2 >= lastPlacedIndex=0 → lastPlacedIndex=2 ✅ 不动
   d: oldIndex=3 >= lastPlacedIndex=2 → lastPlacedIndex=3 ✅ 不动
   b: oldIndex=1 <  lastPlacedIndex=3 → ❌ b 向右移动
@@ -1383,11 +1383,11 @@ graph TD
     A[用户输入] --> B{优先级?}
     B -->|高<br/>点击/输入| C[紧急更新<br/>立即渲染 ✅]
     B -->|低<br/>数据获取| D[过渡更新<br/>可中断/延迟]
-    
+
     D --> E[让出主线程]
     E --> F[高优任务插队]
     F --> G[空闲时继续低优任务]
-    
+
     style C fill:#f44336,color:#fff
     style D fill:#4CAF50,color:#fff
 ```
@@ -1459,17 +1459,17 @@ graph LR
         B[this 绑定问题]
         C[代码复用困难<br/>HOC / Render Props 嵌套]
     end
-    
+
     subgraph "Hooks 方案"
         D[按逻辑分组<br/>useEffect / useCallback]
         E[函数闭包<br/>无 this 陷阱]
         F[自定义 Hooks<br/>轻松复用]
     end
-    
+
     A --> D
     B --> E
     C --> F
-    
+
     style A fill:#f44336,color:#fff
     style B fill:#f44336,color:#fff
     style D fill:#4CAF50,color:#fff
@@ -1562,7 +1562,7 @@ graph TD
         A[组件渲染到屏幕] -->|同步| B[useLayoutEffect<br/>DOM 变更后立即执行]
         A -->|异步| C[useEffect<br/>浏览器绘制后才执行]
     end
-    
+
     style B fill:#FF9800,color:#fff
     style C fill:#2196F3,color:#fff
 ```
@@ -1614,11 +1614,11 @@ layout 阶段   → 执行所有 useLayoutEffect 回调函数（commitHookEffect
 ```mermaid
 graph TD
     subgraph "三大原则"
-        A[单一数据源<br/>Single Source of Truth] 
+        A[单一数据源<br/>Single Source of Truth]
         B[状态只读<br/>只能通过 dispatch 修改]
         C["纯函数修改<br/>Reducer = (state, action) => newState"]
     end
-    
+
     subgraph "工作流"
         D[View] -->|dispatch| E[Action]
         E -->|传入| F[Reducer]
@@ -1626,7 +1626,7 @@ graph TD
         G -->|通知| H[Store]
         H -->|更新| D
     end
-    
+
     style A fill:#764ABC,color:#fff
     style B fill:#764ABC,color:#fff
     style C fill:#764ABC,color:#fff
@@ -1640,12 +1640,12 @@ function dispatch(action) {
   if (typeof action.type === 'undefined') {
     throw new Error('Actions must have a type');
   }
-  
+
   // 2. 🔒 禁止在 reducer 中 dispatch（防死循环）
   if (isDispatching) {
     throw new Error('Reducers may not dispatch actions.');
   }
-  
+
   // 3. 执行 reducer，计算新 state
   try {
     isDispatching = true;  // 上锁
@@ -1653,11 +1653,11 @@ function dispatch(action) {
   } finally {
     isDispatching = false; // 解锁
   }
-  
+
   // 4. 触发所有监听器
   const listeners = currentListeners = nextListeners;
   for (let i = 0; i < listeners.length; i++) listeners[i]();
-  
+
   return action;
 }
 ```
@@ -1670,7 +1670,7 @@ graph LR
     B --> C[中间件 2<br/>logger]
     C --> D[中间件 3<br/>saga]
     D --> E[reducer]
-    
+
     style B fill:#FF9800,color:#fff
     style C fill:#4CAF50,color:#fff
     style D fill:#2196F3,color:#fff
@@ -1681,15 +1681,15 @@ graph LR
 function applyMiddleware(...middlewares) {
   return createStore => (...args) => {
     const store = createStore(...args);
-    
+
     const middlewareAPI = {
       getState: store.getState,
       dispatch: (...args) => dispatch(...args)
     };
-    
+
     const chain = middlewares.map(m => m(middlewareAPI));
     dispatch = compose(...chain)(store.dispatch);
-    
+
     return { ...store, dispatch };
   };
 }
@@ -1872,13 +1872,13 @@ graph TD
         H2["hashchange 事件监听"]
         H3["无需服务端配置"]
     end
-    
+
     subgraph "History 模式"
         B1["URL: example.com/about"]
         B2["popstate 事件监听"]
         B3["需服务端配置<br/>所有路径指向 index.html"]
     end
-    
+
     style H1 fill:#4CAF50,color:#fff
     style B1 fill:#2196F3,color:#fff
 ```
@@ -1933,13 +1933,13 @@ graph LR
         C --> D[AJAX 请求数据]
         D --> E[渲染内容<br/>⏱ 慢]
     end
-    
+
     subgraph "SSR 服务器端渲染"
         F[请求 HTML] --> G[完整 HTML<br/>含内容]
         G --> H[下载 JS]
         H --> I[注水 Hydrate<br/>⏱ 快 ✅]
     end
-    
+
     style E fill:#f44336,color:#fff
     style G fill:#4CAF50,color:#fff
 ```
@@ -2048,7 +2048,7 @@ if (card.step === 'done') {} // ❌ 一直为 false（拼错了）
 
 ### 21.2 组件类型定义
 
-```react
+```jsx
 // Props 接口
 interface ButtonProps {
   label: string;
@@ -2075,7 +2075,7 @@ const [form, setForm] = useState<{ name: string; age: number }>({ name: '', age:
 
 ### 21.3 泛型组件
 
-```react
+```jsx
 function List<T>({
   items,
   render
@@ -2099,16 +2099,16 @@ graph TD
     A --> C[减少渲染范围]
     A --> D[减少计算量]
     A --> E[减少包体积]
-    
+
     B --> F[React.memo / PureComponent]
     B --> G[shouldComponentUpdate]
-    
+
     C --> H[状态下沉]
     C --> I[组件拆分]
-    
+
     D --> J[useMemo / useCallback]
     D --> K[虚拟列表]
-    
+
     E --> L[代码分割 React.lazy]
     E --> M[Tree Shaking]
 ```

@@ -82,6 +82,7 @@ export default withMermaid(defineConfig({
         items: [
           { text: '📖 阶段概览', link: '/S2-框架深入/' },
           { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
+          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
           { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
           {
             text: '🔵 React19',
@@ -107,7 +108,6 @@ export default withMermaid(defineConfig({
               { text: '性能优化与选型', link: '/S2-框架深入/框架对比/04-性能与选型' },
             ]
           },
-          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
         ]
       },
       {
@@ -181,7 +181,6 @@ export default withMermaid(defineConfig({
           { text: '🟡 中间件深度 (26-32)', link: '/S6-Go/阶段26-Redis' },
         ]
       },
-      { text: '题库', link: '/quiz/' },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/KMaybe01/common' }

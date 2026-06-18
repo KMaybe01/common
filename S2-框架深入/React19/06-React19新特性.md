@@ -8,7 +8,7 @@ title: React 19 新特性
 
 ### 🔄 工作原理
 
-```react
+```jsx
 // React Compiler 的核心思想：
 // 1. 静态分析组件
 // 2. 自动推断依赖
@@ -78,7 +78,7 @@ function ProductList({ products, onSelect }) {
 
 ### 🔄 编译流程
 
-```react
+```jsx
 // packages/babel-plugin-react-compiler/src/index.ts
 // React Compiler 的编译流程
 
@@ -114,7 +114,7 @@ function Counter({ initialCount }) {
 
 ### 📍 依赖分析算法
 
-```react
+```jsx
 // packages/babel-plugin-react-compiler/src/DependencyAnalysis.ts
 function analyzeDependencies(analysis) {
   const dependencies = new Map();
@@ -153,7 +153,7 @@ interface Dependency {
 ---
 ## 2️⃣ Actions 机制深度解析
 
-```react
+```jsx
 // Actions 的核心思想：
 // 1. 自动管理 pending 状态
 // 2. 自动处理错误
@@ -212,7 +212,7 @@ function TodoList({ todos, addTodo }) {
 
 ## 3️⃣ use() Hook 深度解析
 
-```react
+```jsx
 // use() 的核心能力：
 // 1. 在渲染时读取 Promise
 // 2. 在渲染时读取 Context
