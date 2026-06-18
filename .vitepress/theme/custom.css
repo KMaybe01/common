@@ -137,3 +137,10 @@ html {
     width: 336px;
   }
 }
+
+/* ── Mermaid diagram zoom-in cursor ── */
+.mermaid svg {
+  cursor: zoom-in;
+}
+
+
