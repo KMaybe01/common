@@ -81,6 +81,16 @@ export default withMermaid(defineConfig({
         activeMatch: '/S2-框架深入/',
         items: [
           { text: '📖 阶段概览', link: '/S2-框架深入/' },
+          {
+            text: '⚖️ 框架对比',
+            items: [
+              { text: '📖 总览', link: '/S2-框架深入/框架对比/' },
+              { text: '核心哲学与响应式', link: '/S2-框架深入/框架对比/01-核心哲学与响应式' },
+              { text: '组件化状态管理路由', link: '/S2-框架深入/框架对比/02-组件化状态管理路由' },
+              { text: '构建SSR与生态', link: '/S2-框架深入/框架对比/03-构建SSR生态' },
+              { text: '性能优化与选型', link: '/S2-框架深入/框架对比/04-性能与选型' },
+            ]
+          },
           { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
           { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
           { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
@@ -96,16 +106,6 @@ export default withMermaid(defineConfig({
               { text: 'React 19 新特性', link: '/S2-框架深入/React19/06-React19新特性' },
               { text: '调试与场景', link: '/S2-框架深入/React19/07-调试与场景' },
               { text: 'React深入浅出解析', link: '/S2-框架深入/React19/08-React深入浅出解析' },
-            ]
-          },
-          {
-            text: '⚖️ 框架对比',
-            items: [
-              { text: '📖 总览', link: '/S2-框架深入/框架对比/' },
-              { text: '核心哲学与响应式', link: '/S2-框架深入/框架对比/01-核心哲学与响应式' },
-              { text: '组件化状态管理路由', link: '/S2-框架深入/框架对比/02-组件化状态管理路由' },
-              { text: '构建SSR与生态', link: '/S2-框架深入/框架对比/03-构建SSR生态' },
-              { text: '性能优化与选型', link: '/S2-框架深入/框架对比/04-性能与选型' },
             ]
           },
         ]
@@ -132,17 +132,22 @@ export default withMermaid(defineConfig({
           { text: '📈 面试技术亮点汇总', link: '/S4-面试冲刺/00-面试技术亮点汇总' },
           { text: '📝 简历', link: '/S4-面试冲刺/01-简历' },
           { text: '❓ 简历问题', link: '/S4-面试冲刺/02-简历问题' },
-          { text: '🔄 反向面试', link: '/S4-面试冲刺/03-反向面试' },
-          { text: '📶 5G核心网测试用例管理系统', link: '/S4-面试冲刺/04-5G核心网测试用例管理系统' },
-          { text: '🏢 AeMS企业级综合网络管理系统', link: '/S4-面试冲刺/05-AeMS企业级综合网络管理系统' },
-          { text: '⚙️ LI-OAM 网元运维与数据管理系统', link: '/S4-面试冲刺/06-LI-OAM 网元运维与数据管理系统' },
-          { text: '🔒 Axyom ACL & HTTP Decorator Library', link: '/S4-面试冲刺/07-Axyom ACL & HTTP Decorator Library' },
-          { text: '📋 Axyom-Form 项目技术分析', link: '/S4-面试冲刺/08-Axyom-Form 项目技术分析' },
-          { text: '📊 Axyom-Table 项目技术分析', link: '/S4-面试冲刺/09-Axyom-Table 项目技术分析' },
-          { text: '🏗️ FMS-UI企业级融合管理系统', link: '/S4-面试冲刺/11-FMS-UI企业级融合管理系统' },
-          { text: '📈 Prometheus+Grafana', link: '/S4-面试冲刺/10-Prometheus+Grafana' },
-          { text: '📈 ToB前端可视化面试通关指南', link: '/S4-面试冲刺/12-ToB前端可视化面试通关指南' },
-          { text: '📈 ToC转型面试策略', link: '/S4-面试冲刺/13-ToC转型面试策略' },
+          { text: '🔄 ToC 转型面试策略', link: '/S4-面试冲刺/03-ToC转型面试策略' },
+          { text: '🖼️ ToB 前端可视化面试', link: '/S4-面试冲刺/04-ToB前端可视化面试通关指南' },
+          { text: '📌 反向面试', link: '/S4-面试冲刺/05-反向面试' },
+          {
+            text: '📁 项目深度复盘',
+            items: [
+              { text: '📶 5G核心网测试管理系统', link: '/S4-面试冲刺/项目/5G核心网测试用例管理系统' },
+              { text: '🏢 AeMS 综合网络管理系统', link: '/S4-面试冲刺/项目/AeMS企业级综合网络管理系统' },
+              { text: '⚙️ LI-OAM 网元运维系统', link: '/S4-面试冲刺/项目/LI-OAM 网元运维与数据管理系统' },
+              { text: '🔒 Axyom ACL 权限库', link: '/S4-面试冲刺/项目/Axyom ACL & HTTP Decorator Library' },
+              { text: '📋 Axyom-Form 表单引擎', link: '/S4-面试冲刺/项目/Axyom-Form 项目技术分析' },
+              { text: '📊 Axyom-Table 高性能表格', link: '/S4-面试冲刺/项目/Axyom-Table 项目技术分析' },
+              { text: '📈 Prometheus+Grafana', link: '/S4-面试冲刺/项目/Prometheus+Grafana' },
+              { text: '🏗️ FMS-UI 融合管理系统', link: '/S4-面试冲刺/项目/FMS-UI企业级融合管理系统' },
+            ]
+          },
         ]
       },
       {
