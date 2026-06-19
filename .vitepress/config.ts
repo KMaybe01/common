@@ -150,21 +150,44 @@ export default withMermaid(defineConfig({
         activeMatch: '/S5-AI/',
         items: [
           { text: '📖 阶段概览', link: '/S5-AI/' },
-          { text: '🎯 AI推荐学习', link: '/S5-AI/00-AI推荐学习' },
-          { text: '💬 入门期-AI聊天室', link: '/S5-AI/01-入门期-AI聊天室' },
-          { text: '🔗 进阶期-RAG应用', link: '/S5-AI/02-进阶期-RAG应用' },
-          { text: '📱 深耕期-端侧推理', link: '/S5-AI/03-深耕期-端侧推理' },
-          { text: '🤖 专家期-Agent设计', link: '/S5-AI/04-专家期-Agent设计' },
-          { text: '🏭 生产化与工程化', link: '/S5-AI/05-生产化与工程化' },
-          { text: '🔬 前沿技术与生态', link: '/S5-AI/06-前沿技术与生态' },
-          { text: '⚖️ 技术选型对比合集', link: '/S5-AI/07-技术选型对比合集' },
-          { text: '🛠️ 开发实战与架构指南', link: '/S5-AI/08-开发实战与架构指南' },
-          { text: '📐 基础篇', link: '/S5-AI/10-基础篇' },
-          { text: '🧰 工具协议篇', link: '/S5-AI/11-工具协议篇' },
-          { text: '🧠 大模型基础篇', link: '/S5-AI/12-大模型基础篇' },
-          { text: '🔧 框架工具链篇', link: '/S5-AI/13-框架工具链篇' },
-          { text: '🚀 实战项目篇', link: '/S5-AI/14-实战项目篇' },
-          { text: '🔮 前沿趋势篇', link: '/S5-AI/15-前沿趋势篇' },
+          {
+            text: '⚡ 实战篇',
+            items: [
+              { text: '🎯 AI推荐学习', link: '/S5-AI/实战篇/00-AI推荐学习' },
+              { text: '💬 入门期-AI聊天室', link: '/S5-AI/实战篇/01-入门期-AI聊天室' },
+              { text: '🔗 进阶期-RAG应用', link: '/S5-AI/实战篇/02-进阶期-RAG应用' },
+              { text: '📱 深耕期-端侧推理', link: '/S5-AI/实战篇/03-深耕期-端侧推理' },
+              { text: '🤖 专家期-Agent设计', link: '/S5-AI/实战篇/04-专家期-Agent设计' },
+              { text: '🏭 生产化与工程化', link: '/S5-AI/实战篇/05-生产化与工程化' },
+              { text: '🔬 前沿技术与生态', link: '/S5-AI/实战篇/06-前沿技术与生态' },
+              { text: '⚖️ 技术选型对比合集', link: '/S5-AI/实战篇/07-技术选型对比合集' },
+              { text: '🛠️ 开发实战与架构指南', link: '/S5-AI/实战篇/08-开发实战与架构指南' },
+            ]
+          },
+          {
+            text: '📝 面试篇',
+            items: [
+              { text: '📐 基础篇', link: '/S5-AI/面试篇/10-基础篇' },
+              { text: '🧰 工具协议篇', link: '/S5-AI/面试篇/11-工具协议篇' },
+              { text: '🧠 大模型基础篇', link: '/S5-AI/面试篇/12-大模型基础篇' },
+              { text: '🔧 框架工具链篇', link: '/S5-AI/面试篇/13-框架工具链篇' },
+              { text: '🚀 实战项目篇', link: '/S5-AI/面试篇/14-实战项目篇' },
+              { text: '🔮 前沿趋势篇', link: '/S5-AI/面试篇/15-前沿趋势篇' },
+            ]
+          },
+          {
+            text: '📚 课程实战',
+            items: [
+              { text: '📖 课程总览', link: '/S5-AI/课程实战/' },
+              { text: '📖 RAG全栈技术实战', link: '/S5-AI/课程实战/01-RAG全栈技术实战' },
+              { text: '🤝 MCP+A2A多Agent全栈实战', link: '/S5-AI/课程实战/02-MCP+A2A多Agent全栈实战' },
+              { text: '🤖 AI编程智能体实战', link: '/S5-AI/课程实战/03-AI编程智能体实战' },
+              { text: '🔄 AI Agent全流程解决方案实战', link: '/S5-AI/课程实战/04-AI%20Agent全流程解决方案实战' },
+              { text: '🧠 大模型训练', link: '/S5-AI/课程实战/05-大模型训练' },
+              { text: '🦙 Ollama学习文档', link: '/S5-AI/课程实战/06-Ollama学习文档' },
+              { text: '🚀 Agent全栈开发实战', link: '/S5-AI/课程实战/07-Agent全栈开发实战' },
+            ]
+          },
         ]
       },
       {
