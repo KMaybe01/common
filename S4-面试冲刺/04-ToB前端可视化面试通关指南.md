@@ -38,6 +38,9 @@
 | **AeMS 地图** | 10 万基站 <10fps | BBOX+Cluster+Cache+懒刷新 | `60fps`, `200MB→30MB` |
 | **AeMS 告警** | 千级 QPS 页面卡死 | WS+RxJS bufferTime+RAF | `<500ms延迟`, `60fps` |
 | **LI-OAM 日志** | 百 MB 解密阻塞 UI | Web Worker 分治+有序合并+流式 | `秒开首屏` |
+| **统一 HTTP 层** | 多处重复 fetch/error 样板代码 | axios 拦截器 + 双 Token 无感刷新 + SESSION_REPLACED 踢下线 | `可用性 99.9%`, `客诉↓40%` |
+| **RBAC 权限** | 前端越权漏洞 | 位运算 O(1) 检查 + 后端 API 双校验 + 前后端对比 | `权限越权↓90%` |
+| **Go 测试** | 后端无自动化验证 | 82 个测试用例覆盖 11 个模块 | `全量通过` |
 
 ---
 
@@ -359,7 +362,7 @@ flowchart TD
 
 ---
 
-## 三、❓ 高频面试题 · 链式追问 
+## 三、❓ 高频面试题 · 链式追问
 
 ### 📐 专题 1：大规模数据渲染优化 （必考 ⭐⭐⭐⭐⭐）
 
@@ -992,10 +995,14 @@ D3 补充一些定制化图表（自定义 Sankey 图、Chord 图）。
 |------|--------------|-------------|
 | **AeMS** | OpenLayers 十万级点位四重优化 | 地图性能优化怎么分层？ |
 | **AeMS** | ECharts 实时告警 + WebSocket 可视化 | 1000+ QPS 实时渲染怎么设计？ |
+| **AeMS** | LRU 路由缓存 + display:none 保持状态 | 前端缓存策略怎么设计？ |
 | **AeMS/FMS** | AntV G6 网络拓扑图 | 万级节点拓扑怎么优化？ |
 | **FMS** | ECharts 告警饼图、Dashboard | 多图表联动怎么实现？ |
-| **监控平台** | Grafana Hub-Spoke 仪表盘架构 | 仪表盘系统怎么设计？ |
+| **监控平台** | Grafana Dashboard 可视化看板 | 仪表盘系统怎么设计？ |
 | **监控平台** | Recording Rules 预计算优化 | 大数据量聚合查询怎么加速？ |
+| **所有项目** | 统一 HTTP 层 + 双 Token 无感刷新 | 拦截器模式 + 401 自动刷新怎么设计？ |
+| **所有项目** | RBAC 位运算 + 后端 API 双校验 | 权限系统前后端一致性怎么保证？ |
+| **所有项目** | React 19 编译器自动 memo | 构建期优化怎么做？ |
 
 ---
 
@@ -1654,7 +1661,7 @@ R（结果）：页面切换 <200ms，CPU 占用 <30%，渲染帧率 60fps。"
 |--------|--------------|---------|
 | **useTransition** | 5GC 测试平台维度切换 | "StartTransition 标记为非紧急更新，切换图表时间范围不阻塞搜索输入" |
 | **useDeferredValue** | 5GC 测试平台树表格 | "树数据 600+ 行编辑，useDeferredValue 延迟渲染让输入框不卡顿" |
-| **Web Worker + React** | LI-OAM 日志解密 | "百万行日志 Web Worker 并行解密，主线程只负责 setState 渲染" |
+| **Web Worker + React** | LI-OAM 日志解密 | "十万行日志 Web Worker 并行解密，主线程只负责 setState 渲染" |
 | **Suspense + lazy** | AeMS 仪表盘 | "ECharts/G6/OL 三个库按路由懒加载，首屏体积减少 60%" |
 | **SWR + ECharts** | FMS Dashboard | "SWR 缓存优先 + 后台刷新，图表切换瞬间展示缓存数据" |
 | **Zustand 联动** | 告警多图表联动 | "hover 高亮 / 筛选器跨图表同步，Zustand subscribe 精准更新" |

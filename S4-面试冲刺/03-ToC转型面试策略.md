@@ -25,15 +25,18 @@ ToC 面试官的三个疑虑：
 | 你的 ToB 能力 | ToC 面试官眼中的价值 | 对标 C 端场景 |
 |--------------|-------------------|-------------|
 | GIS 十万级点位 60fps 渲染 | 大数据量 Canvas/WebGL 渲染优化 | 地图 POI、直播弹幕、信息流 |
-| 百万行日志流式解密 | 大文件流式处理 + 虚拟列表 | 超大图预览、视频分片加载、聊天记录 |
+| 十万行日志流解密 | 大文件流式处理 + 虚拟列表 | 超大图预览、视频分片加载、聊天记录 |
 | Web Worker 分治有序合并 | 多线程并行计算 + 优先级调度 | 图片批量压缩、Excel 导入解析、AI 推理 |
 | SSE + WebSocket 实时通信 | 实时消息推送 + 连接管理 | 即时通讯、直播评论、协同编辑 |
 | LRU 路由缓存 | 前端缓存策略 + 内存管理 | 页面保活、Tab 切换、前进后退 |
 | 动态表单 JSON Schema | 配置驱动 UI + 低代码引擎 | 活动页搭建、用户配置面板 |
-| 双 Token 无感刷新 | 安全认证 + 拦截器架构 | 登录态保持、支付安全 |
+| 双 Token 无感刷新 + 单设备登录 | 安全认证 + 拦截器架构 + 会话管理 | 登录态保持、支付安全、踢下线 |
+| 统一 HTTP 请求层 + 错误提取 | 拦截器模式 + 统一错误处理 | 全局 loading、统一异常兜底 |
 | Signal 精确 Loading | 细粒度状态管理 + 响应式编程 | 按钮 loading、骨架屏 |
-| 权限体系三层联动 | 前端路由守卫 + 访问控制 | 会员体系、功能灰度 |
-| K8s CI/CD 流水线 | 工程化 + 部署能力 | 前端发布效率、版本回滚 |
+| 权限体系三层联动 + 后端双校验 | 前端路由守卫 + 服务端鉴权 | 会员体系、功能灰度、接口权限 |
+| 大文件断点续传 + 一键下载 | 文件管理 + 进度管控 | 超大附件上传、云盘下载 |
+| Go 后端 82 个测试全量通过 | 自动化测试 + 质量门禁 | CI 流水线、测试覆盖率 |
+| K8s + GitHub/GitLab 双 CI/CD | 工程化 + 自动化部署 | 前端发布效率、版本回滚、灰度发布 |
 
 ### 简历优化：ToC 化改造
 
@@ -296,15 +299,16 @@ Q10：你理解的用户体验是什么？       "秒开" + "60fps" + "不丢数
 ```txt
 已知（ToB）                   → 学习（C 端）
 ────────────────────────────────────────────────
-React 19 + UmiJS             → CRA / Vite + Next.js（App Router）
-Angular 21                   → Angular 通用 + 懒加载模块
-Ant Design Pro / Ng-Zorro    → 移动端：Ant Design Mobile / Vant
-ECharts / G6 / OpenLayers    → Framer Motion / Lottie（动画）
-RxJS                         → Zustand / Jotai（轻量状态管理）
-K8s + GitLab CI/CD           → Vercel / Netlify / Cloudflare Pages
+React 19 + Vite 8 + Rolldown → Next.js（App Router）+ Turbopack
+Bun 1.3（运行时 + 包管理）   → pnpm / yarn（workspace monorepo）
+Ant Design 6                 → 移动端：Ant Design Mobile / Vant
+ECharts 6 + OpenLayers 10.9  → Framer Motion / Lottie（动画）
+Zustand 5（精确订阅）         → Jotai / Signals（原子化状态）
+Biome + ESLint + TS Strict   → 同栈迁移，无需学习
+GitHub Actions + GitLab CI   → Vercel / Netlify / Cloudflare Pages
 Prometheus + Grafana         → Sentry / Datadog RUM / Firebase
 SSE / WebSocket              → WebSocket + 消息推送 SDK
-自研 npm 库 @axyom-ui        → 开源项目 / Side Project
+Go 后端 82 测试用例           → 前端测试（Vitest / Playwright）
 
 核心结论：你已掌握的技术中有 80% 可以直接迁移到 C 端，
 只需补充 20% 的 C 端特有知识（SSR 理解、CDN 运用、SEO、移动端适配）
@@ -385,7 +389,282 @@ SSE / WebSocket              → WebSocket + 消息推送 SDK
 └─ 常见性能指标阈值（LCP 2.5s / INP 200ms / CLS 0.1）
 ```
 
-##### 7 两周突击计划
+##### 7 H5 开发核心知识点与面试题
+
+```txt
+┌──────────────────────────────────────────────────────────────┐
+│                     H5 = C 端流量入口                          │
+│                                                              │
+│  几乎所有 C 端产品都包含 H5 页面：活动页、商城、文章、表单。    │
+│  H5 面试题是 C 端面试的必考项，覆盖移动端适配、性能、Hybrid。   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+##### 7.1 移动端适配方案对比
+
+```
+┌────────────┬──────────────────────┬──────────────────┬──────────────────┐
+│   方案     │       原理           │      优点        │      缺点        │
+├────────────┼──────────────────────┼──────────────────┼──────────────────┤
+│ rem        │ 根字体动态缩放        │ 兼容性好、成熟   │ 小数像素偏差      │
+│ vw/vh      │ 视口单位 1vw=1%       │ 纯 CSS、无 JS    │ 低版本安卓不支持  │
+│ scale      │ meta + CSS 缩放       │ 1px 精确          │ 全局缩放影响      │
+│ 媒体查询   │ @media 断点适配       │ 可控性强         │ 代码冗余          │
+│ 综合方案   │ rem + vw + 媒体查询   │ 兼顾各有优点     │ 复杂度略高        │
+└────────────┴──────────────────────┴──────────────────┴──────────────────┘
+
+推荐方案：lib-flexible（阿里）原理 = rem + JS 动态设置根字号
+  设计稿 750px → 根字号 = clientWidth / 10 = 75px
+  元素宽 100px → 100/75 = 1.3333rem
+  屏幕 < 320px 或 > 750px 时锁死根字号
+  新增：CSS 变量 + vw 兜底（现代浏览器原生支持）
+```
+
+##### 7.2 H5 必知概念速查
+
+```
+viewport：
+├─ layout viewport：默认 980px（兼容 PC 页面）
+├─ visual viewport：屏幕可视区域（手指缩放改变）
+├─ ideal viewport：设备最佳宽度（iPhone = 375/414）
+└─ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+1px 物理像素：
+├─ 问题：Retina 屏 CSS 1px = 物理 2/3px，显示偏粗
+├─ 方案一：transform: scaleY(0.5) 伪元素
+├─ 方案二：box-shadow: 0 0.5px 0 #ccc（iOS 8+）
+├─ 方案三：background-image 1px 渐变
+└─ 最佳：SVG 边框 + border-image
+
+300ms 点击延迟：
+├─ 原因：双击缩放判断（等待第二次点击）
+├─ 解决：<meta> 设置 user-scalable=no 或 width=device-width
+├─ 现代：touch-action: manipulation（Chrome 35+）
+└─ 进阶：FastClick 库（已过时，不建议再用）
+
+touch 事件与 click：
+├─ touchstart → touchmove → touchend → click（延迟 300ms）
+├─ 滚动容器内 click 不触发（iOS overscroll）
+├─ 解决方案：touchend 替代 click，或 CSS touch-action
+└─ 注意：touch 事件在 Android 4.x 下有 200ms 限制
+
+-webkit-overflow-scrolling: touch：
+├─ iOS 弹性滚动（Safari 专用）
+├─ 坑：滚动容器内 position:fixed 失效
+├─ 坑：滚动时暂停 JS 执行（scroll 事件不触发）
+└─ 替代：overflow: auto + overscroll-behavior（现代浏览器）
+```
+
+##### 7.3 Hybrid / JSBridge 通信
+
+```
+WebView → Native 通信方案：
+
+┌─────────────┬────────────────────┬──────────────────┐
+│   方案      │      原理          │     适用场景       │
+├─────────────┼────────────────────┼──────────────────┤
+│ URL Scheme  │ location.href      │ 通用、简单        │
+│              │ = 'jsbridge://xxx' │                   │
+│ intercept   │ iframe.src 跳转     │ 兼容低版本        │
+│ prompt      │ 拦截 prompt()      │ 历史方案          │
+│ addJavascript│ 原生注入全局函数   │ 高效、双向        │
+│ Interface   │                    │                   │
+│ WebView      │ postMessage API   │ 现代、标准        │
+│ Message     │                    │                   │
+└─────────────┴────────────────────┴──────────────────┘
+
+推荐方案：WebView Message Channel（Android）/ WKScriptMessageHandler（iOS）
+  H5 → Native：window.webkit.messageHandlers.xxx.postMessage(data)
+  Native → H5：webview.evaluateJavaScript('callback(data)')
+  超时兜底：setTimeout 检测回调，无响应则降级处理
+
+常见 JSBridge 封装模式：
+  // 基于 Promise 的桥接调用
+  function invoke(method, params) {
+    return new Promise((resolve, reject) => {
+      const id = ++callId
+      callbacks.set(id, { resolve, reject })
+      nativeBridge.postMessage(JSON.stringify({ id, method, params }))
+      setTimeout(() => reject(new Error('timeout')), 10000)
+    })
+  }
+
+H5 与 Native 的登录态同步：
+├─ Cookie 同步：WebView 共享 Cookie → 自动注入 token
+├─ Token 注入：Native 拦截请求注入 Authorization header
+├─ JS 桥接：Native 主动调用 H5 回调传递 token
+└─ 最佳：Token 注入 + 桥接双保险
+
+常见 Hybrid 坑：
+├─ Android 低版本 WebView 不执行 H5 重定向 → 用 Native 拦截 url 处理
+├─ iOS Safari 缓存 POST 请求（仅返回缓存结果）→ 加时间戳 / 禁用缓存
+├─ 页面跳转时 iframe 未销毁 → 内存泄漏
+└─ 深链接拉起 App 失败 → scheme + universal link 双通道
+```
+
+##### 7.4 H5 性能优化面试高频
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  H5 性能优化的核心：在弱网+低端设备上，做到秒开              │
+│                                                             │
+│  你的 ToB 迁移优势：GIS 四重优化、日志流式加载、              │
+│  LRU 缓存策略 → 直接可迁移到 H5 场景                          │
+└─────────────────────────────────────────────────────────────┘
+
+H5 首屏加载优化（必考）：
+├─ 1. 关键渲染路径
+│   ├─ 关键 CSS 内联：首屏样式直接 <style> 内联（减少 1 次 RTT）
+│   ├─ 非关键 CSS 异步：<link rel="preload" as="style" onload="this.rel='stylesheet'">
+│   ├─ JS 异步加载：<script defer> / async
+│   └─ 字体优化：font-display: swap / fallback
+│
+├─ 2. 图片加载优化
+│   ├─ WebP/AVIF 格式 + <picture> 降级
+│   ├─ 懒加载：IntersectionObserver + data-src
+│   ├─ 渐进式加载：先缩略图 blur → 原图替换
+│   ├─ 预加载：preload 关键图片、preconnect 图片 CDN
+│   └─ 雪碧图 / Base64 图标（小图标场景）
+│
+├─ 3. 缓存策略
+│   ├─ CDN 缓存（静态资源强缓存 1 年 + 内容 hash）
+│   ├─ Service Worker 预缓存（PWA 能力）
+│   ├─ 内存缓存（SPA 页面 keep-alive）
+│   └─ localStorage 数据缓存（配置/模板/兜底数据）
+│
+└─ 4. 渲染优化
+    ├─ 减少 DOM 层级与节点数
+    ├─ requestAnimationFrame 批量 DOM 操作
+    ├─ 虚拟滚动（长列表）、懒渲染（折叠内容）
+    └─ 避免重排：transform → opacity → 跳过 Layout
+
+H5 弱网优化：
+├─ 离线降级：Service Worker 缓存 + 离线页面
+├─ 骨架屏：先展示结构，数据加载后填充
+├─ 分步加载：先文本、后图片、再视频
+├─ 重试策略：指数退避 + jitter（迁移自 WS 重连经验）
+├─ 压缩策略：Brotli > Gzip（CDN 层配置）
+└─ 数据预取：空闲时提前拉取下一步可能需要的数据
+```
+
+##### 7.5 H5 常见面试题
+
+```
+Q1：H5 怎么做移动端适配？rem vs vw 怎么选？
+✅ 回答：
+  "我采用 vw + rem 双方案：
+  以 750px 设计稿为基准，根字号 = 100vw / 7.5 = 13.333vw，
+  元素宽 100px → 100 / 75 = 1.3333rem。
+  vw 方案的好处是纯 CSS 无 JS 依赖，但低版本安卓不支持。
+  rem 方案兼容性好但需 JS 动态计算。
+  我通常用 vw 做主要方案 + 媒体查询兜底低版本。
+  从 ToB 迁移来说，GIS 项目的 viewport 计算思路和 rem/vw 的适配思路是一致的。"
+
+Q2：H5 1px 边框问题怎么解决？
+✅ 回答：
+  "我推荐用 transform: scaleY(0.5) + 伪元素方案。
+  给元素添加 ::after，绝对定位 bottom，高度 1px，
+  transform: scaleY(0.5)，在 Retina 屏上显示为物理 1px。
+  iOS 8+ 可以直接用 0.5px 的 border-width。
+  其他方案如 border-image 兼容性更好但灵活性差。"
+
+Q3：H5 和 Native 怎么通信？
+✅ 回答：
+  "H5 和 Native 通过 URL Scheme 或注入 JS 接口通信。
+  推荐方案是 WKScriptMessageHandler（iOS）/ addJavascriptInterface（Android）。
+  我封装了一个基于 Promise 的桥接层，统一调用方式：
+  invoke('openCamera', { type: 'album' }).then(res => handlePhoto(res))
+  超时 10 秒自动 reject，防止死等。
+  从 ToB 迁移来说，这和 WebSocket 传输层的接口抽象思路是一致的。"
+
+Q4：H5 首屏加载慢怎么优化？
+✅ 回答：
+  "首屏优化核心是'减少关键路径资源'。
+  我从四个维度做：关键 CSS 内联、图片 WebP 懒加载、CDN 强缓存、骨架屏。
+  从 ToB 的日志项目迁移，流式加载 + 首段优先策略可以直接用。
+  日志是'先看到第一段，再慢慢加载后面'，
+  H5 是'先看到首屏，再加载非首屏内容'——本质思路一致。"
+
+Q5：H5 页面在 iOS/Android 上表现不一致怎么办？
+✅ 回答：
+  "跨端兼容是 H5 开发的常态。我的处理原则是：
+  第一，统一基线——用 PostCSS 做 autoprefixer，cssnano 做兼容降级。
+  第二，分层测试——先 Chrome DevTools 模拟，真机 iOS+Android 各覆盖一轮。
+  第三，降级策略——新 API（如 IntersectionObserver）用 polyfill，实在不支持的降级为同步加载。
+  从 ToB 迁移来说，多协议降级链的思路可以直接复用到跨端兼容方案。"
+
+Q6：H5 页面怎么做离线可用？
+✅ 回答：
+  "离线可用是 PWA 的核心能力。
+  通过 Service Worker 预缓存关键资源（HTML、CSS、JS、字体），
+  网络请求用 Cache First 策略，离线时从缓存读取。
+  数据层用 IndexedDB 存储用户操作，在线时同步到服务端。
+  从 ToB 迁移来说，LRU 路由缓存的淘汰策略可以直接用在 SW 缓存管理中。"
+
+Q7：H5 页面在低端 Android 上卡顿，怎么定位？
+✅ 回答：
+  "Chrome DevTools 远程调试是基础工具，但低端机远程调试不稳定。
+  我的定位流程：先 GPU 渲染通道分析（检查是否触发 Hardware Layer），
+  再用 console.time + performance.mark 手动埋点定位长任务，
+  最后用 FPS 监控库（如 stats.js）持续观测。
+  从 ToB 迁移来说，GIS 项目的帧率分析和日志项目的性能埋点方法论可以直接复用。"
+
+Q8：H5 和 Flutter/RN/小程序相比，选型怎么看？
+✅ 回答：
+  "选型要看场景：H5 适合活动页、内容展示、轻交互场景；
+  小程序适合流量获取（微信/支付宝生态）；
+  Flutter/RN 适合高性能、强交互场景。
+  我倾向'Hybrid 混合'方案——核心页面用 Native/Flutter，
+  运营活动、内容详情用 H5（WebView），两套互补。
+  从 ToB 迁移来说，这和 WS/SSE/Polling 多协议选型的思路是一致的。"
+```
+
+##### 7.6 H5 面试反问问题
+
+```
+技术深度类：
+├─ "你们的 H5 页面是用什么方案做移动端适配的？遇到过什么兼容性问题？"
+├─ "WebView 和 Native 的通信方案是什么？低版本兼容怎么做的？"
+├─ "H5 页面首屏加载指标（LCP/FCP）在移动端上是多少？优化目标是什么？"
+├─ "弱网环境下 H5 页面有什么降级方案？"
+
+项目经验类：
+├─ "团队 H5 页面在低端 Android 机上的性能表现怎么样？有专项优化吗？"
+├─ "H5 发布流程是什么样的？有没有灰度策略和监控告警？"
+├─ "你们 Hybrid 混合开发的架构是怎样的？WebView 怎么管理？"
+
+架构设计类：
+├─ "你们是怎么处理 H5 页面离线访问的？Service Worker 覆盖率多少？"
+├─ "多端（App/小程序/H5）代码复用怎么做？有统一方案吗？"
+├─ "H5 页面在 WebView 中怎么调试？有没有远程调试工具？"
+```
+
+##### 7.7 H5 技能 → ToB 经验迁移话术
+
+```
+面试官问："你没有 H5 开发经验，怎么胜任这个岗位？"
+
+✅ 回答模板：
+  "虽然我没有专门的 H5 项目，但我对 H5 的核心技术有系统学习，
+  而且我的 ToB 经验中有大量可以直接迁移的技能：
+
+  第一，移动端适配——我在 GIS 项目中做过不同分辨率的坐标系适配，
+  viewport 计算、dpr 感知、比例尺转换——这些和 H5 的 rem/vw 适配是相通的。
+  
+  第二，弱网优化——我的 WebSocket 断线重连、SSE 流式加载经验，
+  直接对应 H5 的离线降级、骨架屏、分步加载方案。
+  
+  第三，跨端兼容——我的多协议降级链设计（WS/SSE/Polling），
+  解决了'不同网络环境都能拿到数据'的问题，
+  这个思路直接复用就是'不同设备都能流畅展示 H5 页面'。
+
+  第四，性能优化——我的 GIS 四重优化、日志流式加载方法论，
+  可以直接迁移到 H5 的首屏加载优化和长列表渲染。
+
+  给我 1-2 周熟悉 H5 特有的兼容性细节，我就能独立产出。"
+```
+
+##### 8 两周突击计划
 
 ```txt
 Week 1：打基础 + 做 Demo
@@ -418,7 +697,7 @@ Week 2：深挖 + 模拟面试
     └─ 最终准备好"一句话技术叙事"
 ```
 
-##### 8 ToC 面试中展示你理解 C 端的话术示例
+##### 9 ToC 面试中展示你理解 C 端的话术示例
 
 ```
 面试官问："你怎么理解 C 端和 ToB 的区别？"
@@ -440,7 +719,7 @@ Week 2：深挖 + 模拟面试
   这也是我感兴趣的地方——挑战更大，成长更快。"
 ```
 
-##### 9 ToC 面试反问问题库（按场景分类）
+##### 10 ToC 面试反问问题库（按场景分类）
 
 ```txt
 技术深度类：
@@ -465,7 +744,7 @@ Week 2：深挖 + 模拟面试
 ├─ "技术分享和 code review 的文化怎么样？"
 ```
 
-##### 10 心态建设：你不是"从零开始"，你是"换个战场"
+##### 11 心态建设：你不是"从零开始"，你是"换个战场"
 
 ```txt
 ┌─────────────────────────────────────────────────────────┐

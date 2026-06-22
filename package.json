@@ -13,7 +13,7 @@
     "typescript": "^6.0.3",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",
-    "vue-tsc": "^3.3.3"
+    "vue-tsc": "^3.3.5"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
