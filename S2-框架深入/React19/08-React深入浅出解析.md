@@ -1341,9 +1341,9 @@ i = 0
 // 核心逻辑：lastPlacedIndex 标记最右侧可复用的位置
 let lastPlacedIndex = 0;
 
-遍历剩余 newChildren:
-  在 Map 中通过 key 找到 oldFiber
-  oldIndex = oldFiber 在原数组中的位置
+  //遍历剩余 newChildren:
+  //在 Map 中通过 key 找到 oldFiber
+  //oldIndex = oldFiber 在原数组中的位置
 
   if (oldIndex >= lastPlacedIndex) {
     // 节点不需要移动（相对位置不变）

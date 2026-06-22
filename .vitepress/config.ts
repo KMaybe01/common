@@ -91,9 +91,6 @@ export default withMermaid(defineConfig({
               { text: '性能优化与选型', link: '/S2-框架深入/框架对比/04-性能与选型' },
             ]
           },
-          { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
-          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
-          { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
           {
             text: '🔵 React19',
             items: [
@@ -108,6 +105,9 @@ export default withMermaid(defineConfig({
               { text: 'React深入浅出解析', link: '/S2-框架深入/React19/08-React深入浅出解析' },
             ]
           },
+          { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
+          { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
+          { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
         ]
       },
       {
