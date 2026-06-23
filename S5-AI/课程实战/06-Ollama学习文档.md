@@ -2668,7 +2668,7 @@ export OLLAMA_ORIGINS=https://myapp.example.com
 
 #### Caddy 反向代理（更简洁）
 
-```caddyfile
+```txt
 ollama.yourdomain.com {
     reverse_proxy localhost:11434 {
         # 流式透传

@@ -7,13 +7,13 @@ VitePress 静态站点项目，构建前端面试知识体系，涵盖 HTML/CSS/
 ## 常用命令
 
 ```bash
-pnpm dev       # 本地开发
-pnpm build     # 生产构建
-pnpm preview   # 预览构建产物
+bun dev        # 本地开发
+bun run build  # 生产构建
+bun preview    # 预览构建产物
 ```
 
 - 构建前会自动执行 `node scripts/gen-version.mjs` 生成版本信息
-- 依赖管理使用 `pnpm`（锁文件 `pnpm-lock.yaml`）
+- 依赖管理使用 `bun`（锁文件 `bun.lock`）
 
 ## 目录结构
 

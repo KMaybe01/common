@@ -856,7 +856,7 @@ scrape_configs:
 
 ### 13.2 典型 PromQL 优化模式
 
-```promql
+```txt
 # 差实践：不加 label 过滤的全量查询（高基数）
 rate({__name__=~".*"}[5m])
 
