@@ -1541,7 +1541,7 @@ flowchart TD
     end
 
     A --> A1["position: absolute; top: 50%; left: 50%;"]
-    A --> A2["transform: translate("-50%, -50%")"]
+    A --> A2["transform: translate('-50%, -50%')"]
     A --> A3["无需知道宽高"]
 
     B --> B1["position: absolute; top:0; ...; margin:auto"]
