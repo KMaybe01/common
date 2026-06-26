@@ -1,5 +1,5 @@
 import hljs from 'highlight.js'
-import { type ReactNode, isValidElement, useState, useCallback, useRef } from 'react'
+import { type ReactNode, isValidElement, useCallback, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import { useNavigate } from 'react-router-dom'
@@ -46,11 +46,19 @@ function LightboxImage({ src, alt }: { src: string; alt: string }) {
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
   const drag = useRef({ dragging: false, startX: 0, startY: 0, tx: 0, ty: 0 })
+  const lightboxRef = useRef<HTMLDivElement>(null)
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault()
-    setScale(s => Math.max(0.25, Math.min(5, s - e.deltaY * 0.002)))
-  }, [])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: need open to re-attach when element mounts
+  useEffect(() => {
+    const el = lightboxRef.current
+    if (!el) return
+    const handler = (e: WheelEvent) => {
+      e.preventDefault()
+      setScale((s) => Math.max(0.25, Math.min(5, s - e.deltaY * 0.002)))
+    }
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+  }, [open])
 
   const handleClose = useCallback(() => {
     setOpen(false)
@@ -58,16 +66,19 @@ function LightboxImage({ src, alt }: { src: string; alt: string }) {
     setTranslate({ x: 0, y: 0 })
   }, [])
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    drag.current = {
-      dragging: true,
-      startX: e.clientX - translate.x,
-      startY: e.clientY - translate.y,
-      tx: translate.x,
-      ty: translate.y,
-    }
-    e.preventDefault()
-  }, [translate])
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      drag.current = {
+        dragging: true,
+        startX: e.clientX - translate.x,
+        startY: e.clientY - translate.y,
+        tx: translate.x,
+        ty: translate.y,
+      }
+      e.preventDefault()
+    },
+    [translate],
+  )
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!drag.current.dragging) return
@@ -89,22 +100,38 @@ function LightboxImage({ src, alt }: { src: string; alt: string }) {
         loading="lazy"
         className="lightbox-trigger"
         onClick={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            setOpen(true)
+          }
+        }}
         style={{ cursor: 'pointer' }}
       />
       {open && (
-        <div className="lightbox-overlay" onClick={handleClose}>
+        <div
+          className="lightbox-overlay"
+          onClick={handleClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') handleClose()
+          }}
+        >
           <button className="lightbox-close" onClick={handleClose} type="button" aria-label="关闭">
             ×
           </button>
           <div
+            ref={lightboxRef}
             className="lightbox-image-wrapper"
             onClick={(e) => e.stopPropagation()}
-            onWheel={handleWheel}
+            onKeyDown={(e) => e.stopPropagation()}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
-            onDoubleClick={() => { setScale(1); setTranslate({ x: 0, y: 0 }) }}
+            onDoubleClick={() => {
+              setScale(1)
+              setTranslate({ x: 0, y: 0 })
+            }}
           >
             <img
               src={src}

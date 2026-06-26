@@ -84,29 +84,29 @@ export default function HomePage() {
         <blockquote>
           <strong>最佳跳槽时机 = 你不需要跳槽的时候</strong>
         </blockquote>
-          <div className="motto-cards">
-            <div className="motto-card">
-              <span className="motto-icon">🔋</span>
-              <div className="motto-body">
-                <strong>保持可被雇佣</strong>
-                <p>每季度更新一次简历，让市场随时为你定价</p>
-              </div>
-            </div>
-            <div className="motto-card">
-              <span className="motto-icon">🎯</span>
-              <div className="motto-body">
-                <strong>离职者心态打工</strong>
-                <p>今天做的事，能写进下一份简历吗？</p>
-              </div>
-            </div>
-            <div className="motto-card">
-              <span className="motto-icon">🛤️</span>
-              <div className="motto-body">
-                <strong>入职第一天就布局未来</strong>
-                <p>积累「资本」而非「年谈资」，别让自己无处可去</p>
-              </div>
+        <div className="motto-cards">
+          <div className="motto-card">
+            <span className="motto-icon">🔋</span>
+            <div className="motto-body">
+              <strong>保持可被雇佣</strong>
+              <p>每季度更新一次简历，让市场随时为你定价</p>
             </div>
           </div>
+          <div className="motto-card">
+            <span className="motto-icon">🎯</span>
+            <div className="motto-body">
+              <strong>离职者心态打工</strong>
+              <p>今天做的事，能写进下一份简历吗？</p>
+            </div>
+          </div>
+          <div className="motto-card">
+            <span className="motto-icon">🛤️</span>
+            <div className="motto-body">
+              <strong>入职第一天就布局未来</strong>
+              <p>积累「资本」而非「年谈资」，别让自己无处可去</p>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   )
