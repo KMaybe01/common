@@ -10,11 +10,23 @@ interface Heading {
 }
 
 function extractHeadings(content: string): Heading[] {
-  const regex = /^(#{1,3})\s+(.+)$/gm
+  const lines = content.split('\n')
   const matches: Heading[] = []
-  let match
-  while ((match = regex.exec(content)) !== null) {
-    matches.push({ level: match[1].length, text: match[2].trim() })
+  let inCodeBlock = false
+
+  for (const line of lines) {
+    if (line.trimStart().startsWith('```')) {
+      inCodeBlock = !inCodeBlock
+      continue
+    }
+    if (inCodeBlock) continue
+
+    const match = line.match(/^(#{1,3})\s+(.+)$/)
+    if (match) {
+      const text = match[2].trim()
+      if (/^https?:\/\//.test(text)) continue
+      matches.push({ level: match[1].length, text })
+    }
   }
   return matches
 }
@@ -52,7 +64,10 @@ export default function DocPage() {
   if (loading) {
     return (
       <div className="doc-page">
-        <div className="doc-loading">加载中...</div>
+        <div className="doc-loading">
+          <div className="spinner" />
+          <div className="loading-text">加载中...</div>
+        </div>
       </div>
     )
   }
