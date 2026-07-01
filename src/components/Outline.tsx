@@ -16,7 +16,7 @@ export default function Outline({ headings }: { headings: Heading[] }) {
       <nav className="outline-list">
         {headings.map((h) => (
           <a
-            key={headingId(h.text)}
+            key={`${h.level}-${headingId(h.text)}`}
             href={`#${headingId(h.text)}`}
             className="outline-item"
             style={{ paddingLeft: `${(h.level - 1) * 12}px` }}
