@@ -35,7 +35,7 @@
 │   ├─ Angular DI 层次体系 + 注入器树
 │   └─ 浏览器渲染流程（Layout / Paint / Composite）
 ├─ 第四阶段 10min — 手写题
-│   ├─ 防抖 / 节流 / Promise.all / 深拷贝 / 自定义 Pipe
+│   ├─ 防抖 / 节流 / forkJoin / 深拷贝 / 自定义 Pipe
 │   ├─ RxJS 操作符实现（map/filter/switchMap）
 │   └─ 每天练 2-3 道
 └─ 第五阶段 5min — 反问环节
@@ -222,11 +222,11 @@
 | 亮点 | 技术价值 | 量化效果 |
 |------|----------|----------|
 | 动态表单引擎（ControlValueAccessor） | 4 层 AST 树 + 7 种字段 + 条件显隐 + 四级校验 + 实时 JSON 编辑 | 开发人效提升 80%（零代码驱动） |
-| 大文件断点续传 | SHA-256 分片 + NgRx persist + Promise Park | 500MB 文件仅占 5MB 内存 |
+| 大文件断点续传 | SHA-256 分片 + NgRx persist + Observable 串行上传 | 500MB 文件仅占 5MB 内存 |
 | RxJS WebSocket 告警推送 | 三级降级链 + 背压控制 + 消息合并 + 心跳保活 | 4000 msg/s 60fps 全帧率渲染 |
 | Web Worker 分治排序 | Worker Pool + 自适应分区 + 多路归并 | 100 万数字排序 620ms → 180ms（3.4×） |
 | GIS 十万级点位渲染 | BBOX + Cluster + dataCache + moveend 四重优化 | 帧率从 <10fps 到 60fps |
-| 双 Token 无感刷新（HttpInterceptor） | Promise gate + Token Rotation + Replay 检测 | 平台可用性 99.9% |
+| 双 Token 无感刷新（HttpInterceptor） | Observable gate + Token Rotation + Replay 检测 | 平台可用性 99.9% |
 | RBAC 位编码权限 | 位运算 O(1) + 三层联动 + 后端双校验 | 越权漏洞降低 90% |
 | SSE 日志流（RxJS） | Observable + AbortController + 节流 | 500 行 RingBuffer 内存可控 |
 | 路由复用策略（RouteReuseStrategy） | Angular RouteReuseStrategy + 写后失效 + TTL | 页面切换性能提升 60% |
@@ -524,34 +524,43 @@ Polling 保底：永不降级
 **Q3：如何用 RxJS 实现 SSE 流式读取？**
 
 ```typescript
-// Angular service: 将 SSE 包装为 Observable
+import { fromFetch } from 'rxjs/fetch';
+
+// Angular service: 将 SSE 包装为 Observable（纯 RxJS 操作符实现）
 sseLogs(url: string, signal?: AbortSignal): Observable<string> {
-  return new Observable<string>((observer) => {
-    const controller = new AbortController()
-    if (signal) signal.addEventListener('abort', () => controller.abort())
+  const controller = new AbortController()
+  const mergedSignal = signal
+    ? AbortSignal.any([signal, controller.signal])
+    : controller.signal
 
-    fetch(url, { headers: { Accept: 'text/event-stream' }, signal: controller.signal })
-      .then(response => {
-        const reader = response.body!.getReader()
-        const decoder = new TextDecoder()
-        let remainder = ''
+  return fromFetch(url, {
+    headers: { Accept: 'text/event-stream' },
+    signal: mergedSignal,
+    selector: response => response.body!.getReader()
+  }).pipe(
+    switchMap(reader => new Observable<string>(observer => {
+      const decoder = new TextDecoder()
+      let remainder = ''
 
-        const pump = () => {
-          reader.read().then(({ done, value }) => {
+      const pump = () =>
+        from(reader.read()).subscribe({
+          next({ done, value }) {
             if (done) { observer.complete(); return }
             remainder += decoder.decode(value, { stream: true })
             const lines = remainder.split('\n')
             remainder = lines.pop() ?? ''
-            lines.filter(l => l.startsWith('data: ')).forEach(l => observer.next(l.slice(6)))
+            lines
+              .filter(l => l.startsWith('data: '))
+              .forEach(l => observer.next(l.slice(6)))
             pump()
-          })
-        }
-        pump()
-      })
-      .catch(err => observer.error(err))
+          },
+          error: err => observer.error(err)
+        })
 
-    return () => controller.abort()  // 退订时清理
-  })
+      pump()
+    })),
+    finalize(() => controller.abort())
+  )
 }
 ```
 
@@ -681,7 +690,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 }
 ```
 
-**关键设计**：`acquireRefresh()` 使用 Promise gate 模式，多个并发 401 只触发一次刷新请求，其余等待同一个 Promise 完成。
+**关键设计**：`acquireRefresh()` 内部使用 ReplaySubject(1) 实现 gate 模式，首次 401 触发 refresh 并将结果推入 Subject，后续并发 401 通过 same-origin 去重直接订阅 Subject 等待结果，替代 Promise gate 的 then 链。
 
 ### GIS 优化相关
 
@@ -738,7 +747,7 @@ Services + Subjects：
 Angular 的变更检测（Change Detection）由 Zone.js 驱动。
 
 Zone.js 做了什么：
-├─ Monkey-patch 了所有异步 API（setTimeout/Promise/事件/DOM 回调）
+├─ Monkey-patch 了所有异步 API（setTimeout/事件/DOM 回调等宏观任务）
 ├─ 任何异步操作执行后，通知 Angular "可能有数据变更"
 ├─ Angular 从根组件遍历 Component Tree
 └─ 对每个组件检查绑定的值是否发生变化
@@ -806,7 +815,7 @@ ViewProvider vs Provider：
 ├─ CanDeactivate：是否可以离开当前路由
 ├─ Resolve：进入路由前预加载数据
 ├─ CanLoad / CanMatch：是否可以加载该模块
-└─ 所有守卫返回 boolean | UrlTree | Observable<boolean> | Promise<boolean>
+└─ 所有守卫返回 boolean | UrlTree | Observable<boolean>（推荐）
 
 RouteReuseStrategy（路由复用）：
 ├─ 缓存组件实例，切换时不销毁重建
@@ -820,7 +829,7 @@ RouteReuseStrategy（路由复用）：
 ```
 创建类：
 ├─ of(1,2,3)：同步发射值, Observable<number>
-├─ from([1,2,3])：从数组/Promise/Iterable 创建
+├─ from([1,2,3])：从数组/Iterable 创建
 ├─ fromEvent(el, 'click')：DOM 事件 → Observable
 ├─ ajax / fromFetch：HTTP 请求
 ├─ interval/timer：定时器
@@ -840,7 +849,7 @@ RouteReuseStrategy（路由复用）：
 └─ skip / skipUntil：跳过指定数量/条件
 
 组合类：
-├─ forkJoin：全部完成后发射最后值（类似 Promise.all）
+├─ forkJoin：全部完成后发射最后值（并行等待）
 ├─ combineLatest：任一变化时，取所有最新值
 ├─ zip：按索引配对
 ├─ merge：合并流（任一上游发射都通知）
