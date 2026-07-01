@@ -18,8 +18,10 @@ for (const filePath of Object.keys(lazyModules)) {
   urlToFile.set(urlPath, filePath)
 }
 
+const FRONTMATTER_RE = /^---[\s\S]*?\n---\s*\n/
+
 function stripFrontmatter(raw: string): string {
-  const match = raw.match(/^---[\s\S]*?\n---\s*\n/)
+  const match = raw.match(FRONTMATTER_RE)
   if (!match) return raw
   return raw.slice(match[0].length)
 }

@@ -49,11 +49,12 @@ function firstLink(items: NavItem[]): string | undefined {
   }
 }
 
+const GS_HEADING_RE = /^(#{1,3})\s+(.+)$/gm
+
 function extractHeadings(content: string): { text: string; id: string }[] {
-  const regex = /^(#{1,3})\s+(.+)$/gm
   const result: { text: string; id: string }[] = []
   let match
-  while ((match = regex.exec(content)) !== null) {
+  while ((match = GS_HEADING_RE.exec(content)) !== null) {
     const text = match[2].trim()
     const id = text.toLowerCase().replace(/\s+/g, '-')
     result.push({ text, id })

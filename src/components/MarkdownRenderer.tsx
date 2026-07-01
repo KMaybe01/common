@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
 
 const MermaidDiagram = lazy(() => import('./MermaidDiagram'))
+const LANG_RE = /language-(\w+)/
 
 function resolveInternalUrl(href: string, basePath: string): string {
   const stripped = href.replace(/\.md$/i, '')
@@ -172,7 +173,7 @@ export default function MarkdownRenderer({
   const components = useMemo<Partial<Components>>(
     () => ({
       code({ className, children, ...props }) {
-        const match = /language-(\w+)/.exec(className || '')
+        const match = LANG_RE.exec(className || '')
         const lang = match?.[1]
         const code = String(children).replace(/\n$/, '')
 

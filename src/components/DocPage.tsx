@@ -4,6 +4,9 @@ import { loadContent } from '../data/content'
 import MarkdownRenderer from './MarkdownRenderer'
 import Outline from './Outline'
 
+const HEADING_RE = /^(#{1,3})\s+(.+)$/
+const HTTP_RE = /^https?:\/\//
+
 interface Heading {
   level: number
   text: string
@@ -21,10 +24,10 @@ function extractHeadings(content: string): Heading[] {
     }
     if (inCodeBlock) continue
 
-    const match = line.match(/^(#{1,3})\s+(.+)$/)
+    const match = line.match(HEADING_RE)
     if (match) {
       const text = match[2].trim()
-      if (/^https?:\/\//.test(text)) continue
+      if (HTTP_RE.test(text)) continue
       matches.push({ level: match[1].length, text })
     }
   }
