@@ -15,6 +15,7 @@ function NavDropdown({
     return (
       <li>
         <Link to={item.link || '#'} className={`nav-link${isActive ? ' active' : ''}`}>
+          {item.icon && <span className="nav-item-icon">{item.icon}</span>}
           {item.text}
         </Link>
       </li>
@@ -24,6 +25,7 @@ function NavDropdown({
   return (
     <li className={`nav-dropdown${depth > 0 ? ' nested-dropdown' : ''}`}>
       <button className={`nav-dropdown-toggle${isActive ? ' active' : ''}`} type="button">
+        {item.icon && <span className="nav-item-icon">{item.icon}</span>}
         {item.text}
         <svg
           className="chevron"

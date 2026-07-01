@@ -1,10 +1,8 @@
+import { slugify } from '../utils/slugify'
+
 interface Heading {
   level: number
   text: string
-}
-
-function headingId(text: string): string {
-  return text.toLowerCase().replace(/\s+/g, '-')
 }
 
 export default function Outline({ headings }: { headings: Heading[] }) {
@@ -16,13 +14,13 @@ export default function Outline({ headings }: { headings: Heading[] }) {
       <nav className="outline-list">
         {headings.map((h, i) => (
           <a
-            key={`${h.level}-${headingId(h.text)}-${i}`}
-            href={`#${headingId(h.text)}`}
+            key={`${h.level}-${slugify(h.text)}-${i}`}
+            href={`#${slugify(h.text)}`}
             className="outline-item"
             style={{ paddingLeft: `${(h.level - 1) * 12}px` }}
             onClick={(e) => {
               e.preventDefault()
-              const id = headingId(h.text)
+              const id = slugify(h.text)
               const el = document.getElementById(id)
               if (el) el.scrollIntoView({ behavior: 'smooth' })
             }}

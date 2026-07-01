@@ -3,37 +3,37 @@ import HeroCanvas from './HeroCanvas'
 
 const features = [
   {
-    icon: '🟢',
+    icon: '📚',
     title: 'S1 基础夯实',
     details: 'HTML5 · CSS3 · JavaScript 核心 · Web API · 20+ 手写实现',
     link: '/S1-基础夯实/',
   },
   {
-    icon: '🔵',
+    icon: '⚛️',
     title: 'S2 框架深入',
     details: 'Vue3 · React19 · Angular21 · 框架对比与选型',
     link: '/S2-框架深入/',
   },
   {
-    icon: '🟡',
+    icon: '🚀',
     title: 'S3 进阶提升',
     details: '浏览器原理 · 性能优化 · 工程化 · 监控埋点 · Node.js',
     link: '/S3-进阶提升/',
   },
   {
-    icon: '🔴',
+    icon: '🎯',
     title: 'S4 面试冲刺',
     details: '简历优化 · 项目复盘 · 反向面试 · 真实项目深度分析',
     link: '/S4-面试冲刺/',
   },
   {
-    icon: '🟣',
+    icon: '🤖',
     title: 'S5 AI 前沿',
     details: 'AI Agent · RAG · 端侧推理 · MCP/A2A 协议 · 大模型基础',
     link: '/S5-AI/',
   },
   {
-    icon: '🟦',
+    icon: '🐹',
     title: 'S6 Go 语言',
     details: 'Go 基础 · 并发编程 · Web 开发 · 微服务架构',
     link: '/S6-Go/',

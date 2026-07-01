@@ -65,7 +65,7 @@ export function splitMarkdown(md: string): SectionBlock[] {
     }
 
     if (!inCodeBlock) {
-      const match = trimmed.match(/^(#{1,2})\s+(.+)/)
+      const match = trimmed.match(/^(#{1,3})\s+(.+)/)
       if (match) {
         flush()
         currentHeading = match[2].trim()

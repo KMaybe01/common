@@ -152,8 +152,10 @@ function SectionPlaceholder({ section }: { section: SectionBlock }) {
     <div className="doc-section-placeholder" style={{ minHeight: PLACEHOLDER_MIN_HEIGHT }}>
       {section.level === 1 ? (
         <h1 id={section.anchorId}>{section.heading}</h1>
-      ) : (
+      ) : section.level === 2 ? (
         <h2 id={section.anchorId}>{section.heading}</h2>
+      ) : (
+        <h3 id={section.anchorId}>{section.heading}</h3>
       )}
     </div>
   )

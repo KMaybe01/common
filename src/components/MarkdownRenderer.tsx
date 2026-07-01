@@ -14,6 +14,7 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import { useNavigate } from 'react-router'
 import remarkGfm from 'remark-gfm'
+import { slugify } from '../utils/slugify'
 
 const MermaidDiagram = lazy(() => import('./MermaidDiagram'))
 const LANG_RE = /language-(\w+)/
@@ -263,7 +264,7 @@ export default function MarkdownRenderer({
       h1({ children, ...props }) {
         const text = extractText(children)
         return (
-          <h1 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+          <h1 id={slugify(text)} {...props}>
             {children}
           </h1>
         )
@@ -271,7 +272,7 @@ export default function MarkdownRenderer({
       h2({ children, ...props }) {
         const text = extractText(children)
         return (
-          <h2 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+          <h2 id={slugify(text)} {...props}>
             {children}
           </h2>
         )
@@ -279,7 +280,7 @@ export default function MarkdownRenderer({
       h3({ children, ...props }) {
         const text = extractText(children)
         return (
-          <h3 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+          <h3 id={slugify(text)} {...props}>
             {children}
           </h3>
         )
