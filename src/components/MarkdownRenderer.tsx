@@ -1,9 +1,9 @@
 import hljs from 'highlight.js'
 import {
   type ReactNode,
+  Suspense,
   isValidElement,
   lazy,
-  Suspense,
   useCallback,
   useEffect,
   useMemo,

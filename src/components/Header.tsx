@@ -4,7 +4,11 @@ import { type NavItem, navConfig } from '../data/navigation'
 import { useTheme } from '../hooks/useTheme'
 import GlobalSearch from './GlobalSearch'
 
-function NavDropdown({ item, currentPath, depth = 0 }: { item: NavItem; currentPath: string; depth?: number }) {
+function NavDropdown({
+  item,
+  currentPath,
+  depth = 0,
+}: { item: NavItem; currentPath: string; depth?: number }) {
   const isActive = item.link ? currentPath.startsWith(item.link) : false
 
   if (!item.items) {
