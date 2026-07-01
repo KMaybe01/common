@@ -6,6 +6,7 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
   const svgRef = useRef('')
   const idRef = useRef(`mermaid-${Math.random().toString(36).slice(2, 9)}`)
   const initialized = useRef(false)
+  const contentRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -40,7 +41,6 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
     }
   }, [chart])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: need open to re-attach when element mounts
   useEffect(() => {
     const el = lightboxRef.current
     if (!el) return
@@ -50,6 +50,23 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
     }
     el.addEventListener('wheel', handler, { passive: false })
     return () => el.removeEventListener('wheel', handler)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const el = contentRef.current
+    if (!el) return
+    const svg = el.querySelector('svg')
+    if (!svg) return
+
+    const svgW = svg.getBoundingClientRect().width
+    const svgH = svg.getBoundingClientRect().height
+    if (svgW === 0 || svgH === 0) return
+
+    const vw = window.innerWidth * 0.9
+    const vh = window.innerHeight * 0.9
+    const fitScale = Math.min(vw / svgW, vh / svgH)
+    setScale(Math.max(0.25, Math.min(5, fitScale)))
   }, [open])
 
   const handleClose = useCallback(() => {
@@ -127,6 +144,7 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
             style={{ cursor: drag.current.dragging ? 'grabbing' : scale > 1 ? 'grab' : 'default' }}
           >
             <div
+              ref={contentRef}
               className="lightbox-mermaid-content"
               style={{
                 transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
