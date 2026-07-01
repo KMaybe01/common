@@ -3,7 +3,7 @@ title: 性能优化与选型
 ---
 ## 十一、性能优化策略
 
-| 优化手段 | Vue 3 | React 19 | Angular 21 |
+| 优化手段 | Vue 3 | React 19 | Angular 22 |
 |---------|-------|----------|------------|
 | **虚拟滚动** | vue-virtual-scroller | react-window | cdk-virtual-scroll |
 | **懒加载** | defineAsyncComponent | React.lazy + Suspense | loadChildren |
@@ -154,7 +154,7 @@ timeline
               : Angular Signals（17+ 新响应式）
     2024-2026 : React 19（Actions/use/Compiler）
               : Vue 3.6（Alien Signals）
-              : Angular 21（Zoneless + httpResource）
+              : Angular 22（Zoneless + httpResource）
               : Server Components 普及化
               : AI Agent 标准化
 \`\`\`
@@ -196,12 +196,12 @@ Angular 17 (2023)        → Signals、新控制流、SSR 改进
 Angular 18 (2024)        → Zoneless 模式
 Angular 19 (2025)        → linkedSignal、resource API
 Angular 20 (2025)        → httpResource、Signal Forms
-Angular 21 (2026)        → 全面 Zoneless，增量编译
+Angular 22 (2026)        → 全面 Zoneless，增量编译
 \`\`\`
 
 ### 版本迭代对比（2026）
 
-| 最新特性 | Vue 3.6 | React 19 | Angular 21 |
+| 最新特性 | Vue 3.6 | React 19 | Angular 22 |
 |---------|---------|----------|------------|
 | **响应式** | Alien Signals (默认) | React Compiler | Zoneless Signals |
 | **数据获取** | 社区方案 | Server Components + use() | httpResource() |
@@ -220,7 +220,7 @@ graph TD
     A["开始选型"] --> B{"团队技术储备"}
     B -->|"Vue 背景"| C["Vue 3 ✅"]
     B -->|"React 背景"| D["React 19 ✅"]
-    B -->|"Angular 背景"| E["Angular 21 ✅"]
+    B -->|"Angular 背景"| E["Angular 22 ✅"]
     B -->|"新团队无偏好"| F{"项目类型"}
 
     F -->|"快速迭代 MVP"| C
@@ -232,14 +232,14 @@ graph TD
     C --> H{"团队规模"}
     H -->|"1-5人"| I["Vue 3 + Pinia ✅"]
     H -->|"5-20人"| J["Vue 3 + TypeScript + Pinia ✅"]
-    H -->|"20+"| K["Angular 21 ✅ (推荐)"]
+    H -->|"20+"| K["Angular 22 ✅ (推荐)"]
 
     D --> L{"是否需要 SSR"}
     L -->|"是"| M["Next.js 16 ✅"]
     L -->|"否"| N["Vite + React 19 ✅"]
 
     E --> O{"是否需要及时更新"}
-    O -->|"是"| P["Angular 21 + Signals ✅"]
+    O -->|"是"| P["Angular 22 + Signals ✅"]
     O -->|"否"| Q["Angular 18 LTS ✅"]
 \`\`\`
 
@@ -283,7 +283,7 @@ quadrantChart
 |---------|---------|---------|
 | **前端主导（3-5人）** | Vue 3 | 产出最高、学习成本最低、独立完成 |
 | **前端主导（5-15人）** | React 19 | 组件复用、跨平台能力、人才储备 |
-| **前后端隔离（15+人）** | Angular 21 | 规范强、接口先行、DI 层清晰 |
+| **前后端隔离（15+人）** | Angular 22 | 规范强、接口先行、DI 层清晰 |
 | **跨职能团队（全栈）** | React + Next.js | 全栈复用 TypeScript、Server Components |
 | **外包/驻场团队** | Vue 3 | 快速交付、CDN 引入可用、中文文档 |
 | **外企/国际团队** | React 19 | 国际化生态、英文文档、社区支持 |
@@ -305,8 +305,8 @@ quadrantChart
 |---------|------|---------|---------|
 | **Vue 2 → Vue 3** | ⭐⭐⭐ | @vue/compat 逐步迁移 | 2-8 周 |
 | **React 15 → React 19** | ⭐⭐⭐ | 逐个组件升级 + codemod | 4-12 周 |
-| **Angular 8 → Angular 21** | ⭐⭐⭐⭐⭐ | 重写为主（Ivy 不兼容 View Engine） | 8-24 周 |
-| **AngularJS → Angular 21** | ⭐⭐⭐⭐⭐ | 完全重写，推荐 ngUpgrade 渐进 | 12-36 周 |
+| **Angular 8 → Angular 22** | ⭐⭐⭐⭐⭐ | 重写为主（Ivy 不兼容 View Engine） | 8-24 周 |
+| **AngularJS → Angular 22** | ⭐⭐⭐⭐⭐ | 完全重写，推荐 ngUpgrade 渐进 | 12-36 周 |
 | **Vue → React** | ⭐⭐⭐⭐ | 重写组件（SFC → JSX 心智转换） | 6-16 周 |
 | **React → Angular** | ⭐⭐⭐⭐⭐ | 重写 + 学习 DI/RxJS 心智模型 | 12-24 周 |
 | **Angular → React** | ⭐⭐⭐⭐ | 重写 + 选择生态工具链 | 8-20 周 |
@@ -316,7 +316,7 @@ quadrantChart
 \`\`\`
 假设：50 人团队，3 年项目周期，中型 SaaS 产品
 
-                Vue 3           React 19        Angular 21
+                Vue 3           React 19        Angular 22
 招聘成本         低（人才多）    低（最多）       高（较少）
 学习/培训        低（上手快）    中（Hooks 难）   高（RxJS/DI）
 开发效率         高（少写代码）  中（样板代码多）  中（声明式）
@@ -351,7 +351,7 @@ Angular:  ⭐⭐⭐   → 依赖图复杂，AI 难以全局理解 DI 链路
 **选择建议（AI 时代 2026）**：
 - 如果团队 AI 工具成熟，优先选 **React 19**（Cursor/Vercel AI SDK 支持最好）
 - 如果团队 AI 辅助较少，**Vue 3** 开发效率依然最高
-- 大型企业级项目，**Angular 21** 的规范优势仍不可替代
+- 大型企业级项目，**Angular 22** 的规范优势仍不可替代
 
 
 
@@ -373,7 +373,7 @@ Angular:  ⭐⭐⭐   → 依赖图复杂，AI 难以全局理解 DI 链路
 - ❌ 缺点：Hooks 心智模型陡峭、JSX 悖论、版本迭代快、纯 UI 库需自搭
 - 💡 面试加分：React Compiler 消除手写 memo，Actions 原生表单处理
 
-**Angular 21**
+**Angular 22**
 - ✅ 优点：开箱即用、强类型（TS 原生）、DI 可测试、RxJS 生态、企业规范
 - ❌ 缺点：包体积大（~130KB）、学习曲线高、版本升级痛苦（8→15 需重写）
 - 💡 面试加分：Zoneless Signals 替代 Zone.js，增量编译大幅缩短构建时间
@@ -757,7 +757,7 @@ Client Components（在浏览器交互）。Vue/Nuxt 目前没有等效方案。
 >
 > Analog（Angular）：
 >   └─ render() API 生成可读流
->   └─ Angular 21 支持流式 SSR + 延迟加载（@defer）
+>   └─ Angular 22 支持流式 SSR + 延迟加载（@defer）
 >   └─ 每个 @defer 块作为独立流式边界
 > \`\`\`
 > **性能差距：** Next.js 的 RSC + Stream 是目前最成熟的流式 SSR，首字节时间 TTFB 尤其优秀。
@@ -842,7 +842,7 @@ AI 生成代码质量（实测经验）：
 >   ├─ 低延时交易 UI（金融）
 >   └─ WASM 组件嵌入现有应用
 > 长期趋势：混合渲染（部分 WASM + 大部分 JS）
-> 相反，三大框架会吸收 WASM 优势（Angular 21 增量编译已用 Rust 重写部分编译器）
+> 相反，三大框架会吸收 WASM 优势（Angular 22 增量编译已用 Rust 重写部分编译器）
 > \`\`\`
 
 ### Q10：如何从零搭建一个框架选型评审？
@@ -892,7 +892,7 @@ AI 生成代码质量（实测经验）：
 
 ### Q11：三大框架 2026 年最新核心趋势
 
-| 趋势 | Vue 3.6 | React 19 | Angular 21 |
+| 趋势 | Vue 3.6 | React 19 | Angular 22 |
 |------|---------|----------|------------|
 | **响应式升级** | Alien Signals（精确追踪） | React Compiler（自动 memo） | Zoneless + Signals（无 Zone） |
 | **编译优化** | Vapor Mode（无虚拟 DOM） | React Compiler（编译时优化） | 增量编译（esbuild 原生） |
@@ -906,7 +906,7 @@ AI 生成代码质量（实测经验）：
 
 ---
 
-> **💡 面试追问：Vue 3 + Alien Signals vs React 19 + Compiler vs Angular 21 + Zoneless Signals，哪个框架的响应式方案最接近"终极方案"？**
+> **💡 面试追问：Vue 3 + Alien Signals vs React 19 + Compiler vs Angular 22 + Zoneless Signals，哪个框架的响应式方案最接近"终极方案"？**
 >
 > **各方案评分：**
 > \`\`\`
@@ -918,7 +918,7 @@ AI 生成代码质量（实测经验）：
 >   ├─ 纯函数+编译时自动 memo、Compiler 消除闭包陷阱
 >   └─ 缺点：Compiler 仍在早期，虚拟 DOM 兼容层仍存在
 >
-> Angular 21 + Zoneless：⭐⭐⭐（工程化成熟）
+> Angular 22 + Zoneless：⭐⭐⭐（工程化成熟）
 >   ├─ Zone.js 完全移除正确、resource() 声明式数据获取
 >   └─ 缺点：Signals 和 RxJS 共存增加复杂度
 > \`\`\`
@@ -7763,7 +7763,7 @@ export default {
 
 
 
-### 🔴 Angular 21 面试题（20题）
+### 🔴 Angular 22 面试题（20题）
 
 ### Q1：Angular 的变更检测机制是什么？Zone.js 和 Signals 有什么区别？
 
@@ -8100,7 +8100,7 @@ const userResource = httpResource<User>(() => \`/api/users/\${userId()}\`)
 - 取消：\`abortSignal\` 自动取消过期请求
 - 少代码：替代大量 \`effect + subscribe\` 模式
 
-> **💡 面试追问：Angular 装饰器（@Component/@Directive/@Injectable）在 Angular 21 中是否正在被编译时 API 替代？未来是否会完全移除装饰器？**
+> **💡 面试追问：Angular 装饰器（@Component/@Directive/@Injectable）在 Angular 22 中是否正在被编译时 API 替代？未来是否会完全移除装饰器？**
 >
 > **演进路径：**
 > \`\`\`
@@ -8112,9 +8112,9 @@ const userResource = httpResource<User>(() => \`/api/users/\${userId()}\`)
 > @Pipe（保留）→ 无直接替代
 > @NgModule（已过时）→ standalone + imports 替代
 > \`\`\`
-> **是否完全移除装饰器：** Angular 团队计划逐步"缩减装饰器使用范围"，但不会完全移除。\`@Component\`/@Directive/@Injectable 作为框架核心元数据标记将继续存在。Angular 21 新增的编译时宏（如 \`input()\`/\`output()\`/\`viewChild()\`）表明"从装饰器向函数式 API 迁移"是长期趋势。
+> **是否完全移除装饰器：** Angular 团队计划逐步"缩减装饰器使用范围"，但不会完全移除。\`@Component\`/@Directive/@Injectable 作为框架核心元数据标记将继续存在。Angular 22 新增的编译时宏（如 \`input()\`/\`output()\`/\`viewChild()\`）表明"从装饰器向函数式 API 迁移"是长期趋势。
 
-### Q10：Angular 21 Zoneless 模式下如何迁移？
+### Q10：Angular 22 Zoneless 模式下如何迁移？
 
 **迁移四步骤：**
 
@@ -8536,9 +8536,9 @@ class AdminOnlyService {}
 
 ---
 
-### 23. takeUntilDestroyed 防止内存泄漏（Angular 21+）
+### 23. takeUntilDestroyed 防止内存泄漏（Angular 22+）
 
-Angular 21+ 推荐使用 \`takeUntilDestroyed\`，基于 \`DestroyRef\`，无需手动管理 \`Subject\` 和 \`ngOnDestroy\`。
+Angular 22+ 推荐使用 \`takeUntilDestroyed\`，基于 \`DestroyRef\`，无需手动管理 \`Subject\` 和 \`ngOnDestroy\`。
 
 \`\`\`ts
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -8582,7 +8582,7 @@ flowchart LR
     Active --> Destroy["组件销毁"]
   end
 
-  subgraph "订阅管理（Angular 21+）"
+  subgraph "订阅管理（Angular 22+）"
     WS["WebSocket"] --> |"takeUntilDestroyed"| DR["DestroyRef"]
     Alarm["Alarm"] --> |"takeUntilDestroyed"| DR
     Timer["Interval"] --> |"takeUntilDestroyed"| DR
@@ -8621,7 +8621,7 @@ flowchart LR
 >
 > **✅ 答案：** \`switchMap\` 在新值到来时取消前一个内部 Observable。但连续 401 时用 \`switchMap\` 会导致反复发起刷新。**正确做法**：改用 \`exhaustMap\`——它在内部 Observable 未完成时忽略新请求，确保只发一次刷新。等待队列中的请求在刷新完成后统一用新 token 重试。\`switchMap\` 只适用于"取消旧结果"而非"防并发"。
 >
-> **Q3（边界/未来）：** 多标签页场景下，每个 Angular 应用实例独立刷新 token，可能导致 Refresh Token 被反复刷新而过期。如何通过 \`BroadcastChannel\` 或 Service Worker 实现跨标签页共享刷新状态？Angular 21+ 的 Signal + httpResource 出现后，HttpInterceptor + RxJS 的拦截模式还会是推荐实践吗？
+> **Q3（边界/未来）：** 多标签页场景下，每个 Angular 应用实例独立刷新 token，可能导致 Refresh Token 被反复刷新而过期。如何通过 \`BroadcastChannel\` 或 Service Worker 实现跨标签页共享刷新状态？Angular 22+ 的 Signal + httpResource 出现后，HttpInterceptor + RxJS 的拦截模式还会是推荐实践吗？
 >
 > **✅ 答案：** BroadcastChannel 方案：
 >

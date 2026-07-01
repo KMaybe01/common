@@ -1,12 +1,12 @@
 var e=`﻿---
 title: 框架对比
 ---
-# ⚔️ 三大前端框架深度对比：[Vue 3](https://vuejs.org) vs [React 19](https://react.dev) vs [Angular 21](https://angular.dev)
+# ⚔️ 三大前端框架深度对比：[Vue 3](https://vuejs.org) vs [React 19](https://react.dev) vs [Angular 22](https://angular.dev)
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：2 天
 > 大厂必问框架选型题，掌握深度对比 = 面试加分项
 
-> **注意**：本文以 Angular 21 作为当前最新版本（2026），Angular 20 的内容仍可参考历史版本。
+> **注意**：本文以 Angular 22 作为当前最新版本（2026），Angular 20 的内容仍可参考历史版本。
 
 ---
 

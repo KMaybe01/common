@@ -46,7 +46,7 @@ class CardComponent {
 
 ### 3.2 组件通信
 
-| 方式 | Vue 3 | React 19 | Angular 21 |
+| 方式 | Vue 3 | React 19 | Angular 22 |
 |------|-------|----------|------------|
 | **父→子** | \`props\` | \`props\` | \`@Input()\` |
 | **子→父** | \`emit\` | \`callback prop\` | \`@Output()\` |
@@ -67,7 +67,7 @@ function Card({ title, onAction }: { title: string; onAction: (id: number) => vo
   const [state, formAction] = useActionState(updateAction, null)
 }
 
-// Angular 21 — signal input / output
+// Angular 22 — signal input / output
 @Component({
   template: \`<div (click)="click.emit(1)">{{ title() }}</div>\`
 })
@@ -97,7 +97,7 @@ class CardComponent {
 \`\`\`
 
 \`\`\`html
-<!-- Angular 21 — @if / @for 原生控制流 -->
+<!-- Angular 22 — @if / @for 原生控制流 -->
 @if (loading()) {
   <div>加载中...</div>
 } @else if (error()) {
@@ -121,7 +121,7 @@ class CardComponent {
 
 ### 3.5 生命周期对比
 
-| 阶段 | Vue 3 | React 19 | Angular 21 |
+| 阶段 | Vue 3 | React 19 | Angular 22 |
 |------|-------|----------|------------|
 | **创建** | \`setup()\` | \`constructor\` | \`constructor\` |
 | **挂载** | \`onMounted\` | \`useEffect(() => {}, [])\` | \`ngOnInit\` |
@@ -153,7 +153,7 @@ const AsyncComponent = React.lazy(() => import('./AsyncComponent'))
 \`\`\`
 
 \`\`\`html
-<!-- Angular 21 — @defer 延迟加载 -->
+<!-- Angular 22 — @defer 延迟加载 -->
 @defer (on viewport; prefetch on idle) {
   <heavy-component />
 } @placeholder {

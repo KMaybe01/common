@@ -686,7 +686,7 @@ RTK:         10KB
 TanStack Q:  11KB
 \`\`\`
 
-> 🔗 **链式思考**：React Router v6.4+ 引入的 \`loaders\`/\`actions\` 本质是"声明式数据获取"，在路由匹配时自动加载数据——这与 Vue Router 的导航守卫 + 手动数据获取模式不同，更接近 Angular Router 的 \`resolve\` 守卫。三者都支持懒加载和嵌套路由，但 React Router 以 URL 为中心，Vue Router 以组件树为中心，Angular Router 以配置为中心。详见 [框架对比](../框架对比/) 的"路由方案"。
+> 🔗 **链式思考**：React Router v8.1 引入的 \`loaders\`/\`actions\` 本质是"声明式数据获取"，在路由匹配时自动加载数据——这与 Vue Router 的导航守卫 + 手动数据获取模式不同，更接近 Angular Router 的 \`resolve\` 守卫。三者都支持懒加载和嵌套路由，但 React Router 以 URL 为中心，Vue Router 以组件树为中心，Angular Router 以配置为中心。详见 [框架对比](../框架对比/) 的"路由方案"。
 
 ---
 

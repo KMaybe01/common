@@ -288,7 +288,7 @@ Angular 20 (2025)
 
 ---
 
-## 3️⃣ Angular 21 最新进展（2025-2026）
+## 3️⃣ Angular 22 最新进展（2025-2026）
 
 ### 🌟 Angular 技术发展演进时间线
 
@@ -362,7 +362,7 @@ timeline
 | **Angular 18** | 2024 | **Zoneless 实验性** | 可选的精确变更检测 |
 | **Angular 19** | 2025 | \`linkedSignal\`、\`resource()\` | 声明式数据获取 |
 | **Angular 20** | 2025 | \`httpResource\`、Signal Forms | 响应式全面化 |
-| **Angular 21** | 2025 | **Zoneless 默认**、esbuild 原生 | 全面现代化 |
+| **Angular 22** | 2025 | **Zoneless 默认**、esbuild 原生 | 全面现代化 |
 | **Angular 22** | 2026 | **Signal Forms / resource 稳定**、OnPush 默认、@Service、injectAsync、Fetch 默认 | Signal 优先时代 |
 
 ### ⚡ Angular 关键转折点：AngularJS → Angular 2 → Ivy → Zoneless
@@ -417,17 +417,17 @@ Angular 22 (2026.06 发布)
 
 ### 🔥 Zoneless 变更检测（默认启用）
 
-Angular 21 最大的变化是 **Zoneless 成为新项目的默认配置**。Angular 22 在此基础上进一步将 **OnPush 设为默认变更检测策略**，实现了完全的 Signal 优先架构。
+Angular 22 最大的变化是 **Zoneless 成为新项目的默认配置**。Angular 22 在此基础上进一步将 **OnPush 设为默认变更检测策略**，实现了完全的 Signal 优先架构。
 
 \`\`\`typescript
-// Angular 20 - 手动启用 Zoneless（Angular 21 默认启用）
+// Angular 20 - 手动启用 Zoneless（Angular 22 默认启用）
 import { provideZonelessChangeDetection } from '@angular/core';
 
 bootstrapApplication(AppComponent, {
   providers: [provideZonelessChangeDetection()]
 });
 
-// Angular 21 - 默认就是 Zoneless，无需手动配置
+// Angular 22 - 默认就是 Zoneless，无需手动配置
 // ng new 生成的项目自动使用 Zoneless
 \`\`\`
 
@@ -1869,7 +1869,7 @@ export class UppercasePipe implements PipeTransform {
 }
 \`\`\`
 
-> 🔗 **链式思考**：Angular Router 是三框架中最"重量级"的——自带路由守卫（canActivate/canDeactivate/resolve）、多出口（\`<router-outlet>\` 带 name 属性）、以及懒加载模块支持。Vue Router 在灵活性上类似但更简洁（路由守卫更少、命名视图较新）。React Router v6.4+ 则用 \`loaders\`/\`actions\` 替代传统守卫，走"声明式数据获取"路线。详见 [框架对比](./框架对比/) 的"路由方案"。
+> 🔗 **链式思考**：Angular Router 是三框架中最"重量级"的——自带路由守卫（canActivate/canDeactivate/resolve）、多出口（\`<router-outlet>\` 带 name 属性）、以及懒加载模块支持。Vue Router 在灵活性上类似但更简洁（路由守卫更少、命名视图较新）。React Router v8.1 则用 \`loaders\`/\`actions\` 替代传统守卫，走"声明式数据获取"路线。详见 [框架对比](./框架对比/) 的"路由方案"。
 
 ---
 
@@ -2418,7 +2418,7 @@ export class OptimizedListComponent {
 }
 \`\`\`
 
-> 🔗 **链式思考**：Angular 21 的 \`httpResource()\` + Signals 实现了"声明式数据获取"：描述数据来源，框架自动处理 loading/error/refetch。这与 React 19 的 \`use()\` + Server Functions 理念一致，也类似 Vue 生态的 \`useFetch\`（Nuxt）/ TanStack Query（React）。三者的共同演进方向：从"手动管理请求状态"到"声明式描述数据依赖"。详见 [框架对比](./框架对比/) 的"SSR/SSG 方案"。
+> 🔗 **链式思考**：Angular 22 的 \`httpResource()\` + Signals 实现了"声明式数据获取"：描述数据来源，框架自动处理 loading/error/refetch。这与 React 19 的 \`use()\` + Server Functions 理念一致，也类似 Vue 生态的 \`useFetch\`（Nuxt）/ TanStack Query（React）。三者的共同演进方向：从"手动管理请求状态"到"声明式描述数据依赖"。详见 [框架对比](./框架对比/) 的"SSR/SSG 方案"。
 
 ---
 
@@ -3799,7 +3799,7 @@ Angular 对 AI 友好的核心原因：
 
 #### Angular MCP Server（AI 辅助开发）
 
-Angular 21 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angular 项目结构：
+Angular 22 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angular 项目结构：
 
 | 能力 | 描述 | 效率提升 |
 |------|------|---------|
@@ -3930,12 +3930,12 @@ Angular 在 AI 时代的不可替代性：
 
 | 工具 | 最新版本 | 关键变化 |
 |------|----------|----------|
-| Angular | 21 | Zoneless 默认，Signals 成熟 |
-| Angular CLI | 21 | Vite 集成，更快构建 |
-| NgRx | 18+ | SignalStore 改进 |
-| Angular Material | 21 | M3 设计系统 |
-| Nx | 20+ | 更好的模块联邦 |
-| Angular Universal | 废弃 | SSR 内置支持 |
+| Angular | 22 | Zoneless 默认，Signals 成熟 |
+| Angular CLI | 22 | esbuild/Vite 默认，增量编译 |
+| NgRx | 19+ | SignalStore 稳定版 |
+| Angular Material | 22 | M3 设计系统稳定 |
+| Nx | 21+ | 更好的模块联邦与缓存 |
+| Angular Universal | 废弃 | SSR 内置支持 (@angular/ssr) |
 
 ### Angular 生态全景图
 
@@ -3943,7 +3943,7 @@ Angular 在 AI 时代的不可替代性：
 mindmap
   root((Angular 生态))
     核心框架
-      Angular 21
+      Angular 22
       TypeScript
       RxJS
     状态管理
