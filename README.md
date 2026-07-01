@@ -9,6 +9,7 @@ React 19 文档站点，使用 Vite 8 构建，部署在 GitHub Pages。
 - **路由**: React Router 6 (HashRouter)
 - **内容**: Markdown (Vite raw glob import)
 - **渲染**: react-markdown + remark-gfm + highlight.js
+- **虚拟滚动**: IntersectionObserver 分片渲染（大文档仅渲染视口附近区块）
 - **图表**: Mermaid (lazy loaded)
 - **代码质量**: Biome, TypeScript strict mode
 
@@ -28,21 +29,25 @@ src/
 ├── App.tsx                  # 根组件（路由 + ErrorBoundary）
 ├── main.tsx                 # 入口（StrictMode + HashRouter）
 ├── components/
-│   ├── DocPage.tsx          # 文档页面（异步加载 markdown）
-│   ├── Header.tsx           # 顶栏导航 + 主题切换 + 搜索
-│   ├── GlobalSearch.tsx     # 全局搜索（全文索引）
-│   ├── MarkdownRenderer.tsx # Markdown 渲染（代码高亮、图片灯箱）
-│   ├── MermaidDiagram.tsx   # Mermaid 图表（lazy loaded）
-│   ├── HeroCanvas.tsx       # 首页粒子动画
-│   ├── HomePage.tsx         # 首页
-│   ├── Outline.tsx          # 文档目录/大纲
+│   ├── DocPage.tsx           # 文档页面（异步加载 markdown）
+│   ├── DocVirtualScroll.tsx  # 虚拟滚动（分片渲染大文档）
+│   ├── Header.tsx            # 顶栏导航 + 主题切换 + 搜索
+│   ├── GlobalSearch.tsx      # 全局搜索（全文索引）
+│   ├── MarkdownRenderer.tsx  # Markdown 渲染（代码高亮、图片灯箱）
+│   ├── MermaidDiagram.tsx    # Mermaid 图表（lazy loaded）
+│   ├── HeroCanvas.tsx        # 首页粒子动画
+│   ├── HomePage.tsx          # 首页
+│   ├── Outline.tsx           # 文档目录/大纲
 │   ├── UpdateNotification.tsx # 版本更新提示
-│   └── ErrorBoundary.tsx    # 错误边界
-├── hooks/useTheme.ts        # 主题切换（useSyncExternalStore）
+│   └── ErrorBoundary.tsx     # 错误边界
+├── hooks/useTheme.ts         # 主题切换（useSyncExternalStore）
 ├── data/
-│   ├── content.ts           # 内容加载（import.meta.glob）
-│   └── navigation.ts        # 导航配置
-└── index.css                # 全局样式（CSS 变量 + 暗色模式）
+│   ├── content.ts            # 内容加载（import.meta.glob）
+│   └── navigation.ts         # 导航配置
+├── utils/
+│   ├── slugify.ts            # 标题 → anchor ID 算法
+│   └── split-markdown.ts     # MD 按标题分片 + 高度预估
+└── index.css                 # 全局样式（CSS 变量 + 暗色模式）
 ```
 
 ---

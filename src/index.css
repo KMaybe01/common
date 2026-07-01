@@ -653,6 +653,44 @@ pre:hover .code-copy-btn {
   line-height: 1.5;
 }
 
+/* ── Virtual scroll ── */
+.doc-virtual-scroll {
+  min-height: 100%;
+}
+
+.doc-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+}
+
+.doc-section--active {
+  content-visibility: visible;
+}
+
+.doc-section--placeholder {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.doc-section--placeholder:hover {
+  opacity: 0.8;
+}
+
+.doc-section-placeholder {
+  padding: 8px 0;
+}
+
+.doc-section-placeholder h1,
+.doc-section-placeholder h2 {
+  pointer-events: none;
+  margin: 0;
+}
+
+.doc-section-sentinel {
+  height: 1px;
+  width: 100%;
+}
+
 /* ── Doc page ── */
 .doc-page {
   display: flex;

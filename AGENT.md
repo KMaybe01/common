@@ -27,16 +27,20 @@ bun preview    # 预览构建产物
 │   ├── components/
 │   │   ├── Header.tsx           # 顶部导航栏
 │   │   ├── HomePage.tsx         # 首页（Hero + Feature）
-│   │   ├── DocPage.tsx          # 文档页面容器
-│   │   ├── MarkdownRenderer.tsx # MD → React 渲染
-│   │   ├── MermaidDiagram.tsx   # Mermaid 图表
-│   │   ├── Outline.tsx          # 右侧目录
+│   │   ├── DocPage.tsx           # 文档页面容器
+│   │   ├── DocVirtualScroll.tsx  # 虚拟滚动（分片渲染大文档）
+│   │   ├── MarkdownRenderer.tsx  # MD → React 渲染
+│   │   ├── MermaidDiagram.tsx    # Mermaid 图表
+│   │   ├── Outline.tsx           # 右侧目录
 │   │   └── UpdateNotification.tsx # 版本更新通知
 │   ├── data/
-│   │   ├── navigation.ts        # 导航配置
-│   │   └── content.ts           # MD 文件加载器（import.meta.glob）
-│   └── hooks/
-│       └── useTheme.ts          # 暗色模式 hook
+│   │   ├── navigation.ts         # 导航配置
+│   │   └── content.ts            # MD 文件加载器（import.meta.glob）
+│   ├── hooks/
+│   │   └── useTheme.ts           # 暗色模式 hook
+│   └── utils/
+│       ├── slugify.ts            # 标题 → anchor ID 算法
+│       └── split-markdown.ts     # MD 按标题分片 + 高度预估
 ├── public/                      # 静态资源
 ├── scripts/
 │   └── gen-version.mjs          # 构建时版本生成脚本

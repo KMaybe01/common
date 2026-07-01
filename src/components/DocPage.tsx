@@ -1,55 +1,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { loadContent } from '../data/content'
-import MarkdownRenderer from './MarkdownRenderer'
+import { splitMarkdown } from '../utils/split-markdown'
+import DocVirtualScroll from './DocVirtualScroll'
 import Outline from './Outline'
-
-const HEADING_RE = /^(#{1,3})\s+(.+)$/
-const HTTP_RE = /^https?:\/\//
 
 interface Heading {
   level: number
   text: string
 }
 
-function extractHeadings(content: string): Heading[] {
-  const lines = content.split('\n')
-  const matches: Heading[] = []
-  let inCodeBlock = false
-
-  for (const line of lines) {
-    if (line.trimStart().startsWith('```')) {
-      inCodeBlock = !inCodeBlock
-      continue
-    }
-    if (inCodeBlock) continue
-
-    const match = line.match(HEADING_RE)
-    if (match) {
-      const text = match[2].trim()
-      if (HTTP_RE.test(text)) continue
-      matches.push({ level: match[1].length, text })
-    }
-  }
-  return matches
-}
-
 export default function DocPage() {
   const location = useLocation()
   const [content, setContent] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const headings = useMemo(() => (content ? extractHeadings(content) : []), [content])
+  const headings = useMemo(() => {
+    if (!content) return []
+    return splitMarkdown(content)
+      .filter((s) => s.heading)
+      .map((s) => ({ level: s.level, text: s.heading! }))
+  }, [content])
   const [notFound, setNotFound] = useState(false)
-
-  useEffect(() => {
-    if (content && location.hash) {
-      const id = location.hash.slice(1)
-      requestAnimationFrame(() => {
-        const el = document.getElementById(id)
-        if (el) el.scrollIntoView({ behavior: 'smooth' })
-      })
-    }
-  }, [content, location.hash])
 
   useEffect(() => {
     let cancelled = false
@@ -108,7 +79,7 @@ export default function DocPage() {
   return (
     <div className="doc-page">
       <div className="doc-content">
-        <MarkdownRenderer content={content!} basePath={location.pathname} />
+        <DocVirtualScroll content={content!} />
       </div>
       {headings.length > 0 && <Outline headings={headings} />}
     </div>
