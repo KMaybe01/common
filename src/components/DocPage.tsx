@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router'
 import { loadContent } from '../data/content'
 import { splitMarkdown } from '../utils/split-markdown'
 import DocVirtualScroll from './DocVirtualScroll'

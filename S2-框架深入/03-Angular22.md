@@ -652,7 +652,6 @@ export class UserListComponent {
 - ✅ AbortSignal 取消支持
 - ✅ 同步值返回支持
 - ✅ 自动清理订阅
-```
 
 ### 📝 Signal Forms（Angular 22 稳定版）
 
@@ -3778,10 +3777,6 @@ export class MemoryLeakDetector {
 }
 ```
 
-## 总结与最佳实践
-
-### 🎯 Angular 开发黄金法则
-
 ### 🤖 Angular in AI Era：AI 时代 Angular 的核心优势
 
 > Angular 的强类型 + DI + 模板系统在 AI 辅助开发中有独特优势 — AI 生成的代码更准确、更可靠。
@@ -4105,6 +4100,87 @@ export class DataTableComponent {
   delete(id: number) {
     this.dataService.deleteItem(id).subscribe(() => {
       // 刷新数据
+    });
+  }
+}
+```
+
+### 场景2：支付失败怎么再次支付？如何防止重复支付？
+
+在 Angular 企业级开发中，支付状态管理和防重复提交是非常典型的场景。这要求我们结合 Signals、RxJS 和状态机模型进行防抖与幂等性控制。
+
+**核心防御策略：**
+1. **前端组件层**：通过 Signal 管理 `isPaying` 状态（防抖/禁用按钮）。
+2. **幂等性控制**：每次点击生成唯一的 `Idempotency-Key`，失败重试时**必须刷新**该 Key。
+3. **HTTP 请求层**：结合 RxJS 处理请求的取消与重试机制。
+
+```typescript
+import { Component, inject, signal } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { finalize, catchError } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
+
+@Component({
+  selector: 'app-payment',
+  template: `
+    <div class="payment-card">
+      <h3>订单号: {{ orderNo() }}</h3>
+      
+      <!-- 支付按钮：正在支付时禁用 -->
+      <button 
+        (click)="handlePay()" 
+        [disabled]="isPaying()">
+        {{ isPaying() ? '正在处理中...' : '立即支付' }}
+      </button>
+
+      <!-- 错误提示 -->
+      @if (errorMessage()) {
+        <div class="error-alert">
+          {{ errorMessage() }}
+          <button (click)="handlePay()">重新支付</button>
+        </div>
+      }
+    </div>
+  `
+})
+export class PaymentComponent {
+  private http = inject(HttpClient);
+  
+  orderNo = signal('ORD-20260701-001');
+  isPaying = signal(false);
+  errorMessage = signal('');
+  
+  // 幂等性键：防止网络抖动导致的重试重复扣款
+  private idempotencyKey = crypto.randomUUID();
+
+  handlePay() {
+    if (this.isPaying()) return; // 1. 前端防重复点击拦截
+    
+    this.isPaying.set(true);
+    this.errorMessage.set('');
+
+    const headers = new HttpHeaders({
+      'Idempotency-Key': this.idempotencyKey
+    });
+
+    this.http.post('/api/payments/create', 
+      { orderNo: this.orderNo() }, 
+      { headers }
+    ).pipe(
+      // 2. 无论成功失败，重置 loading 状态
+      finalize(() => this.isPaying.set(false)),
+      catchError(err => {
+        // 3. 支付失败处理：必须刷新幂等键，允许用户重试！
+        this.idempotencyKey = crypto.randomUUID();
+        this.errorMessage.set(err.error?.message || '支付失败，请重试');
+        return EMPTY;
+      })
+    ).subscribe({
+      next: (res) => {
+        // 4. 支付成功逻辑：跳转成功页
+        console.log('支付成功:', res);
+        // this.router.navigate(['/success']);
+      }
     });
   }
 }

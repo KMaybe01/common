@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 import DocPage from './components/DocPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import Header from './components/Header'

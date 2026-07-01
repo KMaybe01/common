@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router'
 import { type NavItem, navConfig } from '../data/navigation'
 import { useTheme } from '../hooks/useTheme'
 import GlobalSearch from './GlobalSearch'
