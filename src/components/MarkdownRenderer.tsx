@@ -2,6 +2,8 @@ import hljs from 'highlight.js'
 import {
   type ReactNode,
   isValidElement,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -12,7 +14,8 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import { useNavigate } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
-import MermaidDiagram from './MermaidDiagram'
+
+const MermaidDiagram = lazy(() => import('./MermaidDiagram'))
 
 function resolveInternalUrl(href: string, basePath: string): string {
   const stripped = href.replace(/\.md$/i, '')
@@ -174,7 +177,11 @@ export default function MarkdownRenderer({
         const code = String(children).replace(/\n$/, '')
 
         if (lang === 'mermaid') {
-          return <MermaidDiagram chart={code} />
+          return (
+            <Suspense fallback={<div className="mermaid-loading">Loading diagram…</div>}>
+              <MermaidDiagram chart={code} />
+            </Suspense>
+          )
         }
 
         if (lang && hljs.getLanguage(lang)) {
