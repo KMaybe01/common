@@ -39,6 +39,16 @@ export default function DocPage() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
+    if (content && location.hash) {
+      const id = location.hash.slice(1)
+      requestAnimationFrame(() => {
+        const el = document.getElementById(id)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      })
+    }
+  }, [content, location.hash])
+
+  useEffect(() => {
     let cancelled = false
     setLoading(true)
     setNotFound(false)

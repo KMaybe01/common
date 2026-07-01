@@ -117,14 +117,7 @@ export default function GlobalSearch({ onClose }: { onClose: () => void }) {
   const select = useCallback(
     (link: string) => {
       onClose()
-      const [path, hash] = link.split('#')
-      navigate(path)
-      if (hash) {
-        setTimeout(() => {
-          const el = document.getElementById(hash)
-          if (el) el.scrollIntoView({ behavior: 'smooth' })
-        }, 400)
-      }
+      navigate(link)
     },
     [navigate, onClose],
   )

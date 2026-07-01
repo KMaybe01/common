@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import DocPage from './components/DocPage'
+import ErrorBoundary from './components/ErrorBoundary'
 import Header from './components/Header'
 import HomePage from './components/HomePage'
 import UpdateNotification from './components/UpdateNotification'
@@ -9,10 +10,12 @@ export default function App() {
     <div className="app">
       <Header />
       <main className="main-content">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/*" element={<DocPage />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/*" element={<DocPage />} />
+          </Routes>
+        </ErrorBoundary>
       </main>
       <UpdateNotification />
     </div>

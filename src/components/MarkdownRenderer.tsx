@@ -1,5 +1,13 @@
 import hljs from 'highlight.js'
-import { type ReactNode, isValidElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  type ReactNode,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import { useNavigate } from 'react-router-dom'
@@ -158,116 +166,119 @@ export default function MarkdownRenderer({
 }) {
   const navigate = useNavigate()
 
-  const components = useMemo<Partial<Components>>(() => ({
-    code({ className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '')
-      const lang = match?.[1]
-      const code = String(children).replace(/\n$/, '')
+  const components = useMemo<Partial<Components>>(
+    () => ({
+      code({ className, children, ...props }) {
+        const match = /language-(\w+)/.exec(className || '')
+        const lang = match?.[1]
+        const code = String(children).replace(/\n$/, '')
 
-      if (lang === 'mermaid') {
-        return <MermaidDiagram chart={code} />
-      }
+        if (lang === 'mermaid') {
+          return <MermaidDiagram chart={code} />
+        }
 
-      if (lang && hljs.getLanguage(lang)) {
-        const { value } = hljs.highlight(code, { language: lang })
-        return (
-          <pre className={className}>
-            <CopyButton text={code} />
-            <code dangerouslySetInnerHTML={{ __html: value }} />
-          </pre>
-        )
-      }
+        if (lang && hljs.getLanguage(lang)) {
+          const { value } = hljs.highlight(code, { language: lang })
+          return (
+            <pre className={className}>
+              <CopyButton text={code} />
+              <code dangerouslySetInnerHTML={{ __html: value }} />
+            </pre>
+          )
+        }
 
-      if (lang) {
-        const { value } = hljs.highlightAuto(code)
-        return (
-          <pre className={className}>
-            <CopyButton text={code} />
-            <code dangerouslySetInnerHTML={{ __html: value }} />
-          </pre>
-        )
-      }
+        if (lang) {
+          const { value } = hljs.highlightAuto(code)
+          return (
+            <pre className={className}>
+              <CopyButton text={code} />
+              <code dangerouslySetInnerHTML={{ __html: value }} />
+            </pre>
+          )
+        }
 
-      return <code {...props}>{children}</code>
-    },
+        return <code {...props}>{children}</code>
+      },
 
-    a({ href, children, ...props }) {
-      if (!href) return <span {...props}>{children}</span>
+      a({ href, children, ...props }) {
+        if (!href) return <span {...props}>{children}</span>
 
-      const isExternal = href.startsWith('http') || href.startsWith('//')
-      const isAnchor = href.startsWith('#')
+        const isExternal = href.startsWith('http') || href.startsWith('//')
+        const isAnchor = href.startsWith('#')
 
-      if (isExternal) {
-        return (
-          <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-            {children}
-          </a>
-        )
-      }
+        if (isExternal) {
+          return (
+            <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+              {children}
+            </a>
+          )
+        }
 
-      if (isAnchor) {
+        if (isAnchor) {
+          return (
+            <a
+              href={href}
+              {...props}
+              onClick={(e) => {
+                e.preventDefault()
+                const id = href.slice(1)
+                const el = document.getElementById(id)
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              {children}
+            </a>
+          )
+        }
+
+        const resolved = resolveInternalUrl(href, basePath)
+
         return (
           <a
-            href={href}
+            href={resolved}
             {...props}
             onClick={(e) => {
               e.preventDefault()
-              const id = href.slice(1)
-              const el = document.getElementById(id)
-              if (el) el.scrollIntoView({ behavior: 'smooth' })
+              navigate(resolved)
             }}
           >
             {children}
           </a>
         )
-      }
+      },
 
-      const resolved = resolveInternalUrl(href, basePath)
+      img({ src, alt, ...props }) {
+        if (!src) return null
+        return <LightboxImage src={src} alt={alt || ''} />
+      },
 
-      return (
-        <a
-          href={resolved}
-          {...props}
-          onClick={(e) => {
-            e.preventDefault()
-            navigate(resolved)
-          }}
-        >
-          {children}
-        </a>
-      )
-    },
-
-    img({ src, alt, ...props }) {
-      if (!src) return null
-      return <LightboxImage src={src} alt={alt || ''} />
-    },
-
-    h1({ children, ...props }) {
-      const text = extractText(children)
-      return (
-        <h1 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
-          {children}
-        </h1>
-      )
-    },
-    h2({ children, ...props }) {
-      const text = extractText(children)
-      return (
-        <h2 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
-          {children}
-        </h2>
-      )
-    },
-    h3({ children, ...props }) {
-      const text = extractText(children)
-      return (
-        <h3 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
-          {children}
-        </h3>
-      )
-    },
-  }), [navigate, basePath])
+      h1({ children, ...props }) {
+        const text = extractText(children)
+        return (
+          <h1 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+            {children}
+          </h1>
+        )
+      },
+      h2({ children, ...props }) {
+        const text = extractText(children)
+        return (
+          <h2 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+            {children}
+          </h2>
+        )
+      },
+      h3({ children, ...props }) {
+        const text = extractText(children)
+        return (
+          <h3 id={text.toLowerCase().replace(/\s+/g, '-')} {...props}>
+            {children}
+          </h3>
+        )
+      },
+    }),
+    [navigate, basePath],
+  )
 
   return (
     <div className="markdown-body">
