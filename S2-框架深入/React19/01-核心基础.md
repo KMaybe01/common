@@ -609,7 +609,7 @@ graph TD
 | 框架 | 定位 | 2026 状态 |
 |------|------|-----------|
 | React 19 + Next.js | 全栈应用首选 | 最广泛使用 |
-| Angular 21 | 企业级应用 | Zoneless 默认，性能大幅提升 |
+| Angular 22 | 企业级应用 | Zoneless 默认，性能大幅提升 |
 | Vue 3.6 + Nuxt 5 | 渐进式开发 | Vapor Mode 实验性，性能接近 Solid |
 | Svelte 5 | 编译时优化 | Runes 响应式，轻量级首选 |
 | Solid.js | 细粒度响应式 | 性能标杆，生态增长中 |
@@ -629,7 +629,7 @@ mindmap
       Remix
       Gatsby
     路由
-      React Router 7
+      React Router 8.1
       TanStack Router
     状态管理
       Zustand

@@ -54,7 +54,7 @@ graph LR
 |-------|-----------|
 | Framework | React 19 + TypeScript (strict) |
 | Build | Vite 8 + rolldown |
-| Routing | React Router 6 (HashRouter) |
+| Routing | React Router 8.1 (HashRouter) |
 | Content | Markdown via `import.meta.glob` |
 | Rendering | react-markdown + remark-gfm |
 | Highlighting | highlight.js |
@@ -881,7 +881,7 @@ jobs:
 - `import.meta.glob` for file-system based content discovery
 - Built-in TypeScript and JSX support
 
-## React Router 6 (HashRouter)
+## React Router 8.1 (HashRouter)
 
 **Why:** HashRouter enables static hosting without server-side URL rewriting:
 - URLs like `https://site.com/common/#/path`

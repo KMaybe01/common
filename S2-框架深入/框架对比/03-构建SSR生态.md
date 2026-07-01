@@ -47,7 +47,7 @@ export default defineConfig({
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],   // Angular 21 默认 Zoneless 不再需要
+            "polyfills": ["zone.js"],   // Angular 22 默认 Zoneless 不再需要
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico"],
             "styles": ["src/styles.css"]
@@ -82,11 +82,11 @@ React 19 + Vite 构建产物：
     ├─ assets/index-xxx.js ~44KB (gzip)   ← React + ReactDOM
     └─ assets/vendor-xxx.js                ← 第三方依赖
 
-Angular 21 + esbuild 构建产物：
+Angular 22 + esbuild 构建产物：
   dist/
     ├─ index.html          ~3KB
     ├─ main-xxx.js         ~130-150KB (gzip)  ← Angular 完整框架（Zoneless + 增量编译）
-    ├─ polyfills-xxx.js    ~0KB (Zoneless) ← Angular 21 默认无 Zone.js
+    ├─ polyfills-xxx.js    ~0KB (Zoneless) ← Angular 22 默认无 Zone.js
     ├─ styles-xxx.css      ~5KB
     └─ chunk-xxx.js                       ← 懒加载模块
 ```
@@ -128,7 +128,7 @@ HMR 性能（单文件修改）：
 
 ### 6.5 CI/CD 与 DevOps 对比
 
-| 对比项 | Vue 3 | React 19 | Angular 21 |
+| 对比项 | Vue 3 | React 19 | Angular 22 |
 |--------|-------|----------|------------|
 | **静态分析** | ESLint + vue-tsc | ESLint + TypeScript | Angular ESLint + ngc |
 | **代码格式化** | Prettier | Prettier | Prettier / clang-format |
@@ -343,7 +343,7 @@ test('increments count', () => {
 | **复杂表单** | VeeValidate / FormKit | React Hook Form / Formik | Reactive Forms（内置强大） |
 | **验证** | zod / yup + @vee-validate/zod | zod / yup + @hookform/resolvers | Validators 内置 + 自定义 |
 | **动态表单** | FormKit 动态 schema | React JSON Schema Form | Formly（JSON schema） |
-| **Signal 表单** | 社区实验 | 社区实验 | Angular 21 Signal Forms（官方） |
+| **Signal 表单** | 社区实验 | 社区实验 | Angular 22 Signal Forms（官方） |
 
 ### 8.7 AI / LLM 开发生态
 
@@ -362,7 +362,7 @@ test('increments count', () => {
 
 ## 九、TypeScript 集成
 
-| 对比项 | Vue 3 | React 19 | Angular 21 |
+| 对比项 | Vue 3 | React 19 | Angular 22 |
 |--------|-------|----------|------------|
 | **TS 支持** | 优秀（`<script setup lang="ts">`） | 优秀 | 原生（必须 TS） |
 | **类型推断** | 基于 SFC 编译 | 基于 JSX | 基于装饰器 |
@@ -396,7 +396,7 @@ test('increments count', () => {
   }
 }
 
-// Angular 21 — tsconfig.json（严格默认）
+// Angular 22 — tsconfig.json（严格默认）
 {
   "compilerOptions": {
     "strict": true,
@@ -414,7 +414,7 @@ test('increments count', () => {
 
 ## 十、安全与合规对比
 
-| 安全维度 | Vue 3 | React 19 | Angular 21 |
+| 安全维度 | Vue 3 | React 19 | Angular 22 |
 |---------|-------|----------|------------|
 | **XSS 防护** | 模板自动转义 | JSX 默认转义（dangerouslySetInnerHTML 警告） | 默认转义 + DomSanitizer |
 | **CSRF 防护** | 需自行实现 | 需自行实现 | HttpClient 拦截器内置 |

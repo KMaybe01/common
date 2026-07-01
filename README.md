@@ -6,7 +6,7 @@ React 19 文档站点，使用 Vite 8 构建，部署在 GitHub Pages。
 
 - **框架**: React 19 + TypeScript (strict)
 - **构建**: Vite 8 + rolldown
-- **路由**: React Router 6 (HashRouter)
+- **路由**: React Router 8.1 (HashRouter)
 - **内容**: Markdown (Vite raw glob import)
 - **渲染**: react-markdown + remark-gfm + highlight.js
 - **虚拟滚动**: IntersectionObserver 分片渲染（大文档仅渲染视口附近区块）
@@ -160,14 +160,14 @@ HTML4 + CSS2 + jQuery         ← 原生 DOM 操作，贫血架构
 ├─ 2023: React 19 预览（Actions/use()）、Angular Signals
 ├─ 2024: React Compiler（自动记忆化）、Vue 3.5、Angular 18 Zoneless
 ├─ 2025: Vue 3.6 Alien Signals、Angular 19/20、React 19 正式版
-├─ 2026: Angular 21 全面 Zoneless、Vite 8、Server Components 普及
+├─ 2026: Angular 22 全面 Zoneless、Vite 8、Server Components 普及
 ```
 
 ### 阶段四：AI 融合（2024—2026）
 ```
 ├─ 2024: AI 编程助手（Cursor/Copilot）、LLM 前端集成
 ├─ 2025: Agent 互操作（MCP/A2A）、端侧推理（WebGPU）
-├─ 2026: React 19 稳定、Vue 3.6 Alien Signals、Angular 21
+├─ 2026: React 19 稳定、Vue 3.6 Alien Signals、Angular 22
 │         AI Agent 标准化、Server Components 普及化
 ```
 

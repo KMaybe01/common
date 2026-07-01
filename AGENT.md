@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-React 19 静态站点项目（由 VitePress 迁移），构建前端面试知识体系，涵盖 HTML/CSS/JS、Vue3/React19/Angular21、性能优化、工程化、AI、Go 语言六大方向。
+React 19 静态站点项目（由 VitePress 迁移），构建前端面试知识体系，涵盖 HTML/CSS/JS、Vue3/React19/Angular22、性能优化、工程化、AI、Go 语言六大方向。
 
 ## 常用命令
 
@@ -50,10 +50,10 @@ bun preview    # 预览构建产物
 │   ├── 02-CSS.md
 │   ├── JavaScript核心/          # 数据类型、ES6、原型、异步、TS
 │   └── JavaScript代码篇/        # WebAPI、手写实现、输出题
-├── S2-框架深入/                 # Vue3、React19、Angular21、框架对比
+├── S2-框架深入/                 # Vue3、React19、Angular22、框架对比
 │   ├── index.md
 │   ├── 01-Vue3.md
-│   ├── 03-Angular21.md
+│   ├── 03-Angular22.md
 │   ├── 05-Vue3.0源码深度解析.md
 │   ├── React19/                 # 8 篇
 │   └── 框架对比/                # 4 篇
@@ -81,7 +81,7 @@ bun preview    # 预览构建产物
 - React 19（UI 框架）
 - Vite 6（构建工具）
 - TypeScript 5.6（类型安全）
-- React Router v6（路由）
+- React Router v8.1（路由）
 - react-markdown + remark-gfm（Markdown 渲染）
 - highlight.js（代码高亮）
 - Mermaid 11（图表/流程图）

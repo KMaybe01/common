@@ -65,7 +65,10 @@ export const navConfig: NavItem[] = [
       },
       { text: '🟢 Vue3', link: '/S2-框架深入/01-Vue3' },
       { text: '🔴 Vue3源码解析', link: '/S2-框架深入/05-Vue3.0源码深度解析' },
-      { text: '🔴 Angular21', link: '/S2-框架深入/03-Angular21' },
+      {
+        text: '🔴 Angular22',
+        link: '/S2-框架深入/03-Angular22',
+      },
     ],
   },
   {
