@@ -1,5 +1,5 @@
 import hljs from 'highlight.js'
-import { type ReactNode, isValidElement, useCallback, useEffect, useRef, useState } from 'react'
+import { type ReactNode, isValidElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import { useNavigate } from 'react-router-dom'
@@ -158,7 +158,7 @@ export default function MarkdownRenderer({
 }) {
   const navigate = useNavigate()
 
-  const components: Partial<Components> = {
+  const components = useMemo<Partial<Components>>(() => ({
     code({ className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || '')
       const lang = match?.[1]
@@ -267,7 +267,7 @@ export default function MarkdownRenderer({
         </h3>
       )
     },
-  }
+  }), [navigate, basePath])
 
   return (
     <div className="markdown-body">
