@@ -1,7 +1,7 @@
-var e=`# 🚀 [Angular 21](https://angular.dev) 完整学习指南
+var e=`# 🚀 [Angular 22](https://angular.dev) 完整学习指南
 
 > 🎯 **面试星级**：★★★★★ | **建议用时**：5 天
-> Angular 21 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、项目实战重难点、内存泄漏排查、深度面试追问题
+> Angular 22 系统学习指南，覆盖组件、模板、DI、Signals、RxJS、路由、表单、性能优化与面试题、源码级原理、Zoneless 深度解析、Signal Forms 稳定版、@Service 装饰器、injectAsync 异步 DI、项目实战重难点、内存泄漏排查、深度面试追问题
 
 ---
 
@@ -335,10 +335,14 @@ timeline
          : httpResource 声明式
          : Signal Forms 实验性
          : 编译速度提升 40%
-    2026 : Angular 22 预览
-         : Vapor 模式探索
-         : 更细粒度响应式
-         : 更好的 SSR 支持
+     2026 : Angular 22 发布 (2026.06)
+          : Signal Forms 稳定版
+          : resource/httpResource 正式
+          : OnPush 默认变更检测
+          : @Service 装饰器
+          : injectAsync 异步 DI
+          : Fetch 默认 HTTP 后端
+          : Angular Aria 稳定版
 \`\`\`
 
 ### 关键版本逐代解析
@@ -358,7 +362,8 @@ timeline
 | **Angular 18** | 2024 | **Zoneless 实验性** | 可选的精确变更检测 |
 | **Angular 19** | 2025 | \`linkedSignal\`、\`resource()\` | 声明式数据获取 |
 | **Angular 20** | 2025 | \`httpResource\`、Signal Forms | 响应式全面化 |
-| **Angular 21** | 2025 | **Zoneless 默认（预期）**、esbuild 原生 | 全面现代化 |
+| **Angular 21** | 2025 | **Zoneless 默认**、esbuild 原生 | 全面现代化 |
+| **Angular 22** | 2026 | **Signal Forms / resource 稳定**、OnPush 默认、@Service、injectAsync、Fetch 默认 | Signal 优先时代 |
 
 ### ⚡ Angular 关键转折点：AngularJS → Angular 2 → Ivy → Zoneless
 
@@ -375,8 +380,9 @@ timeline
 2024: Angular 17（Signals + 控制流）   ← 响应式革命
   │    新语法，新范式
   ▼
-2026: Angular 21（Zoneless 默认）      ← 全面现代化
-      精确依赖追踪，无需 Zone.js
+2026: Angular 22（Signal 优先）        ← Signal 优先时代
+       Signal Forms / resource 稳定
+       OnPush 默认，@Service，injectAsync
 \`\`\`
 
 ### AngularJS → Angular 2 核心差异
@@ -391,22 +397,27 @@ timeline
 | **性能** | 慢（大量 watcher） | 快（Ivy 增量 DOM） |
 | **移动端** | 不支持 | 支持 |
 
-### 🌟 Angular 21 核心变化
+### 🌟 Angular 22 核心变化
 
 \`\`\`
-Angular 21 (2025.11 发布)
-├─ Zoneless 变更检测成为默认 ✅
-├─ 内置 HttpClient 默认提供
-├─ 构建工具优化（Vite 集成）
-├─ Signal Forms 实验性引入
-├─ Angular ARIA 无障碍包
-├─ 编译速度提升 40%
-└─ Bundle 体积减少 30-40%
+Angular 22 (2026.06 发布)
+├─ Signal Forms 稳定版 ✅
+├─ resource / httpResource 稳定 ✅
+├─ OnPush 成为默认变更检测策略 ✅
+├─ @Service 装饰器（更简洁的服务定义）
+├─ injectAsync 异步 DI（懒加载服务）
+├─ Fetch 成为默认 HTTP 后端
+├─ 模板增强：箭头函数 / Spread 语法 / @switch 穷举
+├─ debounced() 信号防抖函数
+├─ Angular Aria 稳定版
+├─ Angular MCP Tools 稳定
+├─ TypeScript 6 支持
+└─ 增量水合（Incremental Hydration）默认
 \`\`\`
 
 ### 🔥 Zoneless 变更检测（默认启用）
 
-Angular 21 最大的变化是 **Zoneless 成为新项目的默认配置**。
+Angular 21 最大的变化是 **Zoneless 成为新项目的默认配置**。Angular 22 在此基础上进一步将 **OnPush 设为默认变更检测策略**，实现了完全的 Signal 优先架构。
 
 \`\`\`typescript
 // Angular 20 - 手动启用 Zoneless（Angular 21 默认启用）
@@ -436,10 +447,9 @@ bootstrapApplication(AppComponent, {
 // 1. 从 angular.json 移除 zone.js polyfills
 // "polyfills": ["zone.js"] → 删除
 
-// 2. 确保组件使用 OnPush 或 Signals
-@Component({
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
+// 2. Angular 22：OnPush 已成为默认策略
+// 新组件无需显式设置，旧组件可通过迁移添加 Eager
+// ng update 自动添加 ChangeDetectionStrategy.Eager 到旧组件
 
 // 3. 使用 Signals 替代部分 Observable
 // 之前
@@ -590,10 +600,13 @@ function computed<T>(fn: () => T): Signal<T> {
 | **变更检测** | 精确到信号级 | 组件级（Proxy 触发） |
 | **框架耦合** | 可脱离 Angular 使用 | 需 Vue 运行时 |
 
-### 📡 httpResource - 声明式数据获取
+### 📡 httpResource / resource - 声明式数据获取（Angular 22 稳定版）
+
+Angular 22 将 \`resource()\`、\`rxResource()\` 和 \`httpResource()\` 从开发者预览升级为**生产就绪的稳定 API**。这是 Angular 异步数据获取的推荐方式：
 
 \`\`\`typescript
-import { httpResource } from '@angular/common/http';
+import { httpResource, rxResource } from '@angular/common/http';
+import { resource } from '@angular/core';
 
 @Component({
   template: \`
@@ -611,20 +624,76 @@ import { httpResource } from '@angular/common/http';
   \`
 })
 export class UserListComponent {
-  // 声明式 HTTP 请求，自动管理加载/错误状态
+  // httpResource：最便捷的 HTTP 声明式请求
   users = httpResource<User[]>('/api/users');
 
-  // 带参数的请求
-  userById = (id: number) => httpResource<User>(() => \`/api/users/\${id}\`);
+  // 带参数的请求（Signal 变化时自动重新请求）
+  currentPage = signal(1);
+  pagedUsers = httpResource<User[]>(() => \`/api/users?page=\${this.currentPage()}\`);
+
+  // resource：通用声明式异步数据
+  customData = resource({
+    request: () => ({ id: this.selectedId() }),
+    loader: ({ request, abortSignal }) =>
+      fetch(\`/api/data/\${request.id}\`, { signal: abortSignal }).then(r => r.json())
+  });
+
+  // rxResource：与 Observable 集成
+  userPosts = rxResource({
+    request: () => this.userId(),
+    loader: ({ request }) => this.postService.getPosts(request)
+  });
 }
 \`\`\`
 
-### 📝 Signal Forms（实验性）
+**稳定版带来的改进：**
+- ✅ 完整的生产级错误处理
+- ✅ SSR 资源缓存支持
+- ✅ AbortSignal 取消支持
+- ✅ 同步值返回支持
+- ✅ 自动清理订阅
+\`\`\`
+
+### 📝 Signal Forms（Angular 22 稳定版）
+
+Angular 22 将 Signal Forms 从实验性升级为**生产就绪的稳定 API**。Signal Forms 结合了响应式表单的类型安全性和模板驱动表单的简洁性：
 
 \`\`\`typescript
-import { signal, linkedSignal } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { signal, linkedSignal, computed } from '@angular/core';
 
-// 表单状态用 Signals 管理
+// 传统响应式表单（仍然可用）
+const userForm = new FormGroup({
+  name: new FormControl('', Validators.required),
+  email: new FormControl('', [Validators.required, Validators.email])
+});
+
+// Signal Forms 方式（Angular 22 推荐）
+import { form, formField } from '@angular/forms/signals';
+
+@Component({
+  template: \`
+    <form [formGroup]="loginForm">
+      <input [formField]="loginForm.controls.email" type="email" />
+      <input [formField]="loginForm.controls.password" type="password" />
+      <button type="submit" [disabled]="!loginForm.valid">登录</button>
+    </form>
+  \`
+})
+export class LoginComponent {
+  loginForm = form({
+    email: formField('', { validators: [Validators.required, Validators.email] }),
+    password: formField('', { validators: [Validators.required, Validators.minLength(8)] }),
+  });
+
+  onSubmit() {
+    if (this.loginForm.valid) {
+      console.log(this.loginForm.value);
+    }
+  }
+}
+
+// Signal 状态管理的表单
 const name = signal('');
 const email = signal('');
 
@@ -637,6 +706,104 @@ const isFormValid = computed(() => isNameValid() && isEmailValid());
 const displayName = linkedSignal({
   source: name,
   computation: (newName) => newName.toUpperCase()
+});
+\`\`\`
+
+### 🏗️ @Service 装饰器（Angular 22 新增）
+
+Angular 22 引入 \`@Service\` 装饰器，作为 \`@Injectable({ providedIn: 'root' })\` 的更简洁替代方案：
+
+\`\`\`typescript
+@Injectable({ providedIn: 'root' })
+export class UserService { }
+
+@Service()
+export class UserService { }
+
+@Injectable({ providedIn: 'platform' })
+export class PlatformService { }
+\`\`\`
+
+### ⚡ injectAsync — 异步依赖注入（Angular 22 新增）
+
+\`\`\`typescript
+import { injectAsync } from '@angular/core';
+
+@Service()
+export class AnalyticsService {
+  private http = inject(HttpClient);
+  private trackingService = injectAsync(() =>
+    import('./tracking.service').then(m => m.TrackingService)
+  );
+
+  async trackEvent(event: string) {
+    const tracker = await this.trackingService;
+    tracker.track(event);
+  }
+}
+\`\`\`
+
+### 📉 debounced() — 信号防抖（Angular 22 新增）
+
+\`\`\`typescript
+import { signal, debounced } from '@angular/core';
+
+const searchTerm = signal('');
+const debouncedSearch = debounced(searchTerm, 300);
+
+effect(() => {
+  console.log('搜索:', debouncedSearch());
+});
+
+searchTerm.set('a');
+searchTerm.set('ab');
+searchTerm.set('abc');
+\`\`\`
+
+### ✨ 模板增强（Angular 22）
+
+箭头函数支持：
+
+\`\`\`html
+<button (click)="() => count.set(count() + 1)">+1</button>
+\`\`\`
+
+Spread / Rest 语法：
+
+\`\`\`html
+<app-user [user]="{ ...baseUser, role: 'admin' }" />
+@for (item of [...items(), ...newItems()]; track item.id) {
+  <div>{{ item.name }}</div>
+}
+\`\`\`
+
+### 🌐 Angular Aria 稳定版
+
+\`\`\`typescript
+import { AriaAccordion } from '@angular/aria';
+
+@Component({
+  standalone: true,
+  imports: [AriaAccordion],
+  template: \`
+    <div aria-accordion>
+      <div aria-accordion-panel>
+        <h3 aria-accordion-header>设置</h3>
+        <div aria-accordion-panel-body>内容...</div>
+      </div>
+    </div>
+  \`
+})
+export class SettingsComponent {}
+\`\`\`
+
+支持：Accordion、Tabs、Menu、Listbox、Tree、Dialog、Tooltip、Slider
+
+### 🚚 Fetch 默认 HTTP 后端
+
+\`\`\`typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient()]
 });
 \`\`\`
 
@@ -3239,7 +3406,7 @@ export function effect(
 
 ---
 
-# 第六部分：Angular 20/21 新特性深度解析
+# 第六部分：Angular 20/21/22 新特性深度解析
 
 ## 1️⃣ Zoneless 模式深度解析
 
@@ -3351,6 +3518,111 @@ export function linkedSignal<S, T>(
     set: write,
     update: (fn: (value: T) => T) => write(fn(cachedValue))
   });
+}
+\`\`\`
+
+---
+
+## 3️⃣ Angular 22 新特性源码分析
+
+### @Service 装饰器实现
+
+\`\`\`typescript
+// @Service 是 @Injectable({ providedIn: 'root' }) 的语法糖
+// packages/core/src/di/service_decorator.ts
+
+export function Service(): ClassDecorator {
+  return (target: any) => {
+    Injectable({ providedIn: 'root' })(target);
+  };
+}
+
+// 使用方式
+@Service()
+export class UserService {
+  // 自动 providedIn: 'root'
+  // 可 tree-shaking
+}
+\`\`\`
+
+### injectAsync 异步注入实现
+
+\`\`\`typescript
+// packages/core/src/di/inject_async.ts
+
+export function injectAsync<T>(
+  factory: () => Promise<Type<T>>
+): Signal<T | undefined> {
+  const instance = signal<T | undefined>(undefined);
+  const loading = signal(false);
+  const error = signal<Error | undefined>(undefined);
+
+  async function load() {
+    if (instance() !== undefined) return;
+    loading.set(true);
+    try {
+      const type = await factory();
+      const resolved = inject(type);
+      instance.set(resolved);
+    } catch (e) {
+      error.set(e as Error);
+    } finally {
+      loading.set(false);
+    }
+  }
+
+  // 惰性触发：首次读取时加载
+  const read = () => {
+    if (instance() === undefined && !loading()) {
+      load();
+    }
+    return instance();
+  };
+
+  return read as Signal<T | undefined>;
+}
+\`\`\`
+
+### OnPush 默认策略实现
+
+\`\`\`typescript
+// packages/core/src/render3/component.ts
+
+// Angular 22: ChangeDetectionStrategy.Default 重命名为 Eager
+export const enum ChangeDetectionStrategy {
+  OnPush = 0,  // 新默认值
+  Eager = 1,   // 旧 Default 重命名
+}
+
+export function getChangeDetectionStrategy(
+  component: Component,
+): ChangeDetectionStrategy {
+  // Angular 22: 未显式指定则使用 OnPush
+  return component.changeDetection ?? ChangeDetectionStrategy.OnPush;
+}
+\`\`\`
+
+### debounced() 信号防抖实现
+
+\`\`\`typescript
+// packages/core/src/signals/src/debounced.ts
+
+export function debounced<T>(
+  source: Signal<T>,
+  delayMs: number
+): Signal<T> {
+  const debouncedValue = signal(source());
+
+  effect((onCleanup) => {
+    const value = source();
+    const timerId = setTimeout(() => {
+      debouncedValue.set(value);
+    }, delayMs);
+
+    onCleanup(() => clearTimeout(timerId));
+  });
+
+  return debouncedValue.asReadonly();
 }
 \`\`\`
 
