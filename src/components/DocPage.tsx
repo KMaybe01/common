@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { loadContent } from '../data/content'
 import MarkdownRenderer from './MarkdownRenderer'
@@ -34,8 +34,8 @@ function extractHeadings(content: string): Heading[] {
 export default function DocPage() {
   const location = useLocation()
   const [content, setContent] = useState<string | null>(null)
-  const [headings, setHeadings] = useState<Heading[]>([])
   const [loading, setLoading] = useState(true)
+  const headings = useMemo(() => (content ? extractHeadings(content) : []), [content])
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
@@ -63,7 +63,6 @@ export default function DocPage() {
           return
         }
         setContent(result.content)
-        setHeadings(extractHeadings(result.content))
         setLoading(false)
       })
       .catch(() => {

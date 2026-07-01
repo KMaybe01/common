@@ -4,9 +4,8 @@ import { type NavItem, navConfig } from '../data/navigation'
 import { useTheme } from '../hooks/useTheme'
 import GlobalSearch from './GlobalSearch'
 
-function NavDropdown({ item, depth = 0 }: { item: NavItem; depth?: number }) {
-  const location = useLocation()
-  const isActive = item.link ? location.pathname.startsWith(item.link) : false
+function NavDropdown({ item, currentPath, depth = 0 }: { item: NavItem; currentPath: string; depth?: number }) {
+  const isActive = item.link ? currentPath.startsWith(item.link) : false
 
   if (!item.items) {
     return (
@@ -36,7 +35,7 @@ function NavDropdown({ item, depth = 0 }: { item: NavItem; depth?: number }) {
       </button>
       <ul className={`nav-dropdown-menu${depth > 0 ? ' nested' : ''}`}>
         {item.items.map((child, i) => (
-          <NavDropdown key={i} item={child} depth={depth + 1} />
+          <NavDropdown key={i} item={child} currentPath={currentPath} depth={depth + 1} />
         ))}
       </ul>
     </li>
@@ -48,6 +47,8 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const timeoutRef = useRef<number>(undefined)
+  const location = useLocation()
+  const currentPath = location.pathname
 
   return (
     <>
@@ -80,7 +81,7 @@ export default function Header() {
           >
             <ul className="nav-list">
               {navConfig.map((item, i) => (
-                <NavDropdown key={i} item={item} />
+                <NavDropdown key={i} item={item} currentPath={currentPath} />
               ))}
             </ul>
           </nav>

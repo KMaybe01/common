@@ -103,8 +103,9 @@ export default function GlobalSearch({ onClose }: { onClose: () => void }) {
     })
   }, [allPages])
 
+  const deferredQuery = useDeferredValue(query)
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = deferredQuery.trim().toLowerCase()
     if (!q) return []
     return items.filter(
       (i) =>
@@ -112,7 +113,7 @@ export default function GlobalSearch({ onClose }: { onClose: () => void }) {
         i.pageText.toLowerCase().includes(q) ||
         i.heading?.toLowerCase().includes(q),
     )
-  }, [query, items])
+  }, [deferredQuery, items])
 
   const select = useCallback(
     (link: string) => {
