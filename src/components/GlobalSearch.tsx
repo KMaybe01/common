@@ -175,7 +175,7 @@ export default function GlobalSearch({ onClose }: { onClose: () => void }) {
         <div className="search-results">
           {results.map((item, i) => (
             <div
-              key={item.link}
+              key={item.link + '-' + i}
               className={`search-result-item ${i === activeIndex ? 'active' : ''}`}
               onClick={() => select(item.link)}
               onKeyDown={(e) => {
