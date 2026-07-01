@@ -52,8 +52,8 @@ describe('ErrorBoundary', () => {
 
   it('reload button calls window.location.reload', async () => {
     const reloadFn = vi.fn()
-    const originalLocation = window.location
-    delete (window as Record<string, unknown>).location
+    const { location: originalLocation } = window
+    delete (window as unknown as Record<string, unknown>).location
     window.location = { ...originalLocation, reload: reloadFn } as unknown as Location
     const user = userEvent.setup()
 
