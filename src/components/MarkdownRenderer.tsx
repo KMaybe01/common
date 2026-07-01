@@ -10,7 +10,7 @@ function resolveInternalUrl(href: string, basePath: string): string {
   const stripped = href.replace(/\.md$/i, '')
   if (stripped.startsWith('/')) return stripped
   const dir = basePath.endsWith('/') ? basePath : basePath.replace(/\/[^/]*$/, '/')
-  const resolved = new URL(stripped, `http://localhost${dir}`)
+  const resolved = new URL(stripped, window.location.origin + dir)
   return resolved.pathname
 }
 

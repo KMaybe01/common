@@ -1,11 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const VERSION_KEY = 'cached-version'
 const DISMISSED_KEY = 'dismissed-version'
 const CHECK_INTERVAL = 300_000
 
+interface VersionData {
+  timestamp: number
+}
+
+function fetchVersion(base: string): Promise<VersionData> {
+  return fetch(`${base}version.json?t=${Date.now()}`).then((res) => {
+    if (!res.ok) throw new Error('fetch failed')
+    return res.json() as Promise<VersionData>
+  })
+}
+
 export default function UpdateNotification() {
   const [visible, setVisible] = useState(false)
+  const latestVersion = useRef<string>('')
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -13,11 +25,9 @@ export default function UpdateNotification() {
 
     async function checkUpdate() {
       try {
-        const url = `${base}version.json?t=${Date.now()}`
-        const res = await fetch(url)
-        if (!res.ok) return
-        const data = await res.json()
+        const data = await fetchVersion(base)
         const newVersion = String(data.timestamp)
+        latestVersion.current = newVersion
 
         if (isFirstCheck) {
           isFirstCheck = false
@@ -41,29 +51,17 @@ export default function UpdateNotification() {
   }, [])
 
   async function handleRefresh() {
-    const base = import.meta.env.BASE_URL
     try {
-      const res = await fetch(`${base}version.json?t=${Date.now()}`)
-      if (res.ok) {
-        const data = await res.json()
-        localStorage.setItem(VERSION_KEY, String(data.timestamp))
-      }
+      await fetchVersion(import.meta.env.BASE_URL)
+      localStorage.setItem(VERSION_KEY, latestVersion.current)
     } finally {
       window.location.reload()
     }
   }
 
   async function handleDismiss() {
-    const base = import.meta.env.BASE_URL
-    try {
-      const res = await fetch(`${base}version.json?t=${Date.now()}`)
-      if (res.ok) {
-        const data = await res.json()
-        localStorage.setItem(DISMISSED_KEY, String(data.timestamp))
-      }
-    } finally {
-      setVisible(false)
-    }
+    localStorage.setItem(DISMISSED_KEY, latestVersion.current)
+    setVisible(false)
   }
 
   if (!visible) return null

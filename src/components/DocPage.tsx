@@ -44,17 +44,24 @@ export default function DocPage() {
     setNotFound(false)
     setContent(null)
 
-    loadContent(location.pathname).then((result) => {
-      if (cancelled) return
-      if (!result) {
-        setNotFound(true)
+    loadContent(location.pathname)
+      .then((result) => {
+        if (cancelled) return
+        if (!result) {
+          setNotFound(true)
+          setLoading(false)
+          return
+        }
+        setContent(result.content)
+        setHeadings(extractHeadings(result.content))
         setLoading(false)
-        return
-      }
-      setContent(result.content)
-      setHeadings(extractHeadings(result.content))
-      setLoading(false)
-    })
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setNotFound(true)
+          setLoading(false)
+        }
+      })
 
     return () => {
       cancelled = true
