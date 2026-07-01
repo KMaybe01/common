@@ -28,10 +28,11 @@ mindmap
       effect
       linkedSignal
     指令系统
-      结构指令
-      属性指令
-      自定义指令
-      新控制流
+       结构指令
+       属性指令
+       自定义指令
+       新控制流
+       @defer 延迟加载
     路由系统
       Angular Router
       路由守卫
@@ -237,9 +238,30 @@ const fixture = TestBed.createComponent(UserComponent);
 **测试基础设施：**
 - `TestBed`：完整的测试环境模拟
 - DI 替换：每个依赖都可 mock
-- `async` / `fakeAsync`：异步测试支持
+- `async` / `fakeAsync`：异步测试支持（Zone.js 模式）
+- Zoneless 模式下使用 resource/httpResource 测试，无需 fakeAsync
 - `ComponentFixture`：组件渲染测试
 - E2E：Protractor（已弃用）/ Playwright / Cypress
+
+---
+
+### 📍 现代 DI 写法：inject() 函数
+
+Angular 22 推荐使用 `inject()` 函数替代构造器注入，更简洁且类型安全：
+
+```typescript
+import { inject } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
+class UserService {
+  private http = inject(HttpClient);  // inject() 自动注入
+}
+
+@Component({})
+class UserComponent {
+  private userService = inject(UserService);  // inject() 自动注入
+}
+```
 
 ---
 
@@ -454,10 +476,13 @@ bootstrapApplication(AppComponent, {
 // 3. 使用 Signals 替代部分 Observable
 // 之前
 data$ = this.http.get('/api/data');
-// 之后
+// 之后（Angular 22 推荐 httpResource）
+data = httpResource(() => '/api/data');
+// 或使用 resource + AbortSignal
 data = resource({
     request: () => '/api/data',
-    loader: ({ request }) => this.http.get(request)
+    loader: ({ request, abortSignal }) =>
+      fetch(request, { signal: abortSignal }).then(r => r.json())
   });
 
 // 4. 测试中移除 zone.js/testing
@@ -782,7 +807,7 @@ Spread / Rest 语法：
 import { AriaAccordion } from '@angular/aria';
 
 @Component({
-  standalone: true,
+  // standalone: true — Angular 20+ 默认 standalone，无需显式声明
   imports: [AriaAccordion],
   template: `
     <div aria-accordion>
@@ -968,10 +993,8 @@ export class ClickComponent {
   onClick(event: MouseEvent) { }
 }
 
-// 📍 依赖注入（现代推荐：inject() 函数）
-constructor() {
-  const doc = inject(DOCUMENT);
-}
+// 📍 依赖注入（现代推荐：inject() 函数，字段初始化器）
+private doc = inject(DOCUMENT);
 ```
 
 ### 📝 类型安全的组件
@@ -989,28 +1012,26 @@ interface Product {
 @Component({
   selector: 'app-product-list',
   template: `
-    @for (product of products(); track product.id) {
-      <app-product-card 
-        [product]="product"
-        (onSelect)="onProductSelect($event)"
-      />
+    @if (products.isLoading()) {
+      <div>加载中...</div>
+    } @else {
+      @for (product of products.value(); track product.id) {
+        <app-product-card 
+          [product]="product"
+          (onSelect)="onProductSelect($event)"
+        />
+      }
     }
   `,
   imports: [ProductCardComponent]
 })
 export class ProductListComponent {
-  // Signal 类型约束
-  products = signal<Product[]>([]);
+  // ✅ 使用 httpResource 声明式数据获取（Angular 22 推荐）
+  // 类型约束通过泛型自动继承
+  products = httpResource<Product[]>(() => '/api/products');
   selectedProduct = signal<Product | null>(null);
   
-  private productService = inject(ProductService);
-  
-  ngOnInit() {
-    // 类型检查：productService.getProducts() 返回 Observable<Product[]>
-    this.productService.getProducts().subscribe(
-      products => this.products.set(products)
-    );
-  }
+  // 无需手动订阅或清理 — httpResource 自动管理
   
   onProductSelect(product: Product): void {
     this.selectedProduct.set(product);
@@ -1346,7 +1367,7 @@ import { Directive, ElementRef, HostListener, input } from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
-  standalone: true,
+  // standalone: true — Angular 20+ 默认 standalone
 })
 export class HighlightDirective {
   highlightColor = input('yellow', { alias: 'appHighlight' });
@@ -1379,7 +1400,7 @@ import { Directive, TemplateRef, ViewContainerRef, input, effect } from '@angula
 
 @Directive({
   selector: '[appUnless]',
-  standalone: true,
+  // standalone: true — Angular 20+ 默认 standalone
 })
 export class UnlessDirective {
   appUnless = input(false);
@@ -1430,7 +1451,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'productFilter',
-  standalone: true,
+  // standalone: true — Angular 20+ 默认 standalone
   pure: true,
 })
 export class ProductFilterPipe implements PipeTransform {
@@ -1485,40 +1506,168 @@ userClick$.subscribe(event => console.log('用户点击了'));
 userClick$.next(clickEvent); // 发出新值
 ```
 
-### 🔗 常用操作符详解
+### 🔗 操作符分类详解
+
+#### 1️⃣ 高阶映射操作符（面试高频）
+
+四个核心操作符的区别是 RxJS 面试必考点：
 
 ```typescript
-// 1️⃣ 转换操作符
-source$.pipe(
-  map(x => x * 2),              // 变换每个值
-  switchMap(x => this.fetch(x)) // 切换到新 observable
+import { switchMap, mergeMap, concatMap, exhaustMap } from 'rxjs/operators';
+
+// 场景：用户连续点击"保存"按钮
+const clicks$ = fromEvent(button, 'click');
+
+clicks$.pipe(
+  switchMap(() => this.save(data))
+  // 每次新点击 → 取消上一次未完成的请求 → 只保留最新的
+  // 适用：搜索输入、页面导航、Tab 切换
+).subscribe();
+
+clicks$.pipe(
+  mergeMap(() => this.save(data))
+  // 每次新点击 → 并发发起请求 → 不取消旧的
+  // 适用：文件上传、批量操作（需注意并发数）
+).subscribe();
+
+clicks$.pipe(
+  concatMap(() => this.save(data))
+  // 每次新点击 → 排队执行 → 上一个完成才发起下一个
+  // 适用：订单提交、消息队列、严格顺序的场景
+).subscribe();
+
+clicks$.pipe(
+  exhaustMap(() => this.save(data))
+  // 正在处理时 → 忽略新点击 → 处理完才接受下一个
+  // 适用：支付提交、登录按钮防重复
+).subscribe();
+```
+
+| 操作符 | 行为 | 典型场景 | 面试关键词 |
+|--------|------|---------|-----------|
+| `switchMap` | 取消旧 Observable，切换到新的 | 搜索联想、Tab 切换 | "取消上次" |
+| `mergeMap` | 不取消，新旧并发执行 | 文件上传、多路请求 | "并发" |
+| `concatMap` | 排队，上一个完成再执行下一个 | 订单串行处理 | "顺序" |
+| `exhaustMap` | 正在执行时忽略新的 | 支付防重复、登录按钮 | "忽略" |
+
+#### 2️⃣ 组合操作符
+
+```typescript
+import { forkJoin, combineLatest, withLatestFrom, zip, merge } from 'rxjs';
+
+// forkJoin — 等待所有完成（类似 Promise.all）
+forkJoin({
+  users: this.http.get<User[]>('/api/users'),
+  posts: this.http.get<Post[]>('/api/posts')
+}).subscribe(({ users, posts }) => {
+  // 两个请求都完成才触发
+});
+
+// combineLatest — 任意变化触发合并
+combineLatest([search$, filter$]).pipe(
+  map(([query, category]) => ({ query, category }))
+  // search$ 或 filter$ 任一变化 → 重新发出组合值
+  // 适用：多条件筛选、联动下拉
 );
 
-// 2️⃣ 过滤操作符
-source$.pipe(
-  filter(x => x > 10),          // 过滤值
-  distinctUntilChanged()        // 去重相邻值
+// withLatestFrom — 主从合并
+clicks$.pipe(
+  withLatestFrom(token$)
+  // 只有 clicks$ 触发时才合并 token$ 的最新值
+  // 适用：事件发生时取最新状态
 );
 
-// 3️⃣ 时间操作符
-source$.pipe(
-  debounceTime(300),            // 防抖（最后一个事件）
-  throttleTime(1000)            // 节流（固定间隔）
+// merge — 合并多个流
+merge(
+  this.buttonClicks$,
+  this.keyboardShortcuts$
+).subscribe(event => this.handleAction(event));
+```
+
+#### 3️⃣ 过滤操作符
+
+```typescript
+import { filter, take, takeUntil, distinctUntilChanged, skip, first } from 'rxjs/operators';
+
+// filter — 按条件过滤
+keyup$.pipe(filter((e: KeyboardEvent) => e.key === 'Enter'));
+
+// take — 只取前 N 次
+clicks$.pipe(take(1)) // 只响应第一次点击
+
+// takeUntil — 直到某事件发生
+interval(1000).pipe(
+  takeUntil(this.destroy$)
+  // ⭐ Angular 常用：搭配 DestroyRef 自动清理
 );
 
-// 4️⃣ 组合操作符
-combineLatest([users$, posts$]).pipe(
-  map(([users, posts]) => ({ users, posts }))
-);
-
-// 5️⃣ 错误处理
-source$.pipe(
-  retry(3),                           // 重试3次
-  catchError(err => of(defaultValue)) // 捕获错误
+// distinctUntilChanged — 值变化时才发出
+this.route.params.pipe(
+  distinctUntilChanged((a, b) => a.id === b.id)
+  // URL 参数相同不触发
 );
 ```
 
-### 🔍 实战场景：搜索输入框
+#### 4️⃣ 错误处理操作符
+
+```typescript
+import { catchError, retry, retryWhen, delay, take } from 'rxjs/operators';
+
+// catchError — 捕获并恢复
+this.http.get('/api/data').pipe(
+  catchError(err => {
+    console.error(err);
+    return of(fallbackData); // 返回默认值，流不终止
+  })
+);
+
+// retry — 自动重试 N 次
+this.http.get('/api/data').pipe(
+  retry(3) // 失败后重试 3 次
+);
+
+// retryWhen — 自定义重试策略
+this.http.get('/api/data').pipe(
+  retryWhen(errors => errors.pipe(
+    delay(1000),  // 每次重试间隔 1 秒
+    take(3)       // 最多重试 3 次
+  ))
+);
+```
+
+#### 5️⃣ 工具操作符
+
+```typescript
+import { tap, finalize, timeout, delay } from 'rxjs/operators';
+
+// tap — 副作用（不改变值）
+this.http.get('/api/data').pipe(
+  tap({
+    next: () => this.loading.set(false),
+    error: () => this.error.set(true)
+  })
+);
+
+// finalize — 无论成功失败都执行（类似 try/finally）
+this.http.post('/api/order', order).pipe(
+  finalize(() => this.isSubmitting.set(false))
+);
+
+// timeout — 超时控制
+this.http.get('/api/data').pipe(
+  timeout(5000),
+  catchError(err => {
+    if (err.name === 'TimeoutError') {
+      return of(fallbackData);
+    }
+    throw err;
+  })
+);
+```
+
+### 🔍 高频实战场景
+
+#### 场景 1：搜索输入框（防抖 + SwitchMap）
 
 ```typescript
 @Component({
@@ -1526,46 +1675,211 @@ source$.pipe(
   template: `
     <input 
       #searchInput
-      (input)="onSearch(searchInput.value)"
+      (input)="searchTerm.set(searchInput.value)"
       placeholder="搜索用户..."
     />
 
-    @if (results.value(); as data) {
-      @for (result of data; track result.id) {
+    @if (results.isLoading()) {
+      <div class="loading">搜索中...</div>
+    } @else {
+      @for (result of results.value(); track result.id) {
         <div class="result">{{ result.name }}</div>
       }
     }
   `
 })
 export class SearchComponent {
-  private userService = inject(UserService);
+  private http = inject(HttpClient);
 
-  rawTerm = signal('');
-  debouncedTerm = signal('');
+  searchTerm = signal('');
 
-  constructor() {
-    effect((onCleanup) => {
-      const value = this.rawTerm();
-      const id = setTimeout(() => this.debouncedTerm.set(value), 300);
-      onCleanup(() => clearTimeout(id));
-    });
-  }
-
-  results = resource({
-    request: () => this.debouncedTerm(),
+  // rxResource + debounce 实现防抖搜索
+  results = rxResource({
+    request: () => this.searchTerm(),
     loader: ({ request: term }) => {
       if (!term) return of([] as User[]);
-      return this.userService.search(term).pipe(
-        catchError(error => {
-          console.error('搜索失败', error);
-          return of([] as User[]);
-        })
+      return of(term).pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(query => this.http.get<User[]>(`/api/users?q=${query}`)),
+        catchError(() => of([] as User[]))
       );
     }
   });
+}
+```
 
-  onSearch(term: string) {
-    this.rawTerm.set(term);
+#### 场景 2：页面初始化并行请求（forkJoin）
+
+```typescript
+@Component({...})
+export class DashboardComponent implements OnInit {
+  private http = inject(HttpClient);
+
+  ngOnInit() {
+    forkJoin({
+      userStats: this.http.get<Stats>('/api/stats'),
+      recentOrders: this.http.get<Order[]>('/api/orders/recent'),
+      notifications: this.http.get<Notif[]>('/api/notifications')
+    }).subscribe({
+      next: ({ userStats, recentOrders, notifications }) => {
+        // 三个接口并行请求，全部完成后统一处理
+        this.populateDashboard(userStats, recentOrders, notifications);
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+}
+```
+
+#### 场景 3：串行执行依赖请求（concatMap）
+
+```typescript
+// 需求：先创建订单 → 拿到 orderId → 再上传文件 → 最后确认
+@Component({...})
+export class OrderService {
+  private http = inject(HttpClient);
+
+  createOrder(items: CartItem[]): Observable<OrderResult> {
+    return of(null).pipe(
+      concatMap(() => this.http.post<{id: string}>('/api/orders', { items })),
+      concatMap(order => this.uploadFiles(order.id, items)),
+      concatMap(order => this.http.post<OrderResult>(`/api/orders/${order.id}/confirm`, {})),
+      catchError(err => {
+        console.error('订单创建失败', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private uploadFiles(orderId: string, items: CartItem[]): Observable<{id: string}> {
+    return of({ id: orderId }); // 上传逻辑省略
+  }
+}
+```
+
+#### 场景 4：自动保存防重复（exhaustMap）
+
+```typescript
+@Component({...})
+export class EditorComponent {
+  private http = inject(HttpClient);
+  private save$ = new Subject<void>();
+
+  content = signal('');
+
+  constructor() {
+    // 用户连续点击保存 → 正在保存时忽略后续点击
+    this.save$.pipe(
+      exhaustMap(() => this.http.post('/api/save', { content: this.content() }).pipe(
+        finalize(() => console.log('保存完成（忽略期间点击）'))
+      ))
+    ).subscribe();
+  }
+
+  onSave() {
+    this.save$.next();
+  }
+}
+```
+
+#### 场景 5：轮询请求（interval + switchMap）
+
+```typescript
+@Component({...})
+export class LiveOrderComponent implements OnInit, OnDestroy {
+  private http = inject(HttpClient);
+  private destroy$ = new Subject<void>();
+
+  orderStatus = signal<string>('pending');
+
+  ngOnInit() {
+    // 每 5 秒查询一次订单状态，但如有请求未完成则取消上次
+    interval(5000).pipe(
+      startWith(0),
+      switchMap(() => this.http.get<{status: string}>('/api/order/status')),
+      takeUntil(this.destroy$)
+    ).subscribe(res => this.orderStatus.set(res.status));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+  }
+}
+```
+
+#### 场景 6：缓存 HTTP 请求（shareReplay）
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CachedService {
+  private http = inject(HttpClient);
+
+  // shareReplay(1) — 缓存最后一次结果，后续订阅不重新请求
+  private products$ = this.http.get<Product[]>('/api/products').pipe(
+    shareReplay(1),
+    catchError(() => of([]))
+  );
+
+  getProducts(): Observable<Product[]> {
+    return this.products$;
+  }
+
+  // 强制刷新
+  refresh() {
+    this.products$ = this.http.get<Product[]>('/api/products').pipe(
+      shareReplay(1),
+      catchError(() => of([]))
+    );
+  }
+}
+```
+
+#### 场景 7：表单验证防抖（debounceTime + distinctUntilChanged + switchMap）
+
+```typescript
+@Component({...})
+export class RegisterComponent {
+  private http = inject(HttpClient);
+
+  usernameControl = new FormControl('', { nonNullable: true });
+  usernameStatus = signal<'idle' | 'checking' | 'available' | 'taken'>('idle');
+
+  constructor() {
+    this.usernameControl.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      filter(name => name.length >= 3),
+      tap(() => this.usernameStatus.set('checking')),
+      switchMap(name => this.http.get<{available: boolean}>(`/api/check-username?name=${name}`)),
+      tap(res => this.usernameStatus.set(res.available ? 'available' : 'taken')),
+      takeUntilDestroyed()
+    ).subscribe();
+  }
+}
+```
+
+#### 场景 8：WebSocket 心跳 + 重连
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class WebSocketService {
+  private messages$ = new Subject<MessageEvent>();
+
+  connect(url: string): Observable<any> {
+    return new Observable(subscriber => {
+      const ws = new WebSocket(url);
+      ws.onmessage = event => subscriber.next(JSON.parse(event.data));
+      ws.onerror = event => subscriber.error(event);
+      ws.onclose = () => subscriber.complete();
+      return () => ws.close();
+    }).pipe(
+      retryWhen(errors => errors.pipe(
+        delay(3000),   // 断开后 3 秒重连
+        take(10)       // 最多重连 10 次
+      )),
+      share()          // 多订阅者共享同一连接
+    );
   }
 }
 ```
@@ -1588,7 +1902,9 @@ export class SearchComponent {
 ### 📍 Signals + DI 状态管理
 
 ```typescript
-@Injectable({ providedIn: 'root' })
+import { Service, signal, computed } from '@angular/core';
+
+@Service()
 export class CartStore {
   private readonly items = signal<CartItem[]>([]);
 
@@ -1949,11 +2265,11 @@ export const routes: Routes = [
     ]
   },
   
-  // 5️⃣ 延迟加载模块
+  // 5️⃣ 延迟加载（Angular 22 推荐 loadComponent）
   {
     path: 'analytics',
-    loadChildren: () => 
-      import('./analytics/analytics.module').then(m => m.AnalyticsModule),
+    loadComponent: () => 
+      import('./analytics/analytics.component').then(m => m.AnalyticsComponent),
     canMatch: [authGuard],  // ✅ canLoad 已废弃，使用 canMatch
 
 
@@ -1974,28 +2290,21 @@ export class UserDetailComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   
-  userId = signal('');
+  // ✅ Angular 22 推荐：使用 input() + withComponentInputBinding()
+  // 需在 app.config.ts 中启用 withComponentInputBinding()
+  // 路由配置: { path: 'user/:id', ...}
+  // 路由参数名需与 input 名一致
+  userId = input<string>('');
   user = signal<User | null>(null);
+  
   private userService = inject(UserService);
   
   constructor() {
-    // 方式 1：使用 signal 从 resolve 获取数据
-    const resolvedUser = this.route.snapshot.data['user'] as User | undefined;
-    if (resolvedUser) this.user.set(resolvedUser);
-    
-    // 方式 2：监听参数变化（组件复用时自动更新）
-    const id$ = this.route.paramMap.pipe(
-      map(params => params.get('id') || ''),
-      takeUntilDestroyed()
-    );
-    id$.subscribe(id => {
-      this.userId.set(id);
-      this.loadUser();
+    // 参数变化时自动更新 user（配合 resolve 数据）
+    effect(() => {
+      const id = this.userId();
+      if (id) this.loadUser(id);
     });
-    
-    // 方式 3（推荐）：使用 input 转换路由参数
-    // Angular 20+ 支持: userId = input<string>(); 
-    // 配合路由配置: { path: 'user/:id', ...}
   }
   
   goBack() {
@@ -2048,17 +2357,20 @@ export class UserDetailComponent {
 ```
 表单类型选择
 │
+├─ Angular 22 新项目？（推荐优先）
+│  └─ ✅  Signal Forms（v22 稳定版，信号驱动）
+│
 ├─ 简单表单？(< 5 个字段)
 │  └─ ✅ 模板驱动表单
 │
 ├─ 复杂/动态表单？
-│  └─ ✅ 响应式表单
+│  └─ ✅ 响应式表单 或 Signal Forms
 │
 ├─ 需要自定义验证？
-│  └─ ✅ 响应式表单
+│  └─ ✅ 响应式表单 或 Signal Forms
 │
 └─ 需要实时数据同步？
-   └─ ✅ 响应式表单
+   └─ ✅ 响应式表单 或 Signal Forms
 ```
 
 ### 📋 模板驱动表单示例
@@ -2136,7 +2448,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
       <button type="submit" [disabled]="!userForm.valid">保存</button>
     </form>
   `,
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule] // Angular 22 新项目优先推荐 Signal Forms
 })
 export class UserFormComponent {
   private fb = inject(FormBuilder);
@@ -2235,7 +2547,10 @@ graph TD
 export class BestPracticeComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   
-  constructor(private userService: UserService) {
+  // ✅ 使用 inject() 函数替代构造器参数注入
+  private userService = inject(UserService);
+  
+  constructor() {
     // ❌ 不要在这里做复杂初始化
     // ❌ 不要访问 @Input/@ViewChild
   }
@@ -2439,8 +2754,7 @@ interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private baseUrl = 'https://api.example.com';
-  
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   
   // ✅ GET 请求
   getUsers(page: number = 1): Observable<User[]> {
@@ -3812,10 +4126,10 @@ Angular 22 引入了 **Angular MCP Server**，支持 AI 工具直接理解 Angul
 
 @Component({
   selector: 'app-user-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  // standalone: true — Angular 20+ 默认 standalone
+  imports: [RouterLink],
   template: `
-    <input [(ngModel)]="searchTerm" placeholder="搜索用户..." />
+    <input [value]="searchTerm()" (input)="searchTerm.set($any($event.target).value)" placeholder="搜索用户..." />
     
     @for (user of filteredUsers(); track user.id) {
       <div class="user-card" [routerLink]="['/users', user.id]">
@@ -3871,7 +4185,7 @@ export class UserListComponent {
       }
     </div>
     
-    <input [(ngModel)]="inputText" (keyup.enter)="sendMessage()" />
+    <input [value]="inputText()" (input)="inputText.set($any($event.target).value)" (keyup.enter)="sendMessage()" />
     <button (click)="sendMessage()" [disabled]="isStreaming()">发送</button>
   `
 })
@@ -3989,9 +4303,10 @@ mindmap
 @Component({
   selector: 'app-data-table',
   template: `
-    <!-- 搜索框 -->
+    <!-- 搜索框（Angular 22：Signal 绑定） -->
     <input 
-      [formControl]="searchControl" 
+      [value]="searchTerm()" 
+      (input)="searchTerm.set($any($event.target).value)"
       placeholder="搜索..."
     />
     
@@ -4033,13 +4348,13 @@ mindmap
       <button (click)="nextPage()">下一页</button>
     </div>
   `,
-  imports: [ReactiveFormsModule]
+  // Angular 22：Signal Forms 优先，Signal 绑定无需额外模块导入
 })
 export class DataTableComponent {
   private dataService = inject(DataService);
   
-  // 响应式状态
-  searchControl = new FormControl('');
+  // 响应式状态（Angular 22 推荐 Signal）
+  searchTerm = signal('');
   sortBy = signal<'name' | 'date'>('name');
   currentPage = signal(1);
   pageSize = 10;
@@ -4051,7 +4366,7 @@ export class DataTableComponent {
   
   // 搜索过滤
   filteredBySearch = computed(() => {
-    const term = this.searchControl.value?.toLowerCase() || '';
+    const term = this.searchTerm().toLowerCase();
     return (this.allData.value() || []).filter(item =>
       item.name.toLowerCase().includes(term)
     );
