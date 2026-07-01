@@ -647,7 +647,7 @@ function PageTransition({ children }) {
 |------|----------|----------|
 | React | 19 | Compiler 推荐启用，RSC 稳定 |
 | Next.js | 15+ | App Router 默认，Turbopack |
-| React Router | 7+ | 统一客户端/服务端路由 |
+| React Router | 8.3 | 三模式路由（Declarative/Data/Framework） |
 | Redux | 5+ | RTK 简化，更好的 TS |
 | Zustand | 5+ | 更轻量，持久化内置 |
 | TanStack Query | 5+ | 更精细缓存，SSR 优化 |
@@ -723,7 +723,7 @@ mindmap
       Remix
       Gatsby
     路由
-      React Router 8.1
+      React Router 8.3
       TanStack Router
     状态管理
       Zustand
@@ -3166,11 +3166,38 @@ RTK:         10KB
 TanStack Q:  11KB
 \`\`\`
 
-> 🔗 **链式思考**：React Router v8.1 引入的 \`loaders\`/\`actions\` 本质是"声明式数据获取"，在路由匹配时自动加载数据——这与 Vue Router 的导航守卫 + 手动数据获取模式不同，更接近 Angular Router 的 \`resolve\` 守卫。三者都支持懒加载和嵌套路由，但 React Router 以 URL 为中心，Vue Router 以组件树为中心，Angular Router 以配置为中心。详见 [框架对比](../框架对比/) 的"路由方案"。
+> 🔗 **链式思考**：React Router v8 的 \`loaders\`/\`actions\` 本质是"声明式数据获取"，在路由匹配时自动加载数据——这与 Vue Router 的导航守卫 + 手动数据获取模式不同，更接近 Angular Router 的 \`resolve\` 守卫。三者都支持懒加载和嵌套路由，但 React Router 以 URL 为中心，Vue Router 以组件树为中心，Angular Router 以配置为中心。详见 [框架对比](../框架对比/) 的"路由方案"。
 
 ---
 
 ## 3️⃣ 路由完全指南
+
+### 📊 React Router v6 vs v7 vs v8 核心对比
+
+| 维度 | v6 (2021-2024) | v7 (2024-2025) | v8 (2026+) |
+|------|---------------|---------------|------------|
+| **包名** | \`react-router-dom\` + \`react-router\` | 统一为 \`react-router\`，DOM API 从 \`react-router/dom\` 导入 | \`react-router\`（已移除 \`react-router-dom\`） |
+| **最低 React** | 16.8 | 18 | 19.2.7 |
+| **最低 Node** | 12 | 20 | 22.22 |
+| **最低 Vite** | 4 | 5 | 7 |
+| **ESM** | CJS + ESM | CJS + ESM | **ESM-only** |
+| **架构模式** | 元素路由 + 数据路由 | 三模式：Declarative / Data / **Framework** | 三模式继续，Framework 为默认推荐 |
+| **数据加载** | \`loader\` / \`action\`（v6.4+） | \`loader\` / \`action\` + Framework 模式路由模块 | 同上 + Split Route Modules 默认启用 |
+| **路由配置** | \`createBrowserRouter\` | \`createBrowserRouter\` + \`@react-router/dev\` | 同上 + \`routes.ts\` 集中式配置 |
+| **Middleware** | ❌ | ✅（v7.9 稳定） | ✅ 默认启用 |
+| **RSC 支持** | ❌ | ⚠️ 实验性 | ⚠️ 实验性 |
+| **Type-safe href** | ❌ | ✅ | ✅ |
+| **SSR / SSG** | ❌ 需额外配置 | ✅ Framework 模式内置 | ✅ 内置 |
+| **测试** | \`MemoryRouter\` | \`createRoutesStub\` | \`createRoutesStub\` |
+| **React Compiler** | ❌ | ✅ 兼容 | ✅ 原生优化 |
+| **升级路径** | — | 通过 Future Flags 无断裂升级 | v7 → v8 非断裂，移除 Future Flags |
+
+**v8 关键变化总结：**
+- \`react-router-dom\` 包已移除，所有导入统一从 \`react-router\`
+- Future Flags（\`v8_middleware\`, \`v8_splitRouteModules\` 等）已默认启用
+- 最低要求：Node 22.22+ / React 19.2.7+ / Vite 7+
+- Split Route Modules 默认启用，支持零配置代码分割
+- Middleware API 稳定，支持认证/日志/错误处理等拦截逻辑
 
 ### 📍 React Router 实现原理
 
@@ -3194,10 +3221,10 @@ flowchart TD
     end
 \`\`\`
 
-### 🛣️ 完整路由配置
+### 🛣️ 完整路由配置（v8 Data Mode）
 
 \`\`\`jsx
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router';
 
 const router = createBrowserRouter([
   {
@@ -3232,6 +3259,8 @@ export default function App() {
 **参数读取与导航：**
 
 \`\`\`jsx
+import { useParams, useNavigate, Navigate } from 'react-router';
+
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -3245,9 +3274,16 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 }
 \`\`\`
 
-### 📍 loaders / actions (v6.4+)
+### 📍 loaders / actions（数据加载与突变）
 
 \`\`\`jsx
+import {
+  createBrowserRouter,
+  useLoaderData,
+  useActionData,
+  Form,
+} from 'react-router';
+
 const router = createBrowserRouter([
   {
     path: '/products/:id',
@@ -3283,6 +3319,8 @@ function ProductDetail() {
 **defer / Await（延迟数据加载）：**
 
 \`\`\`jsx
+import { defer, Await, useLoaderData, Suspense } from 'react-router';
+
 async function loader() {
   const reviewsPromise = fetch('/api/reviews').then(r => r.json());
   return defer({
@@ -3304,6 +3342,35 @@ function ProductPage() {
     </div>
   );
 }
+\`\`\`
+
+### 📍 Middleware（v8 稳定 API）
+
+v8 将 \`future.v8_middleware\` 默认启用，支持在路由处理前后执行拦截逻辑：
+
+\`\`\`jsx
+import { createBrowserRouter } from 'react-router';
+
+const router = createBrowserRouter([
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
+    loader: ({ context }) => {
+      if (!context.isAuthenticated) throw new Response('Unauthorized', { status: 401 });
+      return fetchDashboardData();
+    },
+    // v8 middleware：before/after 拦截
+    unstable_middleware: [
+      async ({ request, context }, next) => {
+        const start = Date.now();
+        const response = await next();
+        console.log(\`/\${request.url} took \${Date.now() - start}ms\`);
+        return response;
+      },
+    ],
+  },
+]);
+\`\`\`
 \`\`\`
 
 ---
