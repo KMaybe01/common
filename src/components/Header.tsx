@@ -47,7 +47,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const timeoutRef = useRef<number>(undefined)
 
   return (
     <>

@@ -1,29 +1,11 @@
 import mermaid from 'mermaid'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-let initialized = false
-
-function ensureInit() {
-  if (initialized) return
-  initialized = true
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'neutral',
-    themeVariables: {
-      primaryColor: '#3eaf7c',
-      primaryTextColor: '#fff',
-      primaryBorderColor: '#2d8f5e',
-      lineColor: '#666',
-      secondaryColor: '#2196f3',
-      tertiaryColor: '#f5f5f5',
-    },
-  })
-}
-
 export default function MermaidDiagram({ chart }: { chart: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const svgRef = useRef('')
   const idRef = useRef(`mermaid-${Math.random().toString(36).slice(2, 9)}`)
+  const initialized = useRef(false)
   const [open, setOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -31,7 +13,21 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
   const lightboxRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    ensureInit()
+    if (!initialized.current) {
+      initialized.current = true
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'neutral',
+        themeVariables: {
+          primaryColor: '#3eaf7c',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#2d8f5e',
+          lineColor: '#666',
+          secondaryColor: '#2196f3',
+          tertiaryColor: '#f5f5f5',
+        },
+      })
+    }
     let cancelled = false
     mermaid.render(idRef.current, chart).then(({ svg }) => {
       if (!cancelled && ref.current) {
